@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String   @id @default(uuid())
+  nome            String
+  email           String   @unique
+  cpf             String   @unique
+  senha           String
+  role            Role     @default(ALUNO)
+  instituicao     String
+  curso           String
+  matricula       String
+  comprovanteUrl  String?
+  dataNascimento  DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  inscricao       Inscricao?
+  submissoes      Submissao[]
+  progressoCursos ProgressoCurso[]
+  certificados    Certificado[]
+}
+
+enum Role {
+  ALUNO
+  AVALIADOR
+  ADMIN
+}
+
+model Inscricao {
+  id                String      @id @default(uuid())
+  userId            String      @unique
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status            StatusInsc  @default(PENDENTE)
+  estado            String
+  municipio         String?
+  instituicao       String
+  curso             String
+  periodo           Int?
+  comprovanteUrl    String?
+  fase1Nota         Float?
+  fase1Inicio       DateTime?
+  fase1Fim          DateTime?
+  fase2Tema         String?
+  fase2VideoUrl     String?
+  fase2PortfolioUrl String?
+  fase2Nota         Float?
+  notaFinal         Float?
+  medalha           Medalha?
+  respostas         Resposta[]
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+}
+
+enum StatusInsc {
+  PENDENTE
+  CONFIRMADA
+  REJEITADA
+}
+
+enum Medalha {
+  OURO
+  PRATA
+  BRONZE
+}
+
+model Questao {
+  id            String       @id @default(uuid())
+  enunciado     String
+  alternativaA  String
+  alternativaB  String
+  alternativaC  String
+  alternativaD  String
+  alternativaE  String
+  correta       String
+  eixo          Eixo
+  dificuldade   Dificuldade
+  createdAt     DateTime     @default(now())
+
+  respostas     Resposta[]
+}
+
+enum Eixo {
+  ALGEBRA
+  GEOMETRIA
+  ANALISE
+  ESTATISTICA
+  DIDATICA
+}
+
+enum Dificuldade {
+  FACIL
+  MEDIO
+  DIFICIL
+}
+
+model Resposta {
+  id         String   @id @default(uuid())
+  inscricaoId String
+  questaoId  String
+  alternativa String
+  correta    Boolean  @default(false)
+  respondedAt DateTime @default(now())
+
+  inscricao Inscricao @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+  questao   Questao   @relation(fields: [questaoId], references: [id], onDelete: Cascade)
+
+  @@unique([inscricaoId, questaoId])
+}
+
+model Modulo {
+  id           String   @id @default(uuid())
+  titulo       String
+  descricao    String
+  ordem        Int      @unique
+  cargaHoraria Int
+  conteudos    Json
+  questionario Json?
+
+  progressos   ProgressoCurso[]
+}
+
+model ProgressoCurso {
+  id        String   @id @default(uuid())
+  userId    String
+  moduloId  String
+  concluido Boolean  @default(false)
+  nota      Float?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  modulo    Modulo   @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, moduloId])
+}
+
+model Certificado {
+  id           String   @id @default(uuid())
+  userId       String
+  cargaHoraria Int
+  emitidoEm    DateTime @default(now())
+  codigo       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Submissao {
+  id         String     @id @default(uuid())
+  userId     String
+  tipo       TipoSubm
+  titulo     String
+  resumo     String
+  arquivoUrl String
+  status     StatusSubm @default(EM_AVALIACAO)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+enum TipoSubm {
+  ARTIGO
+  POSTER
+}
+
+enum StatusSubm {
+  EM_AVALIACAO
+  APROVADO
+  REJEITADO
+}
