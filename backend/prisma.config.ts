@@ -10,13 +10,3 @@ export default defineConfig({
     url: env('DATABASE_URL'),
   },
 });
-
-export default defineConfig({
-  schema: 'prisma/schema.prisma',
-  migrations: {
-    seed: 'node_modules/.bin/tsx prisma/seed.ts',
-  },
-  datasource: {
-    url: env('DATABASE_URL'),
-  },
-});
