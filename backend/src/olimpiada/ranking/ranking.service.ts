@@ -6,12 +6,24 @@ export class RankingService {
   constructor(private prisma: PrismaService) {}
 
   async rankingPorEstado(estado?: string) {
+    // Find the most recent active edition
+    const edicao = await this.prisma.edicao.findFirst({
+      orderBy: { ano: "desc" },
+    });
+
+    const whereClause: Record<string, unknown> = {
+      status: "CONFIRMADA",
+      fase1Nota: { not: null },
+    };
+    if (edicao) {
+      whereClause.edicaoId = edicao.id;
+    }
+    if (estado) {
+      whereClause.estado = estado.toUpperCase();
+    }
+
     const inscricoes = await this.prisma.inscricao.findMany({
-      where: {
-        status: "CONFIRMADA",
-        fase1Nota: { not: null },
-        ...(estado ? { estado: estado.toUpperCase() } : {}),
-      },
+      where: whereClause,
       include: {
         user: {
           select: {
@@ -20,20 +32,36 @@ export class RankingService {
             dataNascimento: true,
           },
         },
+        avaliacoes: {
+          select: { nota: true },
+        },
       },
     });
 
+    const pesoFase1 = edicao?.pesoFase1 ?? 0.5;
+    const pesoFase2 = edicao?.pesoFase2 ?? 0.5;
+
     const ordenado = inscricoes
-      .map((i) => ({
-        inscricaoId: i.id,
-        nome: i.user.nome,
-        estado: i.estado,
-        fase1Nota: i.fase1Nota || 0,
-        fase2Nota: i.fase2Nota || 0,
-        notaFinal: i.notaFinal || this.calcularNotaFinal(i.fase1Nota, i.fase2Nota),
-        dataNascimento: i.user.dataNascimento,
-        medalha: i.medalha,
-      }))
+      .map((i) => {
+        const fase1Nota = i.fase1Nota || 0;
+        const fase2Nota =
+          i.avaliacoes.length > 0
+            ? i.avaliacoes.reduce((sum, a) => sum + a.nota, 0) / i.avaliacoes.length
+            : 0;
+        const notaFinal =
+          i.notaFinal || fase1Nota * pesoFase1 + fase2Nota * pesoFase2;
+
+        return {
+          inscricaoId: i.id,
+          nome: i.user.nome,
+          estado: i.estado,
+          fase1Nota,
+          fase2Nota,
+          notaFinal,
+          dataNascimento: i.user.dataNascimento,
+          medalha: i.medalha,
+        };
+      })
       .sort((a, b) => {
         // Desempate: nota final > fase2 > fase1 > idade (mais velho)
         if (b.notaFinal !== a.notaFinal) return b.notaFinal - a.notaFinal;
@@ -84,11 +112,5 @@ export class RankingService {
     }
 
     return { atualizado: true };
-  }
-
-  private calcularNotaFinal(fase1: number | null, fase2: number | null): number {
-    const n1 = fase1 || 0;
-    const n2 = fase2 || 0;
-    return n1 * 0.4 + n2 * 0.6;
   }
 }

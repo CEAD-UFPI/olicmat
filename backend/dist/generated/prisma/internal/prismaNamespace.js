@@ -24,14 +24,20 @@ export const DbNull = runtime.DbNull;
 export const JsonNull = runtime.JsonNull;
 export const AnyNull = runtime.AnyNull;
 export const ModelName = {
+    Instituicao: 'Instituicao',
+    Curso: 'Curso',
     User: 'User',
+    CoordenadorCurso: 'CoordenadorCurso',
+    Edicao: 'Edicao',
     Inscricao: 'Inscricao',
+    Prova: 'Prova',
     Questao: 'Questao',
+    ProvaQuestao: 'ProvaQuestao',
     Resposta: 'Resposta',
-    Modulo: 'Modulo',
-    ProgressoCurso: 'ProgressoCurso',
-    Certificado: 'Certificado',
-    Submissao: 'Submissao'
+    EnvioFase2: 'EnvioFase2',
+    AvaliacaoFase2: 'AvaliacaoFase2',
+    RankingSnapshot: 'RankingSnapshot',
+    AuditLog: 'AuditLog'
 };
 export const TransactionIsolationLevel = runtime.makeStrictEnum({
     ReadUncommitted: 'ReadUncommitted',
@@ -39,40 +45,85 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
     RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
 });
+export const InstituicaoScalarFieldEnum = {
+    id: 'id',
+    nome: 'nome',
+    sigla: 'sigla',
+    estado: 'estado',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+export const CursoScalarFieldEnum = {
+    id: 'id',
+    nome: 'nome',
+    instituicaoId: 'instituicaoId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
 export const UserScalarFieldEnum = {
     id: 'id',
     nome: 'nome',
     email: 'email',
     cpf: 'cpf',
-    senha: 'senha',
+    senhaHash: 'senhaHash',
     role: 'role',
-    instituicao: 'instituicao',
-    curso: 'curso',
+    instituicaoId: 'instituicaoId',
+    cursoId: 'cursoId',
     matricula: 'matricula',
     comprovanteUrl: 'comprovanteUrl',
     dataNascimento: 'dataNascimento',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
+export const CoordenadorCursoScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    cursoId: 'cursoId'
+};
+export const EdicaoScalarFieldEnum = {
+    id: 'id',
+    ano: 'ano',
+    titulo: 'titulo',
+    status: 'status',
+    dataInicio: 'dataInicio',
+    dataFim: 'dataFim',
+    pesoFase1: 'pesoFase1',
+    pesoFase2: 'pesoFase2',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
 export const InscricaoScalarFieldEnum = {
     id: 'id',
     userId: 'userId',
+    edicaoId: 'edicaoId',
     status: 'status',
     estado: 'estado',
     municipio: 'municipio',
-    instituicao: 'instituicao',
-    curso: 'curso',
+    instituicaoId: 'instituicaoId',
+    cursoId: 'cursoId',
     periodo: 'periodo',
     comprovanteUrl: 'comprovanteUrl',
     fase1Nota: 'fase1Nota',
     fase1Inicio: 'fase1Inicio',
     fase1Fim: 'fase1Fim',
     fase2Tema: 'fase2Tema',
-    fase2VideoUrl: 'fase2VideoUrl',
-    fase2PortfolioUrl: 'fase2PortfolioUrl',
-    fase2Nota: 'fase2Nota',
     notaFinal: 'notaFinal',
     medalha: 'medalha',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+export const ProvaScalarFieldEnum = {
+    id: 'id',
+    edicaoId: 'edicaoId',
+    fase: 'fase',
+    titulo: 'titulo',
+    duracaoMinutos: 'duracaoMinutos',
+    status: 'status',
+    publicadaEm: 'publicadaEm',
+    janelaInicio: 'janelaInicio',
+    janelaFim: 'janelaFim',
+    versao: 'versao',
+    createdBy: 'createdBy',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
@@ -87,49 +138,58 @@ export const QuestaoScalarFieldEnum = {
     correta: 'correta',
     eixo: 'eixo',
     dificuldade: 'dificuldade',
-    createdAt: 'createdAt'
+    createdBy: 'createdBy',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+};
+export const ProvaQuestaoScalarFieldEnum = {
+    id: 'id',
+    provaId: 'provaId',
+    questaoId: 'questaoId',
+    ordem: 'ordem'
 };
 export const RespostaScalarFieldEnum = {
     id: 'id',
     inscricaoId: 'inscricaoId',
+    provaId: 'provaId',
     questaoId: 'questaoId',
-    alternativa: 'alternativa',
+    alternativaMarcada: 'alternativaMarcada',
     correta: 'correta',
-    respondedAt: 'respondedAt'
-};
-export const ModuloScalarFieldEnum = {
-    id: 'id',
-    titulo: 'titulo',
-    descricao: 'descricao',
-    ordem: 'ordem',
-    cargaHoraria: 'cargaHoraria',
-    conteudos: 'conteudos',
-    questionario: 'questionario'
-};
-export const ProgressoCursoScalarFieldEnum = {
-    id: 'id',
-    userId: 'userId',
-    moduloId: 'moduloId',
-    concluido: 'concluido',
-    nota: 'nota'
-};
-export const CertificadoScalarFieldEnum = {
-    id: 'id',
-    userId: 'userId',
-    cargaHoraria: 'cargaHoraria',
-    emitidoEm: 'emitidoEm',
-    codigo: 'codigo'
-};
-export const SubmissaoScalarFieldEnum = {
-    id: 'id',
-    userId: 'userId',
-    tipo: 'tipo',
-    titulo: 'titulo',
-    resumo: 'resumo',
-    arquivoUrl: 'arquivoUrl',
-    status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
+};
+export const EnvioFase2ScalarFieldEnum = {
+    id: 'id',
+    inscricaoId: 'inscricaoId',
+    tipo: 'tipo',
+    arquivoUrl: 'arquivoUrl',
+    status: 'status',
+    enviadoEm: 'enviadoEm'
+};
+export const AvaliacaoFase2ScalarFieldEnum = {
+    id: 'id',
+    inscricaoId: 'inscricaoId',
+    avaliadorId: 'avaliadorId',
+    nota: 'nota',
+    parecer: 'parecer',
+    avaliadoEm: 'avaliadoEm'
+};
+export const RankingSnapshotScalarFieldEnum = {
+    id: 'id',
+    edicaoId: 'edicaoId',
+    estado: 'estado',
+    dados: 'dados',
+    publicadoEm: 'publicadoEm',
+    createdAt: 'createdAt'
+};
+export const AuditLogScalarFieldEnum = {
+    id: 'id',
+    actorId: 'actorId',
+    acao: 'acao',
+    entidade: 'entidade',
+    entidadeId: 'entidadeId',
+    payload: 'payload',
+    createdAt: 'createdAt'
 };
 export const SortOrder = {
     asc: 'asc',

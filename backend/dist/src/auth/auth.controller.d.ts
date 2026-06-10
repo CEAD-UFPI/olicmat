@@ -1,5 +1,12 @@
 import { AuthService } from "./auth.service.js";
 import type { LoginDto, RegisterDto } from "./dto/login.dto.js";
+import type { Request as ExpressReq } from "express";
+interface AuthUser {
+    id: string;
+    email: string;
+    nome: string;
+    role: string;
+}
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
@@ -7,10 +14,10 @@ export declare class AuthController {
         accessToken: string;
         user: {
             id: string;
-            email: string;
             nome: string;
-            role: import("../../generated/prisma/enums.js").Role;
             createdAt: Date;
+            email: string;
+            role: import("../../generated/prisma/enums.js").Role;
         };
     }>;
     login(body: LoginDto): Promise<{
@@ -22,4 +29,19 @@ export declare class AuthController {
             role: import("../../generated/prisma/enums.js").Role;
         };
     }>;
+    esqueciSenha(body: {
+        email: string;
+    }): Promise<{
+        message: string;
+    }>;
+    redefinirSenha(body: {
+        token: string;
+        novaSenha: string;
+    }): Promise<{
+        message: string;
+    }>;
+    me(req: ExpressReq & {
+        user: AuthUser;
+    }): Promise<Express.User & AuthUser>;
 }
+export {};

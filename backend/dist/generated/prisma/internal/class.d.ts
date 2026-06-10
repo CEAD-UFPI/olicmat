@@ -30,28 +30,46 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
     $extends: runtime.Types.Extensions.ExtendsHook<"extends", Prisma.TypeMapCb<OmitOpts>, ExtArgs, runtime.Types.Utils.Call<Prisma.TypeMapCb<OmitOpts>, {
         extArgs: ExtArgs;
     }>>;
+    get instituicao(): Prisma.InstituicaoDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    get curso(): Prisma.CursoDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
     get user(): Prisma.UserDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    get coordenadorCurso(): Prisma.CoordenadorCursoDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    get edicao(): Prisma.EdicaoDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
     get inscricao(): Prisma.InscricaoDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
+    get prova(): Prisma.ProvaDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
     get questao(): Prisma.QuestaoDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
+    get provaQuestao(): Prisma.ProvaQuestaoDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
     get resposta(): Prisma.RespostaDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
-    get modulo(): Prisma.ModuloDelegate<ExtArgs, {
+    get envioFase2(): Prisma.EnvioFase2Delegate<ExtArgs, {
         omit: OmitOpts;
     }>;
-    get progressoCurso(): Prisma.ProgressoCursoDelegate<ExtArgs, {
+    get avaliacaoFase2(): Prisma.AvaliacaoFase2Delegate<ExtArgs, {
         omit: OmitOpts;
     }>;
-    get certificado(): Prisma.CertificadoDelegate<ExtArgs, {
+    get rankingSnapshot(): Prisma.RankingSnapshotDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
-    get submissao(): Prisma.SubmissaoDelegate<ExtArgs, {
+    get auditLog(): Prisma.AuditLogDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;
 }

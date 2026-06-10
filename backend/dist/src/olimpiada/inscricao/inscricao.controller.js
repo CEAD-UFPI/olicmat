@@ -10,12 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Patch, Param, Body, UseGuards, Request, BadRequestException, Query, } from "@nestjs/common";
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, Request, BadRequestException, Query, } from "@nestjs/common";
+import { z } from "zod";
 import { InscricaoService } from "./inscricao.service.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
 import { Roles } from "../../common/decorators/roles.decorator.js";
-import { criarInscricaoSchema, } from "./dto/inscricao.dto.js";
+import { criarInscricaoSchema, editarInscricaoSchema, } from "./dto/inscricao.dto.js";
 let InscricaoController = class InscricaoController {
     inscricaoService;
     constructor(inscricaoService) {
@@ -44,6 +45,25 @@ let InscricaoController = class InscricaoController {
     }
     async confirmar(id) {
         return this.inscricaoService.confirmar(id);
+    }
+    async atualizarStatus(id, body) {
+        const parsed = z.object({
+            status: z.enum(["PENDENTE", "CONFIRMADA", "REJEITADA"]),
+        }).safeParse(body);
+        if (!parsed.success) {
+            throw new BadRequestException(parsed.error.flatten().fieldErrors);
+        }
+        return this.inscricaoService.atualizarStatus(id, parsed.data.status);
+    }
+    async editar(id, body) {
+        const parsed = editarInscricaoSchema.safeParse(body);
+        if (!parsed.success) {
+            throw new BadRequestException(parsed.error.flatten().fieldErrors);
+        }
+        return this.inscricaoService.editar(id, parsed.data);
+    }
+    async deletar(id) {
+        return this.inscricaoService.deletar(id);
     }
 };
 __decorate([
@@ -97,6 +117,35 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], InscricaoController.prototype, "confirmar", null);
+__decorate([
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles("ADMIN", "AVALIADOR"),
+    Patch(":id/status"),
+    __param(0, Param("id")),
+    __param(1, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], InscricaoController.prototype, "atualizarStatus", null);
+__decorate([
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles("ADMIN", "AVALIADOR"),
+    Patch(":id"),
+    __param(0, Param("id")),
+    __param(1, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], InscricaoController.prototype, "editar", null);
+__decorate([
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles("ADMIN"),
+    Delete(":id"),
+    __param(0, Param("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], InscricaoController.prototype, "deletar", null);
 InscricaoController = __decorate([
     Controller("inscricoes"),
     __metadata("design:paramtypes", [InscricaoService])

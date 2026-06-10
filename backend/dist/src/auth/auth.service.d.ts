@@ -9,10 +9,10 @@ export declare class AuthService {
         accessToken: string;
         user: {
             id: string;
-            email: string;
             nome: string;
-            role: import("../../generated/prisma/enums.js").Role;
             createdAt: Date;
+            email: string;
+            role: import("../../generated/prisma/enums.js").Role;
         };
     }>;
     login(data: LoginDto): Promise<{

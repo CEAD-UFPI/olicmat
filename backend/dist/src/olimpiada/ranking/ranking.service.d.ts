@@ -24,5 +24,4 @@ export declare class RankingService {
     atualizarMedalhas(): Promise<{
         atualizado: boolean;
     }>;
-    private calcularNotaFinal;
 }

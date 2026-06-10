@@ -4,21 +4,30 @@ export declare class UsersService {
     constructor(prisma: PrismaService);
     findById(id: string): Promise<{
         id: string;
-        email: string;
         nome: string;
-        instituicao: string;
-        curso: string;
-        matricula: string;
-        role: import("../../generated/prisma/enums.js").Role;
-        comprovanteUrl: string | null;
         createdAt: Date;
+        instituicao: {
+            id: string;
+            sigla: string;
+            nome: string;
+        } | null;
+        instituicaoId: string | null;
+        curso: {
+            id: string;
+            nome: string;
+        } | null;
+        email: string;
+        role: import("../../generated/prisma/enums.js").Role;
+        cursoId: string | null;
+        matricula: string;
+        comprovanteUrl: string | null;
     }>;
     findAll(): Promise<{
         id: string;
-        email: string;
         nome: string;
-        instituicao: string;
-        role: import("../../generated/prisma/enums.js").Role;
         createdAt: Date;
+        instituicaoId: string | null;
+        email: string;
+        role: import("../../generated/prisma/enums.js").Role;
     }[]>;
 }

@@ -33,33 +33,33 @@ export declare class ProvaController {
         user: AuthUser;
     }, body: ResponderQuestaoDto): Promise<{
         id: string;
-        questaoId: string;
-        alternativa: string;
+        createdAt: Date;
+        updatedAt: Date;
         correta: boolean;
+        provaId: string;
+        questaoId: string;
         inscricaoId: string;
-        respondedAt: Date;
+        alternativaMarcada: string;
     }>;
     finalizar(req: ExpressReq & {
         user: AuthUser;
     }): Promise<{
         id: string;
-        instituicao: string;
-        curso: string;
-        comprovanteUrl: string | null;
+        estado: string;
         createdAt: Date;
         updatedAt: Date;
-        estado: string;
+        instituicaoId: string;
+        cursoId: string;
+        comprovanteUrl: string | null;
+        userId: string;
+        status: import("../../../generated/prisma/enums.js").StatusInsc;
+        edicaoId: string;
         municipio: string | null;
         periodo: number | null;
-        status: import("../../../generated/prisma/enums.js").StatusInsc;
-        fase2Tema: string | null;
-        fase2VideoUrl: string | null;
-        fase2PortfolioUrl: string | null;
-        fase2Nota: number | null;
-        userId: string;
         fase1Nota: number | null;
         fase1Inicio: Date | null;
         fase1Fim: Date | null;
+        fase2Tema: string | null;
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     }>;

@@ -27,19 +27,33 @@ let InscricaoService = class InscricaoService {
         this.prisma = prisma;
     }
     async criar(userId, data) {
+        let edicao = await this.prisma.edicao.findFirst({
+            where: { status: "PLANEJAMENTO" },
+            orderBy: { ano: "desc" },
+        });
+        if (!edicao) {
+            edicao = await this.prisma.edicao.create({
+                data: {
+                    ano: new Date().getFullYear(),
+                    titulo: `OLICMAT ${new Date().getFullYear()}`,
+                    status: "PLANEJAMENTO",
+                },
+            });
+        }
         const existente = await this.prisma.inscricao.findUnique({
-            where: { userId },
+            where: { userId_edicaoId: { userId, edicaoId: edicao.id } },
         });
         if (existente) {
-            throw new ConflictException("Você já possui uma inscrição");
+            throw new ConflictException("Você já possui uma inscrição nesta edição");
         }
         return this.prisma.inscricao.create({
             data: {
                 userId,
+                edicaoId: edicao.id,
                 estado: data.estado.toUpperCase(),
                 municipio: data.municipio,
-                instituicao: data.instituicao,
-                curso: data.curso,
+                instituicaoId: data.instituicaoId,
+                cursoId: data.cursoId,
                 periodo: data.periodo,
             },
         });
@@ -114,12 +128,50 @@ let InscricaoService = class InscricaoService {
                         id: true,
                         nome: true,
                         email: true,
-                        instituicao: true,
+                        instituicao: { select: { id: true, nome: true, sigla: true } },
                     },
                 },
+                instituicao: { select: { id: true, nome: true, sigla: true } },
+                curso: { select: { id: true, nome: true } },
             },
             orderBy: { createdAt: "desc" },
         });
+    }
+    async atualizarStatus(inscricaoId, status) {
+        const inscricao = await this.prisma.inscricao.findUnique({
+            where: { id: inscricaoId },
+        });
+        if (!inscricao) {
+            throw new NotFoundException("Inscrição não encontrada");
+        }
+        return this.prisma.inscricao.update({
+            where: { id: inscricaoId },
+            data: { status: status },
+        });
+    }
+    async editar(inscricaoId, data) {
+        const inscricao = await this.prisma.inscricao.findUnique({
+            where: { id: inscricaoId },
+        });
+        if (!inscricao) {
+            throw new NotFoundException("Inscrição não encontrada");
+        }
+        return this.prisma.inscricao.update({
+            where: { id: inscricaoId },
+            data,
+        });
+    }
+    async deletar(inscricaoId) {
+        const inscricao = await this.prisma.inscricao.findUnique({
+            where: { id: inscricaoId },
+        });
+        if (!inscricao) {
+            throw new NotFoundException("Inscrição não encontrada");
+        }
+        await this.prisma.resposta.deleteMany({ where: { inscricaoId } });
+        await this.prisma.envioFase2.deleteMany({ where: { inscricaoId } });
+        await this.prisma.avaliacaoFase2.deleteMany({ where: { inscricaoId } });
+        return this.prisma.inscricao.delete({ where: { id: inscricaoId } });
     }
 };
 InscricaoService = __decorate([

@@ -59,7 +59,7 @@ export class ProvaService {
     });
 
     const respostasMap = new Map(
-      respostas.map((r) => [r.questaoId, r.alternativa])
+      respostas.map((r) => [r.questaoId, r.alternativaMarcada])
     );
 
     return {
@@ -90,6 +90,23 @@ export class ProvaService {
       throw new NotFoundException("Questão não encontrada");
     }
 
+    // Find or create the Fase 1 prova for this inscricao's edition
+    let prova = await this.prisma.prova.findFirst({
+      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+    });
+
+    if (!prova) {
+      prova = await this.prisma.prova.create({
+        data: {
+          edicaoId: inscricao.edicaoId,
+          fase: 1,
+          titulo: "Prova Fase 1",
+          duracaoMinutos: DURACAO_PROVA_MINUTOS,
+          createdBy: userId,
+        },
+      });
+    }
+
     const fimProva = inscricao.fase1Inicio
       ? new Date(inscricao.fase1Inicio.getTime() + DURACAO_PROVA_MINUTOS * 60 * 1000)
       : null;
@@ -102,19 +119,21 @@ export class ProvaService {
 
     return this.prisma.resposta.upsert({
       where: {
-        inscricaoId_questaoId: {
+        inscricaoId_provaId_questaoId: {
           inscricaoId: inscricao.id,
+          provaId: prova.id,
           questaoId: data.questaoId,
         },
       },
       create: {
         inscricaoId: inscricao.id,
+        provaId: prova.id,
         questaoId: data.questaoId,
-        alternativa: data.alternativa,
+        alternativaMarcada: data.alternativa,
         correta,
       },
       update: {
-        alternativa: data.alternativa,
+        alternativaMarcada: data.alternativa,
         correta,
       },
     });

@@ -49,7 +49,7 @@ let ProvaService = class ProvaService {
                 questaoId: { in: questoes.map((q) => q.id) },
             },
         });
-        const respostasMap = new Map(respostas.map((r) => [r.questaoId, r.alternativa]));
+        const respostasMap = new Map(respostas.map((r) => [r.questaoId, r.alternativaMarcada]));
         return {
             inscricaoId: inscricao.id,
             inicio: inscricao.fase1Inicio.toISOString(),
@@ -73,6 +73,20 @@ let ProvaService = class ProvaService {
         if (!questao) {
             throw new NotFoundException("Questão não encontrada");
         }
+        let prova = await this.prisma.prova.findFirst({
+            where: { edicaoId: inscricao.edicaoId, fase: 1 },
+        });
+        if (!prova) {
+            prova = await this.prisma.prova.create({
+                data: {
+                    edicaoId: inscricao.edicaoId,
+                    fase: 1,
+                    titulo: "Prova Fase 1",
+                    duracaoMinutos: DURACAO_PROVA_MINUTOS,
+                    createdBy: userId,
+                },
+            });
+        }
         const fimProva = inscricao.fase1Inicio
             ? new Date(inscricao.fase1Inicio.getTime() + DURACAO_PROVA_MINUTOS * 60 * 1000)
             : null;
@@ -82,19 +96,21 @@ let ProvaService = class ProvaService {
         const correta = data.alternativa === questao.correta;
         return this.prisma.resposta.upsert({
             where: {
-                inscricaoId_questaoId: {
+                inscricaoId_provaId_questaoId: {
                     inscricaoId: inscricao.id,
+                    provaId: prova.id,
                     questaoId: data.questaoId,
                 },
             },
             create: {
                 inscricaoId: inscricao.id,
+                provaId: prova.id,
                 questaoId: data.questaoId,
-                alternativa: data.alternativa,
+                alternativaMarcada: data.alternativa,
                 correta,
             },
             update: {
-                alternativa: data.alternativa,
+                alternativaMarcada: data.alternativa,
                 correta,
             },
         });

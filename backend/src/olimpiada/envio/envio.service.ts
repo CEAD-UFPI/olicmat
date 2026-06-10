@@ -13,9 +13,10 @@ export class EnvioService {
     private upload: UploadService
   ) {}
 
-  async uploadVideo(
+  async uploadFase2(
     userId: string,
-    file: Express.Multer.File
+    file: Express.Multer.File,
+    tipo: string
   ) {
     const inscricao = await this.prisma.inscricao.findUnique({
       where: { userId },
@@ -33,56 +34,62 @@ export class EnvioService {
       throw new BadRequestException("Nota mínima da Fase 1 não atingida");
     }
 
-    const videoUrl = await this.upload.uploadBuffer(
+    const resourceType = tipo === "video" ? "video" : "raw";
+    const arquivoUrl = await this.upload.uploadBuffer(
       file.buffer,
       `fase2/${userId}`,
       file.originalname,
-      "video"
+      resourceType
     );
 
-    return this.prisma.inscricao.update({
-      where: { id: inscricao.id },
-      data: { fase2VideoUrl: videoUrl },
+    // Create an EnvioFase2 record
+    return this.prisma.envioFase2.create({
+      data: {
+        inscricaoId: inscricao.id,
+        tipo,
+        arquivoUrl,
+        status: "ENVIADO",
+      },
     });
+  }
+
+  async uploadVideo(
+    userId: string,
+    file: Express.Multer.File
+  ) {
+    return this.uploadFase2(userId, file, "video");
   }
 
   async uploadPortfolio(
     userId: string,
     file: Express.Multer.File
   ) {
-    const inscricao = await this.prisma.inscricao.findUnique({
-      where: { userId },
-    });
-
-    if (!inscricao) {
-      throw new NotFoundException("Inscrição não encontrada");
-    }
-
-    if (!inscricao.fase2Tema) {
-      throw new BadRequestException("Tema da Fase 2 ainda não foi sorteado");
-    }
-
-    const portfolioUrl = await this.upload.uploadBuffer(
-      file.buffer,
-      `portfolio/${userId}`,
-      file.originalname,
-      "raw"
-    );
-
-    return this.prisma.inscricao.update({
-      where: { id: inscricao.id },
-      data: { fase2PortfolioUrl: portfolioUrl },
-    });
+    return this.uploadFase2(userId, file, "portfolio");
   }
 
   async statusEnvio(userId: string) {
     const inscricao = await this.prisma.inscricao.findUnique({
       where: { userId },
       select: {
+        id: true,
         fase2Tema: true,
-        fase2VideoUrl: true,
-        fase2PortfolioUrl: true,
-        fase2Nota: true,
+        enviosFase2: {
+          select: {
+            id: true,
+            tipo: true,
+            arquivoUrl: true,
+            status: true,
+            enviadoEm: true,
+          },
+        },
+        avaliacoes: {
+          select: {
+            id: true,
+            nota: true,
+            parecer: true,
+            avaliadoEm: true,
+          },
+        },
       },
     });
 

@@ -26,13 +26,18 @@ export class AuthService {
       throw new ConflictException("Email ou CPF já cadastrado");
     }
 
-    const senha = await bcrypt.hash(data.senha, 10);
+    const senhaHash = await bcrypt.hash(data.senha, 10);
+
+    // Extract only the fields that map to the User model
+    // `instituicao` and `curso` from the DTO are strings but the model expects
+    // `instituicaoId` / `cursoId` FKs — they are omitted here (frontend mapping TBD)
+    const { senha, instituicao, curso, ...restData } = data;
 
     const user = await this.prisma.user.create({
       data: {
-        ...data,
-        senha,
-        dataNascimento: new Date(data.dataNascimento),
+        ...restData,
+        senhaHash,
+        dataNascimento: new Date(restData.dataNascimento),
       },
       select: {
         id: true,
@@ -57,7 +62,7 @@ export class AuthService {
       throw new UnauthorizedException("Credenciais inválidas");
     }
 
-    const senhaValida = await bcrypt.compare(data.senha, user.senha);
+    const senhaValida = await bcrypt.compare(data.senha, user.senhaHash);
 
     if (!senhaValida) {
       throw new UnauthorizedException("Credenciais inválidas");

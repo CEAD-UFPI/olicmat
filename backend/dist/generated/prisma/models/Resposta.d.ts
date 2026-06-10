@@ -9,51 +9,63 @@ export type AggregateResposta = {
 export type RespostaMinAggregateOutputType = {
     id: string | null;
     inscricaoId: string | null;
+    provaId: string | null;
     questaoId: string | null;
-    alternativa: string | null;
+    alternativaMarcada: string | null;
     correta: boolean | null;
-    respondedAt: Date | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
 };
 export type RespostaMaxAggregateOutputType = {
     id: string | null;
     inscricaoId: string | null;
+    provaId: string | null;
     questaoId: string | null;
-    alternativa: string | null;
+    alternativaMarcada: string | null;
     correta: boolean | null;
-    respondedAt: Date | null;
+    createdAt: Date | null;
+    updatedAt: Date | null;
 };
 export type RespostaCountAggregateOutputType = {
     id: number;
     inscricaoId: number;
+    provaId: number;
     questaoId: number;
-    alternativa: number;
+    alternativaMarcada: number;
     correta: number;
-    respondedAt: number;
+    createdAt: number;
+    updatedAt: number;
     _all: number;
 };
 export type RespostaMinAggregateInputType = {
     id?: true;
     inscricaoId?: true;
+    provaId?: true;
     questaoId?: true;
-    alternativa?: true;
+    alternativaMarcada?: true;
     correta?: true;
-    respondedAt?: true;
+    createdAt?: true;
+    updatedAt?: true;
 };
 export type RespostaMaxAggregateInputType = {
     id?: true;
     inscricaoId?: true;
+    provaId?: true;
     questaoId?: true;
-    alternativa?: true;
+    alternativaMarcada?: true;
     correta?: true;
-    respondedAt?: true;
+    createdAt?: true;
+    updatedAt?: true;
 };
 export type RespostaCountAggregateInputType = {
     id?: true;
     inscricaoId?: true;
+    provaId?: true;
     questaoId?: true;
-    alternativa?: true;
+    alternativaMarcada?: true;
     correta?: true;
-    respondedAt?: true;
+    createdAt?: true;
+    updatedAt?: true;
     _all?: true;
 };
 export type RespostaAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -83,10 +95,12 @@ export type RespostaGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type RespostaGroupByOutputType = {
     id: string;
     inscricaoId: string;
+    provaId: string;
     questaoId: string;
-    alternativa: string;
+    alternativaMarcada: string;
     correta: boolean;
-    respondedAt: Date;
+    createdAt: Date;
+    updatedAt: Date;
     _count: RespostaCountAggregateOutputType | null;
     _min: RespostaMinAggregateOutputType | null;
     _max: RespostaMaxAggregateOutputType | null;
@@ -100,44 +114,55 @@ export type RespostaWhereInput = {
     NOT?: Prisma.RespostaWhereInput | Prisma.RespostaWhereInput[];
     id?: Prisma.StringFilter<"Resposta"> | string;
     inscricaoId?: Prisma.StringFilter<"Resposta"> | string;
+    provaId?: Prisma.StringFilter<"Resposta"> | string;
     questaoId?: Prisma.StringFilter<"Resposta"> | string;
-    alternativa?: Prisma.StringFilter<"Resposta"> | string;
+    alternativaMarcada?: Prisma.StringFilter<"Resposta"> | string;
     correta?: Prisma.BoolFilter<"Resposta"> | boolean;
-    respondedAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
+    createdAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
     inscricao?: Prisma.XOR<Prisma.InscricaoScalarRelationFilter, Prisma.InscricaoWhereInput>;
+    prova?: Prisma.XOR<Prisma.ProvaScalarRelationFilter, Prisma.ProvaWhereInput>;
     questao?: Prisma.XOR<Prisma.QuestaoScalarRelationFilter, Prisma.QuestaoWhereInput>;
 };
 export type RespostaOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     inscricaoId?: Prisma.SortOrder;
+    provaId?: Prisma.SortOrder;
     questaoId?: Prisma.SortOrder;
-    alternativa?: Prisma.SortOrder;
+    alternativaMarcada?: Prisma.SortOrder;
     correta?: Prisma.SortOrder;
-    respondedAt?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
     inscricao?: Prisma.InscricaoOrderByWithRelationInput;
+    prova?: Prisma.ProvaOrderByWithRelationInput;
     questao?: Prisma.QuestaoOrderByWithRelationInput;
 };
 export type RespostaWhereUniqueInput = Prisma.AtLeast<{
     id?: string;
-    inscricaoId_questaoId?: Prisma.RespostaInscricaoIdQuestaoIdCompoundUniqueInput;
+    inscricaoId_provaId_questaoId?: Prisma.RespostaInscricaoIdProvaIdQuestaoIdCompoundUniqueInput;
     AND?: Prisma.RespostaWhereInput | Prisma.RespostaWhereInput[];
     OR?: Prisma.RespostaWhereInput[];
     NOT?: Prisma.RespostaWhereInput | Prisma.RespostaWhereInput[];
     inscricaoId?: Prisma.StringFilter<"Resposta"> | string;
+    provaId?: Prisma.StringFilter<"Resposta"> | string;
     questaoId?: Prisma.StringFilter<"Resposta"> | string;
-    alternativa?: Prisma.StringFilter<"Resposta"> | string;
+    alternativaMarcada?: Prisma.StringFilter<"Resposta"> | string;
     correta?: Prisma.BoolFilter<"Resposta"> | boolean;
-    respondedAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
+    createdAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
     inscricao?: Prisma.XOR<Prisma.InscricaoScalarRelationFilter, Prisma.InscricaoWhereInput>;
+    prova?: Prisma.XOR<Prisma.ProvaScalarRelationFilter, Prisma.ProvaWhereInput>;
     questao?: Prisma.XOR<Prisma.QuestaoScalarRelationFilter, Prisma.QuestaoWhereInput>;
-}, "id" | "inscricaoId_questaoId">;
+}, "id" | "inscricaoId_provaId_questaoId">;
 export type RespostaOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     inscricaoId?: Prisma.SortOrder;
+    provaId?: Prisma.SortOrder;
     questaoId?: Prisma.SortOrder;
-    alternativa?: Prisma.SortOrder;
+    alternativaMarcada?: Prisma.SortOrder;
     correta?: Prisma.SortOrder;
-    respondedAt?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
     _count?: Prisma.RespostaCountOrderByAggregateInput;
     _max?: Prisma.RespostaMaxOrderByAggregateInput;
     _min?: Prisma.RespostaMinOrderByAggregateInput;
@@ -148,64 +173,79 @@ export type RespostaScalarWhereWithAggregatesInput = {
     NOT?: Prisma.RespostaScalarWhereWithAggregatesInput | Prisma.RespostaScalarWhereWithAggregatesInput[];
     id?: Prisma.StringWithAggregatesFilter<"Resposta"> | string;
     inscricaoId?: Prisma.StringWithAggregatesFilter<"Resposta"> | string;
+    provaId?: Prisma.StringWithAggregatesFilter<"Resposta"> | string;
     questaoId?: Prisma.StringWithAggregatesFilter<"Resposta"> | string;
-    alternativa?: Prisma.StringWithAggregatesFilter<"Resposta"> | string;
+    alternativaMarcada?: Prisma.StringWithAggregatesFilter<"Resposta"> | string;
     correta?: Prisma.BoolWithAggregatesFilter<"Resposta"> | boolean;
-    respondedAt?: Prisma.DateTimeWithAggregatesFilter<"Resposta"> | Date | string;
+    createdAt?: Prisma.DateTimeWithAggregatesFilter<"Resposta"> | Date | string;
+    updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Resposta"> | Date | string;
 };
 export type RespostaCreateInput = {
     id?: string;
-    alternativa: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
     inscricao: Prisma.InscricaoCreateNestedOneWithoutRespostasInput;
+    prova: Prisma.ProvaCreateNestedOneWithoutRespostasInput;
     questao: Prisma.QuestaoCreateNestedOneWithoutRespostasInput;
 };
 export type RespostaUncheckedCreateInput = {
     id?: string;
     inscricaoId: string;
+    provaId: string;
     questaoId: string;
-    alternativa: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type RespostaUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     inscricao?: Prisma.InscricaoUpdateOneRequiredWithoutRespostasNestedInput;
+    prova?: Prisma.ProvaUpdateOneRequiredWithoutRespostasNestedInput;
     questao?: Prisma.QuestaoUpdateOneRequiredWithoutRespostasNestedInput;
 };
 export type RespostaUncheckedUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     inscricaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    provaId?: Prisma.StringFieldUpdateOperationsInput | string;
     questaoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type RespostaCreateManyInput = {
     id?: string;
     inscricaoId: string;
+    provaId: string;
     questaoId: string;
-    alternativa: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type RespostaUpdateManyMutationInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type RespostaUncheckedUpdateManyInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     inscricaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    provaId?: Prisma.StringFieldUpdateOperationsInput | string;
     questaoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type RespostaListRelationFilter = {
     every?: Prisma.RespostaWhereInput;
@@ -215,33 +255,40 @@ export type RespostaListRelationFilter = {
 export type RespostaOrderByRelationAggregateInput = {
     _count?: Prisma.SortOrder;
 };
-export type RespostaInscricaoIdQuestaoIdCompoundUniqueInput = {
+export type RespostaInscricaoIdProvaIdQuestaoIdCompoundUniqueInput = {
     inscricaoId: string;
+    provaId: string;
     questaoId: string;
 };
 export type RespostaCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     inscricaoId?: Prisma.SortOrder;
+    provaId?: Prisma.SortOrder;
     questaoId?: Prisma.SortOrder;
-    alternativa?: Prisma.SortOrder;
+    alternativaMarcada?: Prisma.SortOrder;
     correta?: Prisma.SortOrder;
-    respondedAt?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
 };
 export type RespostaMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     inscricaoId?: Prisma.SortOrder;
+    provaId?: Prisma.SortOrder;
     questaoId?: Prisma.SortOrder;
-    alternativa?: Prisma.SortOrder;
+    alternativaMarcada?: Prisma.SortOrder;
     correta?: Prisma.SortOrder;
-    respondedAt?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
 };
 export type RespostaMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     inscricaoId?: Prisma.SortOrder;
+    provaId?: Prisma.SortOrder;
     questaoId?: Prisma.SortOrder;
-    alternativa?: Prisma.SortOrder;
+    alternativaMarcada?: Prisma.SortOrder;
     correta?: Prisma.SortOrder;
-    respondedAt?: Prisma.SortOrder;
+    createdAt?: Prisma.SortOrder;
+    updatedAt?: Prisma.SortOrder;
 };
 export type RespostaCreateNestedManyWithoutInscricaoInput = {
     create?: Prisma.XOR<Prisma.RespostaCreateWithoutInscricaoInput, Prisma.RespostaUncheckedCreateWithoutInscricaoInput> | Prisma.RespostaCreateWithoutInscricaoInput[] | Prisma.RespostaUncheckedCreateWithoutInscricaoInput[];
@@ -279,6 +326,44 @@ export type RespostaUncheckedUpdateManyWithoutInscricaoNestedInput = {
     connect?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
     update?: Prisma.RespostaUpdateWithWhereUniqueWithoutInscricaoInput | Prisma.RespostaUpdateWithWhereUniqueWithoutInscricaoInput[];
     updateMany?: Prisma.RespostaUpdateManyWithWhereWithoutInscricaoInput | Prisma.RespostaUpdateManyWithWhereWithoutInscricaoInput[];
+    deleteMany?: Prisma.RespostaScalarWhereInput | Prisma.RespostaScalarWhereInput[];
+};
+export type RespostaCreateNestedManyWithoutProvaInput = {
+    create?: Prisma.XOR<Prisma.RespostaCreateWithoutProvaInput, Prisma.RespostaUncheckedCreateWithoutProvaInput> | Prisma.RespostaCreateWithoutProvaInput[] | Prisma.RespostaUncheckedCreateWithoutProvaInput[];
+    connectOrCreate?: Prisma.RespostaCreateOrConnectWithoutProvaInput | Prisma.RespostaCreateOrConnectWithoutProvaInput[];
+    createMany?: Prisma.RespostaCreateManyProvaInputEnvelope;
+    connect?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+};
+export type RespostaUncheckedCreateNestedManyWithoutProvaInput = {
+    create?: Prisma.XOR<Prisma.RespostaCreateWithoutProvaInput, Prisma.RespostaUncheckedCreateWithoutProvaInput> | Prisma.RespostaCreateWithoutProvaInput[] | Prisma.RespostaUncheckedCreateWithoutProvaInput[];
+    connectOrCreate?: Prisma.RespostaCreateOrConnectWithoutProvaInput | Prisma.RespostaCreateOrConnectWithoutProvaInput[];
+    createMany?: Prisma.RespostaCreateManyProvaInputEnvelope;
+    connect?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+};
+export type RespostaUpdateManyWithoutProvaNestedInput = {
+    create?: Prisma.XOR<Prisma.RespostaCreateWithoutProvaInput, Prisma.RespostaUncheckedCreateWithoutProvaInput> | Prisma.RespostaCreateWithoutProvaInput[] | Prisma.RespostaUncheckedCreateWithoutProvaInput[];
+    connectOrCreate?: Prisma.RespostaCreateOrConnectWithoutProvaInput | Prisma.RespostaCreateOrConnectWithoutProvaInput[];
+    upsert?: Prisma.RespostaUpsertWithWhereUniqueWithoutProvaInput | Prisma.RespostaUpsertWithWhereUniqueWithoutProvaInput[];
+    createMany?: Prisma.RespostaCreateManyProvaInputEnvelope;
+    set?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+    disconnect?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+    delete?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+    connect?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+    update?: Prisma.RespostaUpdateWithWhereUniqueWithoutProvaInput | Prisma.RespostaUpdateWithWhereUniqueWithoutProvaInput[];
+    updateMany?: Prisma.RespostaUpdateManyWithWhereWithoutProvaInput | Prisma.RespostaUpdateManyWithWhereWithoutProvaInput[];
+    deleteMany?: Prisma.RespostaScalarWhereInput | Prisma.RespostaScalarWhereInput[];
+};
+export type RespostaUncheckedUpdateManyWithoutProvaNestedInput = {
+    create?: Prisma.XOR<Prisma.RespostaCreateWithoutProvaInput, Prisma.RespostaUncheckedCreateWithoutProvaInput> | Prisma.RespostaCreateWithoutProvaInput[] | Prisma.RespostaUncheckedCreateWithoutProvaInput[];
+    connectOrCreate?: Prisma.RespostaCreateOrConnectWithoutProvaInput | Prisma.RespostaCreateOrConnectWithoutProvaInput[];
+    upsert?: Prisma.RespostaUpsertWithWhereUniqueWithoutProvaInput | Prisma.RespostaUpsertWithWhereUniqueWithoutProvaInput[];
+    createMany?: Prisma.RespostaCreateManyProvaInputEnvelope;
+    set?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+    disconnect?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+    delete?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+    connect?: Prisma.RespostaWhereUniqueInput | Prisma.RespostaWhereUniqueInput[];
+    update?: Prisma.RespostaUpdateWithWhereUniqueWithoutProvaInput | Prisma.RespostaUpdateWithWhereUniqueWithoutProvaInput[];
+    updateMany?: Prisma.RespostaUpdateManyWithWhereWithoutProvaInput | Prisma.RespostaUpdateManyWithWhereWithoutProvaInput[];
     deleteMany?: Prisma.RespostaScalarWhereInput | Prisma.RespostaScalarWhereInput[];
 };
 export type RespostaCreateNestedManyWithoutQuestaoInput = {
@@ -324,17 +409,21 @@ export type BoolFieldUpdateOperationsInput = {
 };
 export type RespostaCreateWithoutInscricaoInput = {
     id?: string;
-    alternativa: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    prova: Prisma.ProvaCreateNestedOneWithoutRespostasInput;
     questao: Prisma.QuestaoCreateNestedOneWithoutRespostasInput;
 };
 export type RespostaUncheckedCreateWithoutInscricaoInput = {
     id?: string;
+    provaId: string;
     questaoId: string;
-    alternativa: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type RespostaCreateOrConnectWithoutInscricaoInput = {
     where: Prisma.RespostaWhereUniqueInput;
@@ -363,24 +452,69 @@ export type RespostaScalarWhereInput = {
     NOT?: Prisma.RespostaScalarWhereInput | Prisma.RespostaScalarWhereInput[];
     id?: Prisma.StringFilter<"Resposta"> | string;
     inscricaoId?: Prisma.StringFilter<"Resposta"> | string;
+    provaId?: Prisma.StringFilter<"Resposta"> | string;
     questaoId?: Prisma.StringFilter<"Resposta"> | string;
-    alternativa?: Prisma.StringFilter<"Resposta"> | string;
+    alternativaMarcada?: Prisma.StringFilter<"Resposta"> | string;
     correta?: Prisma.BoolFilter<"Resposta"> | boolean;
-    respondedAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
+    createdAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
+    updatedAt?: Prisma.DateTimeFilter<"Resposta"> | Date | string;
+};
+export type RespostaCreateWithoutProvaInput = {
+    id?: string;
+    alternativaMarcada: string;
+    correta?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    inscricao: Prisma.InscricaoCreateNestedOneWithoutRespostasInput;
+    questao: Prisma.QuestaoCreateNestedOneWithoutRespostasInput;
+};
+export type RespostaUncheckedCreateWithoutProvaInput = {
+    id?: string;
+    inscricaoId: string;
+    questaoId: string;
+    alternativaMarcada: string;
+    correta?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type RespostaCreateOrConnectWithoutProvaInput = {
+    where: Prisma.RespostaWhereUniqueInput;
+    create: Prisma.XOR<Prisma.RespostaCreateWithoutProvaInput, Prisma.RespostaUncheckedCreateWithoutProvaInput>;
+};
+export type RespostaCreateManyProvaInputEnvelope = {
+    data: Prisma.RespostaCreateManyProvaInput | Prisma.RespostaCreateManyProvaInput[];
+    skipDuplicates?: boolean;
+};
+export type RespostaUpsertWithWhereUniqueWithoutProvaInput = {
+    where: Prisma.RespostaWhereUniqueInput;
+    update: Prisma.XOR<Prisma.RespostaUpdateWithoutProvaInput, Prisma.RespostaUncheckedUpdateWithoutProvaInput>;
+    create: Prisma.XOR<Prisma.RespostaCreateWithoutProvaInput, Prisma.RespostaUncheckedCreateWithoutProvaInput>;
+};
+export type RespostaUpdateWithWhereUniqueWithoutProvaInput = {
+    where: Prisma.RespostaWhereUniqueInput;
+    data: Prisma.XOR<Prisma.RespostaUpdateWithoutProvaInput, Prisma.RespostaUncheckedUpdateWithoutProvaInput>;
+};
+export type RespostaUpdateManyWithWhereWithoutProvaInput = {
+    where: Prisma.RespostaScalarWhereInput;
+    data: Prisma.XOR<Prisma.RespostaUpdateManyMutationInput, Prisma.RespostaUncheckedUpdateManyWithoutProvaInput>;
 };
 export type RespostaCreateWithoutQuestaoInput = {
     id?: string;
-    alternativa: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
     inscricao: Prisma.InscricaoCreateNestedOneWithoutRespostasInput;
+    prova: Prisma.ProvaCreateNestedOneWithoutRespostasInput;
 };
 export type RespostaUncheckedCreateWithoutQuestaoInput = {
     id?: string;
     inscricaoId: string;
-    alternativa: string;
+    provaId: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type RespostaCreateOrConnectWithoutQuestaoInput = {
     where: Prisma.RespostaWhereUniqueInput;
@@ -405,124 +539,193 @@ export type RespostaUpdateManyWithWhereWithoutQuestaoInput = {
 };
 export type RespostaCreateManyInscricaoInput = {
     id?: string;
+    provaId: string;
     questaoId: string;
-    alternativa: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type RespostaUpdateWithoutInscricaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    prova?: Prisma.ProvaUpdateOneRequiredWithoutRespostasNestedInput;
     questao?: Prisma.QuestaoUpdateOneRequiredWithoutRespostasNestedInput;
 };
 export type RespostaUncheckedUpdateWithoutInscricaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
+    provaId?: Prisma.StringFieldUpdateOperationsInput | string;
     questaoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type RespostaUncheckedUpdateManyWithoutInscricaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
+    provaId?: Prisma.StringFieldUpdateOperationsInput | string;
     questaoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type RespostaCreateManyProvaInput = {
+    id?: string;
+    inscricaoId: string;
+    questaoId: string;
+    alternativaMarcada: string;
+    correta?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type RespostaUpdateWithoutProvaInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
+    correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    inscricao?: Prisma.InscricaoUpdateOneRequiredWithoutRespostasNestedInput;
+    questao?: Prisma.QuestaoUpdateOneRequiredWithoutRespostasNestedInput;
+};
+export type RespostaUncheckedUpdateWithoutProvaInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    inscricaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    questaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
+    correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+export type RespostaUncheckedUpdateManyWithoutProvaInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    inscricaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    questaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
+    correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type RespostaCreateManyQuestaoInput = {
     id?: string;
     inscricaoId: string;
-    alternativa: string;
+    provaId: string;
+    alternativaMarcada: string;
     correta?: boolean;
-    respondedAt?: Date | string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
 };
 export type RespostaUpdateWithoutQuestaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     inscricao?: Prisma.InscricaoUpdateOneRequiredWithoutRespostasNestedInput;
+    prova?: Prisma.ProvaUpdateOneRequiredWithoutRespostasNestedInput;
 };
 export type RespostaUncheckedUpdateWithoutQuestaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     inscricaoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    provaId?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type RespostaUncheckedUpdateManyWithoutQuestaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     inscricaoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    alternativa?: Prisma.StringFieldUpdateOperationsInput | string;
+    provaId?: Prisma.StringFieldUpdateOperationsInput | string;
+    alternativaMarcada?: Prisma.StringFieldUpdateOperationsInput | string;
     correta?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-    respondedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type RespostaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     inscricaoId?: boolean;
+    provaId?: boolean;
     questaoId?: boolean;
-    alternativa?: boolean;
+    alternativaMarcada?: boolean;
     correta?: boolean;
-    respondedAt?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
+    prova?: boolean | Prisma.ProvaDefaultArgs<ExtArgs>;
     questao?: boolean | Prisma.QuestaoDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["resposta"]>;
 export type RespostaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     inscricaoId?: boolean;
+    provaId?: boolean;
     questaoId?: boolean;
-    alternativa?: boolean;
+    alternativaMarcada?: boolean;
     correta?: boolean;
-    respondedAt?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
+    prova?: boolean | Prisma.ProvaDefaultArgs<ExtArgs>;
     questao?: boolean | Prisma.QuestaoDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["resposta"]>;
 export type RespostaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
     id?: boolean;
     inscricaoId?: boolean;
+    provaId?: boolean;
     questaoId?: boolean;
-    alternativa?: boolean;
+    alternativaMarcada?: boolean;
     correta?: boolean;
-    respondedAt?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
+    prova?: boolean | Prisma.ProvaDefaultArgs<ExtArgs>;
     questao?: boolean | Prisma.QuestaoDefaultArgs<ExtArgs>;
 }, ExtArgs["result"]["resposta"]>;
 export type RespostaSelectScalar = {
     id?: boolean;
     inscricaoId?: boolean;
+    provaId?: boolean;
     questaoId?: boolean;
-    alternativa?: boolean;
+    alternativaMarcada?: boolean;
     correta?: boolean;
-    respondedAt?: boolean;
+    createdAt?: boolean;
+    updatedAt?: boolean;
 };
-export type RespostaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "inscricaoId" | "questaoId" | "alternativa" | "correta" | "respondedAt", ExtArgs["result"]["resposta"]>;
+export type RespostaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "inscricaoId" | "provaId" | "questaoId" | "alternativaMarcada" | "correta" | "createdAt" | "updatedAt", ExtArgs["result"]["resposta"]>;
 export type RespostaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
+    prova?: boolean | Prisma.ProvaDefaultArgs<ExtArgs>;
     questao?: boolean | Prisma.QuestaoDefaultArgs<ExtArgs>;
 };
 export type RespostaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
+    prova?: boolean | Prisma.ProvaDefaultArgs<ExtArgs>;
     questao?: boolean | Prisma.QuestaoDefaultArgs<ExtArgs>;
 };
 export type RespostaIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
+    prova?: boolean | Prisma.ProvaDefaultArgs<ExtArgs>;
     questao?: boolean | Prisma.QuestaoDefaultArgs<ExtArgs>;
 };
 export type $RespostaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     name: "Resposta";
     objects: {
         inscricao: Prisma.$InscricaoPayload<ExtArgs>;
+        prova: Prisma.$ProvaPayload<ExtArgs>;
         questao: Prisma.$QuestaoPayload<ExtArgs>;
     };
     scalars: runtime.Types.Extensions.GetPayloadResult<{
         id: string;
         inscricaoId: string;
+        provaId: string;
         questaoId: string;
-        alternativa: string;
+        alternativaMarcada: string;
         correta: boolean;
-        respondedAt: Date;
+        createdAt: Date;
+        updatedAt: Date;
     }, ExtArgs["result"]["resposta"]>;
     composites: {};
 };
@@ -576,6 +779,7 @@ export interface RespostaDelegate<ExtArgs extends runtime.Types.Extensions.Inter
 export interface Prisma__RespostaClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise";
     inscricao<T extends Prisma.InscricaoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InscricaoDefaultArgs<ExtArgs>>): Prisma.Prisma__InscricaoClient<runtime.Types.Result.GetResult<Prisma.$InscricaoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
+    prova<T extends Prisma.ProvaDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProvaDefaultArgs<ExtArgs>>): Prisma.Prisma__ProvaClient<runtime.Types.Result.GetResult<Prisma.$ProvaPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     questao<T extends Prisma.QuestaoDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QuestaoDefaultArgs<ExtArgs>>): Prisma.Prisma__QuestaoClient<runtime.Types.Result.GetResult<Prisma.$QuestaoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>;
     then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): runtime.Types.Utils.JsPromise<TResult1 | TResult2>;
     catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): runtime.Types.Utils.JsPromise<T | TResult>;
@@ -584,10 +788,12 @@ export interface Prisma__RespostaClient<T, Null = never, ExtArgs extends runtime
 export interface RespostaFieldRefs {
     readonly id: Prisma.FieldRef<"Resposta", 'String'>;
     readonly inscricaoId: Prisma.FieldRef<"Resposta", 'String'>;
+    readonly provaId: Prisma.FieldRef<"Resposta", 'String'>;
     readonly questaoId: Prisma.FieldRef<"Resposta", 'String'>;
-    readonly alternativa: Prisma.FieldRef<"Resposta", 'String'>;
+    readonly alternativaMarcada: Prisma.FieldRef<"Resposta", 'String'>;
     readonly correta: Prisma.FieldRef<"Resposta", 'Boolean'>;
-    readonly respondedAt: Prisma.FieldRef<"Resposta", 'DateTime'>;
+    readonly createdAt: Prisma.FieldRef<"Resposta", 'DateTime'>;
+    readonly updatedAt: Prisma.FieldRef<"Resposta", 'DateTime'>;
 }
 export type RespostaFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.RespostaSelect<ExtArgs> | null;

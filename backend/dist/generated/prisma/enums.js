@@ -1,5 +1,6 @@
 export const Role = {
     ALUNO: 'ALUNO',
+    COORDENADOR_CURSO: 'COORDENADOR_CURSO',
     AVALIADOR: 'AVALIADOR',
     ADMIN: 'ADMIN'
 };
@@ -7,6 +8,12 @@ export const StatusInsc = {
     PENDENTE: 'PENDENTE',
     CONFIRMADA: 'CONFIRMADA',
     REJEITADA: 'REJEITADA'
+};
+export const StatusProva = {
+    RASCUNHO: 'RASCUNHO',
+    PUBLICADA: 'PUBLICADA',
+    EM_ANDAMENTO: 'EM_ANDAMENTO',
+    ENCERRADA: 'ENCERRADA'
 };
 export const Medalha = {
     OURO: 'OURO',
@@ -25,13 +32,9 @@ export const Dificuldade = {
     MEDIO: 'MEDIO',
     DIFICIL: 'DIFICIL'
 };
-export const TipoSubm = {
-    ARTIGO: 'ARTIGO',
-    POSTER: 'POSTER'
-};
-export const StatusSubm = {
-    EM_AVALIACAO: 'EM_AVALIACAO',
-    APROVADO: 'APROVADO',
-    REJEITADO: 'REJEITADO'
+export const StatusEnvioFase2 = {
+    PENDENTE: 'PENDENTE',
+    ENVIADO: 'ENVIADO',
+    AVALIADO: 'AVALIADO'
 };
 //# sourceMappingURL=enums.js.map

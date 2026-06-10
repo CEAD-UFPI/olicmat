@@ -1,5 +1,6 @@
 export declare const Role: {
     readonly ALUNO: "ALUNO";
+    readonly COORDENADOR_CURSO: "COORDENADOR_CURSO";
     readonly AVALIADOR: "AVALIADOR";
     readonly ADMIN: "ADMIN";
 };
@@ -10,6 +11,13 @@ export declare const StatusInsc: {
     readonly REJEITADA: "REJEITADA";
 };
 export type StatusInsc = (typeof StatusInsc)[keyof typeof StatusInsc];
+export declare const StatusProva: {
+    readonly RASCUNHO: "RASCUNHO";
+    readonly PUBLICADA: "PUBLICADA";
+    readonly EM_ANDAMENTO: "EM_ANDAMENTO";
+    readonly ENCERRADA: "ENCERRADA";
+};
+export type StatusProva = (typeof StatusProva)[keyof typeof StatusProva];
 export declare const Medalha: {
     readonly OURO: "OURO";
     readonly PRATA: "PRATA";
@@ -30,14 +38,9 @@ export declare const Dificuldade: {
     readonly DIFICIL: "DIFICIL";
 };
 export type Dificuldade = (typeof Dificuldade)[keyof typeof Dificuldade];
-export declare const TipoSubm: {
-    readonly ARTIGO: "ARTIGO";
-    readonly POSTER: "POSTER";
+export declare const StatusEnvioFase2: {
+    readonly PENDENTE: "PENDENTE";
+    readonly ENVIADO: "ENVIADO";
+    readonly AVALIADO: "AVALIADO";
 };
-export type TipoSubm = (typeof TipoSubm)[keyof typeof TipoSubm];
-export declare const StatusSubm: {
-    readonly EM_AVALIACAO: "EM_AVALIACAO";
-    readonly APROVADO: "APROVADO";
-    readonly REJEITADO: "REJEITADO";
-};
-export type StatusSubm = (typeof StatusSubm)[keyof typeof StatusSubm];
+export type StatusEnvioFase2 = (typeof StatusEnvioFase2)[keyof typeof StatusEnvioFase2];

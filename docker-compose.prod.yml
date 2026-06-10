@@ -1,0 +1,64 @@
+services:
+  # ============================================
+  # PostgreSQL
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: olicmat-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-olicmat}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-olicmat_prod}
+      POSTGRES_DB: ${DB_NAME:-olicmat}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-olicmat} -d ${DB_NAME:-olicmat}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # Backend — NestJS API
+  # ============================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: olicmat-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3333:3333"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${DB_USER:-olicmat}:${DB_PASSWORD:-olicmat_prod}@postgres:5432/${DB_NAME:-olicmat}
+      JWT_SECRET: ${JWT_SECRET}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ============================================
+  # Frontend — Next.js
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+    container_name: olicmat-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

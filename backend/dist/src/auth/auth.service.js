@@ -27,12 +27,13 @@ let AuthService = class AuthService {
         if (existing) {
             throw new ConflictException("Email ou CPF já cadastrado");
         }
-        const senha = await bcrypt.hash(data.senha, 10);
+        const senhaHash = await bcrypt.hash(data.senha, 10);
+        const { senha, instituicao, curso, ...restData } = data;
         const user = await this.prisma.user.create({
             data: {
-                ...data,
-                senha,
-                dataNascimento: new Date(data.dataNascimento),
+                ...restData,
+                senhaHash,
+                dataNascimento: new Date(restData.dataNascimento),
             },
             select: {
                 id: true,
@@ -52,7 +53,7 @@ let AuthService = class AuthService {
         if (!user) {
             throw new UnauthorizedException("Credenciais inválidas");
         }
-        const senhaValida = await bcrypt.compare(data.senha, user.senha);
+        const senhaValida = await bcrypt.compare(data.senha, user.senhaHash);
         if (!senhaValida) {
             throw new UnauthorizedException("Credenciais inválidas");
         }

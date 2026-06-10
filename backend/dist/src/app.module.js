@@ -9,8 +9,9 @@ import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module.js";
 import { UsersModule } from "./users/users.module.js";
 import { OlimpiadaModule } from "./olimpiada/olimpiada.module.js";
-import { LmsModule } from "./lms/lms.module.js";
-import { CongressoModule } from "./congresso/congresso.module.js";
+import { InstituicoesModule } from "./instituicoes/instituicoes.module.js";
+import { AdminModule } from "./admin/admin.module.js";
+import { CoordenacaoModule } from "./coordenacao/coordenacao.module.js";
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -20,8 +21,9 @@ AppModule = __decorate([
             AuthModule,
             UsersModule,
             OlimpiadaModule,
-            LmsModule,
-            CongressoModule,
+            InstituicoesModule,
+            AdminModule,
+            CoordenacaoModule,
         ],
     })
 ], AppModule);
