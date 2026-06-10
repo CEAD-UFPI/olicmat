@@ -1,0 +1,185 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* === OLICMAT Design Tokens — "Matemática Viva" === */
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-outfit);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-jetbrains-mono);
+
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--pi-laranja);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--surface);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--bg-secondary);
+  --color-muted-foreground: var(--text-secondary);
+  --color-accent: var(--sigma-azul);
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #e53e3e;
+  --color-border: var(--border-color);
+  --color-input: var(--border-color);
+  --color-ring: var(--pi-laranja);
+  --color-success: var(--integral-verde);
+
+  --radius: 0.625rem;
+}
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --surface: #1a1a26;
+  --pi-laranja: #f48120;
+  --integral-verde: #2d9b6c;
+  --sigma-azul: #4b7bec;
+  --text-primary: #f0ece4;
+  --text-secondary: #9895a4;
+  --border-color: #2a2a3a;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-outfit), sans-serif;
+  }
+}
+
+/* === Dot Pattern Background === */
+.dot-pattern {
+  --dot-size: 1px;
+  --dot-spacing: 24px;
+  background-image: radial-gradient(
+    circle at center,
+    rgb(255 255 255 / 0.04) var(--dot-size),
+    transparent var(--dot-size)
+  );
+  background-size: var(--dot-spacing) var(--dot-spacing);
+}
+
+/* === Noise Overlay === */
+.noise-overlay::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* === Geometric Gradient Orbs === */
+.gradient-orb-pi {
+  background: radial-gradient(circle at 50% 50%, rgb(244 129 32 / 0.12) 0%, transparent 60%);
+}
+.gradient-orb-integral {
+  background: radial-gradient(circle at 50% 50%, rgb(45 155 108 / 0.10) 0%, transparent 60%);
+}
+.gradient-orb-sigma {
+  background: radial-gradient(circle at 50% 50%, rgb(75 123 236 / 0.10) 0%, transparent 60%);
+}
+
+/* === Staggered Reveal Animation === */
+.stagger-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: revealUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes revealUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Math Grid (isometric lines) === */
+.math-grid {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* === Gradiente de borda animado === */
+.border-glow {
+  position: relative;
+}
+.border-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--pi-laranja),
+    var(--integral-verde),
+    var(--sigma-azul),
+    var(--pi-laranja)
+  );
+  background-size: 300% 300%;
+  animation: borderRotate 4s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.border-glow:hover::before,
+.border-glow:focus-within::before {
+  opacity: 1;
+}
+
+@keyframes borderRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* === Hero geometric animation === */
+@keyframes floatGeometry {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(0.5deg); }
+  66% { transform: translateY(6px) rotate(-0.3deg); }
+}
+
+.animate-float-geometry {
+  animation: floatGeometry 8s ease-in-out infinite;
+}
+
+/* === Pulse for exam timer urgency === */
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-timer-urgent {
+  animation: timerPulse 0.7s ease-in-out infinite;
+}
+
+/* === Scrollbar styling === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}

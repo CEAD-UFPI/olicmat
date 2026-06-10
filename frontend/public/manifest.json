@@ -1,0 +1,10 @@
+{
+  "name": "OLICMAT - Olimpiada de Matematica",
+  "short_name": "OLICMAT",
+  "description": "Plataforma da Olimpiada para Licenciandos em Matematica",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#00d47d",
+  "icons": []
+}
