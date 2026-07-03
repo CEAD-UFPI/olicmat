@@ -5,17 +5,18 @@ const publicPaths = [
   '/',
   '/login',
   '/registro',
+  '/confirmar-email',
   '/esqueci-senha',
   '/redefinir-senha',
   '/ranking',
   '/regulamento',
   '/sobre',
+  '/cronograma',
 ]
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Allow Next.js internals and API routes
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
@@ -25,12 +26,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Allow public paths
   if (publicPaths.some((p) => pathname === p || pathname.startsWith(p + '/'))) {
     return NextResponse.next()
   }
 
-  // Auth check — full role enforcement happens in dashboard layout
   const token = request.cookies.get('token')?.value
   if (!token) {
     const loginUrl = new URL('/login', request.url)

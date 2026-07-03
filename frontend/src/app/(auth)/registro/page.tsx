@@ -168,7 +168,7 @@ export default function RegistroPage() {
 
           <p className="text-sm text-[#9895a4] text-center mt-6">
             Já tem conta?{" "}
-            <Link href="/login" className="text-[#4b7bec] hover:underline">
+            <Link href="/login" className="text-[#3AAFE0] hover:underline">
               Entrar
             </Link>
           </p>

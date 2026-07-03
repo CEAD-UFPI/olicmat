@@ -3,6 +3,7 @@ export declare const Role: {
     readonly COORDENADOR_CURSO: "COORDENADOR_CURSO";
     readonly AVALIADOR: "AVALIADOR";
     readonly ADMIN: "ADMIN";
+    readonly COMISSAO: "COMISSAO";
 };
 export type Role = (typeof Role)[keyof typeof Role];
 export declare const StatusInsc: {

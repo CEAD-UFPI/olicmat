@@ -13,8 +13,9 @@ export class ProvaService {
   constructor(private prisma: PrismaService) {}
 
   async buscarQuestoes(userId: string, quantidade = 30) {
-    const inscricao = await this.prisma.inscricao.findUnique({
+    const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
+      orderBy: { createdAt: "desc" },
     });
 
     if (!inscricao || inscricao.status !== "CONFIRMADA") {
@@ -35,20 +36,37 @@ export class ProvaService {
       throw new BadRequestException("Tempo de prova esgotado");
     }
 
-    const questoes = await this.prisma.questao.findMany({
-      take: quantidade,
-      select: {
-        id: true,
-        enunciado: true,
-        alternativaA: true,
-        alternativaB: true,
-        alternativaC: true,
-        alternativaD: true,
-        alternativaE: true,
-        eixo: true,
-        dificuldade: true,
-      },
+    // Find the Fase 1 prova for this edition
+    const prova = await this.prisma.prova.findFirst({
+      where: { edicaoId: inscricao.edicaoId, fase: 1 },
     });
+
+    if (!prova) {
+      throw new BadRequestException("Nenhuma prova disponível para esta edição");
+    }
+
+    // Get questions linked via ProvaQuestao
+    const provasQuestoes = await this.prisma.provaQuestao.findMany({
+      where: { provaId: prova.id },
+      include: {
+        questao: {
+          select: {
+            id: true,
+            enunciado: true,
+            alternativaA: true,
+            alternativaB: true,
+            alternativaC: true,
+            alternativaD: true,
+            alternativaE: true,
+            eixo: true,
+            dificuldade: true,
+          },
+        },
+      },
+      orderBy: { ordem: "asc" },
+    });
+
+    const questoes = provasQuestoes.map((pq) => pq.questao);
 
     // Buscar respostas já dadas
     const respostas = await this.prisma.resposta.findMany({
@@ -74,8 +92,9 @@ export class ProvaService {
   }
 
   async responder(userId: string, data: ResponderQuestaoDto) {
-    const inscricao = await this.prisma.inscricao.findUnique({
+    const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
+      orderBy: { createdAt: "desc" },
     });
 
     if (!inscricao) {
@@ -90,21 +109,12 @@ export class ProvaService {
       throw new NotFoundException("Questão não encontrada");
     }
 
-    // Find or create the Fase 1 prova for this inscricao's edition
-    let prova = await this.prisma.prova.findFirst({
+    const prova = await this.prisma.prova.findFirst({
       where: { edicaoId: inscricao.edicaoId, fase: 1 },
     });
 
     if (!prova) {
-      prova = await this.prisma.prova.create({
-        data: {
-          edicaoId: inscricao.edicaoId,
-          fase: 1,
-          titulo: "Prova Fase 1",
-          duracaoMinutos: DURACAO_PROVA_MINUTOS,
-          createdBy: userId,
-        },
-      });
+      throw new BadRequestException("Nenhuma prova disponível para esta edição");
     }
 
     const fimProva = inscricao.fase1Inicio
@@ -140,8 +150,9 @@ export class ProvaService {
   }
 
   async finalizarProva(userId: string) {
-    const inscricao = await this.prisma.inscricao.findUnique({
+    const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
+      orderBy: { createdAt: "desc" },
     });
 
     if (!inscricao) {
@@ -169,23 +180,29 @@ export class ProvaService {
   }
 
   async resumoProva(userId: string) {
-    const inscricao = await this.prisma.inscricao.findUnique({
+    const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
+      orderBy: { createdAt: "desc" },
     });
 
     if (!inscricao) {
       throw new NotFoundException("Inscrição não encontrada");
     }
 
-    const [total, corretas, respondidas] = await Promise.all([
+    const prova = await this.prisma.prova.findFirst({
+      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+    });
+
+    const total = prova
+      ? await this.prisma.provaQuestao.count({ where: { provaId: prova.id } })
+      : 0;
+
+    const [respondidas, corretas] = await Promise.all([
       this.prisma.resposta.count({
         where: { inscricaoId: inscricao.id },
       }),
       this.prisma.resposta.count({
         where: { inscricaoId: inscricao.id, correta: true },
-      }),
-      this.prisma.resposta.count({
-        where: { inscricaoId: inscricao.id },
       }),
     ]);
 

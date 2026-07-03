@@ -16,8 +16,9 @@ let ProvaService = class ProvaService {
         this.prisma = prisma;
     }
     async buscarQuestoes(userId, quantidade = 30) {
-        const inscricao = await this.prisma.inscricao.findUnique({
+        const inscricao = await this.prisma.inscricao.findFirst({
             where: { userId },
+            orderBy: { createdAt: "desc" },
         });
         if (!inscricao || inscricao.status !== "CONFIRMADA") {
             throw new BadRequestException("Inscrição não está confirmada para realizar a prova");
@@ -29,20 +30,32 @@ let ProvaService = class ProvaService {
         if (new Date() > fimProva) {
             throw new BadRequestException("Tempo de prova esgotado");
         }
-        const questoes = await this.prisma.questao.findMany({
-            take: quantidade,
-            select: {
-                id: true,
-                enunciado: true,
-                alternativaA: true,
-                alternativaB: true,
-                alternativaC: true,
-                alternativaD: true,
-                alternativaE: true,
-                eixo: true,
-                dificuldade: true,
-            },
+        const prova = await this.prisma.prova.findFirst({
+            where: { edicaoId: inscricao.edicaoId, fase: 1 },
         });
+        if (!prova) {
+            throw new BadRequestException("Nenhuma prova disponível para esta edição");
+        }
+        const provasQuestoes = await this.prisma.provaQuestao.findMany({
+            where: { provaId: prova.id },
+            include: {
+                questao: {
+                    select: {
+                        id: true,
+                        enunciado: true,
+                        alternativaA: true,
+                        alternativaB: true,
+                        alternativaC: true,
+                        alternativaD: true,
+                        alternativaE: true,
+                        eixo: true,
+                        dificuldade: true,
+                    },
+                },
+            },
+            orderBy: { ordem: "asc" },
+        });
+        const questoes = provasQuestoes.map((pq) => pq.questao);
         const respostas = await this.prisma.resposta.findMany({
             where: {
                 inscricaoId: inscricao.id,
@@ -61,8 +74,9 @@ let ProvaService = class ProvaService {
         };
     }
     async responder(userId, data) {
-        const inscricao = await this.prisma.inscricao.findUnique({
+        const inscricao = await this.prisma.inscricao.findFirst({
             where: { userId },
+            orderBy: { createdAt: "desc" },
         });
         if (!inscricao) {
             throw new NotFoundException("Inscrição não encontrada");
@@ -73,19 +87,11 @@ let ProvaService = class ProvaService {
         if (!questao) {
             throw new NotFoundException("Questão não encontrada");
         }
-        let prova = await this.prisma.prova.findFirst({
+        const prova = await this.prisma.prova.findFirst({
             where: { edicaoId: inscricao.edicaoId, fase: 1 },
         });
         if (!prova) {
-            prova = await this.prisma.prova.create({
-                data: {
-                    edicaoId: inscricao.edicaoId,
-                    fase: 1,
-                    titulo: "Prova Fase 1",
-                    duracaoMinutos: DURACAO_PROVA_MINUTOS,
-                    createdBy: userId,
-                },
-            });
+            throw new BadRequestException("Nenhuma prova disponível para esta edição");
         }
         const fimProva = inscricao.fase1Inicio
             ? new Date(inscricao.fase1Inicio.getTime() + DURACAO_PROVA_MINUTOS * 60 * 1000)
@@ -116,8 +122,9 @@ let ProvaService = class ProvaService {
         });
     }
     async finalizarProva(userId) {
-        const inscricao = await this.prisma.inscricao.findUnique({
+        const inscricao = await this.prisma.inscricao.findFirst({
             where: { userId },
+            orderBy: { createdAt: "desc" },
         });
         if (!inscricao) {
             throw new NotFoundException("Inscrição não encontrada");
@@ -138,21 +145,25 @@ let ProvaService = class ProvaService {
         });
     }
     async resumoProva(userId) {
-        const inscricao = await this.prisma.inscricao.findUnique({
+        const inscricao = await this.prisma.inscricao.findFirst({
             where: { userId },
+            orderBy: { createdAt: "desc" },
         });
         if (!inscricao) {
             throw new NotFoundException("Inscrição não encontrada");
         }
-        const [total, corretas, respondidas] = await Promise.all([
+        const prova = await this.prisma.prova.findFirst({
+            where: { edicaoId: inscricao.edicaoId, fase: 1 },
+        });
+        const total = prova
+            ? await this.prisma.provaQuestao.count({ where: { provaId: prova.id } })
+            : 0;
+        const [respondidas, corretas] = await Promise.all([
             this.prisma.resposta.count({
                 where: { inscricaoId: inscricao.id },
             }),
             this.prisma.resposta.count({
                 where: { inscricaoId: inscricao.id, correta: true },
-            }),
-            this.prisma.resposta.count({
-                where: { inscricaoId: inscricao.id },
             }),
         ]);
         return {

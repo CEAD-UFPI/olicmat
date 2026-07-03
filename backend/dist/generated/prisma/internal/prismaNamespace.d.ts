@@ -169,6 +169,7 @@ export declare const ModelName: {
     readonly Resposta: "Resposta";
     readonly EnvioFase2: "EnvioFase2";
     readonly AvaliacaoFase2: "AvaliacaoFase2";
+    readonly Token: "Token";
     readonly RankingSnapshot: "RankingSnapshot";
     readonly AuditLog: "AuditLog";
 };
@@ -183,7 +184,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         omit: GlobalOmitOptions;
     };
     meta: {
-        modelProps: "instituicao" | "curso" | "user" | "coordenadorCurso" | "edicao" | "inscricao" | "prova" | "questao" | "provaQuestao" | "resposta" | "envioFase2" | "avaliacaoFase2" | "rankingSnapshot" | "auditLog";
+        modelProps: "instituicao" | "curso" | "user" | "coordenadorCurso" | "edicao" | "inscricao" | "prova" | "questao" | "provaQuestao" | "resposta" | "envioFase2" | "avaliacaoFase2" | "token" | "rankingSnapshot" | "auditLog";
         txIsolationLevel: TransactionIsolationLevel;
     };
     model: {
@@ -1075,6 +1076,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
                 };
             };
         };
+        Token: {
+            payload: Prisma.$TokenPayload<ExtArgs>;
+            fields: Prisma.TokenFieldRefs;
+            operations: {
+                findUnique: {
+                    args: Prisma.TokenFindUniqueArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload> | null;
+                };
+                findUniqueOrThrow: {
+                    args: Prisma.TokenFindUniqueOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>;
+                };
+                findFirst: {
+                    args: Prisma.TokenFindFirstArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload> | null;
+                };
+                findFirstOrThrow: {
+                    args: Prisma.TokenFindFirstOrThrowArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>;
+                };
+                findMany: {
+                    args: Prisma.TokenFindManyArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>[];
+                };
+                create: {
+                    args: Prisma.TokenCreateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>;
+                };
+                createMany: {
+                    args: Prisma.TokenCreateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                createManyAndReturn: {
+                    args: Prisma.TokenCreateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>[];
+                };
+                delete: {
+                    args: Prisma.TokenDeleteArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>;
+                };
+                update: {
+                    args: Prisma.TokenUpdateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>;
+                };
+                deleteMany: {
+                    args: Prisma.TokenDeleteManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateMany: {
+                    args: Prisma.TokenUpdateManyArgs<ExtArgs>;
+                    result: BatchPayload;
+                };
+                updateManyAndReturn: {
+                    args: Prisma.TokenUpdateManyAndReturnArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>[];
+                };
+                upsert: {
+                    args: Prisma.TokenUpsertArgs<ExtArgs>;
+                    result: runtime.Types.Utils.PayloadToResult<Prisma.$TokenPayload>;
+                };
+                aggregate: {
+                    args: Prisma.TokenAggregateArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.AggregateToken>;
+                };
+                groupBy: {
+                    args: Prisma.TokenGroupByArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.TokenGroupByOutputType>[];
+                };
+                count: {
+                    args: Prisma.TokenCountArgs<ExtArgs>;
+                    result: runtime.Types.Utils.Optional<Prisma.TokenCountAggregateOutputType> | number;
+                };
+            };
+        };
         RankingSnapshot: {
             payload: Prisma.$RankingSnapshotPayload<ExtArgs>;
             fields: Prisma.RankingSnapshotFieldRefs;
@@ -1258,6 +1333,7 @@ export declare const InstituicaoScalarFieldEnum: {
     readonly id: "id";
     readonly nome: "nome";
     readonly sigla: "sigla";
+    readonly codigoInep: "codigoInep";
     readonly estado: "estado";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
@@ -1283,6 +1359,7 @@ export declare const UserScalarFieldEnum: {
     readonly matricula: "matricula";
     readonly comprovanteUrl: "comprovanteUrl";
     readonly dataNascimento: "dataNascimento";
+    readonly emailConfirmado: "emailConfirmado";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
 };
@@ -1382,6 +1459,7 @@ export declare const EnvioFase2ScalarFieldEnum: {
     readonly inscricaoId: "inscricaoId";
     readonly tipo: "tipo";
     readonly arquivoUrl: "arquivoUrl";
+    readonly videoLink: "videoLink";
     readonly status: "status";
     readonly enviadoEm: "enviadoEm";
 };
@@ -1395,6 +1473,16 @@ export declare const AvaliacaoFase2ScalarFieldEnum: {
     readonly avaliadoEm: "avaliadoEm";
 };
 export type AvaliacaoFase2ScalarFieldEnum = (typeof AvaliacaoFase2ScalarFieldEnum)[keyof typeof AvaliacaoFase2ScalarFieldEnum];
+export declare const TokenScalarFieldEnum: {
+    readonly id: "id";
+    readonly userId: "userId";
+    readonly tipo: "tipo";
+    readonly token: "token";
+    readonly expiraEm: "expiraEm";
+    readonly usadoEm: "usadoEm";
+    readonly createdAt: "createdAt";
+};
+export type TokenScalarFieldEnum = (typeof TokenScalarFieldEnum)[keyof typeof TokenScalarFieldEnum];
 export declare const RankingSnapshotScalarFieldEnum: {
     readonly id: "id";
     readonly edicaoId: "edicaoId";
@@ -1450,6 +1538,7 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>;
 export type EnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role'>;
 export type ListEnumRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Role[]'>;
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>;
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>;
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>;
@@ -1464,7 +1553,6 @@ export type EnumEixoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 export type ListEnumEixoFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Eixo[]'>;
 export type EnumDificuldadeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Dificuldade'>;
 export type ListEnumDificuldadeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Dificuldade[]'>;
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>;
 export type EnumStatusEnvioFase2FieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatusEnvioFase2'>;
 export type ListEnumStatusEnvioFase2FieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'StatusEnvioFase2[]'>;
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>;
@@ -1506,6 +1594,7 @@ export type GlobalOmitConfig = {
     resposta?: Prisma.RespostaOmit;
     envioFase2?: Prisma.EnvioFase2Omit;
     avaliacaoFase2?: Prisma.AvaliacaoFase2Omit;
+    token?: Prisma.TokenOmit;
     rankingSnapshot?: Prisma.RankingSnapshotOmit;
     auditLog?: Prisma.AuditLogOmit;
 };

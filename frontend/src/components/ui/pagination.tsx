@@ -46,8 +46,8 @@ export function Pagination({ pagina, totalPaginas, onPageChange }: PaginationPro
             onClick={() => onPageChange(p as number)}
             className="text-sm cursor-pointer min-w-[32px]"
             style={{
-              color: p === pagina ? "#00d47d" : "#9895a4",
-              backgroundColor: p === pagina ? "#00d47d15" : "transparent",
+              color: p === pagina ? "#4CAF50" : "#9895a4",
+              backgroundColor: p === pagina ? "#4CAF5015" : "transparent",
               fontWeight: p === pagina ? 600 : 400,
             }}
           >

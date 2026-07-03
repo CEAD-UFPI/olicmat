@@ -14,6 +14,11 @@ let AuditoriaService = class AuditoriaService {
     constructor(prisma) {
         this.prisma = prisma;
     }
+    async log(actorId, acao, entidade, entidadeId, payload) {
+        return this.prisma.auditLog.create({
+            data: { actorId, acao, entidade, entidadeId, payload: (payload ?? {}) },
+        });
+    }
     async findAll(filters) {
         const where = {};
         if (filters?.entidade)

@@ -1,9 +1,32 @@
-import { Controller, Get, Header, Query, UseGuards } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Param,
+  Body,
+  Header,
+  Query,
+  UseGuards,
+  BadRequestException,
+} from "@nestjs/common";
+import { z } from "zod";
 import { DashboardService } from "./dashboard.service.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
 import { Roles } from "../../common/decorators/roles.decorator.js";
 import { Role } from "../../../generated/prisma/client.js";
+
+const criarEdicaoSchema = z.object({
+  ano: z.number().int().min(2020, "Ano mínimo 2020"),
+  titulo: z.string().min(2, "Título deve ter no mínimo 2 caracteres"),
+});
+
+const atualizarEdicaoSchema = z.object({
+  titulo: z.string().min(2).optional(),
+  status: z.enum(["PLANEJAMENTO", "ATIVA", "ENCERRADA"]).optional(),
+});
 
 @Controller("admin")
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -66,5 +89,31 @@ export class DashboardController {
   @Get("edicoes")
   async listEdicoes() {
     return this.dashboardService.listEdicoes();
+  }
+
+  @Roles(Role.ADMIN)
+  @Post("edicoes")
+  async createEdicao(@Body() body: unknown) {
+    const parsed = criarEdicaoSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten().fieldErrors);
+    }
+    return this.dashboardService.createEdicao(parsed.data);
+  }
+
+  @Roles(Role.ADMIN)
+  @Patch("edicoes/:id")
+  async updateEdicao(@Param("id") id: string, @Body() body: unknown) {
+    const parsed = atualizarEdicaoSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten().fieldErrors);
+    }
+    return this.dashboardService.updateEdicao(id, parsed.data);
+  }
+
+  @Roles(Role.ADMIN)
+  @Delete("edicoes/:id")
+  async deleteEdicao(@Param("id") id: string) {
+    return this.dashboardService.deleteEdicao(id);
   }
 }

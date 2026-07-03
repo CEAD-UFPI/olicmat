@@ -21,6 +21,7 @@ export declare class UsersService {
         cursoId: string | null;
         matricula: string;
         comprovanteUrl: string | null;
+        emailConfirmado: boolean;
     }>;
     findAll(): Promise<{
         id: string;

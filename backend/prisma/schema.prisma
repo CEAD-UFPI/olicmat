@@ -16,6 +16,7 @@ enum Role {
   COORDENADOR_CURSO
   AVALIADOR
   ADMIN
+  COMISSAO
 }
 
 enum StatusInsc {
@@ -62,15 +63,16 @@ enum StatusEnvioFase2 {
 // ============================================
 
 model Instituicao {
-  id        String   @id @default(uuid())
-  nome      String
-  sigla     String   @unique
-  estado    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  nome       String
+  sigla      String   @unique
+  codigoInep String?  @unique
+  estado     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  cursos    Curso[]
-  usuarios  User[]
+  cursos     Curso[]
+  usuarios   User[]
   inscricoes Inscricao[]
 }
 
@@ -107,10 +109,12 @@ model User {
   matricula       String
   comprovanteUrl  String?
   dataNascimento  DateTime
+  emailConfirmado Boolean   @default(false)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  inscricao       Inscricao?
+  inscricoes      Inscricao[]
+  tokens          Token[]
   coordenadorias  CoordenadorCurso[]
   avaliacoes      AvaliacaoFase2[]
   auditLogs       AuditLog[]
@@ -151,7 +155,7 @@ model Edicao {
 
 model Inscricao {
   id              String      @id @default(uuid())
-  userId          String      @unique
+  userId          String
   edicaoId        String
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   edicao          Edicao      @relation(fields: [edicaoId], references: [id])
@@ -262,6 +266,7 @@ model EnvioFase2 {
   inscricaoId String
   tipo        String
   arquivoUrl  String
+  videoLink   String?
   status      StatusEnvioFase2  @default(PENDENTE)
   enviadoEm   DateTime          @default(now())
 
@@ -285,6 +290,21 @@ model AvaliacaoFase2 {
 // ============================================
 // Ranking & Audit
 // ============================================
+
+model Token {
+  id        String   @id @default(uuid())
+  userId    String
+  tipo      String
+  token     String   @unique
+  expiraEm  DateTime
+  usadoEm   DateTime?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
 
 model RankingSnapshot {
   id          String    @id @default(uuid())

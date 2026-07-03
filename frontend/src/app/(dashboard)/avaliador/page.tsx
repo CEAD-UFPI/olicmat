@@ -36,7 +36,7 @@ export default function AvaliadorPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -59,7 +59,7 @@ export default function AvaliadorPage() {
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
             <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <BookOpen size={14} className="text-[#4b7bec]" />
+              <BookOpen size={14} className="text-[#3AAFE0]" />
               Provas
             </CardTitle>
           </CardHeader>
@@ -87,12 +87,12 @@ export default function AvaliadorPage() {
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
             <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <CheckSquare size={14} className="text-[#00d47d]" />
+              <CheckSquare size={14} className="text-[#4CAF50]" />
               Avaliadas
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#00d47d" }}>
+            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#4CAF50" }}>
               {resumo.totalAvaliadas ?? "-"}
             </p>
           </CardContent>
@@ -109,7 +109,7 @@ export default function AvaliadorPage() {
             href="/avaliador/provas"
             className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
           >
-            <BookOpen size={18} className="text-[#4b7bec]" />
+            <BookOpen size={18} className="text-[#3AAFE0]" />
             <div>
               <p className="text-sm font-medium text-[#f0ece4]">Gerenciar Provas</p>
               <p className="text-xs text-[#9895a4]">Criar e editar provas da Fase 1</p>
@@ -119,7 +119,7 @@ export default function AvaliadorPage() {
             href="/avaliador/fase2"
             className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
           >
-            <CheckSquare size={18} className="text-[#00d47d]" />
+            <CheckSquare size={18} className="text-[#4CAF50]" />
             <div>
               <p className="text-sm font-medium text-[#f0ece4]">Avaliar Fase 2</p>
               <p className="text-xs text-[#9895a4]">Avaliar videoaulas e portfolios</p>

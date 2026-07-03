@@ -43,6 +43,7 @@ let InstituicoesService = class InstituicoesService {
             data: {
                 nome: data.nome,
                 sigla: data.sigla.toUpperCase(),
+                codigoInep: data.codigoInep ?? "",
                 estado: data.estado?.toUpperCase() ?? "",
             },
         });
@@ -56,10 +57,17 @@ let InstituicoesService = class InstituicoesService {
             updateData.sigla = data.sigla.toUpperCase();
         if (data.estado)
             updateData.estado = data.estado.toUpperCase();
+        if (data.codigoInep !== undefined)
+            updateData.codigoInep = data.codigoInep;
         return this.prisma.instituicao.update({
             where: { id },
             data: updateData,
         });
+    }
+    async delete(id) {
+        await this.findById(id);
+        await this.prisma.instituicao.delete({ where: { id } });
+        return { deleted: true };
     }
 };
 InstituicoesService = __decorate([

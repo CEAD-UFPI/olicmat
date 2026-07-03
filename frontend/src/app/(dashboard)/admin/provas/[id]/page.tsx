@@ -212,7 +212,7 @@ export default function AdminProvaDetalhePage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -295,7 +295,7 @@ export default function AdminProvaDetalhePage() {
               <Button
                 onClick={salvar}
                 disabled={salvando}
-                style={{ backgroundColor: "#00d47d", color: "#fff" }}
+                style={{ backgroundColor: "#4CAF50", color: "#fff" }}
                 className="cursor-pointer"
               >
                 {salvando ? "Salvando..." : "Salvar"}
@@ -354,7 +354,7 @@ export default function AdminProvaDetalhePage() {
                     <div className="flex items-center gap-1 flex-shrink-0 ml-2">
                       <button
                         onClick={() => abrirEditarQuestao(pq)}
-                        className="text-[#9895a4] hover:text-[#00d47d] transition-colors p-1 cursor-pointer"
+                        className="text-[#9895a4] hover:text-[#4CAF50] transition-colors p-1 cursor-pointer"
                         title="Editar"
                       >
                         <Pencil size={14} />
@@ -389,7 +389,7 @@ export default function AdminProvaDetalhePage() {
               value={formQuestao.enunciado}
               onChange={(e) => setFormQuestao({ ...formQuestao, enunciado: e.target.value })}
               rows={3}
-              className="mt-1.5 w-full rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-3 py-2 outline-none focus:border-[#00d47d] transition-colors resize-vertical"
+              className="mt-1.5 w-full rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-3 py-2 outline-none focus:border-[#4CAF50] transition-colors resize-vertical"
               placeholder="Enunciado da questão..."
             />
           </div>
@@ -463,7 +463,7 @@ export default function AdminProvaDetalhePage() {
             <Button
               onClick={salvarQuestao}
               disabled={salvandoQuestao}
-              style={{ backgroundColor: "#00d47d", color: "#fff" }}
+              style={{ backgroundColor: "#4CAF50", color: "#fff" }}
               className="cursor-pointer"
             >
               {salvandoQuestao ? "Salvando..." : editandoQuestaoId ? "Atualizar" : "Adicionar Questão"}

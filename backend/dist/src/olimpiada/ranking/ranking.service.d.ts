@@ -1,7 +1,9 @@
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
 export declare class RankingService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private auditoria;
+    constructor(prisma: PrismaService, auditoria: AuditoriaService);
     rankingPorEstado(estado?: string): Promise<Record<"OURO" | "PRATA" | "BRONZE", {
         inscricaoId: string;
         nome: string;
@@ -21,7 +23,8 @@ export declare class RankingService {
         dataNascimento: Date;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     }[]>>>;
-    atualizarMedalhas(): Promise<{
+    atualizarMedalhas(actorId?: string): Promise<{
         atualizado: boolean;
+        total: number;
     }>;
 }

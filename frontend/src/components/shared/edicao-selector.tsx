@@ -37,7 +37,7 @@ export function EdicaoSelector({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       disabled={carregando}
-      className="h-8 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-2.5 py-0 outline-none focus:border-[#00d47d] transition-colors disabled:opacity-50 cursor-pointer"
+      className="h-8 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-2.5 py-0 outline-none focus:border-[#4CAF50] transition-colors disabled:opacity-50 cursor-pointer"
     >
       {incluirTodas && <option value="">Todas as edições</option>}
       {edicoes.map((ed) => (

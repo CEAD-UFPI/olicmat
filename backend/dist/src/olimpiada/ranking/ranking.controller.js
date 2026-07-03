@@ -11,6 +11,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import { Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
+import { Role } from "../../../generated/prisma/client.js";
 import { RankingService } from "./ranking.service.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
@@ -28,6 +29,8 @@ let RankingController = class RankingController {
     }
 };
 __decorate([
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ALUNO, Role.COORDENADOR_CURSO, Role.COMISSAO, Role.AVALIADOR, Role.ADMIN),
     Get(),
     __param(0, Query("estado")),
     __metadata("design:type", Function),
@@ -36,7 +39,7 @@ __decorate([
 ], RankingController.prototype, "ranking", null);
 __decorate([
     UseGuards(JwtAuthGuard, RolesGuard),
-    Roles("ADMIN"),
+    Roles(Role.ADMIN),
     Post("atualizar-medalhas"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

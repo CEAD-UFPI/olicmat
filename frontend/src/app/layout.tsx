@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   other: {
-    "theme-color": "#00d47d",
+    "theme-color": "#4CAF50",
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "black-translucent",
     "apple-mobile-web-app-title": "OLICMAT",

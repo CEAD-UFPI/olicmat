@@ -63,7 +63,7 @@ export default function ProvaPage() {
   if (carregando && !iniciada) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -192,7 +192,7 @@ export default function ProvaPage() {
               Você respondeu {respondidas} de {questoes.length} questões.
             </p>
             {respondidas < questoes.length && (
-              <p className="text-xs text-[#f48120] mb-6">
+              <p className="text-xs text-[#E8B829] mb-6">
                 Atenção: {questoes.length - respondidas} questões não foram respondidas.
               </p>
             )}

@@ -2,8 +2,10 @@ import { z } from "zod";
 export declare const criarInscricaoSchema: z.ZodObject<{
     estado: z.ZodString;
     municipio: z.ZodOptional<z.ZodString>;
-    instituicaoId: z.ZodString;
-    cursoId: z.ZodString;
+    instituicaoId: z.ZodOptional<z.ZodString>;
+    cursoId: z.ZodOptional<z.ZodString>;
+    instituicao: z.ZodOptional<z.ZodString>;
+    curso: z.ZodOptional<z.ZodString>;
     periodo: z.ZodOptional<z.ZodNumber>;
 }, z.core.$strip>;
 export type CriarInscricaoDto = z.infer<typeof criarInscricaoSchema>;

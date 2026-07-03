@@ -266,11 +266,11 @@ export type InscricaoOrderByWithRelationInput = {
 };
 export type InscricaoWhereUniqueInput = Prisma.AtLeast<{
     id?: string;
-    userId?: string;
     userId_edicaoId?: Prisma.InscricaoUserIdEdicaoIdCompoundUniqueInput;
     AND?: Prisma.InscricaoWhereInput | Prisma.InscricaoWhereInput[];
     OR?: Prisma.InscricaoWhereInput[];
     NOT?: Prisma.InscricaoWhereInput | Prisma.InscricaoWhereInput[];
+    userId?: Prisma.StringFilter<"Inscricao"> | string;
     edicaoId?: Prisma.StringFilter<"Inscricao"> | string;
     status?: Prisma.EnumStatusInscFilter<"Inscricao"> | $Enums.StatusInsc;
     estado?: Prisma.StringFilter<"Inscricao"> | string;
@@ -294,7 +294,7 @@ export type InscricaoWhereUniqueInput = Prisma.AtLeast<{
     respostas?: Prisma.RespostaListRelationFilter;
     enviosFase2?: Prisma.EnvioFase2ListRelationFilter;
     avaliacoes?: Prisma.AvaliacaoFase2ListRelationFilter;
-}, "id" | "userId" | "userId_edicaoId">;
+}, "id" | "userId_edicaoId">;
 export type InscricaoOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     userId?: Prisma.SortOrder;
@@ -358,7 +358,7 @@ export type InscricaoCreateInput = {
     medalha?: $Enums.Medalha | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    user: Prisma.UserCreateNestedOneWithoutInscricaoInput;
+    user: Prisma.UserCreateNestedOneWithoutInscricoesInput;
     edicao: Prisma.EdicaoCreateNestedOneWithoutInscricoesInput;
     instituicao: Prisma.InstituicaoCreateNestedOneWithoutInscricoesInput;
     curso: Prisma.CursoCreateNestedOneWithoutInscricoesInput;
@@ -404,7 +404,7 @@ export type InscricaoUpdateInput = {
     medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    user?: Prisma.UserUpdateOneRequiredWithoutInscricaoNestedInput;
+    user?: Prisma.UserUpdateOneRequiredWithoutInscricoesNestedInput;
     edicao?: Prisma.EdicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     instituicao?: Prisma.InstituicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     curso?: Prisma.CursoUpdateOneRequiredWithoutInscricoesNestedInput;
@@ -498,10 +498,6 @@ export type InscricaoListRelationFilter = {
 };
 export type InscricaoOrderByRelationAggregateInput = {
     _count?: Prisma.SortOrder;
-};
-export type InscricaoNullableScalarRelationFilter = {
-    is?: Prisma.InscricaoWhereInput | null;
-    isNot?: Prisma.InscricaoWhereInput | null;
 };
 export type InscricaoUserIdEdicaoIdCompoundUniqueInput = {
     userId: string;
@@ -657,33 +653,43 @@ export type InscricaoUncheckedUpdateManyWithoutCursoNestedInput = {
     updateMany?: Prisma.InscricaoUpdateManyWithWhereWithoutCursoInput | Prisma.InscricaoUpdateManyWithWhereWithoutCursoInput[];
     deleteMany?: Prisma.InscricaoScalarWhereInput | Prisma.InscricaoScalarWhereInput[];
 };
-export type InscricaoCreateNestedOneWithoutUserInput = {
-    create?: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput>;
-    connectOrCreate?: Prisma.InscricaoCreateOrConnectWithoutUserInput;
-    connect?: Prisma.InscricaoWhereUniqueInput;
+export type InscricaoCreateNestedManyWithoutUserInput = {
+    create?: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput> | Prisma.InscricaoCreateWithoutUserInput[] | Prisma.InscricaoUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.InscricaoCreateOrConnectWithoutUserInput | Prisma.InscricaoCreateOrConnectWithoutUserInput[];
+    createMany?: Prisma.InscricaoCreateManyUserInputEnvelope;
+    connect?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
 };
-export type InscricaoUncheckedCreateNestedOneWithoutUserInput = {
-    create?: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput>;
-    connectOrCreate?: Prisma.InscricaoCreateOrConnectWithoutUserInput;
-    connect?: Prisma.InscricaoWhereUniqueInput;
+export type InscricaoUncheckedCreateNestedManyWithoutUserInput = {
+    create?: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput> | Prisma.InscricaoCreateWithoutUserInput[] | Prisma.InscricaoUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.InscricaoCreateOrConnectWithoutUserInput | Prisma.InscricaoCreateOrConnectWithoutUserInput[];
+    createMany?: Prisma.InscricaoCreateManyUserInputEnvelope;
+    connect?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
 };
-export type InscricaoUpdateOneWithoutUserNestedInput = {
-    create?: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput>;
-    connectOrCreate?: Prisma.InscricaoCreateOrConnectWithoutUserInput;
-    upsert?: Prisma.InscricaoUpsertWithoutUserInput;
-    disconnect?: Prisma.InscricaoWhereInput | boolean;
-    delete?: Prisma.InscricaoWhereInput | boolean;
-    connect?: Prisma.InscricaoWhereUniqueInput;
-    update?: Prisma.XOR<Prisma.XOR<Prisma.InscricaoUpdateToOneWithWhereWithoutUserInput, Prisma.InscricaoUpdateWithoutUserInput>, Prisma.InscricaoUncheckedUpdateWithoutUserInput>;
+export type InscricaoUpdateManyWithoutUserNestedInput = {
+    create?: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput> | Prisma.InscricaoCreateWithoutUserInput[] | Prisma.InscricaoUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.InscricaoCreateOrConnectWithoutUserInput | Prisma.InscricaoCreateOrConnectWithoutUserInput[];
+    upsert?: Prisma.InscricaoUpsertWithWhereUniqueWithoutUserInput | Prisma.InscricaoUpsertWithWhereUniqueWithoutUserInput[];
+    createMany?: Prisma.InscricaoCreateManyUserInputEnvelope;
+    set?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
+    disconnect?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
+    delete?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
+    connect?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
+    update?: Prisma.InscricaoUpdateWithWhereUniqueWithoutUserInput | Prisma.InscricaoUpdateWithWhereUniqueWithoutUserInput[];
+    updateMany?: Prisma.InscricaoUpdateManyWithWhereWithoutUserInput | Prisma.InscricaoUpdateManyWithWhereWithoutUserInput[];
+    deleteMany?: Prisma.InscricaoScalarWhereInput | Prisma.InscricaoScalarWhereInput[];
 };
-export type InscricaoUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput>;
-    connectOrCreate?: Prisma.InscricaoCreateOrConnectWithoutUserInput;
-    upsert?: Prisma.InscricaoUpsertWithoutUserInput;
-    disconnect?: Prisma.InscricaoWhereInput | boolean;
-    delete?: Prisma.InscricaoWhereInput | boolean;
-    connect?: Prisma.InscricaoWhereUniqueInput;
-    update?: Prisma.XOR<Prisma.XOR<Prisma.InscricaoUpdateToOneWithWhereWithoutUserInput, Prisma.InscricaoUpdateWithoutUserInput>, Prisma.InscricaoUncheckedUpdateWithoutUserInput>;
+export type InscricaoUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput> | Prisma.InscricaoCreateWithoutUserInput[] | Prisma.InscricaoUncheckedCreateWithoutUserInput[];
+    connectOrCreate?: Prisma.InscricaoCreateOrConnectWithoutUserInput | Prisma.InscricaoCreateOrConnectWithoutUserInput[];
+    upsert?: Prisma.InscricaoUpsertWithWhereUniqueWithoutUserInput | Prisma.InscricaoUpsertWithWhereUniqueWithoutUserInput[];
+    createMany?: Prisma.InscricaoCreateManyUserInputEnvelope;
+    set?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
+    disconnect?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
+    delete?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
+    connect?: Prisma.InscricaoWhereUniqueInput | Prisma.InscricaoWhereUniqueInput[];
+    update?: Prisma.InscricaoUpdateWithWhereUniqueWithoutUserInput | Prisma.InscricaoUpdateWithWhereUniqueWithoutUserInput[];
+    updateMany?: Prisma.InscricaoUpdateManyWithWhereWithoutUserInput | Prisma.InscricaoUpdateManyWithWhereWithoutUserInput[];
+    deleteMany?: Prisma.InscricaoScalarWhereInput | Prisma.InscricaoScalarWhereInput[];
 };
 export type InscricaoCreateNestedManyWithoutEdicaoInput = {
     create?: Prisma.XOR<Prisma.InscricaoCreateWithoutEdicaoInput, Prisma.InscricaoUncheckedCreateWithoutEdicaoInput> | Prisma.InscricaoCreateWithoutEdicaoInput[] | Prisma.InscricaoUncheckedCreateWithoutEdicaoInput[];
@@ -794,7 +800,7 @@ export type InscricaoCreateWithoutInstituicaoInput = {
     medalha?: $Enums.Medalha | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    user: Prisma.UserCreateNestedOneWithoutInscricaoInput;
+    user: Prisma.UserCreateNestedOneWithoutInscricoesInput;
     edicao: Prisma.EdicaoCreateNestedOneWithoutInscricoesInput;
     curso: Prisma.CursoCreateNestedOneWithoutInscricoesInput;
     respostas?: Prisma.RespostaCreateNestedManyWithoutInscricaoInput;
@@ -882,7 +888,7 @@ export type InscricaoCreateWithoutCursoInput = {
     medalha?: $Enums.Medalha | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    user: Prisma.UserCreateNestedOneWithoutInscricaoInput;
+    user: Prisma.UserCreateNestedOneWithoutInscricoesInput;
     edicao: Prisma.EdicaoCreateNestedOneWithoutInscricoesInput;
     instituicao: Prisma.InstituicaoCreateNestedOneWithoutInscricoesInput;
     respostas?: Prisma.RespostaCreateNestedManyWithoutInscricaoInput;
@@ -980,58 +986,22 @@ export type InscricaoCreateOrConnectWithoutUserInput = {
     where: Prisma.InscricaoWhereUniqueInput;
     create: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput>;
 };
-export type InscricaoUpsertWithoutUserInput = {
+export type InscricaoCreateManyUserInputEnvelope = {
+    data: Prisma.InscricaoCreateManyUserInput | Prisma.InscricaoCreateManyUserInput[];
+    skipDuplicates?: boolean;
+};
+export type InscricaoUpsertWithWhereUniqueWithoutUserInput = {
+    where: Prisma.InscricaoWhereUniqueInput;
     update: Prisma.XOR<Prisma.InscricaoUpdateWithoutUserInput, Prisma.InscricaoUncheckedUpdateWithoutUserInput>;
     create: Prisma.XOR<Prisma.InscricaoCreateWithoutUserInput, Prisma.InscricaoUncheckedCreateWithoutUserInput>;
-    where?: Prisma.InscricaoWhereInput;
 };
-export type InscricaoUpdateToOneWithWhereWithoutUserInput = {
-    where?: Prisma.InscricaoWhereInput;
+export type InscricaoUpdateWithWhereUniqueWithoutUserInput = {
+    where: Prisma.InscricaoWhereUniqueInput;
     data: Prisma.XOR<Prisma.InscricaoUpdateWithoutUserInput, Prisma.InscricaoUncheckedUpdateWithoutUserInput>;
 };
-export type InscricaoUpdateWithoutUserInput = {
-    id?: Prisma.StringFieldUpdateOperationsInput | string;
-    status?: Prisma.EnumStatusInscFieldUpdateOperationsInput | $Enums.StatusInsc;
-    estado?: Prisma.StringFieldUpdateOperationsInput | string;
-    municipio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-    periodo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
-    comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-    fase1Nota?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
-    fase1Inicio?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-    fase1Fim?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-    fase2Tema?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-    notaFinal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
-    medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
-    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    edicao?: Prisma.EdicaoUpdateOneRequiredWithoutInscricoesNestedInput;
-    instituicao?: Prisma.InstituicaoUpdateOneRequiredWithoutInscricoesNestedInput;
-    curso?: Prisma.CursoUpdateOneRequiredWithoutInscricoesNestedInput;
-    respostas?: Prisma.RespostaUpdateManyWithoutInscricaoNestedInput;
-    enviosFase2?: Prisma.EnvioFase2UpdateManyWithoutInscricaoNestedInput;
-    avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutInscricaoNestedInput;
-};
-export type InscricaoUncheckedUpdateWithoutUserInput = {
-    id?: Prisma.StringFieldUpdateOperationsInput | string;
-    edicaoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    status?: Prisma.EnumStatusInscFieldUpdateOperationsInput | $Enums.StatusInsc;
-    estado?: Prisma.StringFieldUpdateOperationsInput | string;
-    municipio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-    instituicaoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    cursoId?: Prisma.StringFieldUpdateOperationsInput | string;
-    periodo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
-    comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-    fase1Nota?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
-    fase1Inicio?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-    fase1Fim?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
-    fase2Tema?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
-    notaFinal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
-    medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
-    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    respostas?: Prisma.RespostaUncheckedUpdateManyWithoutInscricaoNestedInput;
-    enviosFase2?: Prisma.EnvioFase2UncheckedUpdateManyWithoutInscricaoNestedInput;
-    avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutInscricaoNestedInput;
+export type InscricaoUpdateManyWithWhereWithoutUserInput = {
+    where: Prisma.InscricaoScalarWhereInput;
+    data: Prisma.XOR<Prisma.InscricaoUpdateManyMutationInput, Prisma.InscricaoUncheckedUpdateManyWithoutUserInput>;
 };
 export type InscricaoCreateWithoutEdicaoInput = {
     id?: string;
@@ -1048,7 +1018,7 @@ export type InscricaoCreateWithoutEdicaoInput = {
     medalha?: $Enums.Medalha | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    user: Prisma.UserCreateNestedOneWithoutInscricaoInput;
+    user: Prisma.UserCreateNestedOneWithoutInscricoesInput;
     instituicao: Prisma.InstituicaoCreateNestedOneWithoutInscricoesInput;
     curso: Prisma.CursoCreateNestedOneWithoutInscricoesInput;
     respostas?: Prisma.RespostaCreateNestedManyWithoutInscricaoInput;
@@ -1113,7 +1083,7 @@ export type InscricaoCreateWithoutRespostasInput = {
     medalha?: $Enums.Medalha | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    user: Prisma.UserCreateNestedOneWithoutInscricaoInput;
+    user: Prisma.UserCreateNestedOneWithoutInscricoesInput;
     edicao: Prisma.EdicaoCreateNestedOneWithoutInscricoesInput;
     instituicao: Prisma.InstituicaoCreateNestedOneWithoutInscricoesInput;
     curso: Prisma.CursoCreateNestedOneWithoutInscricoesInput;
@@ -1170,7 +1140,7 @@ export type InscricaoUpdateWithoutRespostasInput = {
     medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    user?: Prisma.UserUpdateOneRequiredWithoutInscricaoNestedInput;
+    user?: Prisma.UserUpdateOneRequiredWithoutInscricoesNestedInput;
     edicao?: Prisma.EdicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     instituicao?: Prisma.InstituicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     curso?: Prisma.CursoUpdateOneRequiredWithoutInscricoesNestedInput;
@@ -1214,7 +1184,7 @@ export type InscricaoCreateWithoutEnviosFase2Input = {
     medalha?: $Enums.Medalha | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    user: Prisma.UserCreateNestedOneWithoutInscricaoInput;
+    user: Prisma.UserCreateNestedOneWithoutInscricoesInput;
     edicao: Prisma.EdicaoCreateNestedOneWithoutInscricoesInput;
     instituicao: Prisma.InstituicaoCreateNestedOneWithoutInscricoesInput;
     curso: Prisma.CursoCreateNestedOneWithoutInscricoesInput;
@@ -1271,7 +1241,7 @@ export type InscricaoUpdateWithoutEnviosFase2Input = {
     medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    user?: Prisma.UserUpdateOneRequiredWithoutInscricaoNestedInput;
+    user?: Prisma.UserUpdateOneRequiredWithoutInscricoesNestedInput;
     edicao?: Prisma.EdicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     instituicao?: Prisma.InstituicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     curso?: Prisma.CursoUpdateOneRequiredWithoutInscricoesNestedInput;
@@ -1315,7 +1285,7 @@ export type InscricaoCreateWithoutAvaliacoesInput = {
     medalha?: $Enums.Medalha | null;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    user: Prisma.UserCreateNestedOneWithoutInscricaoInput;
+    user: Prisma.UserCreateNestedOneWithoutInscricoesInput;
     edicao: Prisma.EdicaoCreateNestedOneWithoutInscricoesInput;
     instituicao: Prisma.InstituicaoCreateNestedOneWithoutInscricoesInput;
     curso: Prisma.CursoCreateNestedOneWithoutInscricoesInput;
@@ -1372,7 +1342,7 @@ export type InscricaoUpdateWithoutAvaliacoesInput = {
     medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    user?: Prisma.UserUpdateOneRequiredWithoutInscricaoNestedInput;
+    user?: Prisma.UserUpdateOneRequiredWithoutInscricoesNestedInput;
     edicao?: Prisma.EdicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     instituicao?: Prisma.InstituicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     curso?: Prisma.CursoUpdateOneRequiredWithoutInscricoesNestedInput;
@@ -1435,7 +1405,7 @@ export type InscricaoUpdateWithoutInstituicaoInput = {
     medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    user?: Prisma.UserUpdateOneRequiredWithoutInscricaoNestedInput;
+    user?: Prisma.UserUpdateOneRequiredWithoutInscricoesNestedInput;
     edicao?: Prisma.EdicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     curso?: Prisma.CursoUpdateOneRequiredWithoutInscricoesNestedInput;
     respostas?: Prisma.RespostaUpdateManyWithoutInscricaoNestedInput;
@@ -1517,7 +1487,7 @@ export type InscricaoUpdateWithoutCursoInput = {
     medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    user?: Prisma.UserUpdateOneRequiredWithoutInscricaoNestedInput;
+    user?: Prisma.UserUpdateOneRequiredWithoutInscricoesNestedInput;
     edicao?: Prisma.EdicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     instituicao?: Prisma.InstituicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     respostas?: Prisma.RespostaUpdateManyWithoutInscricaoNestedInput;
@@ -1565,6 +1535,88 @@ export type InscricaoUncheckedUpdateManyWithoutCursoInput = {
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
+export type InscricaoCreateManyUserInput = {
+    id?: string;
+    edicaoId: string;
+    status?: $Enums.StatusInsc;
+    estado: string;
+    municipio?: string | null;
+    instituicaoId: string;
+    cursoId: string;
+    periodo?: number | null;
+    comprovanteUrl?: string | null;
+    fase1Nota?: number | null;
+    fase1Inicio?: Date | string | null;
+    fase1Fim?: Date | string | null;
+    fase2Tema?: string | null;
+    notaFinal?: number | null;
+    medalha?: $Enums.Medalha | null;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+};
+export type InscricaoUpdateWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumStatusInscFieldUpdateOperationsInput | $Enums.StatusInsc;
+    estado?: Prisma.StringFieldUpdateOperationsInput | string;
+    municipio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    periodo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    fase1Nota?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
+    fase1Inicio?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    fase1Fim?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    fase2Tema?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    notaFinal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
+    medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    edicao?: Prisma.EdicaoUpdateOneRequiredWithoutInscricoesNestedInput;
+    instituicao?: Prisma.InstituicaoUpdateOneRequiredWithoutInscricoesNestedInput;
+    curso?: Prisma.CursoUpdateOneRequiredWithoutInscricoesNestedInput;
+    respostas?: Prisma.RespostaUpdateManyWithoutInscricaoNestedInput;
+    enviosFase2?: Prisma.EnvioFase2UpdateManyWithoutInscricaoNestedInput;
+    avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutInscricaoNestedInput;
+};
+export type InscricaoUncheckedUpdateWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    edicaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumStatusInscFieldUpdateOperationsInput | $Enums.StatusInsc;
+    estado?: Prisma.StringFieldUpdateOperationsInput | string;
+    municipio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    instituicaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    cursoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    periodo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    fase1Nota?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
+    fase1Inicio?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    fase1Fim?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    fase2Tema?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    notaFinal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
+    medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    respostas?: Prisma.RespostaUncheckedUpdateManyWithoutInscricaoNestedInput;
+    enviosFase2?: Prisma.EnvioFase2UncheckedUpdateManyWithoutInscricaoNestedInput;
+    avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutInscricaoNestedInput;
+};
+export type InscricaoUncheckedUpdateManyWithoutUserInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    edicaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    status?: Prisma.EnumStatusInscFieldUpdateOperationsInput | $Enums.StatusInsc;
+    estado?: Prisma.StringFieldUpdateOperationsInput | string;
+    municipio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    instituicaoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    cursoId?: Prisma.StringFieldUpdateOperationsInput | string;
+    periodo?: Prisma.NullableIntFieldUpdateOperationsInput | number | null;
+    comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    fase1Nota?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
+    fase1Inicio?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    fase1Fim?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null;
+    fase2Tema?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    notaFinal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null;
+    medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
 export type InscricaoCreateManyEdicaoInput = {
     id?: string;
     userId: string;
@@ -1599,7 +1651,7 @@ export type InscricaoUpdateWithoutEdicaoInput = {
     medalha?: Prisma.NullableEnumMedalhaFieldUpdateOperationsInput | $Enums.Medalha | null;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    user?: Prisma.UserUpdateOneRequiredWithoutInscricaoNestedInput;
+    user?: Prisma.UserUpdateOneRequiredWithoutInscricoesNestedInput;
     instituicao?: Prisma.InstituicaoUpdateOneRequiredWithoutInscricoesNestedInput;
     curso?: Prisma.CursoUpdateOneRequiredWithoutInscricoesNestedInput;
     respostas?: Prisma.RespostaUpdateManyWithoutInscricaoNestedInput;

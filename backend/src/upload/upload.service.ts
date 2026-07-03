@@ -1,6 +1,13 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
 import { v2 as cloudinary } from "cloudinary";
 
+interface MulterBufferFile {
+  buffer: Buffer;
+  originalname: string;
+  mimetype: string;
+  size: number;
+}
+
 @Injectable()
 export class UploadService {
   constructor() {
@@ -12,7 +19,7 @@ export class UploadService {
   }
 
   async uploadArquivo(
-    file: Express.Multer.File,
+    file: MulterBufferFile,
     folder: string,
     resourceType: "video" | "image" | "raw" = "raw"
   ): Promise<string> {

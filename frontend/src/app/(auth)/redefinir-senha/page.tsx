@@ -69,7 +69,7 @@ function RedefinirSenhaForm() {
         <p className="text-sm text-[#9895a4] mb-6">
           O link de redefinicao de senha e invalido ou expirou.
         </p>
-        <Link href="/esqueci-senha" className="text-sm text-[#4b7bec] hover:underline">
+        <Link href="/esqueci-senha" className="text-sm text-[#3AAFE0] hover:underline">
           Solicitar novo link
         </Link>
       </div>
@@ -180,7 +180,7 @@ export default function RedefinirSenhaPage() {
           <Suspense
             fallback={
               <div className="flex justify-center py-8">
-                <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+                <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
               </div>
             }
           >

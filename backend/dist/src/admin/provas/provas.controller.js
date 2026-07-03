@@ -68,7 +68,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProvasController.prototype, "create", null);
 __decorate([
-    Roles(Role.AVALIADOR, Role.ADMIN),
+    Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO),
     Get(),
     __param(0, Query("edicaoId")),
     __metadata("design:type", Function),
@@ -76,7 +76,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProvasController.prototype, "findAll", null);
 __decorate([
-    Roles(Role.AVALIADOR, Role.ADMIN),
+    Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO),
     Get(":id"),
     __param(0, Param("id")),
     __metadata("design:type", Function),

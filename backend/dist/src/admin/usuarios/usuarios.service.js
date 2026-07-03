@@ -10,10 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Injectable, NotFoundException, ConflictException, BadRequestException, } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 let AdminUsuariosService = class AdminUsuariosService {
     prisma;
-    constructor(prisma) {
+    auditoria;
+    constructor(prisma, auditoria) {
         this.prisma = prisma;
+        this.auditoria = auditoria;
     }
     async findAll() {
         const users = await this.prisma.user.findMany({
@@ -58,7 +61,7 @@ let AdminUsuariosService = class AdminUsuariosService {
                 updatedAt: true,
                 instituicao: { select: { id: true, nome: true, sigla: true } },
                 curso: { select: { id: true, nome: true } },
-                inscricao: {
+                inscricoes: {
                     select: { id: true, status: true, edicao: { select: { ano: true } } },
                 },
             },
@@ -68,7 +71,7 @@ let AdminUsuariosService = class AdminUsuariosService {
         }
         return user;
     }
-    async create(data) {
+    async create(data, actorId) {
         const existing = await this.prisma.user.findFirst({
             where: {
                 OR: [{ email: data.email }, { cpf: data.cpf }],
@@ -99,9 +102,15 @@ let AdminUsuariosService = class AdminUsuariosService {
                 createdAt: true,
             },
         });
+        if (actorId) {
+            await this.auditoria.log(actorId, "CRIAR_USUARIO", "User", user.id, {
+                email: data.email,
+                role: data.role,
+            });
+        }
         return user;
     }
-    async update(id, data) {
+    async update(id, data, actorId) {
         const user = await this.prisma.user.findUnique({ where: { id } });
         if (!user) {
             throw new NotFoundException("Usuário não encontrado");
@@ -114,7 +123,7 @@ let AdminUsuariosService = class AdminUsuariosService {
                 throw new ConflictException("Email já está em uso por outro usuário");
             }
         }
-        return this.prisma.user.update({
+        const result = await this.prisma.user.update({
             where: { id },
             data,
             select: {
@@ -127,25 +136,33 @@ let AdminUsuariosService = class AdminUsuariosService {
                 updatedAt: true,
             },
         });
+        if (actorId) {
+            await this.auditoria.log(actorId, "ATUALIZAR_USUARIO", "User", id, data);
+        }
+        return result;
     }
-    async delete(id) {
+    async delete(id, actorId) {
         const user = await this.prisma.user.findUnique({
             where: { id },
-            include: { inscricao: { select: { id: true } } },
+            include: { inscricoes: { select: { id: true } } },
         });
         if (!user) {
             throw new NotFoundException("Usuário não encontrado");
         }
-        if (user.inscricao) {
+        if (user.inscricoes?.length) {
             throw new BadRequestException("Não é possível excluir usuário com inscrições ativas. Remova as inscrições primeiro.");
         }
         await this.prisma.user.delete({ where: { id } });
+        if (actorId) {
+            await this.auditoria.log(actorId, "DELETAR_USUARIO", "User", id);
+        }
         return { message: "Usuário excluído com sucesso" };
     }
 };
 AdminUsuariosService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [PrismaService])
+    __metadata("design:paramtypes", [PrismaService,
+        AuditoriaService])
 ], AdminUsuariosService);
 export { AdminUsuariosService };
 //# sourceMappingURL=usuarios.service.js.map

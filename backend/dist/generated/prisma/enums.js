@@ -2,7 +2,8 @@ export const Role = {
     ALUNO: 'ALUNO',
     COORDENADOR_CURSO: 'COORDENADOR_CURSO',
     AVALIADOR: 'AVALIADOR',
-    ADMIN: 'ADMIN'
+    ADMIN: 'ADMIN',
+    COMISSAO: 'COMISSAO'
 };
 export const StatusInsc = {
     PENDENTE: 'PENDENTE',

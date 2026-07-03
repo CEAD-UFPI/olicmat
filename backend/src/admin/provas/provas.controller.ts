@@ -45,13 +45,13 @@ export class ProvasController {
     return this.provasService.create(req.user.id, parsed.data);
   }
 
-  @Roles(Role.AVALIADOR, Role.ADMIN)
+  @Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO)
   @Get()
   async findAll(@Query("edicaoId") edicaoId?: string) {
     return this.provasService.findAll(edicaoId);
   }
 
-  @Roles(Role.AVALIADOR, Role.ADMIN)
+  @Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO)
   @Get(":id")
   async findById(@Param("id") id: string) {
     return this.provasService.findById(id);

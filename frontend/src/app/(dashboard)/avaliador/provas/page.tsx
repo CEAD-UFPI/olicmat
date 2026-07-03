@@ -30,7 +30,7 @@ export default function AvaliadorProvasPage() {
 
   const statusColors: Record<string, string> = {
     RASCUNHO: "#9895a4",
-    PUBLICADA: "#00d47d",
+    PUBLICADA: "#4CAF50",
     ENCERRADA: "#e53e3e",
   };
 
@@ -56,7 +56,7 @@ export default function AvaliadorProvasPage() {
         </div>
         <Button
           render={<Link href="/avaliador/provas/nova" />}
-          style={{ backgroundColor: "#00d47d", color: "#fff" }}
+          style={{ backgroundColor: "#4CAF50", color: "#fff" }}
           className="gap-2"
         >
           <Plus size={16} />
@@ -66,7 +66,7 @@ export default function AvaliadorProvasPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : provas.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
@@ -89,7 +89,7 @@ export default function AvaliadorProvasPage() {
                 {provas.map((prova) => (
                   <tr key={prova.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
                     <td className="py-3 px-4">
-                      <Link href={`/avaliador/provas/${prova.id}`} className="text-[#f0ece4] font-medium hover:text-[#00d47d] transition-colors">
+                      <Link href={`/avaliador/provas/${prova.id}`} className="text-[#f0ece4] font-medium hover:text-[#4CAF50] transition-colors">
                         {prova.titulo || "Prova sem titulo"}
                       </Link>
                     </td>

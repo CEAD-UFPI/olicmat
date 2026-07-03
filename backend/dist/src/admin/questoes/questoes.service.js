@@ -9,12 +9,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 let QuestoesService = class QuestoesService {
     prisma;
-    constructor(prisma) {
+    auditoria;
+    constructor(prisma, auditoria) {
         this.prisma = prisma;
+        this.auditoria = auditoria;
     }
-    async addToExam(provaId, data) {
+    async addToExam(provaId, data, userId) {
         const prova = await this.prisma.prova.findUnique({
             where: { id: provaId },
         });
@@ -43,15 +46,17 @@ let QuestoesService = class QuestoesService {
         });
         const ordem = data.ordem ?? (maxOrdem._max.ordem ?? 0) + 1;
         await this.prisma.provaQuestao.create({
-            data: {
-                provaId,
-                questaoId: questao.id,
-                ordem,
-            },
+            data: { provaId, questaoId: questao.id, ordem },
         });
+        if (userId) {
+            await this.auditoria.log(userId, "CRIAR_QUESTAO", "Questao", questao.id, {
+                provaId,
+                eixo: data.eixo,
+            });
+        }
         return questao;
     }
-    async linkToExam(provaId, data) {
+    async linkToExam(provaId, data, userId) {
         const prova = await this.prisma.prova.findUnique({
             where: { id: provaId },
         });
@@ -81,12 +86,11 @@ let QuestoesService = class QuestoesService {
         });
         const ordem = data.ordem ?? (maxOrdem._max.ordem ?? 0) + 1;
         await this.prisma.provaQuestao.create({
-            data: {
-                provaId,
-                questaoId: data.questaoId,
-                ordem,
-            },
+            data: { provaId, questaoId: data.questaoId, ordem },
         });
+        if (userId) {
+            await this.auditoria.log(userId, "VINCULAR_QUESTAO", "ProvaQuestao", `${provaId}_${data.questaoId}`);
+        }
         return questao;
     }
     async findAll(filters) {
@@ -109,13 +113,11 @@ let QuestoesService = class QuestoesService {
         }
         return this.prisma.provaQuestao.findMany({
             where: { provaId },
-            include: {
-                questao: true,
-            },
+            include: { questao: true },
             orderBy: { ordem: "asc" },
         });
     }
-    async update(id, data) {
+    async update(id, data, userId) {
         const questao = await this.prisma.questao.findUnique({
             where: { id },
         });
@@ -130,12 +132,16 @@ let QuestoesService = class QuestoesService {
         if (temProvaPublicada) {
             throw new BadRequestException("Não é possível editar questão vinculada a uma prova publicada");
         }
-        return this.prisma.questao.update({
+        const result = await this.prisma.questao.update({
             where: { id },
             data,
         });
+        if (userId) {
+            await this.auditoria.log(userId, "ATUALIZAR_QUESTAO", "Questao", id, data);
+        }
+        return result;
     }
-    async remove(id) {
+    async remove(id, userId) {
         const questao = await this.prisma.questao.findUnique({
             where: { id },
         });
@@ -156,12 +162,16 @@ let QuestoesService = class QuestoesService {
         await this.prisma.questao.delete({
             where: { id },
         });
+        if (userId) {
+            await this.auditoria.log(userId, "DELETAR_QUESTAO", "Questao", id);
+        }
         return { deleted: true };
     }
 };
 QuestoesService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [PrismaService])
+    __metadata("design:paramtypes", [PrismaService,
+        AuditoriaService])
 ], QuestoesService);
 export { QuestoesService };
 //# sourceMappingURL=questoes.service.js.map

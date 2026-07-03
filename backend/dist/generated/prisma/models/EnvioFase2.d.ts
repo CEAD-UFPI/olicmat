@@ -12,6 +12,7 @@ export type EnvioFase2MinAggregateOutputType = {
     inscricaoId: string | null;
     tipo: string | null;
     arquivoUrl: string | null;
+    videoLink: string | null;
     status: $Enums.StatusEnvioFase2 | null;
     enviadoEm: Date | null;
 };
@@ -20,6 +21,7 @@ export type EnvioFase2MaxAggregateOutputType = {
     inscricaoId: string | null;
     tipo: string | null;
     arquivoUrl: string | null;
+    videoLink: string | null;
     status: $Enums.StatusEnvioFase2 | null;
     enviadoEm: Date | null;
 };
@@ -28,6 +30,7 @@ export type EnvioFase2CountAggregateOutputType = {
     inscricaoId: number;
     tipo: number;
     arquivoUrl: number;
+    videoLink: number;
     status: number;
     enviadoEm: number;
     _all: number;
@@ -37,6 +40,7 @@ export type EnvioFase2MinAggregateInputType = {
     inscricaoId?: true;
     tipo?: true;
     arquivoUrl?: true;
+    videoLink?: true;
     status?: true;
     enviadoEm?: true;
 };
@@ -45,6 +49,7 @@ export type EnvioFase2MaxAggregateInputType = {
     inscricaoId?: true;
     tipo?: true;
     arquivoUrl?: true;
+    videoLink?: true;
     status?: true;
     enviadoEm?: true;
 };
@@ -53,6 +58,7 @@ export type EnvioFase2CountAggregateInputType = {
     inscricaoId?: true;
     tipo?: true;
     arquivoUrl?: true;
+    videoLink?: true;
     status?: true;
     enviadoEm?: true;
     _all?: true;
@@ -86,6 +92,7 @@ export type EnvioFase2GroupByOutputType = {
     inscricaoId: string;
     tipo: string;
     arquivoUrl: string;
+    videoLink: string | null;
     status: $Enums.StatusEnvioFase2;
     enviadoEm: Date;
     _count: EnvioFase2CountAggregateOutputType | null;
@@ -103,6 +110,7 @@ export type EnvioFase2WhereInput = {
     inscricaoId?: Prisma.StringFilter<"EnvioFase2"> | string;
     tipo?: Prisma.StringFilter<"EnvioFase2"> | string;
     arquivoUrl?: Prisma.StringFilter<"EnvioFase2"> | string;
+    videoLink?: Prisma.StringNullableFilter<"EnvioFase2"> | string | null;
     status?: Prisma.EnumStatusEnvioFase2Filter<"EnvioFase2"> | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFilter<"EnvioFase2"> | Date | string;
     inscricao?: Prisma.XOR<Prisma.InscricaoScalarRelationFilter, Prisma.InscricaoWhereInput>;
@@ -112,6 +120,7 @@ export type EnvioFase2OrderByWithRelationInput = {
     inscricaoId?: Prisma.SortOrder;
     tipo?: Prisma.SortOrder;
     arquivoUrl?: Prisma.SortOrder;
+    videoLink?: Prisma.SortOrderInput | Prisma.SortOrder;
     status?: Prisma.SortOrder;
     enviadoEm?: Prisma.SortOrder;
     inscricao?: Prisma.InscricaoOrderByWithRelationInput;
@@ -124,6 +133,7 @@ export type EnvioFase2WhereUniqueInput = Prisma.AtLeast<{
     inscricaoId?: Prisma.StringFilter<"EnvioFase2"> | string;
     tipo?: Prisma.StringFilter<"EnvioFase2"> | string;
     arquivoUrl?: Prisma.StringFilter<"EnvioFase2"> | string;
+    videoLink?: Prisma.StringNullableFilter<"EnvioFase2"> | string | null;
     status?: Prisma.EnumStatusEnvioFase2Filter<"EnvioFase2"> | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFilter<"EnvioFase2"> | Date | string;
     inscricao?: Prisma.XOR<Prisma.InscricaoScalarRelationFilter, Prisma.InscricaoWhereInput>;
@@ -133,6 +143,7 @@ export type EnvioFase2OrderByWithAggregationInput = {
     inscricaoId?: Prisma.SortOrder;
     tipo?: Prisma.SortOrder;
     arquivoUrl?: Prisma.SortOrder;
+    videoLink?: Prisma.SortOrderInput | Prisma.SortOrder;
     status?: Prisma.SortOrder;
     enviadoEm?: Prisma.SortOrder;
     _count?: Prisma.EnvioFase2CountOrderByAggregateInput;
@@ -147,6 +158,7 @@ export type EnvioFase2ScalarWhereWithAggregatesInput = {
     inscricaoId?: Prisma.StringWithAggregatesFilter<"EnvioFase2"> | string;
     tipo?: Prisma.StringWithAggregatesFilter<"EnvioFase2"> | string;
     arquivoUrl?: Prisma.StringWithAggregatesFilter<"EnvioFase2"> | string;
+    videoLink?: Prisma.StringNullableWithAggregatesFilter<"EnvioFase2"> | string | null;
     status?: Prisma.EnumStatusEnvioFase2WithAggregatesFilter<"EnvioFase2"> | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeWithAggregatesFilter<"EnvioFase2"> | Date | string;
 };
@@ -154,6 +166,7 @@ export type EnvioFase2CreateInput = {
     id?: string;
     tipo: string;
     arquivoUrl: string;
+    videoLink?: string | null;
     status?: $Enums.StatusEnvioFase2;
     enviadoEm?: Date | string;
     inscricao: Prisma.InscricaoCreateNestedOneWithoutEnviosFase2Input;
@@ -163,6 +176,7 @@ export type EnvioFase2UncheckedCreateInput = {
     inscricaoId: string;
     tipo: string;
     arquivoUrl: string;
+    videoLink?: string | null;
     status?: $Enums.StatusEnvioFase2;
     enviadoEm?: Date | string;
 };
@@ -170,6 +184,7 @@ export type EnvioFase2UpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     tipo?: Prisma.StringFieldUpdateOperationsInput | string;
     arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string;
+    videoLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumStatusEnvioFase2FieldUpdateOperationsInput | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     inscricao?: Prisma.InscricaoUpdateOneRequiredWithoutEnviosFase2NestedInput;
@@ -179,6 +194,7 @@ export type EnvioFase2UncheckedUpdateInput = {
     inscricaoId?: Prisma.StringFieldUpdateOperationsInput | string;
     tipo?: Prisma.StringFieldUpdateOperationsInput | string;
     arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string;
+    videoLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumStatusEnvioFase2FieldUpdateOperationsInput | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -187,6 +203,7 @@ export type EnvioFase2CreateManyInput = {
     inscricaoId: string;
     tipo: string;
     arquivoUrl: string;
+    videoLink?: string | null;
     status?: $Enums.StatusEnvioFase2;
     enviadoEm?: Date | string;
 };
@@ -194,6 +211,7 @@ export type EnvioFase2UpdateManyMutationInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     tipo?: Prisma.StringFieldUpdateOperationsInput | string;
     arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string;
+    videoLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumStatusEnvioFase2FieldUpdateOperationsInput | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -202,6 +220,7 @@ export type EnvioFase2UncheckedUpdateManyInput = {
     inscricaoId?: Prisma.StringFieldUpdateOperationsInput | string;
     tipo?: Prisma.StringFieldUpdateOperationsInput | string;
     arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string;
+    videoLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumStatusEnvioFase2FieldUpdateOperationsInput | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -218,6 +237,7 @@ export type EnvioFase2CountOrderByAggregateInput = {
     inscricaoId?: Prisma.SortOrder;
     tipo?: Prisma.SortOrder;
     arquivoUrl?: Prisma.SortOrder;
+    videoLink?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     enviadoEm?: Prisma.SortOrder;
 };
@@ -226,6 +246,7 @@ export type EnvioFase2MaxOrderByAggregateInput = {
     inscricaoId?: Prisma.SortOrder;
     tipo?: Prisma.SortOrder;
     arquivoUrl?: Prisma.SortOrder;
+    videoLink?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     enviadoEm?: Prisma.SortOrder;
 };
@@ -234,6 +255,7 @@ export type EnvioFase2MinOrderByAggregateInput = {
     inscricaoId?: Prisma.SortOrder;
     tipo?: Prisma.SortOrder;
     arquivoUrl?: Prisma.SortOrder;
+    videoLink?: Prisma.SortOrder;
     status?: Prisma.SortOrder;
     enviadoEm?: Prisma.SortOrder;
 };
@@ -282,6 +304,7 @@ export type EnvioFase2CreateWithoutInscricaoInput = {
     id?: string;
     tipo: string;
     arquivoUrl: string;
+    videoLink?: string | null;
     status?: $Enums.StatusEnvioFase2;
     enviadoEm?: Date | string;
 };
@@ -289,6 +312,7 @@ export type EnvioFase2UncheckedCreateWithoutInscricaoInput = {
     id?: string;
     tipo: string;
     arquivoUrl: string;
+    videoLink?: string | null;
     status?: $Enums.StatusEnvioFase2;
     enviadoEm?: Date | string;
 };
@@ -321,6 +345,7 @@ export type EnvioFase2ScalarWhereInput = {
     inscricaoId?: Prisma.StringFilter<"EnvioFase2"> | string;
     tipo?: Prisma.StringFilter<"EnvioFase2"> | string;
     arquivoUrl?: Prisma.StringFilter<"EnvioFase2"> | string;
+    videoLink?: Prisma.StringNullableFilter<"EnvioFase2"> | string | null;
     status?: Prisma.EnumStatusEnvioFase2Filter<"EnvioFase2"> | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFilter<"EnvioFase2"> | Date | string;
 };
@@ -328,6 +353,7 @@ export type EnvioFase2CreateManyInscricaoInput = {
     id?: string;
     tipo: string;
     arquivoUrl: string;
+    videoLink?: string | null;
     status?: $Enums.StatusEnvioFase2;
     enviadoEm?: Date | string;
 };
@@ -335,6 +361,7 @@ export type EnvioFase2UpdateWithoutInscricaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     tipo?: Prisma.StringFieldUpdateOperationsInput | string;
     arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string;
+    videoLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumStatusEnvioFase2FieldUpdateOperationsInput | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -342,6 +369,7 @@ export type EnvioFase2UncheckedUpdateWithoutInscricaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     tipo?: Prisma.StringFieldUpdateOperationsInput | string;
     arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string;
+    videoLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumStatusEnvioFase2FieldUpdateOperationsInput | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -349,6 +377,7 @@ export type EnvioFase2UncheckedUpdateManyWithoutInscricaoInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     tipo?: Prisma.StringFieldUpdateOperationsInput | string;
     arquivoUrl?: Prisma.StringFieldUpdateOperationsInput | string;
+    videoLink?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     status?: Prisma.EnumStatusEnvioFase2FieldUpdateOperationsInput | $Enums.StatusEnvioFase2;
     enviadoEm?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -357,6 +386,7 @@ export type EnvioFase2Select<ExtArgs extends runtime.Types.Extensions.InternalAr
     inscricaoId?: boolean;
     tipo?: boolean;
     arquivoUrl?: boolean;
+    videoLink?: boolean;
     status?: boolean;
     enviadoEm?: boolean;
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
@@ -366,6 +396,7 @@ export type EnvioFase2SelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
     inscricaoId?: boolean;
     tipo?: boolean;
     arquivoUrl?: boolean;
+    videoLink?: boolean;
     status?: boolean;
     enviadoEm?: boolean;
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
@@ -375,6 +406,7 @@ export type EnvioFase2SelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
     inscricaoId?: boolean;
     tipo?: boolean;
     arquivoUrl?: boolean;
+    videoLink?: boolean;
     status?: boolean;
     enviadoEm?: boolean;
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
@@ -384,10 +416,11 @@ export type EnvioFase2SelectScalar = {
     inscricaoId?: boolean;
     tipo?: boolean;
     arquivoUrl?: boolean;
+    videoLink?: boolean;
     status?: boolean;
     enviadoEm?: boolean;
 };
-export type EnvioFase2Omit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "inscricaoId" | "tipo" | "arquivoUrl" | "status" | "enviadoEm", ExtArgs["result"]["envioFase2"]>;
+export type EnvioFase2Omit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "inscricaoId" | "tipo" | "arquivoUrl" | "videoLink" | "status" | "enviadoEm", ExtArgs["result"]["envioFase2"]>;
 export type EnvioFase2Include<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     inscricao?: boolean | Prisma.InscricaoDefaultArgs<ExtArgs>;
 };
@@ -407,6 +440,7 @@ export type $EnvioFase2Payload<ExtArgs extends runtime.Types.Extensions.Internal
         inscricaoId: string;
         tipo: string;
         arquivoUrl: string;
+        videoLink: string | null;
         status: $Enums.StatusEnvioFase2;
         enviadoEm: Date;
     }, ExtArgs["result"]["envioFase2"]>;
@@ -471,6 +505,7 @@ export interface EnvioFase2FieldRefs {
     readonly inscricaoId: Prisma.FieldRef<"EnvioFase2", 'String'>;
     readonly tipo: Prisma.FieldRef<"EnvioFase2", 'String'>;
     readonly arquivoUrl: Prisma.FieldRef<"EnvioFase2", 'String'>;
+    readonly videoLink: Prisma.FieldRef<"EnvioFase2", 'String'>;
     readonly status: Prisma.FieldRef<"EnvioFase2", 'StatusEnvioFase2'>;
     readonly enviadoEm: Prisma.FieldRef<"EnvioFase2", 'DateTime'>;
 }

@@ -1,13 +1,17 @@
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 import type { CriarQuestaoDto, VincularQuestaoDto, AtualizarQuestaoDto } from "./dto/questoes.dto.js";
 import type { ProvaQuestao } from "../../../generated/prisma/client.js";
 
 @Injectable()
 export class QuestoesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditoria: AuditoriaService,
+  ) {}
 
-  async addToExam(provaId: string, data: CriarQuestaoDto) {
+  async addToExam(provaId: string, data: CriarQuestaoDto, userId?: string) {
     const prova = await this.prisma.prova.findUnique({
       where: { id: provaId },
     });
@@ -20,7 +24,6 @@ export class QuestoesService {
       throw new BadRequestException("Só é possível adicionar questões a provas em rascunho");
     }
 
-    // Create the question
     const questao = await this.prisma.questao.create({
       data: {
         enunciado: data.enunciado,
@@ -35,7 +38,6 @@ export class QuestoesService {
       },
     });
 
-    // Determine the next order
     const maxOrdem = await this.prisma.provaQuestao.aggregate({
       where: { provaId },
       _max: { ordem: true },
@@ -44,17 +46,20 @@ export class QuestoesService {
     const ordem = data.ordem ?? (maxOrdem._max.ordem ?? 0) + 1;
 
     await this.prisma.provaQuestao.create({
-      data: {
-        provaId,
-        questaoId: questao.id,
-        ordem,
-      },
+      data: { provaId, questaoId: questao.id, ordem },
     });
+
+    if (userId) {
+      await this.auditoria.log(userId, "CRIAR_QUESTAO", "Questao", questao.id, {
+        provaId,
+        eixo: data.eixo,
+      });
+    }
 
     return questao;
   }
 
-  async linkToExam(provaId: string, data: VincularQuestaoDto) {
+  async linkToExam(provaId: string, data: VincularQuestaoDto, userId?: string) {
     const prova = await this.prisma.prova.findUnique({
       where: { id: provaId },
     });
@@ -75,7 +80,6 @@ export class QuestoesService {
       throw new NotFoundException("Questão não encontrada");
     }
 
-    // Check if already linked
     const existing = await this.prisma.provaQuestao.findUnique({
       where: {
         provaId_questaoId: { provaId, questaoId: data.questaoId },
@@ -94,12 +98,12 @@ export class QuestoesService {
     const ordem = data.ordem ?? (maxOrdem._max.ordem ?? 0) + 1;
 
     await this.prisma.provaQuestao.create({
-      data: {
-        provaId,
-        questaoId: data.questaoId,
-        ordem,
-      },
+      data: { provaId, questaoId: data.questaoId, ordem },
     });
+
+    if (userId) {
+      await this.auditoria.log(userId, "VINCULAR_QUESTAO", "ProvaQuestao", `${provaId}_${data.questaoId}`);
+    }
 
     return questao;
   }
@@ -126,14 +130,12 @@ export class QuestoesService {
 
     return this.prisma.provaQuestao.findMany({
       where: { provaId },
-      include: {
-        questao: true,
-      },
+      include: { questao: true },
       orderBy: { ordem: "asc" },
     });
   }
 
-  async update(id: string, data: AtualizarQuestaoDto) {
+  async update(id: string, data: AtualizarQuestaoDto, userId?: string) {
     const questao = await this.prisma.questao.findUnique({
       where: { id },
     });
@@ -142,28 +144,33 @@ export class QuestoesService {
       throw new NotFoundException("Questão não encontrada");
     }
 
-    // Check if any linked exam is not draft
     const vinculadas = await this.prisma.provaQuestao.findMany({
       where: { questaoId: id },
       include: { prova: true },
     });
 
     const temProvaPublicada = vinculadas.some(
-      (v: ProvaQuestao & { prova: { status: string } }) => v.prova.status !== "RASCUNHO"
+      (v: ProvaQuestao & { prova: { status: string } }) => v.prova.status !== "RASCUNHO",
     );
     if (temProvaPublicada) {
       throw new BadRequestException(
-        "Não é possível editar questão vinculada a uma prova publicada"
+        "Não é possível editar questão vinculada a uma prova publicada",
       );
     }
 
-    return this.prisma.questao.update({
+    const result = await this.prisma.questao.update({
       where: { id },
       data,
     });
+
+    if (userId) {
+      await this.auditoria.log(userId, "ATUALIZAR_QUESTAO", "Questao", id, data);
+    }
+
+    return result;
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId?: string) {
     const questao = await this.prisma.questao.findUnique({
       where: { id },
     });
@@ -172,22 +179,20 @@ export class QuestoesService {
       throw new NotFoundException("Questão não encontrada");
     }
 
-    // Check if any linked exam is not draft
     const vinculadas = await this.prisma.provaQuestao.findMany({
       where: { questaoId: id },
       include: { prova: true },
     });
 
     const temProvaPublicada = vinculadas.some(
-      (v: ProvaQuestao & { prova: { status: string } }) => v.prova.status !== "RASCUNHO"
+      (v: ProvaQuestao & { prova: { status: string } }) => v.prova.status !== "RASCUNHO",
     );
     if (temProvaPublicada) {
       throw new BadRequestException(
-        "Não é possível remover questão vinculada a uma prova publicada"
+        "Não é possível remover questão vinculada a uma prova publicada",
       );
     }
 
-    // Remove all provaQuestao links
     await this.prisma.provaQuestao.deleteMany({
       where: { questaoId: id },
     });
@@ -195,6 +200,10 @@ export class QuestoesService {
     await this.prisma.questao.delete({
       where: { id },
     });
+
+    if (userId) {
+      await this.auditoria.log(userId, "DELETAR_QUESTAO", "Questao", id);
+    }
 
     return { deleted: true };
   }

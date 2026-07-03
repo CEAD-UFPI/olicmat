@@ -11,23 +11,25 @@ export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
     register(body: RegisterDto): Promise<{
-        accessToken: string;
         user: {
             id: string;
             nome: string;
             createdAt: Date;
             email: string;
             role: import("../../generated/prisma/enums.js").Role;
+            emailConfirmado: boolean;
         };
+        accessToken: string;
     }>;
     login(body: LoginDto): Promise<{
-        accessToken: string;
         user: {
             id: string;
             nome: string;
             email: string;
             role: import("../../generated/prisma/enums.js").Role;
+            emailConfirmado: boolean;
         };
+        accessToken: string;
     }>;
     esqueciSenha(body: {
         email: string;
@@ -37,6 +39,11 @@ export declare class AuthController {
     redefinirSenha(body: {
         token: string;
         novaSenha: string;
+    }): Promise<{
+        message: string;
+    }>;
+    confirmarEmail(body: {
+        token: string;
     }): Promise<{
         message: string;
     }>;

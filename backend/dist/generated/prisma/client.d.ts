@@ -18,5 +18,6 @@ export type ProvaQuestao = Prisma.ProvaQuestaoModel;
 export type Resposta = Prisma.RespostaModel;
 export type EnvioFase2 = Prisma.EnvioFase2Model;
 export type AvaliacaoFase2 = Prisma.AvaliacaoFase2Model;
+export type Token = Prisma.TokenModel;
 export type RankingSnapshot = Prisma.RankingSnapshotModel;
 export type AuditLog = Prisma.AuditLogModel;

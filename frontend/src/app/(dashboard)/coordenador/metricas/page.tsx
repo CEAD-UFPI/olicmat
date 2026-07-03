@@ -38,7 +38,7 @@ export default function CoordenadorMetricasPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -90,7 +90,7 @@ export default function CoordenadorMetricasPage() {
             <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest">Confirmadas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#00d47d] font-[family-name:var(--font-fraunces)]">{metricas.confirmadas}</p>
+            <p className="text-2xl font-bold text-[#4CAF50] font-[family-name:var(--font-fraunces)]">{metricas.confirmadas}</p>
           </CardContent>
         </Card>
         <Card className="border-[#2a2a3a] bg-[#12121a]">
@@ -126,7 +126,7 @@ export default function CoordenadorMetricasPage() {
                   <tr key={i} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
                     <td className="py-3 px-4 text-[#f0ece4] font-medium">{c.curso}</td>
                     <td className="py-3 px-4 text-center text-[#f0ece4]">{c.total}</td>
-                    <td className="py-3 px-4 text-center text-[#00d47d]">{c.confirmadas}</td>
+                    <td className="py-3 px-4 text-center text-[#4CAF50]">{c.confirmadas}</td>
                     <td className="py-3 px-4 text-center text-[#f59e0b]">{c.pendentes}</td>
                     <td className="py-3 px-4 text-center text-[#e53e3e]">{c.rejeitadas}</td>
                   </tr>
@@ -146,7 +146,7 @@ export default function CoordenadorMetricasPage() {
                 className="h-full"
                 style={{
                   width: `${total > 0 ? (metricas.confirmadas / total) * 100 : 0}%`,
-                  backgroundColor: "#00d47d",
+                  backgroundColor: "#4CAF50",
                 }}
               />
               <div
@@ -168,7 +168,7 @@ export default function CoordenadorMetricasPage() {
         </div>
         <div className="flex gap-6 mt-3 text-xs text-[#9895a4]">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#00d47d" }} />
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#4CAF50" }} />
             Confirmadas
           </span>
           <span className="flex items-center gap-1.5">

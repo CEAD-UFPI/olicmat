@@ -9,10 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
 let RankingService = class RankingService {
     prisma;
-    constructor(prisma) {
+    auditoria;
+    constructor(prisma, auditoria) {
         this.prisma = prisma;
+        this.auditoria = auditoria;
     }
     async rankingPorEstado(estado) {
         const edicao = await this.prisma.edicao.findFirst({
@@ -88,27 +91,39 @@ let RankingService = class RankingService {
         }
         return estado ? resultado[estado.toUpperCase()] || { OURO: [], PRATA: [], BRONZE: [] } : resultado;
     }
-    async atualizarMedalhas() {
+    async atualizarMedalhas(actorId) {
         const ranking = await this.rankingPorEstado();
+        const updates = [];
         for (const medalhas of Object.values(ranking)) {
             for (const [medalha, items] of Object.entries(medalhas)) {
                 for (const item of items) {
-                    await this.prisma.inscricao.update({
-                        where: { id: item.inscricaoId },
-                        data: {
-                            medalha: medalha,
-                            notaFinal: item.notaFinal,
-                        },
+                    updates.push({
+                        inscricaoId: item.inscricaoId,
+                        medalha,
+                        notaFinal: item.notaFinal,
                     });
                 }
             }
         }
-        return { atualizado: true };
+        await this.prisma.$transaction(updates.map((u) => this.prisma.inscricao.update({
+            where: { id: u.inscricaoId },
+            data: {
+                medalha: u.medalha,
+                notaFinal: u.notaFinal,
+            },
+        })));
+        if (actorId) {
+            await this.auditoria.log(actorId, "ATUALIZAR_MEDALHAS", "Ranking", "all", {
+                totalAtualizados: updates.length,
+            });
+        }
+        return { atualizado: true, total: updates.length };
     }
 };
 RankingService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [PrismaService])
+    __metadata("design:paramtypes", [PrismaService,
+        AuditoriaService])
 ], RankingService);
 export { RankingService };
 //# sourceMappingURL=ranking.service.js.map

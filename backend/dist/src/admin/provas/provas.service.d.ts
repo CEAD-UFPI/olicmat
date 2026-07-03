@@ -1,8 +1,10 @@
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 import type { CriarProvaDto, AtualizarProvaDto } from "./dto/provas.dto.js";
 export declare class ProvasService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private auditoria;
+    constructor(prisma: PrismaService, auditoria: AuditoriaService);
     create(userId: string, data: CriarProvaDto): Promise<{
         id: string;
         createdAt: Date;
@@ -85,7 +87,7 @@ export declare class ProvasService {
         janelaFim: Date | null;
         versao: number;
     }>;
-    update(id: string, data: AtualizarProvaDto): Promise<{
+    update(id: string, data: AtualizarProvaDto, userId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -100,10 +102,10 @@ export declare class ProvasService {
         janelaFim: Date | null;
         versao: number;
     }>;
-    delete(id: string): Promise<{
+    delete(id: string, userId?: string): Promise<{
         deleted: boolean;
     }>;
-    publicar(id: string): Promise<{
+    publicar(id: string, userId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

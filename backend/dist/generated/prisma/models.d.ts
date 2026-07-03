@@ -10,6 +10,7 @@ export type * from './models/ProvaQuestao.js';
 export type * from './models/Resposta.js';
 export type * from './models/EnvioFase2.js';
 export type * from './models/AvaliacaoFase2.js';
+export type * from './models/Token.js';
 export type * from './models/RankingSnapshot.js';
 export type * from './models/AuditLog.js';
 export type * from './commonInputTypes.js';

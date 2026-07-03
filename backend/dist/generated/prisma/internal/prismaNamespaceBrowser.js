@@ -21,6 +21,7 @@ export const ModelName = {
     Resposta: 'Resposta',
     EnvioFase2: 'EnvioFase2',
     AvaliacaoFase2: 'AvaliacaoFase2',
+    Token: 'Token',
     RankingSnapshot: 'RankingSnapshot',
     AuditLog: 'AuditLog'
 };
@@ -34,6 +35,7 @@ export const InstituicaoScalarFieldEnum = {
     id: 'id',
     nome: 'nome',
     sigla: 'sigla',
+    codigoInep: 'codigoInep',
     estado: 'estado',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -57,6 +59,7 @@ export const UserScalarFieldEnum = {
     matricula: 'matricula',
     comprovanteUrl: 'comprovanteUrl',
     dataNascimento: 'dataNascimento',
+    emailConfirmado: 'emailConfirmado',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
 };
@@ -148,6 +151,7 @@ export const EnvioFase2ScalarFieldEnum = {
     inscricaoId: 'inscricaoId',
     tipo: 'tipo',
     arquivoUrl: 'arquivoUrl',
+    videoLink: 'videoLink',
     status: 'status',
     enviadoEm: 'enviadoEm'
 };
@@ -158,6 +162,15 @@ export const AvaliacaoFase2ScalarFieldEnum = {
     nota: 'nota',
     parecer: 'parecer',
     avaliadoEm: 'avaliadoEm'
+};
+export const TokenScalarFieldEnum = {
+    id: 'id',
+    userId: 'userId',
+    tipo: 'tipo',
+    token: 'token',
+    expiraEm: 'expiraEm',
+    usadoEm: 'usadoEm',
+    createdAt: 'createdAt'
 };
 export const RankingSnapshotScalarFieldEnum = {
     id: 'id',

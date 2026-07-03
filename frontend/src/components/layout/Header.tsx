@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
 
@@ -32,10 +33,18 @@ export function Header() {
     >
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 lg:h-20">
         <Link href="/" className="flex items-center gap-3 group">
+            <Image
+                src="/logo-semfundo.png"
+                alt="OLICMAT"
+                width={70}
+                height={49}
+                className="h-[49px] w-auto object-contain"
+                priority
+              />
           <span className="text-2xl lg:text-3xl font-bold font-[family-name:var(--font-fraunces)] tracking-tight">
-            <span style={{ color: "var(--pi-laranja)" }}>O</span>
-            <span style={{ color: "var(--integral-verde)" }}>L</span>
-            <span style={{ color: "var(--sigma-azul)" }}>I</span>
+            <span style={{ color: "var(--color-gold)" }}>O</span>
+            <span style={{ color: "var(--color-green)" }}>L</span>
+            <span style={{ color: "var(--color-blue)" }}>I</span>
             <span className="text-[#f0ece4]">CMAT</span>
           </span>
         </Link>
@@ -85,7 +94,7 @@ export function Header() {
               <Button
                 size="sm"
                 render={<Link href="/registro" />}
-                style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+                style={{ backgroundColor: "var(--color-gold)", color: "#fff" }}
                 className="hover:opacity-90 transition-opacity"
               >
                 Cadastre-se
@@ -132,7 +141,7 @@ export function Header() {
                 <Button variant="outline" size="sm" render={<Link href="/login" onClick={() => setMobileOpen(false)} />} className="border-[#2a2a3a] text-[#f0ece4] flex-1">
                   Entrar
                 </Button>
-                <Button size="sm" render={<Link href="/registro" onClick={() => setMobileOpen(false)} />} style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }} className="flex-1">
+                <Button size="sm" render={<Link href="/registro" onClick={() => setMobileOpen(false)} />} style={{ backgroundColor: "var(--color-gold)", color: "#fff" }} className="flex-1">
                   Cadastre-se
                 </Button>
               </>

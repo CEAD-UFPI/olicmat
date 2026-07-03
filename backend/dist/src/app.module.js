@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
+import { PrismaModule } from "./prisma.service.js";
 import { AuthModule } from "./auth/auth.module.js";
 import { UsersModule } from "./users/users.module.js";
 import { OlimpiadaModule } from "./olimpiada/olimpiada.module.js";
@@ -18,6 +19,7 @@ AppModule = __decorate([
     Module({
         imports: [
             ConfigModule.forRoot({ isGlobal: true }),
+            PrismaModule,
             AuthModule,
             UsersModule,
             OlimpiadaModule,

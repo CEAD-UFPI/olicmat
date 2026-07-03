@@ -10,7 +10,6 @@ import { PassportModule } from "@nestjs/passport";
 import { AuthService } from "./auth.service.js";
 import { AuthController } from "./auth.controller.js";
 import { JwtStrategy } from "./strategies/jwt.strategy.js";
-import { PrismaService } from "../prisma.service.js";
 let AuthModule = class AuthModule {
 };
 AuthModule = __decorate([
@@ -23,7 +22,7 @@ AuthModule = __decorate([
             }),
         ],
         controllers: [AuthController],
-        providers: [AuthService, JwtStrategy, PrismaService],
+        providers: [AuthService, JwtStrategy],
         exports: [AuthService],
     })
 ], AuthModule);

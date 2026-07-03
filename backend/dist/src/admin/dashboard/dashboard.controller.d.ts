@@ -34,4 +34,31 @@ export declare class DashboardController {
         titulo: string;
         status: string;
     }[]>;
+    createEdicao(body: unknown): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        ano: number;
+        titulo: string;
+        status: string;
+        dataInicio: Date | null;
+        dataFim: Date | null;
+        pesoFase1: number;
+        pesoFase2: number;
+    }>;
+    updateEdicao(id: string, body: unknown): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        ano: number;
+        titulo: string;
+        status: string;
+        dataInicio: Date | null;
+        dataFim: Date | null;
+        pesoFase1: number;
+        pesoFase2: number;
+    }>;
+    deleteEdicao(id: string): Promise<{
+        deleted: boolean;
+    }>;
 }

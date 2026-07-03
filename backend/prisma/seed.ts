@@ -253,8 +253,8 @@ async function main() {
   }
 
   // --- Inscricao de exemplo ---
-  await prisma.inscricao.upsert({
-    where: { userId: aluno.id },
+  const inscricaoAluno = await prisma.inscricao.upsert({
+    where: { userId_edicaoId: { userId: aluno.id, edicaoId: edicao2026.id } },
     update: {},
     create: {
       userId: aluno.id,
@@ -267,9 +267,6 @@ async function main() {
       periodo: 5,
     },
   });
-
-  // --- Envios Fase 2 de exemplo ---
-  const inscricaoAluno = await prisma.inscricao.findUniqueOrThrow({ where: { userId: aluno.id } });
 
   await prisma.envioFase2.upsert({
     where: { id: "envio-0000-0000-0000-000000000001" },

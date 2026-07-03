@@ -19,6 +19,13 @@ export declare class AdminUsuariosController {
         nome: string;
         createdAt: Date;
         updatedAt: Date;
+        inscricoes: {
+            id: string;
+            status: import("../../../generated/prisma/enums.js").StatusInsc;
+            edicao: {
+                ano: number;
+            };
+        }[];
         instituicao: {
             id: string;
             sigla: string;
@@ -34,13 +41,6 @@ export declare class AdminUsuariosController {
         matricula: string;
         comprovanteUrl: string | null;
         dataNascimento: Date;
-        inscricao: {
-            id: string;
-            status: import("../../../generated/prisma/enums.js").StatusInsc;
-            edicao: {
-                ano: number;
-            };
-        } | null;
     }>;
     create(body: unknown): Promise<{
         id: string;

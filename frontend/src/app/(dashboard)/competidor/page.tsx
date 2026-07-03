@@ -24,7 +24,7 @@ export default function CompetidorPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -85,8 +85,8 @@ export default function CompetidorPage() {
           />
           <StatusCard
             titulo="Fase 2"
-            valor={inscricao.fase2Nota != null ? `${inscricao.fase2Nota} pts` : "Não iniciada"}
-            cor={inscricao.fase2Nota != null ? "var(--integral-verde)" : "var(--sigma-azul)"}
+            valor={inscricao.notaFinal != null ? `${inscricao.notaFinal} pts` : "Não iniciada"}
+            cor={inscricao.notaFinal != null ? "var(--integral-verde)" : "var(--sigma-azul)"}
             simbolo="∫"
             descricao={inscricao.fase2Tema ? `Tema: ${inscricao.fase2Tema}` : "Videoaula e portfólio digital"}
           />

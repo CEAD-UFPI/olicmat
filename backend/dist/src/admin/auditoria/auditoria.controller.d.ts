@@ -15,11 +15,11 @@ export declare class AuditoriaController {
         } & {
             id: string;
             createdAt: Date;
-            entidade: string;
             acao: string;
-            actorId: string;
+            entidade: string;
             entidadeId: string;
             payload: import("@prisma/client/runtime/client").JsonValue | null;
+            actorId: string;
         })[];
         total: number;
         page: number;

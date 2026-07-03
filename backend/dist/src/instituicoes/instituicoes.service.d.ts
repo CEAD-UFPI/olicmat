@@ -10,6 +10,7 @@ export declare class InstituicoesService {
     } & {
         id: string;
         sigla: string;
+        codigoInep: string | null;
         nome: string;
         estado: string;
         createdAt: Date;
@@ -23,6 +24,7 @@ export declare class InstituicoesService {
     } & {
         id: string;
         sigla: string;
+        codigoInep: string | null;
         nome: string;
         estado: string;
         createdAt: Date;
@@ -32,9 +34,11 @@ export declare class InstituicoesService {
         nome: string;
         sigla: string;
         estado?: string;
+        codigoInep?: string;
     }): Promise<{
         id: string;
         sigla: string;
+        codigoInep: string | null;
         nome: string;
         estado: string;
         createdAt: Date;
@@ -44,12 +48,17 @@ export declare class InstituicoesService {
         nome?: string;
         sigla?: string;
         estado?: string;
+        codigoInep?: string;
     }): Promise<{
         id: string;
         sigla: string;
+        codigoInep: string | null;
         nome: string;
         estado: string;
         createdAt: Date;
         updatedAt: Date;
+    }>;
+    delete(id: string): Promise<{
+        deleted: boolean;
     }>;
 }

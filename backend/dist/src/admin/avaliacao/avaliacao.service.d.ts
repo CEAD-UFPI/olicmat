@@ -1,8 +1,10 @@
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 import type { AvaliarEnvioDto } from "./dto/avaliacao.dto.js";
 export declare class AvaliacaoService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private auditoria;
+    constructor(prisma: PrismaService, auditoria: AuditoriaService);
     listPending(): Promise<({
         inscricao: {
             instituicao: {
@@ -45,6 +47,7 @@ export declare class AvaliacaoService {
         inscricaoId: string;
         tipo: string;
         arquivoUrl: string;
+        videoLink: string | null;
         enviadoEm: Date;
     })[]>;
     assignGrade(envioId: string, data: AvaliarEnvioDto, avaliadorId: string): Promise<{
@@ -111,6 +114,7 @@ export declare class AvaliacaoService {
             inscricaoId: string;
             tipo: string;
             arquivoUrl: string;
+            videoLink: string | null;
             enviadoEm: Date;
         })[];
         total: number;

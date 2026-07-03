@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
+import { Upload } from "lucide-react";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,9 @@ export default function InscricaoPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [sucesso, setSucesso] = useState(false);
+  const [comprovante, setComprovante] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
@@ -43,9 +47,23 @@ export default function InscricaoPage() {
     setLoading(true);
     setError("");
     try {
+      let comprovanteUrl: string | undefined;
+
+      if (comprovante) {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("comprovante", comprovante);
+        const { data: uploadData } = await api.post("/inscricoes/comprovante", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        comprovanteUrl = uploadData.url;
+        setUploading(false);
+      }
+
       await api.post("/inscricoes", {
         ...data,
         periodo: data.periodo ? parseInt(data.periodo) : undefined,
+        comprovanteUrl,
       });
       setSucesso(true);
       setTimeout(() => router.push("/competidor"), 2000);
@@ -93,7 +111,7 @@ export default function InscricaoPage() {
           <select
             id="estado"
             {...register("estado")}
-            className="mt-1.5 w-full h-10 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#f48120]"
+            className="mt-1.5 w-full h-10 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]"
           >
             <option value="">Selecione...</option>
             {ESTADOS.map((uf) => (
@@ -129,6 +147,27 @@ export default function InscricaoPage() {
             className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50" />
         </div>
 
+        <div>
+          <Label htmlFor="comprovante" className="text-[#f0ece4]">Comprovante de Matrícula</Label>
+          <div
+            onClick={() => fileRef.current?.click()}
+            className="mt-1.5 flex items-center gap-3 p-4 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] cursor-pointer hover:border-[#E8B829]/50 transition-colors"
+          >
+            <Upload className="w-5 h-5 text-[#9895a4]" />
+            <span className="text-sm text-[#9895a4]">
+              {comprovante ? comprovante.name : "Clique para enviar comprovante (PNG, JPG, PDF)"}
+            </span>
+          </div>
+          <input
+            ref={fileRef}
+            id="comprovante"
+            type="file"
+            accept=".png,.jpg,.jpeg,.pdf"
+            className="hidden"
+            onChange={(e) => setComprovante(e.target.files?.[0] || null)}
+          />
+        </div>
+
         {error && <p className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3">{error}</p>}
 
         <div className="flex gap-3 pt-2">
@@ -137,9 +176,9 @@ export default function InscricaoPage() {
             onClick={() => router.push("/competidor")}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={loading} className="flex-1"
+          <Button type="submit" disabled={loading || uploading} className="flex-1"
             style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}>
-            {loading ? "Enviando..." : "Confirmar inscrição"}
+            {uploading ? "Enviando comprovante..." : loading ? "Enviando..." : "Confirmar inscrição"}
           </Button>
         </div>
       </form>

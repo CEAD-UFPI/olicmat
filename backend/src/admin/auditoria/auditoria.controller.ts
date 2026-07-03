@@ -12,6 +12,7 @@ import { Role } from "../../../generated/prisma/client.js";
 export class AuditoriaController {
   constructor(private readonly auditoriaService: AuditoriaService) {}
 
+  @Roles(Role.ADMIN, Role.COMISSAO)
   @Get()
   async findAll(
     @Query("entidade") entidade?: string,
@@ -33,6 +34,7 @@ export class AuditoriaController {
     });
   }
 
+  @Roles(Role.ADMIN, Role.COMISSAO)
   @Get("export")
   @Header("Content-Type", "text/csv; charset=utf-8")
   @Header("Content-Disposition", "attachment; filename=auditoria.csv")

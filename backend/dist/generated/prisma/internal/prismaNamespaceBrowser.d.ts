@@ -23,6 +23,7 @@ export declare const ModelName: {
     readonly Resposta: "Resposta";
     readonly EnvioFase2: "EnvioFase2";
     readonly AvaliacaoFase2: "AvaliacaoFase2";
+    readonly Token: "Token";
     readonly RankingSnapshot: "RankingSnapshot";
     readonly AuditLog: "AuditLog";
 };
@@ -38,6 +39,7 @@ export declare const InstituicaoScalarFieldEnum: {
     readonly id: "id";
     readonly nome: "nome";
     readonly sigla: "sigla";
+    readonly codigoInep: "codigoInep";
     readonly estado: "estado";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
@@ -63,6 +65,7 @@ export declare const UserScalarFieldEnum: {
     readonly matricula: "matricula";
     readonly comprovanteUrl: "comprovanteUrl";
     readonly dataNascimento: "dataNascimento";
+    readonly emailConfirmado: "emailConfirmado";
     readonly createdAt: "createdAt";
     readonly updatedAt: "updatedAt";
 };
@@ -162,6 +165,7 @@ export declare const EnvioFase2ScalarFieldEnum: {
     readonly inscricaoId: "inscricaoId";
     readonly tipo: "tipo";
     readonly arquivoUrl: "arquivoUrl";
+    readonly videoLink: "videoLink";
     readonly status: "status";
     readonly enviadoEm: "enviadoEm";
 };
@@ -175,6 +179,16 @@ export declare const AvaliacaoFase2ScalarFieldEnum: {
     readonly avaliadoEm: "avaliadoEm";
 };
 export type AvaliacaoFase2ScalarFieldEnum = (typeof AvaliacaoFase2ScalarFieldEnum)[keyof typeof AvaliacaoFase2ScalarFieldEnum];
+export declare const TokenScalarFieldEnum: {
+    readonly id: "id";
+    readonly userId: "userId";
+    readonly tipo: "tipo";
+    readonly token: "token";
+    readonly expiraEm: "expiraEm";
+    readonly usadoEm: "usadoEm";
+    readonly createdAt: "createdAt";
+};
+export type TokenScalarFieldEnum = (typeof TokenScalarFieldEnum)[keyof typeof TokenScalarFieldEnum];
 export declare const RankingSnapshotScalarFieldEnum: {
     readonly id: "id";
     readonly edicaoId: "edicaoId";

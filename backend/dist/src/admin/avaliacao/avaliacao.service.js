@@ -9,10 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 let AvaliacaoService = class AvaliacaoService {
     prisma;
-    constructor(prisma) {
+    auditoria;
+    constructor(prisma, auditoria) {
         this.prisma = prisma;
+        this.auditoria = auditoria;
     }
     async listPending() {
         return this.prisma.envioFase2.findMany({
@@ -83,11 +86,13 @@ let AvaliacaoService = class AvaliacaoService {
             const notaFinal = Math.round((fase1Nota * pesoFase1 + mediaNota * pesoFase2) * 100) / 100;
             await this.prisma.inscricao.update({
                 where: { id: inscricaoId },
-                data: {
-                    notaFinal,
-                },
+                data: { notaFinal },
             });
         }
+        await this.auditoria.log(avaliadorId, "AVALIAR_ENVIO", "EnvioFase2", envioId, {
+            nota: data.nota,
+            inscricaoId,
+        });
         return avaliacao;
     }
     async listHistorico(page = 1, limit = 20, nome) {
@@ -144,7 +149,8 @@ let AvaliacaoService = class AvaliacaoService {
 };
 AvaliacaoService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [PrismaService])
+    __metadata("design:paramtypes", [PrismaService,
+        AuditoriaService])
 ], AvaliacaoService);
 export { AvaliacaoService };
 //# sourceMappingURL=avaliacao.service.js.map

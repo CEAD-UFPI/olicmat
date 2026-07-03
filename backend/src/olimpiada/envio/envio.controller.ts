@@ -2,10 +2,12 @@ import {
   Controller,
   Post,
   Get,
+  Body,
   UseGuards,
   Request,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { EnvioService } from "./envio.service.js";
@@ -24,21 +26,26 @@ interface AuthUser {
 export class EnvioController {
   constructor(private readonly envioService: EnvioService) {}
 
-  @Post("video")
-  @UseInterceptors(FileInterceptor("video"))
-  async uploadVideo(
+  @Post("video-link")
+  async enviarVideoLink(
     @Request() req: ExpressReq & { user: AuthUser },
-    @UploadedFile() file: Express.Multer.File
+    @Body() body: { videoLink: string },
   ) {
-    return this.envioService.uploadVideo(req.user.id, file);
+    if (!body.videoLink) {
+      throw new BadRequestException("Link do vídeo é obrigatório");
+    }
+    return this.envioService.enviarVideoLink(req.user.id, body.videoLink);
   }
 
   @Post("portfolio")
   @UseInterceptors(FileInterceptor("portfolio"))
   async uploadPortfolio(
     @Request() req: ExpressReq & { user: AuthUser },
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile() file: any,
   ) {
+    if (!file) {
+      throw new BadRequestException("Arquivo do portfólio é obrigatório");
+    }
     return this.envioService.uploadPortfolio(req.user.id, file);
   }
 

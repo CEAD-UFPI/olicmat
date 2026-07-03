@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Patch, Param, Body, UseGuards, BadRequestException, } from "@nestjs/common";
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards, BadRequestException, } from "@nestjs/common";
 import { z } from "zod";
 import { InstituicoesService } from "./instituicoes.service.js";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard.js";
@@ -52,6 +52,9 @@ let InstituicoesController = class InstituicoesController {
         }
         return this.instituicoesService.update(id, parsed.data);
     }
+    async delete(id) {
+        return this.instituicoesService.delete(id);
+    }
 };
 __decorate([
     Get("instituicoes"),
@@ -85,6 +88,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], InstituicoesController.prototype, "update", null);
+__decorate([
+    UseGuards(JwtAuthGuard, RolesGuard),
+    Roles(Role.ADMIN),
+    Delete("admin/instituicoes/:id"),
+    __param(0, Param("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], InstituicoesController.prototype, "delete", null);
 InstituicoesController = __decorate([
     Controller(),
     __metadata("design:paramtypes", [InstituicoesService])

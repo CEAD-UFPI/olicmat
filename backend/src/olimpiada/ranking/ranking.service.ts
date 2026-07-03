@@ -1,12 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
 
 @Injectable()
 export class RankingService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditoria: AuditoriaService,
+  ) {}
 
   async rankingPorEstado(estado?: string) {
-    // Find the most recent active edition
     const edicao = await this.prisma.edicao.findFirst({
       orderBy: { ano: "desc" },
     });
@@ -63,14 +66,12 @@ export class RankingService {
         };
       })
       .sort((a, b) => {
-        // Desempate: nota final > fase2 > fase1 > idade (mais velho)
         if (b.notaFinal !== a.notaFinal) return b.notaFinal - a.notaFinal;
         if (b.fase2Nota !== a.fase2Nota) return b.fase2Nota - a.fase2Nota;
         if (b.fase1Nota !== a.fase1Nota) return b.fase1Nota - a.fase1Nota;
         return a.dataNascimento.getTime() - b.dataNascimento.getTime();
       });
 
-    // Agrupar por estado e atribuir medalhas
     const porEstado = new Map<string, typeof ordenado>();
     for (const item of ordenado) {
       const items = porEstado.get(item.estado) || [];
@@ -92,25 +93,43 @@ export class RankingService {
     return estado ? resultado[estado.toUpperCase()] || { OURO: [], PRATA: [], BRONZE: [] } : resultado;
   }
 
-  async atualizarMedalhas() {
+  async atualizarMedalhas(actorId?: string) {
     const ranking = await this.rankingPorEstado();
 
     type ItemRanking = { inscricaoId: string; notaFinal: number };
 
+    const updates: Array<{ inscricaoId: string; medalha: string; notaFinal: number }> = [];
+
     for (const medalhas of Object.values(ranking)) {
       for (const [medalha, items] of Object.entries(medalhas) as [string, ItemRanking[]][]) {
         for (const item of items) {
-          await this.prisma.inscricao.update({
-            where: { id: item.inscricaoId },
-            data: {
-              medalha: medalha as "OURO" | "PRATA" | "BRONZE",
-              notaFinal: item.notaFinal,
-            },
+          updates.push({
+            inscricaoId: item.inscricaoId,
+            medalha,
+            notaFinal: item.notaFinal,
           });
         }
       }
     }
 
-    return { atualizado: true };
+    await this.prisma.$transaction(
+      updates.map((u) =>
+        this.prisma.inscricao.update({
+          where: { id: u.inscricaoId },
+          data: {
+            medalha: u.medalha as "OURO" | "PRATA" | "BRONZE",
+            notaFinal: u.notaFinal,
+          },
+        }),
+      ),
+    );
+
+    if (actorId) {
+      await this.auditoria.log(actorId, "ATUALIZAR_MEDALHAS", "Ranking", "all", {
+        totalAtualizados: updates.length,
+      });
+    }
+
+    return { atualizado: true, total: updates.length };
   }
 }

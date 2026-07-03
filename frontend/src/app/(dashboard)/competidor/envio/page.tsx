@@ -4,26 +4,46 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link as LinkIcon } from "lucide-react";
 
 interface StatusEnvio {
   fase2Tema: string | null;
-  fase2VideoUrl: string | null;
-  fase2PortfolioUrl: string | null;
-  fase2Nota: number | null;
+  enviosFase2: Array<{
+    id: string;
+    tipo: string;
+    arquivoUrl: string;
+    videoLink: string | null;
+    status: string;
+    enviadoEm: string;
+  }>;
+  avaliacoes: Array<{
+    id: string;
+    nota: number;
+    parecer: string | null;
+    avaliadoEm: string;
+  }>;
 }
 
 export default function EnvioPage() {
   const [status, setStatus] = useState<StatusEnvio | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [sorteando, setSorteando] = useState(false);
-  const [uploading, setUploading] = useState<"video" | "portfolio" | null>(null);
+  const [videoLink, setVideoLink] = useState("");
+  const [enviandoLink, setEnviandoLink] = useState(false);
+  const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
   const [msg, setMsg] = useState("");
 
-  useEffect(() => {
+  const carregarStatus = () => {
     api.get("/envio/status")
       .then(({ data }) => setStatus(data))
       .catch(() => {})
       .finally(() => setCarregando(false));
+  };
+
+  useEffect(() => {
+    carregarStatus();
   }, []);
 
   const sortearTema = async () => {
@@ -40,34 +60,52 @@ export default function EnvioPage() {
     }
   };
 
-  const uploadFile = async (tipo: "video" | "portfolio", file: File) => {
-    setUploading(tipo);
+  const enviarLink = async () => {
+    if (!videoLink.trim()) {
+      setMsg("Informe o link do vídeo");
+      return;
+    }
+    setEnviandoLink(true);
+    setMsg("");
+    try {
+      await api.post("/envio/video-link", { videoLink: videoLink.trim() });
+      setMsg("Link do vídeo enviado com sucesso!");
+      carregarStatus();
+    } catch (err: unknown) {
+      const msgErr = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setMsg(typeof msgErr === "string" ? msgErr : "Erro ao enviar link");
+    } finally {
+      setEnviandoLink(false);
+    }
+  };
+
+  const uploadPortfolio = async (file: File) => {
+    setUploadingPortfolio(true);
     setMsg("");
     const formData = new FormData();
-    formData.append(tipo, file);
+    formData.append("portfolio", file);
 
     try {
-      const { data } = await api.post(`/envio/${tipo}`, formData, {
+      await api.post("/envio/portfolio", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setStatus((prev) =>
-        prev
-          ? { ...prev, [tipo === "video" ? "fase2VideoUrl" : "fase2PortfolioUrl"]: data[tipo === "video" ? "fase2VideoUrl" : "fase2PortfolioUrl"] }
-          : null
-      );
-      setMsg(`${tipo === "video" ? "Vídeo" : "Portfólio"} enviado!`);
+      setMsg("Portfólio enviado!");
+      carregarStatus();
     } catch (err: unknown) {
       const msgErr = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
       setMsg(typeof msgErr === "string" ? msgErr : "Erro no upload");
     } finally {
-      setUploading(null);
+      setUploadingPortfolio(false);
     }
   };
+
+  const videoEnviado = status?.enviosFase2?.find((e) => e.tipo === "video");
+  const portfolioEnviado = status?.enviosFase2?.find((e) => e.tipo === "portfolio");
 
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -81,10 +119,10 @@ export default function EnvioPage() {
     >
       <div>
         <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
-          Fase 2 — Videoaula e Portfólio
+          Fase 2 — Desafio Didático-Tecnológico
         </h1>
         <p className="text-[#9895a4] text-sm mt-1">
-          Produza uma videoaula de 20 minutos e envie seu portfólio digital
+          Produza uma videoaula de até 20 minutos e envie o link e o portfólio digital
         </p>
       </div>
 
@@ -110,11 +148,11 @@ export default function EnvioPage() {
           <div
             className="p-4 rounded-xl border text-center"
             style={{
-              backgroundColor: "var(--integral-verde)/10",
-              borderColor: "var(--integral-verde)/30",
-            } as React.CSSProperties}
+              backgroundColor: "rgba(76, 175, 80, 0.1)",
+              borderColor: "rgba(76, 175, 80, 0.3)",
+            }}
           >
-            <span className="text-xs text-[#2d9b6c] uppercase tracking-widest mb-1 block">Seu tema</span>
+            <span className="text-xs text-[#4CAF50] uppercase tracking-widest mb-1 block">Seu tema</span>
             <p className="text-xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "var(--integral-verde)" }}>
               {status.fase2Tema}
             </p>
@@ -124,32 +162,51 @@ export default function EnvioPage() {
         )}
       </div>
 
-      {/* Upload Video */}
+      {/* Video Link */}
       <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]">
         <h2 className="text-lg font-bold text-[#f0ece4] mb-4 font-[family-name:var(--font-fraunces)]">
-          Videoaula (20 min)
+          Link da Videoaula
         </h2>
-        {status?.fase2VideoUrl ? (
-          <p className="text-sm" style={{ color: "var(--integral-verde)" }}>
-            Videoaula enviada
-          </p>
-        ) : (
+        {videoEnviado && videoEnviado.status !== "PENDENTE" ? (
           <div>
-            <input
-              type="file"
-              accept="video/*"
-              id="video-upload"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && uploadFile("video", e.target.files[0])}
-            />
-            <label
-              htmlFor="video-upload"
-              className="flex items-center justify-center h-32 border-2 border-dashed border-[#2a2a3a] rounded-xl cursor-pointer hover:border-[#3a3a4a] transition-colors"
+            <p className="text-sm" style={{ color: "var(--integral-verde)" }}>
+              Videoaula enviada
+            </p>
+            {videoEnviado.videoLink && (
+              <a
+                href={videoEnviado.videoLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-[#3AAFE0] hover:underline mt-2 inline-flex items-center gap-1"
+              >
+                <LinkIcon size={14} />
+                {videoEnviado.videoLink}
+              </a>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-sm text-[#9895a4]">
+              Após produzir sua videoaula, publique-a em uma plataforma (YouTube, Vimeo, Google Drive, etc.) e cole o link abaixo.
+            </p>
+            <div>
+              <Label htmlFor="videoLink" className="text-[#f0ece4]">Link do vídeo</Label>
+              <Input
+                id="videoLink"
+                type="url"
+                placeholder="https://youtube.com/watch?v=..."
+                value={videoLink}
+                onChange={(e) => setVideoLink(e.target.value)}
+                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+              />
+            </div>
+            <Button
+              onClick={enviarLink}
+              disabled={enviandoLink || !videoLink.trim()}
+              style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
             >
-              <span className="text-sm text-[#9895a4]">
-                {uploading === "video" ? "Enviando..." : "Clique para selecionar o vídeo (MP4)"}
-              </span>
-            </label>
+              {enviandoLink ? "Enviando..." : "Enviar link"}
+            </Button>
           </div>
         )}
       </div>
@@ -159,7 +216,7 @@ export default function EnvioPage() {
         <h2 className="text-lg font-bold text-[#f0ece4] mb-4 font-[family-name:var(--font-fraunces)]">
           Portfólio Digital (PDF)
         </h2>
-        {status?.fase2PortfolioUrl ? (
+        {portfolioEnviado && portfolioEnviado.status !== "PENDENTE" ? (
           <p className="text-sm" style={{ color: "var(--integral-verde)" }}>
             Portfólio enviado
           </p>
@@ -170,25 +227,25 @@ export default function EnvioPage() {
               accept=".pdf"
               id="portfolio-upload"
               className="hidden"
-              onChange={(e) => e.target.files?.[0] && uploadFile("portfolio", e.target.files[0])}
+              onChange={(e) => e.target.files?.[0] && uploadPortfolio(e.target.files[0])}
             />
             <label
               htmlFor="portfolio-upload"
               className="flex items-center justify-center h-32 border-2 border-dashed border-[#2a2a3a] rounded-xl cursor-pointer hover:border-[#3a3a4a] transition-colors"
             >
               <span className="text-sm text-[#9895a4]">
-                {uploading === "portfolio" ? "Enviando..." : "Clique para enviar o portfólio (PDF)"}
+                {uploadingPortfolio ? "Enviando..." : "Clique para enviar o portfólio (PDF)"}
               </span>
             </label>
           </div>
         )}
       </div>
 
-      {status?.fase2Nota != null && (
+      {status?.avaliacoes && status.avaliacoes.length > 0 && (
         <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a] text-center">
           <p className="text-sm text-[#9895a4] mb-1">Nota da Fase 2</p>
-          <p className="text-3xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "var(--pi-laranja)" }}>
-            {status.fase2Nota} pts
+          <p className="text-3xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "var(--pi-dourado)" }}>
+            {status.avaliacoes[0].nota} pts
           </p>
         </div>
       )}
@@ -198,7 +255,7 @@ export default function EnvioPage() {
           className="text-sm p-3 rounded-lg text-center"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ backgroundColor: "var(--integral-verde)/10", color: "var(--integral-verde)" }}
+          style={{ backgroundColor: "rgba(76, 175, 80, 0.1)", color: "var(--integral-verde)" }}
         >
           {msg}
         </motion.p>

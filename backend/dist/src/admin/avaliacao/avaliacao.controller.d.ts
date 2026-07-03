@@ -52,6 +52,7 @@ export declare class AvaliacaoController {
         inscricaoId: string;
         tipo: string;
         arquivoUrl: string;
+        videoLink: string | null;
         enviadoEm: Date;
     })[]>;
     assignGrade(envioId: string, body: AvaliarEnvioDto, req: ExpressReq & {
@@ -120,6 +121,7 @@ export declare class AvaliacaoController {
             inscricaoId: string;
             tipo: string;
             arquivoUrl: string;
+            videoLink: string | null;
             enviadoEm: Date;
         })[];
         total: number;

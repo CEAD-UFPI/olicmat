@@ -45,9 +45,9 @@ const FORM_VAZIO: UsuarioForm = {
 };
 
 const ROLES: { value: string; label: string; cor: string }[] = [
-  { value: "ALUNO", label: "Aluno", cor: "#4b7bec" },
-  { value: "COORDENADOR_CURSO", label: "Coordenador", cor: "#f48120" },
-  { value: "AVALIADOR", label: "Avaliador", cor: "#00d47d" },
+  { value: "ALUNO", label: "Aluno", cor: "#3AAFE0" },
+  { value: "COORDENADOR_CURSO", label: "Coordenador", cor: "#E8B829" },
+  { value: "AVALIADOR", label: "Avaliador", cor: "#4CAF50" },
   { value: "ADMIN", label: "Admin", cor: "#e53e3e" },
 ];
 
@@ -193,7 +193,7 @@ export default function AdminUsuariosPage() {
         </div>
         <Button
           onClick={abrirNovo}
-          style={{ backgroundColor: "#00d47d", color: "#fff" }}
+          style={{ backgroundColor: "#4CAF50", color: "#fff" }}
           className="gap-2 cursor-pointer"
         >
           <Plus size={16} />
@@ -230,7 +230,7 @@ export default function AdminUsuariosPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
@@ -276,7 +276,7 @@ export default function AdminUsuariosPage() {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => abrirEditar(u)}
-                            className="text-[#9895a4] hover:text-[#00d47d] transition-colors p-1 cursor-pointer"
+                            className="text-[#9895a4] hover:text-[#4CAF50] transition-colors p-1 cursor-pointer"
                             title="Editar"
                           >
                             <Pencil size={14} />
@@ -406,7 +406,7 @@ export default function AdminUsuariosPage() {
             <Button
               onClick={salvar}
               disabled={salvando}
-              style={{ backgroundColor: "#00d47d", color: "#fff" }}
+              style={{ backgroundColor: "#4CAF50", color: "#fff" }}
               className="cursor-pointer"
             >
               {salvando ? "Salvando..." : editandoId ? "Atualizar" : "Criar Usuário"}

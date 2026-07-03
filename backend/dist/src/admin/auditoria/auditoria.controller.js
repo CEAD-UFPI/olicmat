@@ -43,6 +43,7 @@ let AuditoriaController = class AuditoriaController {
     }
 };
 __decorate([
+    Roles(Role.ADMIN, Role.COMISSAO),
     Get(),
     __param(0, Query("entidade")),
     __param(1, Query("acao")),
@@ -56,6 +57,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuditoriaController.prototype, "findAll", null);
 __decorate([
+    Roles(Role.ADMIN, Role.COMISSAO),
     Get("export"),
     Header("Content-Type", "text/csv; charset=utf-8"),
     Header("Content-Disposition", "attachment; filename=auditoria.csv"),

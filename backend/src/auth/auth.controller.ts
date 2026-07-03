@@ -47,14 +47,29 @@ export class AuthController {
 
   @Post("esqueci-senha")
   async esqueciSenha(@Body() body: { email: string }) {
-    // Placeholder — password reset flow not yet implemented
-    return { message: "Se o email existir, um link de redefinição será enviado" };
+    if (!body.email) {
+      throw new BadRequestException("Email é obrigatório");
+    }
+    return this.authService.esqueciSenha(body.email);
   }
 
   @Post("redefinir-senha")
   async redefinirSenha(@Body() body: { token: string; novaSenha: string }) {
-    // Placeholder — password reset flow not yet implemented
-    return { message: "Senha redefinida com sucesso" };
+    if (!body.token || !body.novaSenha) {
+      throw new BadRequestException("Token e nova senha são obrigatórios");
+    }
+    if (body.novaSenha.length < 6) {
+      throw new BadRequestException("Senha deve ter no mínimo 6 caracteres");
+    }
+    return this.authService.redefinirSenha(body.token, body.novaSenha);
+  }
+
+  @Post("confirmar-email")
+  async confirmarEmail(@Body() body: { token: string }) {
+    if (!body.token) {
+      throw new BadRequestException("Token é obrigatório");
+    }
+    return this.authService.confirmarEmail(body.token);
   }
 
   @UseGuards(JwtAuthGuard)

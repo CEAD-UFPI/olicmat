@@ -30,7 +30,7 @@ interface AuthUser {
 export class AvaliacaoController {
   constructor(private readonly avaliacaoService: AvaliacaoService) {}
 
-  @Roles(Role.AVALIADOR, Role.ADMIN)
+  @Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO)
   @Get("pendentes")
   async listPending() {
     return this.avaliacaoService.listPending();
@@ -50,7 +50,7 @@ export class AvaliacaoController {
     return this.avaliacaoService.assignGrade(envioId, parsed.data, req.user.id);
   }
 
-  @Roles(Role.ADMIN, Role.AVALIADOR)
+  @Roles(Role.ADMIN, Role.AVALIADOR, Role.COMISSAO)
   @Get("historico")
   async listHistorico(
     @Query("page") page?: string,

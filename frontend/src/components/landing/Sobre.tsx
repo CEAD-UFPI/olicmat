@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 const destaques = [
   {
     simbolo: "π",
-    cor: "var(--pi-laranja)",
+    cor: "#E8B829",
     titulo: "Fase 1",
     descricao:
       "Prova online com 30 questões de múltipla escolha, abrangendo matemática e didática. Duração de 3 horas com tempo cronometrado.",

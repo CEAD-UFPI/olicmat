@@ -404,9 +404,6 @@ export type RespostaUncheckedUpdateManyWithoutQuestaoNestedInput = {
     updateMany?: Prisma.RespostaUpdateManyWithWhereWithoutQuestaoInput | Prisma.RespostaUpdateManyWithWhereWithoutQuestaoInput[];
     deleteMany?: Prisma.RespostaScalarWhereInput | Prisma.RespostaScalarWhereInput[];
 };
-export type BoolFieldUpdateOperationsInput = {
-    set?: boolean;
-};
 export type RespostaCreateWithoutInscricaoInput = {
     id?: string;
     alternativaMarcada: string;

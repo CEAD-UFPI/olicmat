@@ -33,11 +33,12 @@ export class InstituicoesService {
     return instituicao;
   }
 
-  async create(data: { nome: string; sigla: string; estado?: string }) {
+  async create(data: { nome: string; sigla: string; estado?: string; codigoInep?: string }) {
     return this.prisma.instituicao.create({
       data: {
         nome: data.nome,
         sigla: data.sigla.toUpperCase(),
+        codigoInep: data.codigoInep ?? "",
         estado: data.estado?.toUpperCase() ?? "",
       },
     });
@@ -45,7 +46,7 @@ export class InstituicoesService {
 
   async update(
     id: string,
-    data: { nome?: string; sigla?: string; estado?: string }
+    data: { nome?: string; sigla?: string; estado?: string; codigoInep?: string },
   ) {
     await this.findById(id);
 
@@ -53,10 +54,17 @@ export class InstituicoesService {
     if (data.nome) updateData.nome = data.nome;
     if (data.sigla) updateData.sigla = data.sigla.toUpperCase();
     if (data.estado) updateData.estado = data.estado.toUpperCase();
+    if (data.codigoInep !== undefined) updateData.codigoInep = data.codigoInep;
 
     return this.prisma.instituicao.update({
       where: { id },
       data: updateData,
     });
+  }
+
+  async delete(id: string) {
+    await this.findById(id);
+    await this.prisma.instituicao.delete({ where: { id } });
+    return { deleted: true };
   }
 }

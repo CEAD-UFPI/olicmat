@@ -2,17 +2,21 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  BadRequestException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
+import { randomBytes } from "node:crypto";
 import { PrismaService } from "../prisma.service.js";
+import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import type { LoginDto, RegisterDto } from "./dto/login.dto.js";
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private auditoria: AuditoriaService,
   ) {}
 
   async register(data: RegisterDto) {
@@ -28,29 +32,79 @@ export class AuthService {
 
     const senhaHash = await bcrypt.hash(data.senha, 10);
 
-    // Extract only the fields that map to the User model
-    // `instituicao` and `curso` from the DTO are strings but the model expects
-    // `instituicaoId` / `cursoId` FKs — they are omitted here (frontend mapping TBD)
-    const { senha, instituicao, curso, ...restData } = data;
+    const { senha, ...restData } = data;
+
+    let instituicaoId: string | undefined;
+    let cursoId: string | undefined;
+
+    if (data.instituicao) {
+      const inst = await this.prisma.instituicao.upsert({
+        where: { sigla: data.instituicao.toUpperCase() },
+        update: {},
+        create: {
+          nome: data.instituicao,
+          sigla: data.instituicao.toUpperCase(),
+          estado: "PI",
+        },
+        select: { id: true },
+      });
+      instituicaoId = inst.id;
+    }
+
+    if (data.curso && instituicaoId) {
+      const curso = await this.prisma.curso.upsert({
+        where: {
+          nome_instituicaoId: { nome: data.curso, instituicaoId },
+        },
+        update: {},
+        create: {
+          nome: data.curso,
+          instituicaoId,
+        },
+        select: { id: true },
+      });
+      cursoId = curso.id;
+    }
 
     const user = await this.prisma.user.create({
       data: {
-        ...restData,
-        senhaHash,
+        nome: restData.nome,
+        email: restData.email,
+        cpf: restData.cpf,
+        matricula: restData.matricula,
         dataNascimento: new Date(restData.dataNascimento),
+        senhaHash,
+        instituicaoId,
+        cursoId,
       },
       select: {
         id: true,
         nome: true,
         email: true,
         role: true,
+        emailConfirmado: true,
         createdAt: true,
       },
     });
 
-    const token = this.generateToken(user.id, user.email, user.role);
+    // Generate email confirmation token
+    const token = randomBytes(32).toString("hex");
+    await this.prisma.token.create({
+      data: {
+        userId: user.id,
+        tipo: "EMAIL_CONFIRM",
+        token,
+        expiraEm: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
 
-    return { user, ...token };
+    console.log(`[EMAIL CONFIRM] ${user.nome} <${user.email}> -> ${process.env.FRONTEND_URL ?? "http://localhost:3000"}/confirmar-email?token=${token}`);
+
+    const accessToken = this.generateToken(user.id, user.email, user.role);
+
+    await this.auditoria.log(user.id, "REGISTRO", "User", user.id, { email: user.email });
+
+    return { user, accessToken };
   }
 
   async login(data: LoginDto) {
@@ -68,7 +122,7 @@ export class AuthService {
       throw new UnauthorizedException("Credenciais inválidas");
     }
 
-    const token = this.generateToken(user.id, user.email, user.role);
+    const accessToken = this.generateToken(user.id, user.email, user.role);
 
     return {
       user: {
@@ -76,16 +130,88 @@ export class AuthService {
         nome: user.nome,
         email: user.email,
         role: user.role,
+        emailConfirmado: user.emailConfirmado,
       },
-      ...token,
+      accessToken,
     };
+  }
+
+  async esqueciSenha(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // Don't reveal whether the email exists
+      return { message: "Se o email existir, um link de redefinição será enviado" };
+    }
+
+    const token = randomBytes(32).toString("hex");
+    await this.prisma.token.create({
+      data: {
+        userId: user.id,
+        tipo: "PASSWORD_RESET",
+        token,
+        expiraEm: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      },
+    });
+
+    console.log(`[PASSWORD RESET] ${user.nome} <${user.email}> -> ${process.env.FRONTEND_URL ?? "http://localhost:3000"}/redefinir-senha?token=${token}`);
+
+    return { message: "Se o email existir, um link de redefinição será enviado" };
+  }
+
+  async redefinirSenha(token: string, novaSenha: string) {
+    const record = await this.prisma.token.findUnique({ where: { token } });
+
+    if (!record || record.tipo !== "PASSWORD_RESET" || record.usadoEm) {
+      throw new BadRequestException("Token inválido ou já utilizado");
+    }
+
+    if (new Date() > record.expiraEm) {
+      throw new BadRequestException("Token expirado. Solicite um novo link de recuperação");
+    }
+
+    const senhaHash = await bcrypt.hash(novaSenha, 10);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: record.userId },
+        data: { senhaHash },
+      }),
+      this.prisma.token.update({
+        where: { id: record.id },
+        data: { usadoEm: new Date() },
+      }),
+    ]);
+
+    return { message: "Senha redefinida com sucesso" };
+  }
+
+  async confirmarEmail(token: string) {
+    const record = await this.prisma.token.findUnique({ where: { token } });
+
+    if (!record || record.tipo !== "EMAIL_CONFIRM" || record.usadoEm) {
+      throw new BadRequestException("Token inválido ou já utilizado");
+    }
+
+    if (new Date() > record.expiraEm) {
+      throw new BadRequestException("Token expirado. Solicite um novo link de confirmação");
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: record.userId },
+        data: { emailConfirmado: true },
+      }),
+      this.prisma.token.update({
+        where: { id: record.id },
+        data: { usadoEm: new Date() },
+      }),
+    ]);
+
+    return { message: "Email confirmado com sucesso" };
   }
 
   private generateToken(userId: string, email: string, role: string) {
     const payload = { sub: userId, email, role };
-
-    return {
-      accessToken: this.jwtService.sign(payload),
-    };
+    return this.jwtService.sign(payload);
   }
 }

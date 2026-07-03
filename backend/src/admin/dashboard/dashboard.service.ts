@@ -1,6 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
 
+function escapeCsv(val: unknown): string {
+  const str = val == null ? "" : String(val);
+  if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
 @Injectable()
 export class DashboardService {
   constructor(private prisma: PrismaService) {}
@@ -25,9 +33,8 @@ export class DashboardService {
         }),
       ]);
 
-    // Resolve institution names
     const instituicoesIds = porInstituicao.map(
-      (i: { instituicaoId: string; _count: { id: number } }) => i.instituicaoId
+      (i: { instituicaoId: string; _count: { id: number } }) => i.instituicaoId,
     );
     const instituicoes = await this.prisma.instituicao.findMany({
       where: { id: { in: instituicoesIds } },
@@ -35,7 +42,7 @@ export class DashboardService {
     });
 
     const instituicaoMap = new Map(
-      instituicoes.map((inst: { id: string; nome: string; sigla: string }) => [inst.id, inst])
+      instituicoes.map((inst: { id: string; nome: string; sigla: string }) => [inst.id, inst]),
     );
 
     return {
@@ -44,13 +51,13 @@ export class DashboardService {
         (s: { status: string; _count: { id: number } }) => ({
           status: s.status,
           count: s._count.id,
-        })
+        }),
       ),
       porEstado: porEstado.map(
         (e: { estado: string; _count: { id: number } }) => ({
           estado: e.estado,
           count: e._count.id,
-        })
+        }),
       ),
       porInstituicao: porInstituicao.map(
         (i: { instituicaoId: string; _count: { id: number } }) => ({
@@ -58,7 +65,7 @@ export class DashboardService {
           nome: instituicaoMap.get(i.instituicaoId)?.nome ?? "Desconhecida",
           sigla: instituicaoMap.get(i.instituicaoId)?.sigla ?? "???",
           count: i._count.id,
-        })
+        }),
       ),
     };
   }
@@ -101,43 +108,30 @@ export class DashboardService {
     });
 
     const header = [
-      "ID",
-      "Nome",
-      "Email",
-      "CPF",
-      "Matricula",
-      "Data Nascimento",
-      "Estado",
-      "Municipio",
-      "Instituicao",
-      "Curso",
-      "Periodo",
-      "Status",
-      "Fase 1 Nota",
-      "Nota Final",
-      "Medalha",
-      "Criado Em",
+      "ID", "Nome", "Email", "CPF", "Matricula", "Data Nascimento",
+      "Estado", "Municipio", "Instituicao", "Curso", "Periodo",
+      "Status", "Fase 1 Nota", "Nota Final", "Medalha", "Criado Em",
     ].join(",");
 
     const rows = inscricoes.map((i) =>
       [
-        i.id,
-        `"${i.user.nome}"`,
-        i.user.email,
-        i.user.cpf,
-        i.user.matricula,
-        i.user.dataNascimento?.toISOString().split("T")[0] ?? "",
-        i.estado,
-        i.municipio ?? "",
-        `"${i.instituicao?.nome ?? ""}"`,
-        `"${i.curso?.nome ?? ""}"`,
-        i.periodo ?? "",
-        i.status,
-        i.fase1Nota ?? "",
-        i.notaFinal ?? "",
-        i.medalha ?? "",
-        i.createdAt.toISOString(),
-      ].join(",")
+        escapeCsv(i.id),
+        escapeCsv(i.user.nome),
+        escapeCsv(i.user.email),
+        escapeCsv(i.user.cpf),
+        escapeCsv(i.user.matricula),
+        escapeCsv(i.user.dataNascimento?.toISOString().split("T")[0] ?? ""),
+        escapeCsv(i.estado),
+        escapeCsv(i.municipio ?? ""),
+        escapeCsv(i.instituicao?.nome ?? ""),
+        escapeCsv(i.curso?.nome ?? ""),
+        escapeCsv(i.periodo ?? ""),
+        escapeCsv(i.status),
+        escapeCsv(i.fase1Nota ?? ""),
+        escapeCsv(i.notaFinal ?? ""),
+        escapeCsv(i.medalha ?? ""),
+        escapeCsv(i.createdAt.toISOString()),
+      ].join(","),
     );
 
     return [header, ...rows].join("\n");
@@ -156,17 +150,17 @@ export class DashboardService {
     const rows = users
       .map((u) =>
         [
-          u.id,
-          `"${u.nome}"`,
-          u.email,
-          u.cpf,
-          u.role,
-          u.matricula ?? "",
-          u.dataNascimento?.toISOString().split("T")[0] ?? "",
-          `"${u.instituicao?.nome ?? ""}"`,
-          `"${u.curso?.nome ?? ""}"`,
-          u.createdAt.toISOString(),
-        ].join(",")
+          escapeCsv(u.id),
+          escapeCsv(u.nome),
+          escapeCsv(u.email),
+          escapeCsv(u.cpf),
+          escapeCsv(u.role),
+          escapeCsv(u.matricula ?? ""),
+          escapeCsv(u.dataNascimento?.toISOString().split("T")[0] ?? ""),
+          escapeCsv(u.instituicao?.nome ?? ""),
+          escapeCsv(u.curso?.nome ?? ""),
+          escapeCsv(u.createdAt.toISOString()),
+        ].join(","),
       )
       .join("\n");
 
@@ -186,15 +180,15 @@ export class DashboardService {
     const rows = provas
       .map((p) =>
         [
-          p.id,
-          `"${p.titulo || ""}"`,
-          p.edicao?.ano ?? "",
-          p.duracaoMinutos ?? "",
-          p._count.questoes,
-          p.status,
-          p.publicadaEm ? "Sim" : "Nao",
-          p.createdAt.toISOString(),
-        ].join(",")
+          escapeCsv(p.id),
+          escapeCsv(p.titulo || ""),
+          escapeCsv(p.edicao?.ano ?? ""),
+          escapeCsv(p.duracaoMinutos ?? ""),
+          escapeCsv(p._count.questoes),
+          escapeCsv(p.status),
+          escapeCsv(p.publicadaEm ? "Sim" : "Nao"),
+          escapeCsv(p.createdAt.toISOString()),
+        ].join(","),
       )
       .join("\n");
 
@@ -218,18 +212,18 @@ export class DashboardService {
     const rows = inscricoes
       .map((i) =>
         [
-          i.id,
-          `"${i.user.nome}"`,
-          i.user.email,
-          i.user.cpf,
-          i.estado,
-          `"${i.instituicao?.nome ?? ""}"`,
-          `"${i.curso?.nome ?? ""}"`,
-          i.fase1Nota ?? "",
-          `"${i.fase2Tema ?? ""}"`,
-          i.notaFinal ?? "",
-          i.medalha ?? "",
-        ].join(",")
+          escapeCsv(i.id),
+          escapeCsv(i.user.nome),
+          escapeCsv(i.user.email),
+          escapeCsv(i.user.cpf),
+          escapeCsv(i.estado),
+          escapeCsv(i.instituicao?.nome ?? ""),
+          escapeCsv(i.curso?.nome ?? ""),
+          escapeCsv(i.fase1Nota ?? ""),
+          escapeCsv(i.fase2Tema ?? ""),
+          escapeCsv(i.notaFinal ?? ""),
+          escapeCsv(i.medalha ?? ""),
+        ].join(","),
       )
       .join("\n");
 
@@ -241,5 +235,27 @@ export class DashboardService {
       select: { id: true, ano: true, titulo: true, status: true },
       orderBy: { ano: "desc" },
     });
+  }
+
+  async createEdicao(data: { ano: number; titulo: string }) {
+    return this.prisma.edicao.create({
+      data: {
+        ano: data.ano,
+        titulo: data.titulo,
+        status: "PLANEJAMENTO",
+      },
+    });
+  }
+
+  async updateEdicao(id: string, data: { titulo?: string; status?: string }) {
+    return this.prisma.edicao.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async deleteEdicao(id: string) {
+    await this.prisma.edicao.delete({ where: { id } });
+    return { deleted: true };
   }
 }

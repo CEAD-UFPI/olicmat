@@ -120,7 +120,7 @@ export default function AvaliadorFase2Page() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : erro ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
@@ -128,7 +128,7 @@ export default function AvaliadorFase2Page() {
         </div>
       ) : submissoes.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <CheckCircle size={40} className="text-[#00d47d] mx-auto mb-3" />
+          <CheckCircle size={40} className="text-[#4CAF50] mx-auto mb-3" />
           <p className="text-[#9895a4]">Nenhuma submissão pendente de avaliação.</p>
         </div>
       ) : (
@@ -155,7 +155,7 @@ export default function AvaliadorFase2Page() {
                       href={s.fase2VideoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-[#4b7bec] hover:underline"
+                      className="text-sm text-[#3AAFE0] hover:underline"
                     >
                       Ver videoaula
                     </a>
@@ -165,7 +165,7 @@ export default function AvaliadorFase2Page() {
                       href={s.fase2PortfolioUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-[#4b7bec] hover:underline"
+                      className="text-sm text-[#3AAFE0] hover:underline"
                     >
                       Ver portfólio
                     </a>
@@ -192,7 +192,7 @@ export default function AvaliadorFase2Page() {
                         size="sm"
                         onClick={() => atribuirNota(s.id)}
                         disabled={enviando[s.id]}
-                        style={{ backgroundColor: "#00d47d", color: "#fff" }}
+                        style={{ backgroundColor: "#4CAF50", color: "#fff" }}
                         className="cursor-pointer"
                       >
                         {enviando[s.id] ? "Salvando..." : s.fase2Nota != null ? "Atualizar" : "Salvar nota"}
@@ -208,7 +208,7 @@ export default function AvaliadorFase2Page() {
                         setComentarioInput((prev) => ({ ...prev, [s.id]: e.target.value }))
                       }
                       rows={2}
-                      className="mt-1.5 w-full rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-3 py-2 outline-none focus:border-[#00d47d] transition-colors resize-vertical"
+                      className="mt-1.5 w-full rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-3 py-2 outline-none focus:border-[#4CAF50] transition-colors resize-vertical"
                       placeholder="Parecer sobre a submissão (opcional)..."
                     />
                   </div>
@@ -216,14 +216,14 @@ export default function AvaliadorFase2Page() {
                   {mensagem[s.id] && (
                     <p
                       className={`text-xs ${
-                        mensagem[s.id].includes("Erro") ? "text-red-400" : "text-[#00d47d]"
+                        mensagem[s.id].includes("Erro") ? "text-red-400" : "text-[#4CAF50]"
                       }`}
                     >
                       {mensagem[s.id]}
                     </p>
                   )}
                   {s.fase2Nota != null && (
-                    <p className="text-xs text-[#00d47d]">Nota atual: {s.fase2Nota}</p>
+                    <p className="text-xs text-[#4CAF50]">Nota atual: {s.fase2Nota}</p>
                   )}
                 </div>
               </CardContent>

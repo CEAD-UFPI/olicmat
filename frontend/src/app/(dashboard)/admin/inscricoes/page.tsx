@@ -169,7 +169,7 @@ export default function AdminInscricoesPage() {
   );
 
   const statusColors: Record<string, string> = {
-    CONFIRMADA: "#00d47d",
+    CONFIRMADA: "#4CAF50",
     PENDENTE: "#f59e0b",
     REJEITADA: "#e53e3e",
   };
@@ -221,7 +221,7 @@ export default function AdminInscricoesPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
@@ -264,7 +264,7 @@ export default function AdminInscricoesPage() {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => setDetailTarget(insc)}
-                            className="text-[#9895a4] hover:text-[#00d47d] transition-colors p-1 cursor-pointer"
+                            className="text-[#9895a4] hover:text-[#4CAF50] transition-colors p-1 cursor-pointer"
                             title="Detalhes"
                           >
                             <Eye size={14} />
@@ -274,7 +274,7 @@ export default function AdminInscricoesPage() {
                               href={insc.comprovanteUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#9895a4] hover:text-[#f48120] transition-colors p-1 cursor-pointer"
+                              className="text-[#9895a4] hover:text-[#E8B829] transition-colors p-1 cursor-pointer"
                               title="Ver comprovante"
                             >
                               <FileText size={14} />
@@ -282,7 +282,7 @@ export default function AdminInscricoesPage() {
                           )}
                           <button
                             onClick={() => abrirEditar(insc)}
-                            className="text-[#9895a4] hover:text-[#00d47d] transition-colors p-1 cursor-pointer"
+                            className="text-[#9895a4] hover:text-[#4CAF50] transition-colors p-1 cursor-pointer"
                             title="Editar"
                           >
                             <Pencil size={14} />
@@ -292,7 +292,7 @@ export default function AdminInscricoesPage() {
                               <button
                                 disabled={processando[insc.id]}
                                 onClick={() => atualizarStatus(insc.id, "CONFIRMADA")}
-                                className="text-[#00d47d] hover:bg-[#00d47d]/10 transition-colors p-1 cursor-pointer"
+                                className="text-[#4CAF50] hover:bg-[#4CAF50]/10 transition-colors p-1 cursor-pointer"
                                 title="Confirmar"
                               >
                                 <Check size={14} />
@@ -354,7 +354,7 @@ export default function AdminInscricoesPage() {
                 href={detailTarget.comprovanteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#00d47d] hover:underline text-sm inline-block mt-2"
+                className="text-[#4CAF50] hover:underline text-sm inline-block mt-2"
               >
                 Ver comprovante →
               </a>
@@ -423,7 +423,7 @@ export default function AdminInscricoesPage() {
             <Button
               onClick={salvarEdicao}
               disabled={salvandoEdicao}
-              style={{ backgroundColor: "#00d47d", color: "#fff" }}
+              style={{ backgroundColor: "#4CAF50", color: "#fff" }}
               className="cursor-pointer"
             >
               {salvandoEdicao ? "Salvando..." : "Salvar"}

@@ -1,8 +1,10 @@
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
 import type { CriarInscricaoDto, EditarInscricaoDto } from "./dto/inscricao.dto.js";
 export declare class InscricaoService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private auditoria;
+    constructor(prisma: PrismaService, auditoria: AuditoriaService);
     criar(userId: string, data: CriarInscricaoDto): Promise<{
         id: string;
         estado: string;
@@ -49,7 +51,7 @@ export declare class InscricaoService {
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     }>;
-    confirmar(inscricaoId: string): Promise<{
+    confirmar(inscricaoId: string, actorId: string): Promise<{
         id: string;
         estado: string;
         createdAt: Date;
@@ -109,7 +111,7 @@ export declare class InscricaoService {
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     }>;
-    listarTodas(status?: string): Promise<({
+    listarTodas(userRole?: string, userId?: string, cursoId?: string, status?: string): Promise<({
         instituicao: {
             id: string;
             sigla: string;
@@ -149,7 +151,7 @@ export declare class InscricaoService {
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     })[]>;
-    atualizarStatus(inscricaoId: string, status: string): Promise<{
+    atualizarStatus(inscricaoId: string, status: string, actorId: string): Promise<{
         id: string;
         estado: string;
         createdAt: Date;
@@ -189,7 +191,7 @@ export declare class InscricaoService {
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     }>;
-    deletar(inscricaoId: string): Promise<{
+    deletar(inscricaoId: string, actorId: string): Promise<{
         id: string;
         estado: string;
         createdAt: Date;

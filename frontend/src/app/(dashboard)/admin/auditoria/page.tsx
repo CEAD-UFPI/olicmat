@@ -101,10 +101,10 @@ export default function AdminAuditoriaPage() {
   const totalPaginas = Math.max(1, Math.ceil(total / ITENS_POR_PAGINA));
 
   const acaoColors: Record<string, string> = {
-    CREATE: "#00d47d",
-    UPDATE: "#4b7bec",
+    CREATE: "#4CAF50",
+    UPDATE: "#3AAFE0",
     DELETE: "#e53e3e",
-    LOGIN: "#f48120",
+    LOGIN: "#E8B829",
   };
 
   return (
@@ -176,7 +176,7 @@ export default function AdminAuditoriaPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : logs.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">

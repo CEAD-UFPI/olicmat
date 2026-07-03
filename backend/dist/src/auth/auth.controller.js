@@ -34,10 +34,25 @@ let AuthController = class AuthController {
         return this.authService.login(parsed.data);
     }
     async esqueciSenha(body) {
-        return { message: "Se o email existir, um link de redefinição será enviado" };
+        if (!body.email) {
+            throw new BadRequestException("Email é obrigatório");
+        }
+        return this.authService.esqueciSenha(body.email);
     }
     async redefinirSenha(body) {
-        return { message: "Senha redefinida com sucesso" };
+        if (!body.token || !body.novaSenha) {
+            throw new BadRequestException("Token e nova senha são obrigatórios");
+        }
+        if (body.novaSenha.length < 6) {
+            throw new BadRequestException("Senha deve ter no mínimo 6 caracteres");
+        }
+        return this.authService.redefinirSenha(body.token, body.novaSenha);
+    }
+    async confirmarEmail(body) {
+        if (!body.token) {
+            throw new BadRequestException("Token é obrigatório");
+        }
+        return this.authService.confirmarEmail(body.token);
     }
     async me(req) {
         return req.user;
@@ -71,6 +86,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "redefinirSenha", null);
+__decorate([
+    Post("confirmar-email"),
+    __param(0, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "confirmarEmail", null);
 __decorate([
     UseGuards(JwtAuthGuard),
     Get("me"),

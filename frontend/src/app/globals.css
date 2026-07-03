@@ -2,180 +2,180 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* === OLICMAT Design Tokens — "Matemática Viva" === */
-
 @theme inline {
   --color-background: var(--bg-primary);
   --color-foreground: var(--text-primary);
-  --font-sans: var(--font-outfit);
-  --font-display: var(--font-fraunces);
-  --font-mono: var(--font-jetbrains-mono);
-
+  --color-primary: var(--color-gold);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--bg-secondary);
+  --color-secondary-foreground: var(--text-primary);
+  --color-accent: var(--color-blue);
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #e53e3e;
+  --color-muted: var(--bg-secondary);
+  --color-muted-foreground: var(--text-secondary);
   --color-card: var(--surface);
   --color-card-foreground: var(--text-primary);
   --color-popover: var(--surface);
   --color-popover-foreground: var(--text-primary);
-  --color-primary: var(--pi-laranja);
-  --color-primary-foreground: #ffffff;
-  --color-secondary: var(--surface);
-  --color-secondary-foreground: var(--text-primary);
-  --color-muted: var(--bg-secondary);
-  --color-muted-foreground: var(--text-secondary);
-  --color-accent: var(--sigma-azul);
-  --color-accent-foreground: #ffffff;
-  --color-destructive: #e53e3e;
   --color-border: var(--border-color);
   --color-input: var(--border-color);
-  --color-ring: var(--pi-laranja);
-  --color-success: var(--integral-verde);
+  --color-ring: var(--color-gold);
+  --radius: 0.75rem;
 
-  --radius: 0.625rem;
+  --font-fraunces: "Fraunces", serif;
+  --font-outfit: "Outfit", sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono", monospace;
 }
 
 :root {
   --bg-primary: #0a0a0f;
   --bg-secondary: #12121a;
   --surface: #1a1a26;
-  --pi-laranja: #f48120;
-  --integral-verde: #2d9b6c;
-  --sigma-azul: #4b7bec;
+  --color-gold: #E8B829;
+  --color-green: #4CAF50;
+  --color-blue: #3AAFE0;
   --text-primary: #f0ece4;
   --text-secondary: #9895a4;
   --border-color: #2a2a3a;
+
+  --pi-dourado: #E8B829;
+  --integral-verde: #4CAF50;
+  --sigma-azul: #3AAFE0;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-family: var(--font-outfit), sans-serif;
-  }
+.light {
+  --bg-primary: #f5f3ef;
+  --bg-secondary: #ffffff;
+  --surface: #faf9f7;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b7280;
+  --border-color: #e5e3df;
+  --color-gold: #E8B829;
+  --color-green: #4CAF50;
+  --color-blue: #3AAFE0;
 }
 
-/* === Dot Pattern Background === */
+* {
+  border-color: var(--border-color);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-outfit), sans-serif;
+}
+
+/* ==============================
+   Utility Patterns
+   ============================== */
+
 .dot-pattern {
-  --dot-size: 1px;
-  --dot-spacing: 24px;
-  background-image: radial-gradient(
-    circle at center,
-    rgb(255 255 255 / 0.04) var(--dot-size),
-    transparent var(--dot-size)
-  );
-  background-size: var(--dot-spacing) var(--dot-spacing);
+  background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
-/* === Noise Overlay === */
-.noise-overlay::after {
+.noise-overlay {
+  position: relative;
+}
+.noise-overlay::before {
   content: "";
   position: fixed;
   inset: 0;
+  opacity: 0.015;
   pointer-events: none;
-  z-index: 9999;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 256px 256px;
+  z-index: 100;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
 }
 
-/* === Geometric Gradient Orbs === */
-.gradient-orb-pi {
-  background: radial-gradient(circle at 50% 50%, rgb(244 129 32 / 0.12) 0%, transparent 60%);
-}
-.gradient-orb-integral {
-  background: radial-gradient(circle at 50% 50%, rgb(45 155 108 / 0.10) 0%, transparent 60%);
-}
+/* Gradient orbs */
 .gradient-orb-sigma {
-  background: radial-gradient(circle at 50% 50%, rgb(75 123 236 / 0.10) 0%, transparent 60%);
+  background: radial-gradient(600px circle at 30% 50%, rgba(58, 175, 224, 0.15), transparent 60%);
+  pointer-events: none;
 }
 
-/* === Staggered Reveal Animation === */
-.stagger-reveal {
+.gradient-orb-integral {
+  background: radial-gradient(600px circle at 70% 50%, rgba(76, 175, 80, 0.12), transparent 60%);
+  pointer-events: none;
+}
+
+.gradient-orb-gold {
+  background: radial-gradient(600px circle at 50% 50%, rgba(232, 184, 41, 0.1), transparent 60%);
+  pointer-events: none;
+}
+
+/* Stagger reveal for lists */
+.stagger-reveal > * {
   opacity: 0;
-  transform: translateY(24px);
-  animation: revealUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeSlideUp 0.5s ease forwards;
 }
 
-@keyframes revealUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.stagger-reveal > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-reveal > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-reveal > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-reveal > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-reveal > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-reveal > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-reveal > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-reveal > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-reveal > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-reveal > *:nth-child(10) { animation-delay: 0.5s; }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* === Math Grid (isometric lines) === */
+/* Math grid background */
 .math-grid {
   background-image:
-    linear-gradient(rgb(255 255 255 / 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.02) 1px, transparent 1px);
+    linear-gradient(var(--border-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
-/* === Gradiente de borda animado === */
+/* Border glow */
 .border-glow {
   position: relative;
 }
-.border-glow::before {
+.border-glow::after {
   content: "";
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(
-    135deg,
-    var(--pi-laranja),
-    var(--integral-verde),
-    var(--sigma-azul),
-    var(--pi-laranja)
-  );
-  background-size: 300% 300%;
-  animation: borderRotate 4s linear infinite;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  background: linear-gradient(135deg, var(--color-gold), var(--color-blue));
+  z-index: -1;
+  opacity: 0.3;
+  transition: opacity 0.3s;
 }
-.border-glow:hover::before,
-.border-glow:focus-within::before {
-  opacity: 1;
+.border-glow:hover::after {
+  opacity: 0.6;
 }
 
-@keyframes borderRotate {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* === Hero geometric animation === */
-@keyframes floatGeometry {
+/* Floating geometry animation */
+@keyframes float {
   0%, 100% { transform: translateY(0) rotate(0deg); }
-  33% { transform: translateY(-12px) rotate(0.5deg); }
-  66% { transform: translateY(6px) rotate(-0.3deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(5px) rotate(-0.5deg); }
 }
 
 .animate-float-geometry {
-  animation: floatGeometry 8s ease-in-out infinite;
+  animation: float 8s ease-in-out infinite;
 }
 
-/* === Pulse for exam timer urgency === */
+/* Timer urgency pulse */
 @keyframes timerPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
 
 .animate-timer-urgent {
-  animation: timerPulse 0.7s ease-in-out infinite;
+  animation: timerPulse 1s ease-in-out infinite;
 }
 
-/* === Scrollbar styling === */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
 ::-webkit-scrollbar-thumb {
   background: var(--border-color);
   border-radius: 3px;

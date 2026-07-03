@@ -34,7 +34,7 @@ export function ConfirmDialog({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [aberto, onClose]);
 
-  const accentColor = variante === "danger" ? "#e53e3e" : "#f48120";
+  const accentColor = variante === "danger" ? "#e53e3e" : "#E8B829";
 
   return (
     <AnimatePresence>

@@ -66,6 +66,9 @@ export interface PrismaClient<in LogOpts extends Prisma.LogLevel = never, in out
     get avaliacaoFase2(): Prisma.AvaliacaoFase2Delegate<ExtArgs, {
         omit: OmitOpts;
     }>;
+    get token(): Prisma.TokenDelegate<ExtArgs, {
+        omit: OmitOpts;
+    }>;
     get rankingSnapshot(): Prisma.RankingSnapshotDelegate<ExtArgs, {
         omit: OmitOpts;
     }>;

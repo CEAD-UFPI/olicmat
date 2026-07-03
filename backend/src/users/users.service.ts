@@ -13,6 +13,7 @@ export class UsersService {
         nome: true,
         email: true,
         role: true,
+        emailConfirmado: true,
         instituicaoId: true,
         instituicao: { select: { id: true, nome: true, sigla: true } },
         cursoId: true,

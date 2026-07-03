@@ -10,6 +10,7 @@ export type InstituicaoMinAggregateOutputType = {
     id: string | null;
     nome: string | null;
     sigla: string | null;
+    codigoInep: string | null;
     estado: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -18,6 +19,7 @@ export type InstituicaoMaxAggregateOutputType = {
     id: string | null;
     nome: string | null;
     sigla: string | null;
+    codigoInep: string | null;
     estado: string | null;
     createdAt: Date | null;
     updatedAt: Date | null;
@@ -26,6 +28,7 @@ export type InstituicaoCountAggregateOutputType = {
     id: number;
     nome: number;
     sigla: number;
+    codigoInep: number;
     estado: number;
     createdAt: number;
     updatedAt: number;
@@ -35,6 +38,7 @@ export type InstituicaoMinAggregateInputType = {
     id?: true;
     nome?: true;
     sigla?: true;
+    codigoInep?: true;
     estado?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -43,6 +47,7 @@ export type InstituicaoMaxAggregateInputType = {
     id?: true;
     nome?: true;
     sigla?: true;
+    codigoInep?: true;
     estado?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -51,6 +56,7 @@ export type InstituicaoCountAggregateInputType = {
     id?: true;
     nome?: true;
     sigla?: true;
+    codigoInep?: true;
     estado?: true;
     createdAt?: true;
     updatedAt?: true;
@@ -84,6 +90,7 @@ export type InstituicaoGroupByOutputType = {
     id: string;
     nome: string;
     sigla: string;
+    codigoInep: string | null;
     estado: string;
     createdAt: Date;
     updatedAt: Date;
@@ -101,6 +108,7 @@ export type InstituicaoWhereInput = {
     id?: Prisma.StringFilter<"Instituicao"> | string;
     nome?: Prisma.StringFilter<"Instituicao"> | string;
     sigla?: Prisma.StringFilter<"Instituicao"> | string;
+    codigoInep?: Prisma.StringNullableFilter<"Instituicao"> | string | null;
     estado?: Prisma.StringFilter<"Instituicao"> | string;
     createdAt?: Prisma.DateTimeFilter<"Instituicao"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"Instituicao"> | Date | string;
@@ -112,6 +120,7 @@ export type InstituicaoOrderByWithRelationInput = {
     id?: Prisma.SortOrder;
     nome?: Prisma.SortOrder;
     sigla?: Prisma.SortOrder;
+    codigoInep?: Prisma.SortOrderInput | Prisma.SortOrder;
     estado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -122,6 +131,7 @@ export type InstituicaoOrderByWithRelationInput = {
 export type InstituicaoWhereUniqueInput = Prisma.AtLeast<{
     id?: string;
     sigla?: string;
+    codigoInep?: string;
     AND?: Prisma.InstituicaoWhereInput | Prisma.InstituicaoWhereInput[];
     OR?: Prisma.InstituicaoWhereInput[];
     NOT?: Prisma.InstituicaoWhereInput | Prisma.InstituicaoWhereInput[];
@@ -132,11 +142,12 @@ export type InstituicaoWhereUniqueInput = Prisma.AtLeast<{
     cursos?: Prisma.CursoListRelationFilter;
     usuarios?: Prisma.UserListRelationFilter;
     inscricoes?: Prisma.InscricaoListRelationFilter;
-}, "id" | "sigla">;
+}, "id" | "sigla" | "codigoInep">;
 export type InstituicaoOrderByWithAggregationInput = {
     id?: Prisma.SortOrder;
     nome?: Prisma.SortOrder;
     sigla?: Prisma.SortOrder;
+    codigoInep?: Prisma.SortOrderInput | Prisma.SortOrder;
     estado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -151,6 +162,7 @@ export type InstituicaoScalarWhereWithAggregatesInput = {
     id?: Prisma.StringWithAggregatesFilter<"Instituicao"> | string;
     nome?: Prisma.StringWithAggregatesFilter<"Instituicao"> | string;
     sigla?: Prisma.StringWithAggregatesFilter<"Instituicao"> | string;
+    codigoInep?: Prisma.StringNullableWithAggregatesFilter<"Instituicao"> | string | null;
     estado?: Prisma.StringWithAggregatesFilter<"Instituicao"> | string;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"Instituicao"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Instituicao"> | Date | string;
@@ -159,6 +171,7 @@ export type InstituicaoCreateInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -170,6 +183,7 @@ export type InstituicaoUncheckedCreateInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -181,6 +195,7 @@ export type InstituicaoUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -192,6 +207,7 @@ export type InstituicaoUncheckedUpdateInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -203,6 +219,7 @@ export type InstituicaoCreateManyInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -211,6 +228,7 @@ export type InstituicaoUpdateManyMutationInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -219,6 +237,7 @@ export type InstituicaoUncheckedUpdateManyInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -227,6 +246,7 @@ export type InstituicaoCountOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     nome?: Prisma.SortOrder;
     sigla?: Prisma.SortOrder;
+    codigoInep?: Prisma.SortOrder;
     estado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -235,6 +255,7 @@ export type InstituicaoMaxOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     nome?: Prisma.SortOrder;
     sigla?: Prisma.SortOrder;
+    codigoInep?: Prisma.SortOrder;
     estado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -243,6 +264,7 @@ export type InstituicaoMinOrderByAggregateInput = {
     id?: Prisma.SortOrder;
     nome?: Prisma.SortOrder;
     sigla?: Prisma.SortOrder;
+    codigoInep?: Prisma.SortOrder;
     estado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
@@ -257,6 +279,9 @@ export type InstituicaoNullableScalarRelationFilter = {
 };
 export type StringFieldUpdateOperationsInput = {
     set?: string;
+};
+export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null;
 };
 export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string;
@@ -303,6 +328,7 @@ export type InstituicaoCreateWithoutCursosInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -313,6 +339,7 @@ export type InstituicaoUncheckedCreateWithoutCursosInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -336,6 +363,7 @@ export type InstituicaoUpdateWithoutCursosInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -346,6 +374,7 @@ export type InstituicaoUncheckedUpdateWithoutCursosInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -356,6 +385,7 @@ export type InstituicaoCreateWithoutUsuariosInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -366,6 +396,7 @@ export type InstituicaoUncheckedCreateWithoutUsuariosInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -389,6 +420,7 @@ export type InstituicaoUpdateWithoutUsuariosInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -399,6 +431,7 @@ export type InstituicaoUncheckedUpdateWithoutUsuariosInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -409,6 +442,7 @@ export type InstituicaoCreateWithoutInscricoesInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -419,6 +453,7 @@ export type InstituicaoUncheckedCreateWithoutInscricoesInput = {
     id?: string;
     nome: string;
     sigla: string;
+    codigoInep?: string | null;
     estado: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -442,6 +477,7 @@ export type InstituicaoUpdateWithoutInscricoesInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -452,6 +488,7 @@ export type InstituicaoUncheckedUpdateWithoutInscricoesInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     sigla?: Prisma.StringFieldUpdateOperationsInput | string;
+    codigoInep?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     estado?: Prisma.StringFieldUpdateOperationsInput | string;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -484,6 +521,7 @@ export type InstituicaoSelect<ExtArgs extends runtime.Types.Extensions.InternalA
     id?: boolean;
     nome?: boolean;
     sigla?: boolean;
+    codigoInep?: boolean;
     estado?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -496,6 +534,7 @@ export type InstituicaoSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
     id?: boolean;
     nome?: boolean;
     sigla?: boolean;
+    codigoInep?: boolean;
     estado?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -504,6 +543,7 @@ export type InstituicaoSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
     id?: boolean;
     nome?: boolean;
     sigla?: boolean;
+    codigoInep?: boolean;
     estado?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
@@ -512,11 +552,12 @@ export type InstituicaoSelectScalar = {
     id?: boolean;
     nome?: boolean;
     sigla?: boolean;
+    codigoInep?: boolean;
     estado?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type InstituicaoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "sigla" | "estado" | "createdAt" | "updatedAt", ExtArgs["result"]["instituicao"]>;
+export type InstituicaoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "sigla" | "codigoInep" | "estado" | "createdAt" | "updatedAt", ExtArgs["result"]["instituicao"]>;
 export type InstituicaoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     cursos?: boolean | Prisma.Instituicao$cursosArgs<ExtArgs>;
     usuarios?: boolean | Prisma.Instituicao$usuariosArgs<ExtArgs>;
@@ -536,6 +577,7 @@ export type $InstituicaoPayload<ExtArgs extends runtime.Types.Extensions.Interna
         id: string;
         nome: string;
         sigla: string;
+        codigoInep: string | null;
         estado: string;
         createdAt: Date;
         updatedAt: Date;
@@ -602,6 +644,7 @@ export interface InstituicaoFieldRefs {
     readonly id: Prisma.FieldRef<"Instituicao", 'String'>;
     readonly nome: Prisma.FieldRef<"Instituicao", 'String'>;
     readonly sigla: Prisma.FieldRef<"Instituicao", 'String'>;
+    readonly codigoInep: Prisma.FieldRef<"Instituicao", 'String'>;
     readonly estado: Prisma.FieldRef<"Instituicao", 'String'>;
     readonly createdAt: Prisma.FieldRef<"Instituicao", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"Instituicao", 'DateTime'>;

@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Injectable } from "@nestjs/common";
+import { Injectable, Global, Module } from "@nestjs/common";
 import { PrismaClient } from "../generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 let PrismaService = class PrismaService extends PrismaClient {
@@ -29,4 +29,14 @@ PrismaService = __decorate([
     __metadata("design:paramtypes", [])
 ], PrismaService);
 export { PrismaService };
+let PrismaModule = class PrismaModule {
+};
+PrismaModule = __decorate([
+    Global(),
+    Module({
+        providers: [PrismaService],
+        exports: [PrismaService],
+    })
+], PrismaModule);
+export { PrismaModule };
 //# sourceMappingURL=prisma.service.js.map

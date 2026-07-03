@@ -1,9 +1,11 @@
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 import type { CriarQuestaoDto, VincularQuestaoDto, AtualizarQuestaoDto } from "./dto/questoes.dto.js";
 export declare class QuestoesService {
     private prisma;
-    constructor(prisma: PrismaService);
-    addToExam(provaId: string, data: CriarQuestaoDto): Promise<{
+    private auditoria;
+    constructor(prisma: PrismaService, auditoria: AuditoriaService);
+    addToExam(provaId: string, data: CriarQuestaoDto, userId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -18,7 +20,7 @@ export declare class QuestoesService {
         dificuldade: import("../../../generated/prisma/enums.js").Dificuldade;
         createdBy: string | null;
     }>;
-    linkToExam(provaId: string, data: VincularQuestaoDto): Promise<{
+    linkToExam(provaId: string, data: VincularQuestaoDto, userId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -73,7 +75,7 @@ export declare class QuestoesService {
         questaoId: string;
         ordem: number;
     })[]>;
-    update(id: string, data: AtualizarQuestaoDto): Promise<{
+    update(id: string, data: AtualizarQuestaoDto, userId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -88,7 +90,7 @@ export declare class QuestoesService {
         dificuldade: import("../../../generated/prisma/enums.js").Dificuldade;
         createdBy: string | null;
     }>;
-    remove(id: string): Promise<{
+    remove(id: string, userId?: string): Promise<{
         deleted: boolean;
     }>;
 }

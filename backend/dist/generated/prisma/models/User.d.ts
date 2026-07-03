@@ -19,6 +19,7 @@ export type UserMinAggregateOutputType = {
     matricula: string | null;
     comprovanteUrl: string | null;
     dataNascimento: Date | null;
+    emailConfirmado: boolean | null;
     createdAt: Date | null;
     updatedAt: Date | null;
 };
@@ -34,6 +35,7 @@ export type UserMaxAggregateOutputType = {
     matricula: string | null;
     comprovanteUrl: string | null;
     dataNascimento: Date | null;
+    emailConfirmado: boolean | null;
     createdAt: Date | null;
     updatedAt: Date | null;
 };
@@ -49,6 +51,7 @@ export type UserCountAggregateOutputType = {
     matricula: number;
     comprovanteUrl: number;
     dataNascimento: number;
+    emailConfirmado: number;
     createdAt: number;
     updatedAt: number;
     _all: number;
@@ -65,6 +68,7 @@ export type UserMinAggregateInputType = {
     matricula?: true;
     comprovanteUrl?: true;
     dataNascimento?: true;
+    emailConfirmado?: true;
     createdAt?: true;
     updatedAt?: true;
 };
@@ -80,6 +84,7 @@ export type UserMaxAggregateInputType = {
     matricula?: true;
     comprovanteUrl?: true;
     dataNascimento?: true;
+    emailConfirmado?: true;
     createdAt?: true;
     updatedAt?: true;
 };
@@ -95,6 +100,7 @@ export type UserCountAggregateInputType = {
     matricula?: true;
     comprovanteUrl?: true;
     dataNascimento?: true;
+    emailConfirmado?: true;
     createdAt?: true;
     updatedAt?: true;
     _all?: true;
@@ -135,6 +141,7 @@ export type UserGroupByOutputType = {
     matricula: string;
     comprovanteUrl: string | null;
     dataNascimento: Date;
+    emailConfirmado: boolean;
     createdAt: Date;
     updatedAt: Date;
     _count: UserCountAggregateOutputType | null;
@@ -159,11 +166,13 @@ export type UserWhereInput = {
     matricula?: Prisma.StringFilter<"User"> | string;
     comprovanteUrl?: Prisma.StringNullableFilter<"User"> | string | null;
     dataNascimento?: Prisma.DateTimeFilter<"User"> | Date | string;
+    emailConfirmado?: Prisma.BoolFilter<"User"> | boolean;
     createdAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     instituicao?: Prisma.XOR<Prisma.InstituicaoNullableScalarRelationFilter, Prisma.InstituicaoWhereInput> | null;
     curso?: Prisma.XOR<Prisma.CursoNullableScalarRelationFilter, Prisma.CursoWhereInput> | null;
-    inscricao?: Prisma.XOR<Prisma.InscricaoNullableScalarRelationFilter, Prisma.InscricaoWhereInput> | null;
+    inscricoes?: Prisma.InscricaoListRelationFilter;
+    tokens?: Prisma.TokenListRelationFilter;
     coordenadorias?: Prisma.CoordenadorCursoListRelationFilter;
     avaliacoes?: Prisma.AvaliacaoFase2ListRelationFilter;
     auditLogs?: Prisma.AuditLogListRelationFilter;
@@ -180,11 +189,13 @@ export type UserOrderByWithRelationInput = {
     matricula?: Prisma.SortOrder;
     comprovanteUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
     dataNascimento?: Prisma.SortOrder;
+    emailConfirmado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     instituicao?: Prisma.InstituicaoOrderByWithRelationInput;
     curso?: Prisma.CursoOrderByWithRelationInput;
-    inscricao?: Prisma.InscricaoOrderByWithRelationInput;
+    inscricoes?: Prisma.InscricaoOrderByRelationAggregateInput;
+    tokens?: Prisma.TokenOrderByRelationAggregateInput;
     coordenadorias?: Prisma.CoordenadorCursoOrderByRelationAggregateInput;
     avaliacoes?: Prisma.AvaliacaoFase2OrderByRelationAggregateInput;
     auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput;
@@ -204,11 +215,13 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
     matricula?: Prisma.StringFilter<"User"> | string;
     comprovanteUrl?: Prisma.StringNullableFilter<"User"> | string | null;
     dataNascimento?: Prisma.DateTimeFilter<"User"> | Date | string;
+    emailConfirmado?: Prisma.BoolFilter<"User"> | boolean;
     createdAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     instituicao?: Prisma.XOR<Prisma.InstituicaoNullableScalarRelationFilter, Prisma.InstituicaoWhereInput> | null;
     curso?: Prisma.XOR<Prisma.CursoNullableScalarRelationFilter, Prisma.CursoWhereInput> | null;
-    inscricao?: Prisma.XOR<Prisma.InscricaoNullableScalarRelationFilter, Prisma.InscricaoWhereInput> | null;
+    inscricoes?: Prisma.InscricaoListRelationFilter;
+    tokens?: Prisma.TokenListRelationFilter;
     coordenadorias?: Prisma.CoordenadorCursoListRelationFilter;
     avaliacoes?: Prisma.AvaliacaoFase2ListRelationFilter;
     auditLogs?: Prisma.AuditLogListRelationFilter;
@@ -225,6 +238,7 @@ export type UserOrderByWithAggregationInput = {
     matricula?: Prisma.SortOrder;
     comprovanteUrl?: Prisma.SortOrderInput | Prisma.SortOrder;
     dataNascimento?: Prisma.SortOrder;
+    emailConfirmado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
     _count?: Prisma.UserCountOrderByAggregateInput;
@@ -246,6 +260,7 @@ export type UserScalarWhereWithAggregatesInput = {
     matricula?: Prisma.StringWithAggregatesFilter<"User"> | string;
     comprovanteUrl?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null;
     dataNascimento?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string;
+    emailConfirmado?: Prisma.BoolWithAggregatesFilter<"User"> | boolean;
     createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string;
     updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string;
 };
@@ -259,11 +274,13 @@ export type UserCreateInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     instituicao?: Prisma.InstituicaoCreateNestedOneWithoutUsuariosInput;
     curso?: Prisma.CursoCreateNestedOneWithoutUsuariosInput;
-    inscricao?: Prisma.InscricaoCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2CreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput;
@@ -280,9 +297,11 @@ export type UserUncheckedCreateInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    inscricao?: Prisma.InscricaoUncheckedCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoUncheckedCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedCreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput;
@@ -297,11 +316,13 @@ export type UserUpdateInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     instituicao?: Prisma.InstituicaoUpdateOneWithoutUsuariosNestedInput;
     curso?: Prisma.CursoUpdateOneWithoutUsuariosNestedInput;
-    inscricao?: Prisma.InscricaoUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput;
@@ -318,9 +339,11 @@ export type UserUncheckedUpdateInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    inscricao?: Prisma.InscricaoUncheckedUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUncheckedUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput;
@@ -337,6 +360,7 @@ export type UserCreateManyInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -350,6 +374,7 @@ export type UserUpdateManyMutationInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -365,6 +390,7 @@ export type UserUncheckedUpdateManyInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -388,6 +414,7 @@ export type UserCountOrderByAggregateInput = {
     matricula?: Prisma.SortOrder;
     comprovanteUrl?: Prisma.SortOrder;
     dataNascimento?: Prisma.SortOrder;
+    emailConfirmado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -403,6 +430,7 @@ export type UserMaxOrderByAggregateInput = {
     matricula?: Prisma.SortOrder;
     comprovanteUrl?: Prisma.SortOrder;
     dataNascimento?: Prisma.SortOrder;
+    emailConfirmado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -418,6 +446,7 @@ export type UserMinOrderByAggregateInput = {
     matricula?: Prisma.SortOrder;
     comprovanteUrl?: Prisma.SortOrder;
     dataNascimento?: Prisma.SortOrder;
+    emailConfirmado?: Prisma.SortOrder;
     createdAt?: Prisma.SortOrder;
     updatedAt?: Prisma.SortOrder;
 };
@@ -504,8 +533,8 @@ export type UserUncheckedUpdateManyWithoutCursoNestedInput = {
 export type EnumRoleFieldUpdateOperationsInput = {
     set?: $Enums.Role;
 };
-export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null;
+export type BoolFieldUpdateOperationsInput = {
+    set?: boolean;
 };
 export type UserCreateNestedOneWithoutCoordenadoriasInput = {
     create?: Prisma.XOR<Prisma.UserCreateWithoutCoordenadoriasInput, Prisma.UserUncheckedCreateWithoutCoordenadoriasInput>;
@@ -519,17 +548,17 @@ export type UserUpdateOneRequiredWithoutCoordenadoriasNestedInput = {
     connect?: Prisma.UserWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCoordenadoriasInput, Prisma.UserUpdateWithoutCoordenadoriasInput>, Prisma.UserUncheckedUpdateWithoutCoordenadoriasInput>;
 };
-export type UserCreateNestedOneWithoutInscricaoInput = {
-    create?: Prisma.XOR<Prisma.UserCreateWithoutInscricaoInput, Prisma.UserUncheckedCreateWithoutInscricaoInput>;
-    connectOrCreate?: Prisma.UserCreateOrConnectWithoutInscricaoInput;
+export type UserCreateNestedOneWithoutInscricoesInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutInscricoesInput, Prisma.UserUncheckedCreateWithoutInscricoesInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutInscricoesInput;
     connect?: Prisma.UserWhereUniqueInput;
 };
-export type UserUpdateOneRequiredWithoutInscricaoNestedInput = {
-    create?: Prisma.XOR<Prisma.UserCreateWithoutInscricaoInput, Prisma.UserUncheckedCreateWithoutInscricaoInput>;
-    connectOrCreate?: Prisma.UserCreateOrConnectWithoutInscricaoInput;
-    upsert?: Prisma.UserUpsertWithoutInscricaoInput;
+export type UserUpdateOneRequiredWithoutInscricoesNestedInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutInscricoesInput, Prisma.UserUncheckedCreateWithoutInscricoesInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutInscricoesInput;
+    upsert?: Prisma.UserUpsertWithoutInscricoesInput;
     connect?: Prisma.UserWhereUniqueInput;
-    update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInscricaoInput, Prisma.UserUpdateWithoutInscricaoInput>, Prisma.UserUncheckedUpdateWithoutInscricaoInput>;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutInscricoesInput, Prisma.UserUpdateWithoutInscricoesInput>, Prisma.UserUncheckedUpdateWithoutInscricoesInput>;
 };
 export type UserCreateNestedOneWithoutAvaliacoesInput = {
     create?: Prisma.XOR<Prisma.UserCreateWithoutAvaliacoesInput, Prisma.UserUncheckedCreateWithoutAvaliacoesInput>;
@@ -542,6 +571,18 @@ export type UserUpdateOneRequiredWithoutAvaliacoesNestedInput = {
     upsert?: Prisma.UserUpsertWithoutAvaliacoesInput;
     connect?: Prisma.UserWhereUniqueInput;
     update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAvaliacoesInput, Prisma.UserUpdateWithoutAvaliacoesInput>, Prisma.UserUncheckedUpdateWithoutAvaliacoesInput>;
+};
+export type UserCreateNestedOneWithoutTokensInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutTokensInput, Prisma.UserUncheckedCreateWithoutTokensInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutTokensInput;
+    connect?: Prisma.UserWhereUniqueInput;
+};
+export type UserUpdateOneRequiredWithoutTokensNestedInput = {
+    create?: Prisma.XOR<Prisma.UserCreateWithoutTokensInput, Prisma.UserUncheckedCreateWithoutTokensInput>;
+    connectOrCreate?: Prisma.UserCreateOrConnectWithoutTokensInput;
+    upsert?: Prisma.UserUpsertWithoutTokensInput;
+    connect?: Prisma.UserWhereUniqueInput;
+    update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTokensInput, Prisma.UserUpdateWithoutTokensInput>, Prisma.UserUncheckedUpdateWithoutTokensInput>;
 };
 export type UserCreateNestedOneWithoutAuditLogsInput = {
     create?: Prisma.XOR<Prisma.UserCreateWithoutAuditLogsInput, Prisma.UserUncheckedCreateWithoutAuditLogsInput>;
@@ -565,10 +606,12 @@ export type UserCreateWithoutInstituicaoInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     curso?: Prisma.CursoCreateNestedOneWithoutUsuariosInput;
-    inscricao?: Prisma.InscricaoCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2CreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput;
@@ -584,9 +627,11 @@ export type UserUncheckedCreateWithoutInstituicaoInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    inscricao?: Prisma.InscricaoUncheckedCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoUncheckedCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedCreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput;
@@ -627,6 +672,7 @@ export type UserScalarWhereInput = {
     matricula?: Prisma.StringFilter<"User"> | string;
     comprovanteUrl?: Prisma.StringNullableFilter<"User"> | string | null;
     dataNascimento?: Prisma.DateTimeFilter<"User"> | Date | string;
+    emailConfirmado?: Prisma.BoolFilter<"User"> | boolean;
     createdAt?: Prisma.DateTimeFilter<"User"> | Date | string;
     updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string;
 };
@@ -640,10 +686,12 @@ export type UserCreateWithoutCursoInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     instituicao?: Prisma.InstituicaoCreateNestedOneWithoutUsuariosInput;
-    inscricao?: Prisma.InscricaoCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2CreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput;
@@ -659,9 +707,11 @@ export type UserUncheckedCreateWithoutCursoInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    inscricao?: Prisma.InscricaoUncheckedCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoUncheckedCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedCreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput;
@@ -697,11 +747,13 @@ export type UserCreateWithoutCoordenadoriasInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     instituicao?: Prisma.InstituicaoCreateNestedOneWithoutUsuariosInput;
     curso?: Prisma.CursoCreateNestedOneWithoutUsuariosInput;
-    inscricao?: Prisma.InscricaoCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2CreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput;
 };
@@ -717,9 +769,11 @@ export type UserUncheckedCreateWithoutCoordenadoriasInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    inscricao?: Prisma.InscricaoUncheckedCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoUncheckedCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedCreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput;
 };
@@ -746,11 +800,13 @@ export type UserUpdateWithoutCoordenadoriasInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     instituicao?: Prisma.InstituicaoUpdateOneWithoutUsuariosNestedInput;
     curso?: Prisma.CursoUpdateOneWithoutUsuariosNestedInput;
-    inscricao?: Prisma.InscricaoUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput;
 };
@@ -766,13 +822,15 @@ export type UserUncheckedUpdateWithoutCoordenadoriasInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    inscricao?: Prisma.InscricaoUncheckedUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUncheckedUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput;
 };
-export type UserCreateWithoutInscricaoInput = {
+export type UserCreateWithoutInscricoesInput = {
     id?: string;
     nome: string;
     email: string;
@@ -782,15 +840,17 @@ export type UserCreateWithoutInscricaoInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     instituicao?: Prisma.InstituicaoCreateNestedOneWithoutUsuariosInput;
     curso?: Prisma.CursoCreateNestedOneWithoutUsuariosInput;
+    tokens?: Prisma.TokenCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2CreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput;
 };
-export type UserUncheckedCreateWithoutInscricaoInput = {
+export type UserUncheckedCreateWithoutInscricoesInput = {
     id?: string;
     nome: string;
     email: string;
@@ -802,26 +862,28 @@ export type UserUncheckedCreateWithoutInscricaoInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
+    tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedCreateNestedManyWithoutAvaliadorInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput;
 };
-export type UserCreateOrConnectWithoutInscricaoInput = {
+export type UserCreateOrConnectWithoutInscricoesInput = {
     where: Prisma.UserWhereUniqueInput;
-    create: Prisma.XOR<Prisma.UserCreateWithoutInscricaoInput, Prisma.UserUncheckedCreateWithoutInscricaoInput>;
+    create: Prisma.XOR<Prisma.UserCreateWithoutInscricoesInput, Prisma.UserUncheckedCreateWithoutInscricoesInput>;
 };
-export type UserUpsertWithoutInscricaoInput = {
-    update: Prisma.XOR<Prisma.UserUpdateWithoutInscricaoInput, Prisma.UserUncheckedUpdateWithoutInscricaoInput>;
-    create: Prisma.XOR<Prisma.UserCreateWithoutInscricaoInput, Prisma.UserUncheckedCreateWithoutInscricaoInput>;
+export type UserUpsertWithoutInscricoesInput = {
+    update: Prisma.XOR<Prisma.UserUpdateWithoutInscricoesInput, Prisma.UserUncheckedUpdateWithoutInscricoesInput>;
+    create: Prisma.XOR<Prisma.UserCreateWithoutInscricoesInput, Prisma.UserUncheckedCreateWithoutInscricoesInput>;
     where?: Prisma.UserWhereInput;
 };
-export type UserUpdateToOneWithWhereWithoutInscricaoInput = {
+export type UserUpdateToOneWithWhereWithoutInscricoesInput = {
     where?: Prisma.UserWhereInput;
-    data: Prisma.XOR<Prisma.UserUpdateWithoutInscricaoInput, Prisma.UserUncheckedUpdateWithoutInscricaoInput>;
+    data: Prisma.XOR<Prisma.UserUpdateWithoutInscricoesInput, Prisma.UserUncheckedUpdateWithoutInscricoesInput>;
 };
-export type UserUpdateWithoutInscricaoInput = {
+export type UserUpdateWithoutInscricoesInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -831,15 +893,17 @@ export type UserUpdateWithoutInscricaoInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     instituicao?: Prisma.InstituicaoUpdateOneWithoutUsuariosNestedInput;
     curso?: Prisma.CursoUpdateOneWithoutUsuariosNestedInput;
+    tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput;
 };
-export type UserUncheckedUpdateWithoutInscricaoInput = {
+export type UserUncheckedUpdateWithoutInscricoesInput = {
     id?: Prisma.StringFieldUpdateOperationsInput | string;
     nome?: Prisma.StringFieldUpdateOperationsInput | string;
     email?: Prisma.StringFieldUpdateOperationsInput | string;
@@ -851,8 +915,10 @@ export type UserUncheckedUpdateWithoutInscricaoInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput;
@@ -867,11 +933,13 @@ export type UserCreateWithoutAvaliacoesInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     instituicao?: Prisma.InstituicaoCreateNestedOneWithoutUsuariosInput;
     curso?: Prisma.CursoCreateNestedOneWithoutUsuariosInput;
-    inscricao?: Prisma.InscricaoCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput;
 };
@@ -887,9 +955,11 @@ export type UserUncheckedCreateWithoutAvaliacoesInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    inscricao?: Prisma.InscricaoUncheckedCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoUncheckedCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedCreateNestedManyWithoutUserInput;
     auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput;
 };
@@ -916,11 +986,13 @@ export type UserUpdateWithoutAvaliacoesInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     instituicao?: Prisma.InstituicaoUpdateOneWithoutUsuariosNestedInput;
     curso?: Prisma.CursoUpdateOneWithoutUsuariosNestedInput;
-    inscricao?: Prisma.InscricaoUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUpdateManyWithoutUserNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput;
 };
@@ -936,10 +1008,105 @@ export type UserUncheckedUpdateWithoutAvaliacoesInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    inscricao?: Prisma.InscricaoUncheckedUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUncheckedUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedUpdateManyWithoutUserNestedInput;
+    auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput;
+};
+export type UserCreateWithoutTokensInput = {
+    id?: string;
+    nome: string;
+    email: string;
+    cpf: string;
+    senhaHash: string;
+    role?: $Enums.Role;
+    matricula: string;
+    comprovanteUrl?: string | null;
+    dataNascimento: Date | string;
+    emailConfirmado?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    instituicao?: Prisma.InstituicaoCreateNestedOneWithoutUsuariosInput;
+    curso?: Prisma.CursoCreateNestedOneWithoutUsuariosInput;
+    inscricoes?: Prisma.InscricaoCreateNestedManyWithoutUserInput;
+    coordenadorias?: Prisma.CoordenadorCursoCreateNestedManyWithoutUserInput;
+    avaliacoes?: Prisma.AvaliacaoFase2CreateNestedManyWithoutAvaliadorInput;
+    auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput;
+};
+export type UserUncheckedCreateWithoutTokensInput = {
+    id?: string;
+    nome: string;
+    email: string;
+    cpf: string;
+    senhaHash: string;
+    role?: $Enums.Role;
+    instituicaoId?: string | null;
+    cursoId?: string | null;
+    matricula: string;
+    comprovanteUrl?: string | null;
+    dataNascimento: Date | string;
+    emailConfirmado?: boolean;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    inscricoes?: Prisma.InscricaoUncheckedCreateNestedManyWithoutUserInput;
+    coordenadorias?: Prisma.CoordenadorCursoUncheckedCreateNestedManyWithoutUserInput;
+    avaliacoes?: Prisma.AvaliacaoFase2UncheckedCreateNestedManyWithoutAvaliadorInput;
+    auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput;
+};
+export type UserCreateOrConnectWithoutTokensInput = {
+    where: Prisma.UserWhereUniqueInput;
+    create: Prisma.XOR<Prisma.UserCreateWithoutTokensInput, Prisma.UserUncheckedCreateWithoutTokensInput>;
+};
+export type UserUpsertWithoutTokensInput = {
+    update: Prisma.XOR<Prisma.UserUpdateWithoutTokensInput, Prisma.UserUncheckedUpdateWithoutTokensInput>;
+    create: Prisma.XOR<Prisma.UserCreateWithoutTokensInput, Prisma.UserUncheckedCreateWithoutTokensInput>;
+    where?: Prisma.UserWhereInput;
+};
+export type UserUpdateToOneWithWhereWithoutTokensInput = {
+    where?: Prisma.UserWhereInput;
+    data: Prisma.XOR<Prisma.UserUpdateWithoutTokensInput, Prisma.UserUncheckedUpdateWithoutTokensInput>;
+};
+export type UserUpdateWithoutTokensInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    nome?: Prisma.StringFieldUpdateOperationsInput | string;
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    cpf?: Prisma.StringFieldUpdateOperationsInput | string;
+    senhaHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+    matricula?: Prisma.StringFieldUpdateOperationsInput | string;
+    comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    instituicao?: Prisma.InstituicaoUpdateOneWithoutUsuariosNestedInput;
+    curso?: Prisma.CursoUpdateOneWithoutUsuariosNestedInput;
+    inscricoes?: Prisma.InscricaoUpdateManyWithoutUserNestedInput;
+    coordenadorias?: Prisma.CoordenadorCursoUpdateManyWithoutUserNestedInput;
+    avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutAvaliadorNestedInput;
+    auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput;
+};
+export type UserUncheckedUpdateWithoutTokensInput = {
+    id?: Prisma.StringFieldUpdateOperationsInput | string;
+    nome?: Prisma.StringFieldUpdateOperationsInput | string;
+    email?: Prisma.StringFieldUpdateOperationsInput | string;
+    cpf?: Prisma.StringFieldUpdateOperationsInput | string;
+    senhaHash?: Prisma.StringFieldUpdateOperationsInput | string;
+    role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+    instituicaoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    cursoId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    matricula?: Prisma.StringFieldUpdateOperationsInput | string;
+    comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+    dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+    createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    inscricoes?: Prisma.InscricaoUncheckedUpdateManyWithoutUserNestedInput;
+    coordenadorias?: Prisma.CoordenadorCursoUncheckedUpdateManyWithoutUserNestedInput;
+    avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput;
 };
 export type UserCreateWithoutAuditLogsInput = {
@@ -952,11 +1119,13 @@ export type UserCreateWithoutAuditLogsInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
     instituicao?: Prisma.InstituicaoCreateNestedOneWithoutUsuariosInput;
     curso?: Prisma.CursoCreateNestedOneWithoutUsuariosInput;
-    inscricao?: Prisma.InscricaoCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2CreateNestedManyWithoutAvaliadorInput;
 };
@@ -972,9 +1141,11 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-    inscricao?: Prisma.InscricaoUncheckedCreateNestedOneWithoutUserInput;
+    inscricoes?: Prisma.InscricaoUncheckedCreateNestedManyWithoutUserInput;
+    tokens?: Prisma.TokenUncheckedCreateNestedManyWithoutUserInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedCreateNestedManyWithoutUserInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedCreateNestedManyWithoutAvaliadorInput;
 };
@@ -1001,11 +1172,13 @@ export type UserUpdateWithoutAuditLogsInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     instituicao?: Prisma.InstituicaoUpdateOneWithoutUsuariosNestedInput;
     curso?: Prisma.CursoUpdateOneWithoutUsuariosNestedInput;
-    inscricao?: Prisma.InscricaoUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutAvaliadorNestedInput;
 };
@@ -1021,9 +1194,11 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    inscricao?: Prisma.InscricaoUncheckedUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUncheckedUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutAvaliadorNestedInput;
 };
@@ -1038,6 +1213,7 @@ export type UserCreateManyInstituicaoInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -1051,10 +1227,12 @@ export type UserUpdateWithoutInstituicaoInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     curso?: Prisma.CursoUpdateOneWithoutUsuariosNestedInput;
-    inscricao?: Prisma.InscricaoUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput;
@@ -1070,9 +1248,11 @@ export type UserUncheckedUpdateWithoutInstituicaoInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    inscricao?: Prisma.InscricaoUncheckedUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUncheckedUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput;
@@ -1088,6 +1268,7 @@ export type UserUncheckedUpdateManyWithoutInstituicaoInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -1102,6 +1283,7 @@ export type UserCreateManyCursoInput = {
     matricula: string;
     comprovanteUrl?: string | null;
     dataNascimento: Date | string;
+    emailConfirmado?: boolean;
     createdAt?: Date | string;
     updatedAt?: Date | string;
 };
@@ -1115,10 +1297,12 @@ export type UserUpdateWithoutCursoInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     instituicao?: Prisma.InstituicaoUpdateOneWithoutUsuariosNestedInput;
-    inscricao?: Prisma.InscricaoUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput;
@@ -1134,9 +1318,11 @@ export type UserUncheckedUpdateWithoutCursoInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-    inscricao?: Prisma.InscricaoUncheckedUpdateOneWithoutUserNestedInput;
+    inscricoes?: Prisma.InscricaoUncheckedUpdateManyWithoutUserNestedInput;
+    tokens?: Prisma.TokenUncheckedUpdateManyWithoutUserNestedInput;
     coordenadorias?: Prisma.CoordenadorCursoUncheckedUpdateManyWithoutUserNestedInput;
     avaliacoes?: Prisma.AvaliacaoFase2UncheckedUpdateManyWithoutAvaliadorNestedInput;
     auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput;
@@ -1152,21 +1338,32 @@ export type UserUncheckedUpdateManyWithoutCursoInput = {
     matricula?: Prisma.StringFieldUpdateOperationsInput | string;
     comprovanteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
     dataNascimento?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+    emailConfirmado?: Prisma.BoolFieldUpdateOperationsInput | boolean;
     createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
     updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 export type UserCountOutputType = {
+    inscricoes: number;
+    tokens: number;
     coordenadorias: number;
     avaliacoes: number;
     auditLogs: number;
 };
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    inscricoes?: boolean | UserCountOutputTypeCountInscricoesArgs;
+    tokens?: boolean | UserCountOutputTypeCountTokensArgs;
     coordenadorias?: boolean | UserCountOutputTypeCountCoordenadoriasArgs;
     avaliacoes?: boolean | UserCountOutputTypeCountAvaliacoesArgs;
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs;
 };
 export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null;
+};
+export type UserCountOutputTypeCountInscricoesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.InscricaoWhereInput;
+};
+export type UserCountOutputTypeCountTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    where?: Prisma.TokenWhereInput;
 };
 export type UserCountOutputTypeCountCoordenadoriasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     where?: Prisma.CoordenadorCursoWhereInput;
@@ -1189,11 +1386,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
     matricula?: boolean;
     comprovanteUrl?: boolean;
     dataNascimento?: boolean;
+    emailConfirmado?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     instituicao?: boolean | Prisma.User$instituicaoArgs<ExtArgs>;
     curso?: boolean | Prisma.User$cursoArgs<ExtArgs>;
-    inscricao?: boolean | Prisma.User$inscricaoArgs<ExtArgs>;
+    inscricoes?: boolean | Prisma.User$inscricoesArgs<ExtArgs>;
+    tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>;
     coordenadorias?: boolean | Prisma.User$coordenadoriasArgs<ExtArgs>;
     avaliacoes?: boolean | Prisma.User$avaliacoesArgs<ExtArgs>;
     auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>;
@@ -1211,6 +1410,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
     matricula?: boolean;
     comprovanteUrl?: boolean;
     dataNascimento?: boolean;
+    emailConfirmado?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     instituicao?: boolean | Prisma.User$instituicaoArgs<ExtArgs>;
@@ -1228,6 +1428,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
     matricula?: boolean;
     comprovanteUrl?: boolean;
     dataNascimento?: boolean;
+    emailConfirmado?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
     instituicao?: boolean | Prisma.User$instituicaoArgs<ExtArgs>;
@@ -1245,14 +1446,16 @@ export type UserSelectScalar = {
     matricula?: boolean;
     comprovanteUrl?: boolean;
     dataNascimento?: boolean;
+    emailConfirmado?: boolean;
     createdAt?: boolean;
     updatedAt?: boolean;
 };
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "email" | "cpf" | "senhaHash" | "role" | "instituicaoId" | "cursoId" | "matricula" | "comprovanteUrl" | "dataNascimento" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>;
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nome" | "email" | "cpf" | "senhaHash" | "role" | "instituicaoId" | "cursoId" | "matricula" | "comprovanteUrl" | "dataNascimento" | "emailConfirmado" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>;
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     instituicao?: boolean | Prisma.User$instituicaoArgs<ExtArgs>;
     curso?: boolean | Prisma.User$cursoArgs<ExtArgs>;
-    inscricao?: boolean | Prisma.User$inscricaoArgs<ExtArgs>;
+    inscricoes?: boolean | Prisma.User$inscricoesArgs<ExtArgs>;
+    tokens?: boolean | Prisma.User$tokensArgs<ExtArgs>;
     coordenadorias?: boolean | Prisma.User$coordenadoriasArgs<ExtArgs>;
     avaliacoes?: boolean | Prisma.User$avaliacoesArgs<ExtArgs>;
     auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>;
@@ -1271,7 +1474,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     objects: {
         instituicao: Prisma.$InstituicaoPayload<ExtArgs> | null;
         curso: Prisma.$CursoPayload<ExtArgs> | null;
-        inscricao: Prisma.$InscricaoPayload<ExtArgs> | null;
+        inscricoes: Prisma.$InscricaoPayload<ExtArgs>[];
+        tokens: Prisma.$TokenPayload<ExtArgs>[];
         coordenadorias: Prisma.$CoordenadorCursoPayload<ExtArgs>[];
         avaliacoes: Prisma.$AvaliacaoFase2Payload<ExtArgs>[];
         auditLogs: Prisma.$AuditLogPayload<ExtArgs>[];
@@ -1288,6 +1492,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
         matricula: string;
         comprovanteUrl: string | null;
         dataNascimento: Date;
+        emailConfirmado: boolean;
         createdAt: Date;
         updatedAt: Date;
     }, ExtArgs["result"]["user"]>;
@@ -1344,7 +1549,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
     readonly [Symbol.toStringTag]: "PrismaPromise";
     instituicao<T extends Prisma.User$instituicaoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$instituicaoArgs<ExtArgs>>): Prisma.Prisma__InstituicaoClient<runtime.Types.Result.GetResult<Prisma.$InstituicaoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
     curso<T extends Prisma.User$cursoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$cursoArgs<ExtArgs>>): Prisma.Prisma__CursoClient<runtime.Types.Result.GetResult<Prisma.$CursoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
-    inscricao<T extends Prisma.User$inscricaoArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$inscricaoArgs<ExtArgs>>): Prisma.Prisma__InscricaoClient<runtime.Types.Result.GetResult<Prisma.$InscricaoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>;
+    inscricoes<T extends Prisma.User$inscricoesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$inscricoesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InscricaoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
+    tokens<T extends Prisma.User$tokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     coordenadorias<T extends Prisma.User$coordenadoriasArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$coordenadoriasArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CoordenadorCursoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     avaliacoes<T extends Prisma.User$avaliacoesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$avaliacoesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvaliacaoFase2Payload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
     auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>;
@@ -1364,6 +1570,7 @@ export interface UserFieldRefs {
     readonly matricula: Prisma.FieldRef<"User", 'String'>;
     readonly comprovanteUrl: Prisma.FieldRef<"User", 'String'>;
     readonly dataNascimento: Prisma.FieldRef<"User", 'DateTime'>;
+    readonly emailConfirmado: Prisma.FieldRef<"User", 'Boolean'>;
     readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>;
     readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>;
 }
@@ -1479,11 +1686,27 @@ export type User$cursoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
     include?: Prisma.CursoInclude<ExtArgs> | null;
     where?: Prisma.CursoWhereInput;
 };
-export type User$inscricaoArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$inscricoesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.InscricaoSelect<ExtArgs> | null;
     omit?: Prisma.InscricaoOmit<ExtArgs> | null;
     include?: Prisma.InscricaoInclude<ExtArgs> | null;
     where?: Prisma.InscricaoWhereInput;
+    orderBy?: Prisma.InscricaoOrderByWithRelationInput | Prisma.InscricaoOrderByWithRelationInput[];
+    cursor?: Prisma.InscricaoWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.InscricaoScalarFieldEnum | Prisma.InscricaoScalarFieldEnum[];
+};
+export type User$tokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+    select?: Prisma.TokenSelect<ExtArgs> | null;
+    omit?: Prisma.TokenOmit<ExtArgs> | null;
+    include?: Prisma.TokenInclude<ExtArgs> | null;
+    where?: Prisma.TokenWhereInput;
+    orderBy?: Prisma.TokenOrderByWithRelationInput | Prisma.TokenOrderByWithRelationInput[];
+    cursor?: Prisma.TokenWhereUniqueInput;
+    take?: number;
+    skip?: number;
+    distinct?: Prisma.TokenScalarFieldEnum | Prisma.TokenScalarFieldEnum[];
 };
 export type User$coordenadoriasArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
     select?: Prisma.CoordenadorCursoSelect<ExtArgs> | null;

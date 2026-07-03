@@ -9,6 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+function escapeCsv(val) {
+    const str = val == null ? "" : String(val);
+    if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
+        return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+}
 let DashboardService = class DashboardService {
     prisma;
     constructor(prisma) {
@@ -90,40 +97,27 @@ let DashboardService = class DashboardService {
             orderBy: { createdAt: "desc" },
         });
         const header = [
-            "ID",
-            "Nome",
-            "Email",
-            "CPF",
-            "Matricula",
-            "Data Nascimento",
-            "Estado",
-            "Municipio",
-            "Instituicao",
-            "Curso",
-            "Periodo",
-            "Status",
-            "Fase 1 Nota",
-            "Nota Final",
-            "Medalha",
-            "Criado Em",
+            "ID", "Nome", "Email", "CPF", "Matricula", "Data Nascimento",
+            "Estado", "Municipio", "Instituicao", "Curso", "Periodo",
+            "Status", "Fase 1 Nota", "Nota Final", "Medalha", "Criado Em",
         ].join(",");
         const rows = inscricoes.map((i) => [
-            i.id,
-            `"${i.user.nome}"`,
-            i.user.email,
-            i.user.cpf,
-            i.user.matricula,
-            i.user.dataNascimento?.toISOString().split("T")[0] ?? "",
-            i.estado,
-            i.municipio ?? "",
-            `"${i.instituicao?.nome ?? ""}"`,
-            `"${i.curso?.nome ?? ""}"`,
-            i.periodo ?? "",
-            i.status,
-            i.fase1Nota ?? "",
-            i.notaFinal ?? "",
-            i.medalha ?? "",
-            i.createdAt.toISOString(),
+            escapeCsv(i.id),
+            escapeCsv(i.user.nome),
+            escapeCsv(i.user.email),
+            escapeCsv(i.user.cpf),
+            escapeCsv(i.user.matricula),
+            escapeCsv(i.user.dataNascimento?.toISOString().split("T")[0] ?? ""),
+            escapeCsv(i.estado),
+            escapeCsv(i.municipio ?? ""),
+            escapeCsv(i.instituicao?.nome ?? ""),
+            escapeCsv(i.curso?.nome ?? ""),
+            escapeCsv(i.periodo ?? ""),
+            escapeCsv(i.status),
+            escapeCsv(i.fase1Nota ?? ""),
+            escapeCsv(i.notaFinal ?? ""),
+            escapeCsv(i.medalha ?? ""),
+            escapeCsv(i.createdAt.toISOString()),
         ].join(","));
         return [header, ...rows].join("\n");
     }
@@ -138,16 +132,16 @@ let DashboardService = class DashboardService {
         const header = "ID,Nome,Email,CPF,Role,Matricula,Data Nascimento,Instituicao,Curso,Criado Em\n";
         const rows = users
             .map((u) => [
-            u.id,
-            `"${u.nome}"`,
-            u.email,
-            u.cpf,
-            u.role,
-            u.matricula ?? "",
-            u.dataNascimento?.toISOString().split("T")[0] ?? "",
-            `"${u.instituicao?.nome ?? ""}"`,
-            `"${u.curso?.nome ?? ""}"`,
-            u.createdAt.toISOString(),
+            escapeCsv(u.id),
+            escapeCsv(u.nome),
+            escapeCsv(u.email),
+            escapeCsv(u.cpf),
+            escapeCsv(u.role),
+            escapeCsv(u.matricula ?? ""),
+            escapeCsv(u.dataNascimento?.toISOString().split("T")[0] ?? ""),
+            escapeCsv(u.instituicao?.nome ?? ""),
+            escapeCsv(u.curso?.nome ?? ""),
+            escapeCsv(u.createdAt.toISOString()),
         ].join(","))
             .join("\n");
         return header + rows;
@@ -163,14 +157,14 @@ let DashboardService = class DashboardService {
         const header = "ID,Titulo,Edicao,Duracao (min),Questoes,Status,Publicada,Criado Em\n";
         const rows = provas
             .map((p) => [
-            p.id,
-            `"${p.titulo || ""}"`,
-            p.edicao?.ano ?? "",
-            p.duracaoMinutos ?? "",
-            p._count.questoes,
-            p.status,
-            p.publicadaEm ? "Sim" : "Nao",
-            p.createdAt.toISOString(),
+            escapeCsv(p.id),
+            escapeCsv(p.titulo || ""),
+            escapeCsv(p.edicao?.ano ?? ""),
+            escapeCsv(p.duracaoMinutos ?? ""),
+            escapeCsv(p._count.questoes),
+            escapeCsv(p.status),
+            escapeCsv(p.publicadaEm ? "Sim" : "Nao"),
+            escapeCsv(p.createdAt.toISOString()),
         ].join(","))
             .join("\n");
         return header + rows;
@@ -190,17 +184,17 @@ let DashboardService = class DashboardService {
         const header = "ID,Nome,Email,CPF,Estado,Instituicao,Curso,Fase 1 Nota,Fase 2 Tema,Nota Final,Medalha\n";
         const rows = inscricoes
             .map((i) => [
-            i.id,
-            `"${i.user.nome}"`,
-            i.user.email,
-            i.user.cpf,
-            i.estado,
-            `"${i.instituicao?.nome ?? ""}"`,
-            `"${i.curso?.nome ?? ""}"`,
-            i.fase1Nota ?? "",
-            `"${i.fase2Tema ?? ""}"`,
-            i.notaFinal ?? "",
-            i.medalha ?? "",
+            escapeCsv(i.id),
+            escapeCsv(i.user.nome),
+            escapeCsv(i.user.email),
+            escapeCsv(i.user.cpf),
+            escapeCsv(i.estado),
+            escapeCsv(i.instituicao?.nome ?? ""),
+            escapeCsv(i.curso?.nome ?? ""),
+            escapeCsv(i.fase1Nota ?? ""),
+            escapeCsv(i.fase2Tema ?? ""),
+            escapeCsv(i.notaFinal ?? ""),
+            escapeCsv(i.medalha ?? ""),
         ].join(","))
             .join("\n");
         return header + rows;
@@ -210,6 +204,25 @@ let DashboardService = class DashboardService {
             select: { id: true, ano: true, titulo: true, status: true },
             orderBy: { ano: "desc" },
         });
+    }
+    async createEdicao(data) {
+        return this.prisma.edicao.create({
+            data: {
+                ano: data.ano,
+                titulo: data.titulo,
+                status: "PLANEJAMENTO",
+            },
+        });
+    }
+    async updateEdicao(id, data) {
+        return this.prisma.edicao.update({
+            where: { id },
+            data,
+        });
+    }
+    async deleteEdicao(id) {
+        await this.prisma.edicao.delete({ where: { id } });
+        return { deleted: true };
     }
 };
 DashboardService = __decorate([

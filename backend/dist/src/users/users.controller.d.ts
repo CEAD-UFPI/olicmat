@@ -29,5 +29,6 @@ export declare class UsersController {
         cursoId: string | null;
         matricula: string;
         comprovanteUrl: string | null;
+        emailConfirmado: boolean;
     }>;
 }

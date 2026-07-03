@@ -9,24 +9,28 @@ interface AuthUser {
 export declare class EnvioController {
     private readonly envioService;
     constructor(envioService: EnvioService);
-    uploadVideo(req: ExpressReq & {
+    enviarVideoLink(req: ExpressReq & {
         user: AuthUser;
-    }, file: Express.Multer.File): Promise<{
+    }, body: {
+        videoLink: string;
+    }): Promise<{
         id: string;
         status: import("../../../generated/prisma/enums.js").StatusEnvioFase2;
         inscricaoId: string;
         tipo: string;
         arquivoUrl: string;
+        videoLink: string | null;
         enviadoEm: Date;
     }>;
     uploadPortfolio(req: ExpressReq & {
         user: AuthUser;
-    }, file: Express.Multer.File): Promise<{
+    }, file: any): Promise<{
         id: string;
         status: import("../../../generated/prisma/enums.js").StatusEnvioFase2;
         inscricaoId: string;
         tipo: string;
         arquivoUrl: string;
+        videoLink: string | null;
         enviadoEm: Date;
     }>;
     status(req: ExpressReq & {
@@ -45,6 +49,7 @@ export declare class EnvioController {
             status: import("../../../generated/prisma/enums.js").StatusEnvioFase2;
             tipo: string;
             arquivoUrl: string;
+            videoLink: string | null;
             enviadoEm: Date;
         }[];
     }>;

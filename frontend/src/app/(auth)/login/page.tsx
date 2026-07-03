@@ -8,9 +8,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { useAuthStore } from "@/stores/authStore";
+import type { Role } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+
+const roleHome: Record<Role, string> = {
+  ALUNO: "/competidor",
+  COORDENADOR_CURSO: "/coordenador",
+  AVALIADOR: "/avaliador",
+  ADMIN: "/admin",
+  COMISSAO: "/comissao",
+};
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -35,8 +44,9 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      await login(data.email, data.senha);
-      router.push("/competidor");
+      const user = await login(data.email, data.senha);
+      const home = roleHome[user.role as Role] || "/competidor";
+      router.push(home);
     } catch {
       setError("Email ou senha inválidos.");
     } finally {
@@ -118,7 +128,7 @@ export default function LoginPage() {
 
           <p className="text-sm text-[#9895a4] text-center mt-6">
             Não tem conta?{" "}
-            <Link href="/registro" className="text-[#4b7bec] hover:underline">
+            <Link href="/registro" className="text-[#3AAFE0] hover:underline">
               Cadastre-se
             </Link>
           </p>

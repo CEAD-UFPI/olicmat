@@ -1,6 +1,7 @@
 import { InscricaoService } from "./inscricao.service.js";
 import type { CriarInscricaoDto } from "./dto/inscricao.dto.js";
 import type { Request as ExpressReq } from "express";
+import { UploadService } from "../../upload/upload.service.js";
 interface AuthUser {
     id: string;
     email: string;
@@ -9,7 +10,8 @@ interface AuthUser {
 }
 export declare class InscricaoController {
     private readonly inscricaoService;
-    constructor(inscricaoService: InscricaoService);
+    private readonly uploadService;
+    constructor(inscricaoService: InscricaoService, uploadService: UploadService);
     criar(req: ExpressReq & {
         user: AuthUser;
     }, body: CriarInscricaoDto): Promise<{
@@ -104,7 +106,9 @@ export declare class InscricaoController {
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     }>;
-    listar(status?: string): Promise<({
+    listar(req: ExpressReq & {
+        user: AuthUser;
+    }, status?: string): Promise<({
         instituicao: {
             id: string;
             sigla: string;
@@ -144,7 +148,9 @@ export declare class InscricaoController {
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     })[]>;
-    confirmar(id: string): Promise<{
+    confirmar(id: string, req: ExpressReq & {
+        user: AuthUser;
+    }): Promise<{
         id: string;
         estado: string;
         createdAt: Date;
@@ -166,6 +172,8 @@ export declare class InscricaoController {
     }>;
     atualizarStatus(id: string, body: {
         status: string;
+    }, req: ExpressReq & {
+        user: AuthUser;
     }): Promise<{
         id: string;
         estado: string;
@@ -206,7 +214,9 @@ export declare class InscricaoController {
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
     }>;
-    deletar(id: string): Promise<{
+    deletar(id: string, req: ExpressReq & {
+        user: AuthUser;
+    }): Promise<{
         id: string;
         estado: string;
         createdAt: Date;
@@ -225,6 +235,11 @@ export declare class InscricaoController {
         fase2Tema: string | null;
         notaFinal: number | null;
         medalha: import("../../../generated/prisma/enums.js").Medalha | null;
+    }>;
+    uploadComprovante(req: ExpressReq & {
+        user: AuthUser;
+    }, file: any): Promise<{
+        url: string;
     }>;
 }
 export {};

@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Post, Get, UseGuards, Request, UseInterceptors, UploadedFile, } from "@nestjs/common";
+import { Controller, Post, Get, Body, UseGuards, Request, UseInterceptors, UploadedFile, BadRequestException, } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { EnvioService } from "./envio.service.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
@@ -19,10 +19,16 @@ let EnvioController = class EnvioController {
     constructor(envioService) {
         this.envioService = envioService;
     }
-    async uploadVideo(req, file) {
-        return this.envioService.uploadVideo(req.user.id, file);
+    async enviarVideoLink(req, body) {
+        if (!body.videoLink) {
+            throw new BadRequestException("Link do vídeo é obrigatório");
+        }
+        return this.envioService.enviarVideoLink(req.user.id, body.videoLink);
     }
     async uploadPortfolio(req, file) {
+        if (!file) {
+            throw new BadRequestException("Arquivo do portfólio é obrigatório");
+        }
         return this.envioService.uploadPortfolio(req.user.id, file);
     }
     async status(req) {
@@ -30,14 +36,13 @@ let EnvioController = class EnvioController {
     }
 };
 __decorate([
-    Post("video"),
-    UseInterceptors(FileInterceptor("video")),
+    Post("video-link"),
     __param(0, Request()),
-    __param(1, UploadedFile()),
+    __param(1, Body()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
-], EnvioController.prototype, "uploadVideo", null);
+], EnvioController.prototype, "enviarVideoLink", null);
 __decorate([
     Post("portfolio"),
     UseInterceptors(FileInterceptor("portfolio")),

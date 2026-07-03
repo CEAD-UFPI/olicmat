@@ -5,6 +5,18 @@ import { PrismaService } from "../../prisma.service.js";
 export class AuditoriaService {
   constructor(private prisma: PrismaService) {}
 
+  async log(
+    actorId: string,
+    acao: string,
+    entidade: string,
+    entidadeId: string,
+    payload?: Record<string, unknown>,
+  ) {
+    return this.prisma.auditLog.create({
+      data: { actorId, acao, entidade, entidadeId, payload: (payload ?? {}) as object },
+    });
+  }
+
   async findAll(filters?: {
     entidade?: string;
     acao?: string;

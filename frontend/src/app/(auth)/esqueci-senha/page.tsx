@@ -83,7 +83,7 @@ export default function EsqueciSenhaPage() {
               </p>
               <Link
                 href="/login"
-                className="text-sm text-[#4b7bec] hover:underline"
+                className="text-sm text-[#3AAFE0] hover:underline"
               >
                 Voltar para o login
               </Link>
@@ -128,7 +128,7 @@ export default function EsqueciSenhaPage() {
 
               <p className="text-sm text-[#9895a4] text-center mt-6">
                 Lembrou sua senha?{" "}
-                <Link href="/login" className="text-[#4b7bec] hover:underline">
+                <Link href="/login" className="text-[#3AAFE0] hover:underline">
                   Entrar
                 </Link>
               </p>

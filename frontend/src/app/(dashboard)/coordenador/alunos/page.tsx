@@ -39,7 +39,7 @@ export default function CoordenadorAlunosPage() {
   });
 
   const statusColors: Record<string, string> = {
-    CONFIRMADA: "#00d47d",
+    CONFIRMADA: "#4CAF50",
     PENDENTE: "#f59e0b",
     REJEITADA: "#e53e3e",
   };
@@ -85,7 +85,7 @@ export default function CoordenadorAlunosPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">

@@ -23,5 +23,6 @@ export declare class RankingController {
     }[]>>>;
     atualizarMedalhas(): Promise<{
         atualizado: boolean;
+        total: number;
     }>;
 }

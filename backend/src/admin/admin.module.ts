@@ -5,15 +5,16 @@ import { AvaliacaoModule } from "./avaliacao/avaliacao.module.js";
 import { DashboardModule } from "./dashboard/dashboard.module.js";
 import { AuditoriaModule } from "./auditoria/auditoria.module.js";
 import { AdminUsuariosModule } from "./usuarios/usuarios.module.js";
+import { CursosModule } from "./cursos/cursos.module.js";
 
 @Module({
   imports: [
     ProvasModule, QuestoesModule, AvaliacaoModule, DashboardModule,
-    AuditoriaModule, AdminUsuariosModule,
+    AuditoriaModule, AdminUsuariosModule, CursosModule,
   ],
   exports: [
     ProvasModule, QuestoesModule, AvaliacaoModule, DashboardModule,
-    AuditoriaModule, AdminUsuariosModule,
+    AuditoriaModule, AdminUsuariosModule, CursosModule,
   ],
 })
 export class AdminModule {}

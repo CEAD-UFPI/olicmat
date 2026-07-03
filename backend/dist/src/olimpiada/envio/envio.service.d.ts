@@ -1,31 +1,31 @@
 import { PrismaService } from "../../prisma.service.js";
 import { UploadService } from "../../upload/upload.service.js";
+interface FileBuffer {
+    buffer: Buffer;
+    originalname: string;
+    mimetype: string;
+    size: number;
+}
 export declare class EnvioService {
     private prisma;
     private upload;
     constructor(prisma: PrismaService, upload: UploadService);
-    uploadFase2(userId: string, file: Express.Multer.File, tipo: string): Promise<{
+    enviarVideoLink(userId: string, videoLink: string): Promise<{
         id: string;
         status: import("../../../generated/prisma/enums.js").StatusEnvioFase2;
         inscricaoId: string;
         tipo: string;
         arquivoUrl: string;
+        videoLink: string | null;
         enviadoEm: Date;
     }>;
-    uploadVideo(userId: string, file: Express.Multer.File): Promise<{
+    uploadPortfolio(userId: string, file: FileBuffer): Promise<{
         id: string;
         status: import("../../../generated/prisma/enums.js").StatusEnvioFase2;
         inscricaoId: string;
         tipo: string;
         arquivoUrl: string;
-        enviadoEm: Date;
-    }>;
-    uploadPortfolio(userId: string, file: Express.Multer.File): Promise<{
-        id: string;
-        status: import("../../../generated/prisma/enums.js").StatusEnvioFase2;
-        inscricaoId: string;
-        tipo: string;
-        arquivoUrl: string;
+        videoLink: string | null;
         enviadoEm: Date;
     }>;
     statusEnvio(userId: string): Promise<{
@@ -42,7 +42,9 @@ export declare class EnvioService {
             status: import("../../../generated/prisma/enums.js").StatusEnvioFase2;
             tipo: string;
             arquivoUrl: string;
+            videoLink: string | null;
             enviadoEm: Date;
         }[];
     }>;
 }
+export {};

@@ -27,9 +27,9 @@ const medalhaCores: Record<string, string> = {
 };
 
 const medalhaEmoji: Record<string, string> = {
-  OURO: "1",
-  PRATA: "2",
-  BRONZE: "3",
+  OURO: "\u{1F947}",
+  PRATA: "\u{1F948}",
+  BRONZE: "\u{1F949}",
 };
 
 export default function RankingPage() {
@@ -71,7 +71,7 @@ export default function RankingPage() {
         <select
           value={estado}
           onChange={(e) => setEstado(e.target.value)}
-          className="h-12 px-4 rounded-xl bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-sm focus:outline-none focus:border-[#f48120] min-w-[200px]"
+          className="h-12 px-4 rounded-xl bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-sm focus:outline-none focus:border-[#E8B829] min-w-[200px]"
         >
           <option value="">Todos os estados</option>
           {ESTADOS.map((uf) => (
@@ -82,7 +82,7 @@ export default function RankingPage() {
 
       {carregando ? (
         <div className="flex justify-center">
-          <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="space-y-12">

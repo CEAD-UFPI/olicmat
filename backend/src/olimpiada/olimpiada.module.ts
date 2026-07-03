@@ -7,7 +7,6 @@ import { EnvioService } from "./envio/envio.service.js";
 import { EnvioController } from "./envio/envio.controller.js";
 import { RankingService } from "./ranking/ranking.service.js";
 import { RankingController } from "./ranking/ranking.controller.js";
-import { PrismaService } from "../prisma.service.js";
 import { UploadModule } from "../upload/upload.module.js";
 
 @Module({
@@ -18,7 +17,7 @@ import { UploadModule } from "../upload/upload.module.js";
     EnvioController,
     RankingController,
   ],
-  providers: [InscricaoService, ProvaService, EnvioService, RankingService, PrismaService],
+  providers: [InscricaoService, ProvaService, EnvioService, RankingService],
   exports: [InscricaoService, ProvaService, EnvioService],
 })
 export class OlimpiadaModule {}

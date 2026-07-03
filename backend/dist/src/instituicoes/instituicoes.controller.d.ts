@@ -10,6 +10,7 @@ export declare class InstituicoesController {
     } & {
         id: string;
         sigla: string;
+        codigoInep: string | null;
         nome: string;
         estado: string;
         createdAt: Date;
@@ -23,6 +24,7 @@ export declare class InstituicoesController {
     } & {
         id: string;
         sigla: string;
+        codigoInep: string | null;
         nome: string;
         estado: string;
         createdAt: Date;
@@ -31,6 +33,7 @@ export declare class InstituicoesController {
     create(body: unknown): Promise<{
         id: string;
         sigla: string;
+        codigoInep: string | null;
         nome: string;
         estado: string;
         createdAt: Date;
@@ -39,9 +42,13 @@ export declare class InstituicoesController {
     update(id: string, body: unknown): Promise<{
         id: string;
         sigla: string;
+        codigoInep: string | null;
         nome: string;
         estado: string;
         createdAt: Date;
         updatedAt: Date;
+    }>;
+    delete(id: string): Promise<{
+        deleted: boolean;
     }>;
 }

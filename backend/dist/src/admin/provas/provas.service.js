@@ -9,13 +9,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 let ProvasService = class ProvasService {
     prisma;
-    constructor(prisma) {
+    auditoria;
+    constructor(prisma, auditoria) {
         this.prisma = prisma;
+        this.auditoria = auditoria;
     }
     async create(userId, data) {
-        return this.prisma.prova.create({
+        const prova = await this.prisma.prova.create({
             data: {
                 edicaoId: data.edicaoId,
                 fase: data.fase,
@@ -27,6 +30,11 @@ let ProvasService = class ProvasService {
                 createdBy: userId,
             },
         });
+        await this.auditoria.log(userId, "CRIAR_PROVA", "Prova", prova.id, {
+            titulo: data.titulo,
+            edicaoId: data.edicaoId,
+        });
+        return prova;
     }
     async findAll(edicaoId) {
         const where = edicaoId ? { edicaoId } : {};
@@ -57,9 +65,9 @@ let ProvasService = class ProvasService {
         }
         return prova;
     }
-    async update(id, data) {
+    async update(id, data, userId) {
         await this.findById(id);
-        return this.prisma.prova.update({
+        const result = await this.prisma.prova.update({
             where: { id },
             data: {
                 ...(data.titulo && { titulo: data.titulo }),
@@ -68,8 +76,12 @@ let ProvasService = class ProvasService {
                 ...(data.janelaFim && { janelaFim: new Date(data.janelaFim) }),
             },
         });
+        if (userId) {
+            await this.auditoria.log(userId, "ATUALIZAR_PROVA", "Prova", id, data);
+        }
+        return result;
     }
-    async delete(id) {
+    async delete(id, userId) {
         await this.findById(id);
         await this.prisma.provaQuestao.deleteMany({
             where: { provaId: id },
@@ -77,9 +89,12 @@ let ProvasService = class ProvasService {
         await this.prisma.prova.delete({
             where: { id },
         });
+        if (userId) {
+            await this.auditoria.log(userId, "DELETAR_PROVA", "Prova", id);
+        }
         return { deleted: true };
     }
-    async publicar(id) {
+    async publicar(id, userId) {
         await this.findById(id);
         const questaoCount = await this.prisma.provaQuestao.count({
             where: { provaId: id },
@@ -87,10 +102,14 @@ let ProvasService = class ProvasService {
         if (questaoCount === 0) {
             throw new BadRequestException("Não é possível publicar uma prova sem questões");
         }
-        return this.prisma.prova.update({
+        const result = await this.prisma.prova.update({
             where: { id },
             data: { status: "PUBLICADA" },
         });
+        if (userId) {
+            await this.auditoria.log(userId, "PUBLICAR_PROVA", "Prova", id);
+        }
+        return result;
     }
     async duplicar(id, userId) {
         const prova = await this.findById(id);
@@ -115,12 +134,16 @@ let ProvasService = class ProvasService {
                 })),
             });
         }
+        await this.auditoria.log(userId, "DUPLICAR_PROVA", "Prova", novaProva.id, {
+            origem: id,
+        });
         return this.findById(novaProva.id);
     }
 };
 ProvasService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [PrismaService])
+    __metadata("design:paramtypes", [PrismaService,
+        AuditoriaService])
 ], ProvasService);
 export { ProvasService };
 //# sourceMappingURL=provas.service.js.map

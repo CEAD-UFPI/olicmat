@@ -13,7 +13,6 @@ import { EnvioService } from "./envio/envio.service.js";
 import { EnvioController } from "./envio/envio.controller.js";
 import { RankingService } from "./ranking/ranking.service.js";
 import { RankingController } from "./ranking/ranking.controller.js";
-import { PrismaService } from "../prisma.service.js";
 import { UploadModule } from "../upload/upload.module.js";
 let OlimpiadaModule = class OlimpiadaModule {
 };
@@ -26,7 +25,7 @@ OlimpiadaModule = __decorate([
             EnvioController,
             RankingController,
         ],
-        providers: [InscricaoService, ProvaService, EnvioService, RankingService, PrismaService],
+        providers: [InscricaoService, ProvaService, EnvioService, RankingService],
         exports: [InscricaoService, ProvaService, EnvioService],
     })
 ], OlimpiadaModule);

@@ -3,6 +3,7 @@ import {
   Get,
   Post,
   Patch,
+  Delete,
   Param,
   Body,
   UseGuards,
@@ -61,5 +62,12 @@ export class InstituicoesController {
       throw new BadRequestException(parsed.error.flatten().fieldErrors);
     }
     return this.instituicoesService.update(id, parsed.data);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Delete("admin/instituicoes/:id")
+  async delete(@Param("id") id: string) {
+    return this.instituicoesService.delete(id);
   }
 }

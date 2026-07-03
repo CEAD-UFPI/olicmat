@@ -38,4 +38,37 @@ export declare class DashboardService {
         titulo: string;
         status: string;
     }[]>;
+    createEdicao(data: {
+        ano: number;
+        titulo: string;
+    }): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        ano: number;
+        titulo: string;
+        status: string;
+        dataInicio: Date | null;
+        dataFim: Date | null;
+        pesoFase1: number;
+        pesoFase2: number;
+    }>;
+    updateEdicao(id: string, data: {
+        titulo?: string;
+        status?: string;
+    }): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        ano: number;
+        titulo: string;
+        status: string;
+        dataInicio: Date | null;
+        dataFim: Date | null;
+        pesoFase1: number;
+        pesoFase2: number;
+    }>;
+    deleteEdicao(id: string): Promise<{
+        deleted: boolean;
+    }>;
 }

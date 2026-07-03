@@ -63,7 +63,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QuestoesController.prototype, "addToExam", null);
 __decorate([
-    Roles(Role.AVALIADOR, Role.ADMIN),
+    Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO),
     Get("admin/questoes"),
     __param(0, Query("eixo")),
     __param(1, Query("dificuldade")),
@@ -72,7 +72,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], QuestoesController.prototype, "findAll", null);
 __decorate([
-    Roles(Role.AVALIADOR, Role.ADMIN),
+    Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO),
     Get("admin/provas/:provaId/questoes"),
     __param(0, Param("provaId")),
     __metadata("design:type", Function),

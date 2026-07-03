@@ -49,7 +49,7 @@ export class QuestoesController {
     return this.questoesService.addToExam(provaId, parsed.data);
   }
 
-  @Roles(Role.AVALIADOR, Role.ADMIN)
+  @Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO)
   @Get("admin/questoes")
   async findAll(
     @Query("eixo") eixo?: string,
@@ -58,7 +58,7 @@ export class QuestoesController {
     return this.questoesService.findAll({ eixo, dificuldade });
   }
 
-  @Roles(Role.AVALIADOR, Role.ADMIN)
+  @Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO)
   @Get("admin/provas/:provaId/questoes")
   async findExamQuestions(@Param("provaId") provaId: string) {
     return this.questoesService.findExamQuestions(provaId);

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, ClipboardList, Clock, BookOpen } from "lucide-react";
+import { Users, ClipboardList, Clock, BookOpen, Building2, GraduationCap, Calendar } from "lucide-react";
 
 interface AdminResumo {
   totalUsuarios?: number;
@@ -31,17 +31,20 @@ export default function AdminPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   const links = [
-    { href: "/admin/usuarios", label: "Usuarios", descricao: "Gerenciar usuarios e permissoes", icon: Users, cor: "#4b7bec" },
-    { href: "/admin/inscricoes", label: "Inscricoes", descricao: "Validar e gerenciar inscricoes", icon: ClipboardList, cor: "#f48120" },
-    { href: "/admin/provas", label: "Provas", descricao: "Criar e gerenciar provas", icon: BookOpen, cor: "#00d47d" },
-    { href: "/admin/avaliacao", label: "Avaliacao", descricao: "Avaliar Fase 2", icon: ClipboardList, cor: "#f48120" },
-    { href: "/admin/exportar", label: "Exportar", descricao: "Exportar dados dos resultados", icon: BookOpen, cor: "#4b7bec" },
+    { href: "/admin/instituicoes", label: "Instituicoes", descricao: "Gerenciar instituicoes", icon: Building2, cor: "#E8B829" },
+    { href: "/admin/cursos", label: "Cursos", descricao: "Gerenciar cursos", icon: GraduationCap, cor: "#4CAF50" },
+    { href: "/admin/edicoes", label: "Edicoes", descricao: "Gerenciar edicoes", icon: Calendar, cor: "#3AAFE0" },
+    { href: "/admin/usuarios", label: "Usuarios", descricao: "Gerenciar usuarios e permissoes", icon: Users, cor: "#3AAFE0" },
+    { href: "/admin/inscricoes", label: "Inscricoes", descricao: "Validar e gerenciar inscricoes", icon: ClipboardList, cor: "#E8B829" },
+    { href: "/admin/provas", label: "Provas", descricao: "Criar e gerenciar provas", icon: BookOpen, cor: "#4CAF50" },
+    { href: "/admin/avaliacao", label: "Avaliacao", descricao: "Avaliar Fase 2", icon: ClipboardList, cor: "#E8B829" },
+    { href: "/admin/exportar", label: "Exportar", descricao: "Exportar dados dos resultados", icon: BookOpen, cor: "#3AAFE0" },
     { href: "/admin/auditoria", label: "Auditoria", descricao: "Log de acoes do sistema", icon: Clock, cor: "#9895a4" },
   ];
 
@@ -63,7 +66,7 @@ export default function AdminPage() {
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
             <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <Users size={14} className="text-[#4b7bec]" />
+              <Users size={14} className="text-[#3AAFE0]" />
               Usuarios
             </CardTitle>
           </CardHeader>
@@ -77,7 +80,7 @@ export default function AdminPage() {
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
             <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <ClipboardList size={14} className="text-[#f48120]" />
+              <ClipboardList size={14} className="text-[#E8B829]" />
               Inscricoes
             </CardTitle>
           </CardHeader>

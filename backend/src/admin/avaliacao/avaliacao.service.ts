@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../auditoria/auditoria.service.js";
 import type { AvaliarEnvioDto } from "./dto/avaliacao.dto.js";
 
 @Injectable()
 export class AvaliacaoService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private auditoria: AuditoriaService,
+  ) {}
 
   async listPending() {
     return this.prisma.envioFase2.findMany({
@@ -43,7 +47,6 @@ export class AvaliacaoService {
 
     const inscricaoId = envio.inscricaoId;
 
-    // Create or update the evaluation
     const avaliacao = await this.prisma.avaliacaoFase2.upsert({
       where: {
         inscricaoId_avaliadorId: {
@@ -63,13 +66,11 @@ export class AvaliacaoService {
       },
     });
 
-    // Mark as AVALIADO
     await this.prisma.envioFase2.update({
       where: { id: envioId },
       data: { status: "AVALIADO" },
     });
 
-    // Calculate the average grade and update the inscricao
     const avaliacoes = await this.prisma.avaliacaoFase2.findMany({
       where: { inscricaoId },
     });
@@ -92,11 +93,14 @@ export class AvaliacaoService {
 
       await this.prisma.inscricao.update({
         where: { id: inscricaoId },
-        data: {
-          notaFinal,
-        },
+        data: { notaFinal },
       });
     }
+
+    await this.auditoria.log(avaliadorId, "AVALIAR_ENVIO", "EnvioFase2", envioId, {
+      nota: data.nota,
+      inscricaoId,
+    });
 
     return avaliacao;
   }

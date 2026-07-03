@@ -11,6 +11,7 @@ const roleHome: Record<Role, string> = {
   COORDENADOR_CURSO: "/coordenador",
   AVALIADOR: "/avaliador",
   ADMIN: "/admin",
+  COMISSAO: "/comissao",
 };
 
 const rolePrefixes: Record<Role, string> = {
@@ -18,6 +19,7 @@ const rolePrefixes: Record<Role, string> = {
   COORDENADOR_CURSO: "/coordenador",
   AVALIADOR: "/avaliador",
   ADMIN: "/admin",
+  COMISSAO: "/comissao",
 };
 
 export default function DashboardLayout({
@@ -39,11 +41,9 @@ export default function DashboardLayout({
     }
   }, [isLoading, isAuthenticated, router]);
 
-  // Redirect to role home if on the wrong dashboard
   useEffect(() => {
     if (!isLoading && isAuthenticated && user?.role) {
       const allowedPrefix = rolePrefixes[user.role];
-      // Admin can access everything
       if (user.role === "ADMIN") return;
 
       if (!pathname.startsWith(allowedPrefix)) {
@@ -55,7 +55,7 @@ export default function DashboardLayout({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-2 border-[#f48120] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }

@@ -37,7 +37,7 @@ let AvaliacaoController = class AvaliacaoController {
     }
 };
 __decorate([
-    Roles(Role.AVALIADOR, Role.ADMIN),
+    Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO),
     Get("pendentes"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -54,7 +54,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AvaliacaoController.prototype, "assignGrade", null);
 __decorate([
-    Roles(Role.ADMIN, Role.AVALIADOR),
+    Roles(Role.ADMIN, Role.AVALIADOR, Role.COMISSAO),
     Get("historico"),
     __param(0, Query("page")),
     __param(1, Query("limit")),

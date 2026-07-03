@@ -10,12 +10,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Header, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Patch, Delete, Param, Body, Header, Query, UseGuards, BadRequestException, } from "@nestjs/common";
+import { z } from "zod";
 import { DashboardService } from "./dashboard.service.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
 import { Roles } from "../../common/decorators/roles.decorator.js";
 import { Role } from "../../../generated/prisma/client.js";
+const criarEdicaoSchema = z.object({
+    ano: z.number().int().min(2020, "Ano mínimo 2020"),
+    titulo: z.string().min(2, "Título deve ter no mínimo 2 caracteres"),
+});
+const atualizarEdicaoSchema = z.object({
+    titulo: z.string().min(2).optional(),
+    status: z.enum(["PLANEJAMENTO", "ATIVA", "ENCERRADA"]).optional(),
+});
 let DashboardController = class DashboardController {
     dashboardService;
     constructor(dashboardService) {
@@ -45,6 +54,23 @@ let DashboardController = class DashboardController {
     }
     async listEdicoes() {
         return this.dashboardService.listEdicoes();
+    }
+    async createEdicao(body) {
+        const parsed = criarEdicaoSchema.safeParse(body);
+        if (!parsed.success) {
+            throw new BadRequestException(parsed.error.flatten().fieldErrors);
+        }
+        return this.dashboardService.createEdicao(parsed.data);
+    }
+    async updateEdicao(id, body) {
+        const parsed = atualizarEdicaoSchema.safeParse(body);
+        if (!parsed.success) {
+            throw new BadRequestException(parsed.error.flatten().fieldErrors);
+        }
+        return this.dashboardService.updateEdicao(id, parsed.data);
+    }
+    async deleteEdicao(id) {
+        return this.dashboardService.deleteEdicao(id);
     }
 };
 __decorate([
@@ -107,6 +133,31 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], DashboardController.prototype, "listEdicoes", null);
+__decorate([
+    Roles(Role.ADMIN),
+    Post("edicoes"),
+    __param(0, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], DashboardController.prototype, "createEdicao", null);
+__decorate([
+    Roles(Role.ADMIN),
+    Patch("edicoes/:id"),
+    __param(0, Param("id")),
+    __param(1, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], DashboardController.prototype, "updateEdicao", null);
+__decorate([
+    Roles(Role.ADMIN),
+    Delete("edicoes/:id"),
+    __param(0, Param("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], DashboardController.prototype, "deleteEdicao", null);
 DashboardController = __decorate([
     Controller("admin"),
     UseGuards(JwtAuthGuard, RolesGuard),
