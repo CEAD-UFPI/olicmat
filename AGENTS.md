@@ -58,6 +58,21 @@ olicmat/
 | AVALIADOR | `/avaliador` | Create questions, manage exams, evaluate Phase 2 |
 | ADMIN | `/admin` | Full access: users, enrollments, exams, exports, audit |
 
+## Production Deployment (3 Containers)
+
+A aplicação roda em produção no **Easypanel** com 3 containers independentes:
+
+| Container | Imagem | Porta | Função |
+|-----------|--------|-------|--------|
+| `olicmat-db` | `postgres:16-alpine` | 5432 | Banco de dados PostgreSQL |
+| `olicmat-api` | `olicmat-backend` | 3333 | API NestJS (Prisma) |
+| `olicmat-web` | `olicmat-frontend` | 3000 | Frontend Next.js |
+
+- Cada container é **independente** e orquestrado via `docker-compose.yml`
+- Migrations do Prisma rodam automaticamente no startup do backend (`prisma migrate deploy`)
+- Variáveis de ambiente (JWT_SECRET, Cloudinary, DATABASE_URL) configuradas no Easypanel
+- O frontend acessa a API via `NEXT_PUBLIC_API_URL` apontando para o domínio público do backend
+
 ## Key Conventions
 
 - **Validation:** Zod everywhere (backend DTOs, frontend forms with react-hook-form)
