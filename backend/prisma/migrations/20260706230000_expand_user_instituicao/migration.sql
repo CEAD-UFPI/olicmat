@@ -9,16 +9,17 @@ CREATE TYPE "EsferaAdministrativa" AS ENUM ('FEDERAL', 'ESTADUAL', 'MUNICIPAL', 
 CREATE TYPE "StatusInstituicao" AS ENUM ('ATIVA', 'INATIVA');
 CREATE TYPE "TipoInstituicao" AS ENUM ('PERMANENTE', 'TEMPORARIA');
 
+-- Add missing codigoInep column (was not in initial migration)
+ALTER TABLE "Instituicao" ADD COLUMN "codigoInep" TEXT;
+UPDATE "Instituicao" SET "codigoInep" = 'MIGRATED_' || id;
+ALTER TABLE "Instituicao" ADD CONSTRAINT "Instituicao_codigoInep_key" UNIQUE ("codigoInep");
+
 -- AlterTable: Instituicao
 -- First add uf and copy existing estado data, then drop estado
 ALTER TABLE "Instituicao" ADD COLUMN "uf" TEXT;
 UPDATE "Instituicao" SET "uf" = "estado";
 ALTER TABLE "Instituicao" ALTER COLUMN "uf" SET NOT NULL;
 ALTER TABLE "Instituicao" DROP COLUMN "estado";
-
--- Fix any NULL codigoInep before setting NOT NULL
-UPDATE "Instituicao" SET "codigoInep" = 'MIGRATED_' || id WHERE "codigoInep" IS NULL OR "codigoInep" = '';
-ALTER TABLE "Instituicao" ALTER COLUMN "codigoInep" SET NOT NULL;
 
 -- Add remaining Instituicao columns
 ALTER TABLE "Instituicao" ADD COLUMN "areaAssentamento" "AreaAssentamento";

@@ -28,3 +28,12 @@ Thumbs.db
 .turbo/
 .next/
 node_modules/
+
+# AI tools (local config)
+.agents/
+.opencode/
+fix-migration.sh
+
+# Root package files (created by opencode plugin)
+/package.json
+/package-lock.json
