@@ -9,13 +9,19 @@ import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye } from "lucide-react";
+import { DetailPanel, EDICAO_STATUS } from "@/components/ui/detail-panel";
 
 interface EdicaoItem {
   id: string;
   ano: number;
   titulo: string;
   status: string;
+  dataInicio?: string | null;
+  dataFim?: string | null;
+  pesoFase1?: number;
+  pesoFase2?: number;
+  createdAt?: string;
 }
 
 interface EdicaoForm {
@@ -43,11 +49,14 @@ export default function AdminEdicoesPage() {
 
   const [confirmDelete, setConfirmDelete] = useState<EdicaoItem | null>(null);
 
+  // Detail modal state
+  const [detailTarget, setDetailTarget] = useState<EdicaoItem | null>(null);
+
   const carregar = async () => {
     setCarregando(true);
     try {
       const { data } = await api.get("/admin/edicoes");
-      setEdicoes(data);
+      setEdicoes(data as EdicaoItem[]);
     } catch {
       console.error("Erro ao carregar edições");
     } finally {
@@ -137,19 +146,19 @@ export default function AdminEdicoesPage() {
         </div>
       ) : (
         <div className="border border-[#2a2a3a] rounded-2xl overflow-hidden bg-[#12121a]">
-          <table className="w-full text-sm">
+          <table className="w-full text-base">
             <thead>
               <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Ano</th>
-                <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Título</th>
-                <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Status</th>
-                <th className="text-right py-3 px-4 text-[#9895a4] font-medium">Ações</th>
+                <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ano</th>
+                <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Título</th>
+                <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
+                <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
               </tr>
             </thead>
             <tbody>
               {edicoes.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-12 text-center text-[#9895a4]">
+                  <td colSpan={4} className="py-16 text-center text-[#b0adc0] text-base">
                     Nenhuma edição encontrada
                   </td>
                 </tr>
@@ -158,37 +167,44 @@ export default function AdminEdicoesPage() {
                   const status = getStatusInfo(ed.status);
                   return (
                     <tr key={ed.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#1a1a26] transition-colors">
-                      <td className="py-3 px-4 text-[#f0ece4] font-medium font-[family-name:var(--font-fraunces)]">
+                      <td className="py-4 px-5 text-[#f0ece4] font-medium font-[family-name:var(--font-fraunces)]">
                         {ed.ano}
                       </td>
-                      <td className="py-3 px-4 text-[#f0ece4]">{ed.titulo}</td>
-                      <td className="py-3 px-4">
+                      <td className="py-4 px-5 text-[#f0ece4]">{ed.titulo}</td>
+                      <td className="py-4 px-5">
                         <span
-                          className="inline-flex items-center gap-1.5 text-xs font-medium"
+                          className="inline-flex items-center gap-1.5 text-sm font-medium"
                           style={{ color: status.cor }}
                         >
                           <span
-                            className="w-1.5 h-1.5 rounded-full inline-block"
+                            className="w-2 h-2 rounded-full inline-block"
                             style={{ backgroundColor: status.cor }}
                           />
                           {status.label}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-4 px-5 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setDetailTarget(ed)}
+                            className="p-1.5 text-[#9895a4] hover:text-[#3AAFE0] transition-colors"
+                            title="Detalhes"
+                          >
+                            <Eye size={18} />
+                          </button>
                           <button
                             onClick={() => abrirEditar(ed)}
                             className="p-1.5 text-[#9895a4] hover:text-[#E8B829] transition-colors"
                             title="Editar"
                           >
-                            <Pencil size={15} />
+                            <Pencil size={18} />
                           </button>
                           <button
                             onClick={() => setConfirmDelete(ed)}
                             className="p-1.5 text-[#9895a4] hover:text-red-400 transition-colors"
                             title="Excluir"
                           >
-                            <Trash2 size={15} />
+                            <Trash2 size={18} />
                           </button>
                         </div>
                       </td>
@@ -201,11 +217,8 @@ export default function AdminEdicoesPage() {
         </div>
       )}
 
-      <Modal aberto={modalAberto} onClose={() => setModalAberto(false)}>
-        <div className="space-y-5 w-full max-w-md p-2">
-          <h2 className="text-xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
-            {editando ? "Editar Edição" : "Nova Edição"}
-          </h2>
+      <Modal aberto={modalAberto} onClose={() => setModalAberto(false)} titulo={editando ? "Editar Edição" : "Nova Edição"} tamanho="md">
+        <div className="space-y-5">
 
           {erro && (
             <p className="text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg p-3">{erro}</p>
@@ -214,13 +227,13 @@ export default function AdminEdicoesPage() {
           {editando ? (
             <>
               <div className="space-y-2">
-                <Label className="text-[#9895a4] text-xs">Ano</Label>
+                <Label className="text-[#b0adc0] text-sm">Ano</Label>
                 <div className="h-10 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] flex items-center px-3 text-[#f0ece4] text-sm">
                   {editando.ano}
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[#9895a4] text-xs">Título</Label>
+                <Label className="text-[#b0adc0] text-sm">Título</Label>
                 <Input
                   value={form.titulo}
                   onChange={(e) => setForm({ ...form, titulo: e.target.value })}
@@ -229,7 +242,7 @@ export default function AdminEdicoesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[#9895a4] text-xs">Status</Label>
+                <Label className="text-[#b0adc0] text-sm">Status</Label>
                 <select
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
@@ -244,7 +257,7 @@ export default function AdminEdicoesPage() {
           ) : (
             <>
               <div className="space-y-2">
-                <Label className="text-[#9895a4] text-xs">Ano</Label>
+                <Label className="text-[#b0adc0] text-sm">Ano</Label>
                 <Input
                   type="number"
                   value={form.ano}
@@ -255,7 +268,7 @@ export default function AdminEdicoesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[#9895a4] text-xs">Título</Label>
+                <Label className="text-[#b0adc0] text-sm">Título</Label>
                 <Input
                   value={form.titulo}
                   onChange={(e) => setForm({ ...form, titulo: e.target.value })}
@@ -290,6 +303,91 @@ export default function AdminEdicoesPage() {
         mensagem={`Tem certeza que deseja excluir a edição ${confirmDelete?.ano} - "${confirmDelete?.titulo}"? Esta ação não pode ser desfeita.`}
         onConfirm={deletar}
         onClose={() => setConfirmDelete(null)}
+      />
+
+      {/* Detail Panel */}
+      <DetailPanel
+        aberto={!!detailTarget}
+        onClose={() => setDetailTarget(null)}
+        titulo="Detalhes da Edição"
+        onEdit={
+          detailTarget
+            ? () => {
+                const target = detailTarget;
+                setDetailTarget(null);
+                abrirEditar(target);
+              }
+            : undefined
+        }
+        hero={
+          detailTarget
+            ? {
+                label: "Status",
+                value: EDICAO_STATUS[detailTarget.status]?.label ?? detailTarget.status,
+                tone: EDICAO_STATUS[detailTarget.status]?.tone ?? "neutral",
+                hint: detailTarget.titulo,
+              }
+            : undefined
+        }
+        sections={
+          detailTarget
+            ? [
+                {
+                  title: "Identificação",
+                  fields: [
+                    { label: "Ano", value: detailTarget.ano },
+                    { label: "Título", value: detailTarget.titulo, full: true },
+                  ],
+                },
+                {
+                  title: "Calendário Olímpico",
+                  fields: [
+                    {
+                      label: "Data de início",
+                      value: detailTarget.dataInicio
+                        ? new Date(detailTarget.dataInicio).toLocaleDateString("pt-BR")
+                        : "",
+                      emptyText: "Não definida",
+                    },
+                    {
+                      label: "Data de término",
+                      value: detailTarget.dataFim
+                        ? new Date(detailTarget.dataFim).toLocaleDateString("pt-BR")
+                        : "",
+                      emptyText: "Não definida",
+                    },
+                  ],
+                },
+                {
+                  title: "Pesos das Fases",
+                  fields: [
+                    {
+                      label: "Peso Fase 1",
+                      value: detailTarget.pesoFase1 != null ? `${(detailTarget.pesoFase1 * 100).toFixed(0)}%` : "",
+                      emptyText: "Padrão (50%)",
+                    },
+                    {
+                      label: "Peso Fase 2",
+                      value: detailTarget.pesoFase2 != null ? `${(detailTarget.pesoFase2 * 100).toFixed(0)}%` : "",
+                      emptyText: "Padrão (50%)",
+                    },
+                  ],
+                },
+                {
+                  title: "Histórico",
+                  fields: [
+                    {
+                      label: "Cadastrada em",
+                      value: detailTarget.createdAt
+                        ? new Date(detailTarget.createdAt).toLocaleDateString("pt-BR")
+                        : "",
+                      emptyText: "Indisponível",
+                    },
+                  ],
+                },
+              ]
+            : []
+        }
       />
     </motion.div>
   );

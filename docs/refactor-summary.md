@@ -1,9 +1,54 @@
 # Refactor Summary — OLICMAT v2.0
 
-**Version:** 1.0
-**Date:** 2026-06-09
+**Version:** 2.1
+**Date:** 2026-07-07
 **Author:** Implementation Team
-**Status:** Complete
+**Status:** Complete (with 3-Module architecture update + DetailPanel unification)
+
+---
+
+## DetailPanel Unification + ENADE Score (2026-07-07)
+
+This incremental release standardises every "view" modal on the admin
+and comissão dashboards onto a single reusable component, and introduces
+the ENADE Score attribute on `Curso`. See `docs/CHANGELOG.md` for the
+exhaustive change list.
+
+### What changed
+
+1. **Unified entity viewer (`<DetailPanel>`)** — All entity detail modals
+   (User, Institution, Course, Edition, Registration) now consume a single
+   schema-driven component at `frontend/src/components/ui/detail-panel.tsx`,
+   built on top of the shared `<Modal>`. Wider (`max-w-3xl` ≈ 768px),
+   labeled sections with 2-col grid on desktop, hero KPI slot with
+   semantic colors. Supersedes the per-page helpers `Row`, `FieldGroup`,
+   `DetailField`.
+2. **Missing view screens added** — `/admin/cursos` and `/admin/edicoes`
+   previously shipped only edit/delete actions. They now ship Eye
+   actions that open `<DetailPanel>`.
+3. **Registration view expanded** — Inscription details now expose
+   `fase1Nota`, `fase2Tema`, `notaFinal`, `medalha`, edition context, and
+   a friendly empty-state for "change history" (AuditLog remains a
+   placeholder until the backend starts writing to it).
+4. **ENADE Score field** — New `notaEnade Decimal?(5,2)` column on
+   `Curso` (Prisma migration `20260707000000_add_curso_nota_enade`).
+   Backend `POST/PATCH /api/admin/cursos` accept it; frontend create/edit
+   form exposes it; list table shows it; DetailPanel hero metric is
+   color-coded (≥60 green / ≥40 amber / else red). Fully backwards
+   compatible (nullable column, optional DTO field).
+5. **Shared UX contract** — New `<StatusBadge>`, `<InlineList>`,
+   `<EmptyState>` widgets shipped from the same `detail-panel.tsx` file;
+   the registration table on admin/comissão pages now uses
+   `<StatusBadge>` and the shared `INSCRICAO_STATUS` map, removing
+   per-table ad-hoc color/label dictionaries.
+6. **Smooth open/close** — Detail modal transitions are fade + scale,
+   with staggered fade-in of inner sections, cards, timeline items and
+   meter fills.
+7. **Documentation** — All affected docs (CLAUDE.md, AGENTS.md,
+   SRS_OLICMAT.md, api-surface.md, database-migration-blueprint.md,
+   refactor-summary.md, frontend-route-map.md, PRD_OLICMAT.md,
+   role-permissions-matrix.md, README.md) updated to reflect this
+   release. New `docs/CHANGELOG.md` was created.
 
 ---
 
@@ -12,6 +57,55 @@
 The OLICMAT platform has been fully refactored from the original three-pillar architecture (OLICMAT + FORPEMAT + CONGEMAT) to an OLICMAT-only platform, aligned with the updated PRD_OLICMAT.md, BRD_OLICMAT.md, and SRS_OLICMAT.md v2.0 documents.
 
 ---
+
+## 3-Module Architecture Refactor (2026-07-06)
+
+### Backend Module Split
+
+The backend was reorganized into three explicit operational modules:
+
+| Module | Nest Module | Route Prefixes | Description |
+|--------|-------------|----------------|-------------|
+| **Config/Results** | `AdminModule`, `AuthModule`, `UsersModule`, `OlimpiadaModule` (inscricao, envio, ranking), `InstituicoesModule`, `CoordenacaoModule` | `/api/auth/*`, `/api/users/*`, `/api/instituicoes/*`, `/api/admin/*`, `/api/inscricoes/*`, `/api/envio/*`, `/api/ranking/*`, `/api/coordenacao/*` | System settings, master data, registrations, results, reports, exports, audit |
+| **Exam** (isolated) | `OlimpiadaModule` (prova only) | `/api/prova/*` | Lightweight exam execution with anti-cheating |
+| **Correction** | `CorrecaoModule` (new) | `/api/correcao/*` | Phase 2 evaluation: pending submissions, grading, history |
+
+Key changes:
+- `CorrecaoModule` was extracted from `admin/avaliacao/` to its own top-level module at route `/api/correcao/*`
+- `AdminModule` no longer imports `AvaliacaoModule` (deprecated in place)
+- `AppModule` now groups imports with explicit `Module 1/2/3` comments
+
+### Frontend Module Split
+
+Navigation and route organization follows the same three modules:
+
+| Module | Routes | Description |
+|--------|--------|-------------|
+| **Config** | `/admin/*`, `/avaliador/*` (provas only), `/competidor/{inscricao,envio,resultado}`, `/coordenador/*`, `/comissao/*` | All configuration, registration, and results pages |
+| **Exam** | `/competidor/prova` | Exam-taking page wrapped in ExamGuard |
+| **Correction** | `/admin/avaliacao`, `/avaliador/fase2`, `/comissao/avaliacao` | Phase 2 evaluation (API calls point to `/api/correcao/*`) |
+
+Key changes:
+- Sidebar redesigned with three explicit section headers (Config / Prova / Correção)
+- Evaluation pages now call `/api/correcao/*` instead of `/api/admin/avaliacao/*`
+- New `ExamGuard` component wraps the prova page with anti-cheating enforcement
+- API client updated in all 3 evaluation pages (admin/avaliacao, avaliador/fase2, comissao/avaliacao)
+
+### Exam Security (ExamGuard)
+
+The ExamGuard component (`frontend/src/components/exam/ExamGuard.tsx`) implements:
+
+| Protection | Mechanism |
+|------------|-----------|
+| Fullscreen enforcement | Requests fullscreen on mount via Fullscreen API |
+| Tab/visibility detection | `visibilitychange` listener increments warnings when page is hidden |
+| Keyboard shortcut blocking | Prevents Ctrl+R, F5, Ctrl+Shift+R, Ctrl+W, Alt+F4 |
+| Context menu prevention | Blocks right-click during exam |
+| Copy prevention | Blocks Ctrl+C / copy events |
+| Warning counter | 3 warnings max, displayed as red banner |
+| Auto-submit | Finalizes exam via `/api/prova/finalizar` when limit exceeded |
+
+**Limitation:** ExamGuard is entirely client-side JS — it cannot prevent dedicated cheating tools, external devices, or OS-level bypasses.
 
 ## Major Architectural Changes
 
@@ -76,11 +170,12 @@ The OLICMAT platform has been fully refactored from the original three-pillar ar
 - POST/GET `/api/certificados/*` (2 routes)
 - POST/GET/PATCH `/api/submissoes/*` (4 routes)
 
-### Backend Routes Added (30+)
+### Backend Routes Added (30+, plus new correction module)
+- `/api/correcao` (3 routes — extracted from admin/avaliacao to independent module)
 - `/api/instituicoes` (4 routes)
 - `/api/admin/provas` (7 routes)
 - `/api/admin/questoes` (5 routes)
-- `/api/admin/avaliacao` (2 routes)
+- `/api/admin/avaliacao` (deprecated — moved to `/api/correcao`)
 - `/api/admin/dashboard` (2 routes)
 - `/api/admin/auditoria` (1 route)
 - `/api/coordenacao` (3 routes)
@@ -94,8 +189,8 @@ The OLICMAT platform has been fully refactored from the original three-pillar ar
 - `/regulamento`, `/sobre`
 - `/competidor/resultado`
 - `/coordenador`, `/coordenador/alunos`, `/coordenador/metricas`
-- `/avaliador`, `/avaliador/provas`, `/avaliador/provas/[id]`, `/avaliador/fase2`
-- `/admin`, `/admin/usuarios`, `/admin/inscricoes`, `/admin/provas`, `/admin/avaliacao`, `/admin/exportar`, `/admin/auditoria`
+- `/avaliador`, `/avaliador/provas`, `/avaliador/provas/[id]`, `/avaliador/fase2` (now calls `/api/correcao/*`)
+- `/admin`, `/admin/usuarios`, `/admin/inscricoes`, `/admin/provas`, `/admin/avaliacao` (now calls `/api/correcao/*`), `/admin/exportar`, `/admin/auditoria`
 
 ---
 
@@ -119,20 +214,33 @@ The OLICMAT platform has been fully refactored from the original three-pillar ar
 | New tests | Documented test requirements, not yet implemented |
 | Test strategy | See SRS_OLICMAT.md §8 for full test plan |
 
-**Note:** The refactor did not include writing new tests. The pre-existing codebase had zero meaningful tests. A comprehensive test suite covering auth, RBAC, enrollment, exam execution, Phase 2 evaluation, and ranking should be the next engineering priority. See the test matrix in SRS_OLICMAT.md for the complete list.
+**Note (2026-07-02):** The refactor did not include writing new tests. The pre-existing codebase had zero meaningful tests. A comprehensive test suite covering auth, RBAC, enrollment, exam execution, Phase 2 evaluation, and ranking should be the next engineering priority. See the test matrix in SRS_OLICMAT.md for the complete list.
+
+**Note (2026-07-06):** The 3-module refactor also did not add tests. The correction module endpoints (`/api/correcao/*`) must be tested separately from the old admin/avaliacao routes.
 
 ---
 
 ## Known Limitations
 
 1. **Password recovery is placeholder:** Endpoints return success messages but don't actually send emails. Real email integration required.
-2. **Instituicao/Curso autocomplete:** Frontend forms still use text inputs for institution/course. Need to integrate institution catalog endpoints.
+2. **Instituicao/Curso autocomplete:** Frontend forms still use text inputs for institution/course on the registration page. Admin pages already use selects populated from the catalog endpoints.
 3. **Service worker not implemented:** PWA has manifest and meta tags but no offline caching strategy.
 4. **No pagination:** List endpoints return all records without limit/offset.
 5. **No tests:** Zero test coverage. Critical flows need unit + integration tests.
 6. **Export is basic CSV:** Single enrollment export. Results, users, and provas exports not yet implemented.
 7. **No rate limiting:** Auth endpoints should have rate limiting for production.
 8. **Middleware uses cookies:** The auth middleware reads `token` from cookies, but the app uses localStorage. This needs alignment (either use cookies for token storage, or remove server-side middleware and rely on client-side guards).
+9. **ExamGuard is client-side only:** Cannot prevent dedicated cheating tools, external recording devices, or OS-level bypasses.
+10. **Evaluation pages still duplicated:** `admin/avaliacao` (400 lines), `avaliador/fase2` (236 lines), and `comissao/avaliacao` (261 lines) share similar logic but are not extracted to a shared component. The next shared-component candidate after the 2026-07-07 DetailPanel release.
+11. **ExamGuard auto-submit may 400:** Calls `/prova/finalizar` which may return 400 if exam is already finalized.
+12. **Admin/avaliador exam editor duplicated:** Same ProvaDetalhePage logic exists in both admin and avaliador dashboards (~480 lines each).
+13. **AuditLog not yet written:** The `AuditLog` table exists and endpoints work, but no backend code persists mutations into it. The Registration detail panel surfaces a friendly empty-state placeholder in the "Histórico" section until this is implemented.
+
+> **Resolved in 2026-07-07 release:**
+> - Ad-hoc detail modal pattern — replaced by the unified `<DetailPanel>` component.
+> - Per-page `Row`/`SectionTitle`/`FieldGroup`/`DetailField` helpers — folded into `<DetailPanel>`.
+> - Missing Course and Edition view screens — both shipped with Eye actions.
+> - Hidden registration fields (`fase1Nota`, `fase2Tema`, `notaFinal`, `medalha`) — exposed in the expanded view.
 
 ---
 
@@ -163,4 +271,7 @@ The OLICMAT platform has been fully refactored from the original three-pillar ar
 | `docs/database-migration-blueprint.md` | ✅ Complete |
 | `docs/frontend-route-map.md` | ✅ Complete |
 | `docs/refactor-checklist.md` | ✅ Complete |
+| `docs/CHANGELOG.md` | ✅ New (2026-07-07) |
+| `frontend/src/components/ui/detail-panel.tsx` | ✅ New (2026-07-07) — unified entity viewer |
+| `frontend/src/components/ui/modal.tsx` | ✅ Extended (2026-07-07) — new `2xl`/`3xl` sizes + `headerActions` slot |
 | `CLAUDE.md` (root) | ✅ Complete |

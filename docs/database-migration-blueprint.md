@@ -1,16 +1,23 @@
 # Database Migration Blueprint — OLICMAT v2.0
 
-**Version:** 1.0
-**Date:** 2026-06-09
+**Version:** 1.1
+**Date:** 2026-07-07
 
 ---
 
 ## 1. Migration Summary
 
-A single new migration was created to transform the database from the original three-pillar schema (OLICMAT + FORPEMAT + CONGEMAT) to the OLICMAT-only v2.0 schema.
+The v2.0 refactor applied a single destructive-rebuild migration
+(`20260609131525_refactor_olicmat_v2`) — see §2.1–§2.8. Two incremental
+additive migrations followed after the refactor.
 
-### Migration ID
-`20260609131525_refactor_olicmat_v2`
+### Migration IDs
+
+| ID | Type | Date | Notes |
+|------|------|------|-------|
+| `20260609131525_refactor_olicmat_v2` | Destructive rebuild | 2026-06-09 | Original v2.0 schema (see §2.1–§2.8) |
+| `20260706230000_expand_user_instituicao` | Additive | 2026-07-06 | Added 9 new enums and ~22 User / ~15 Instituicao fields (CEP-backed localisation) |
+| `20260707000000_add_curso_nota_enade` | Additive | 2026-07-07 | Added `notaEnade DECIMAL(5,2)` to `Curso` — see §2.9 |
 
 ### Database
 PostgreSQL 16, schema `public`, database `olicmat`
@@ -110,6 +117,49 @@ PostgreSQL 16, schema `public`, database `olicmat`
 | ProvaQuestao | `@@unique([provaId, ordem])` — unique ordering within exam |
 | Resposta | `@@unique([inscricaoId, provaId, questaoId])` — one answer per enrollment+exam+question |
 | AvaliacaoFase2 | `@@unique([inscricaoId, avaliadorId])` — one evaluation per evaluator per enrollment |
+
+### 2.9 Subsequent Additive Migrations
+
+Two small additive migrations have been applied after the v2.0 rebuild
+to extend the data model without breaking existing records.
+
+#### `20260706230000_expand_user_instituicao` (2026-07-06)
+
+Added 9 new enums (`Genero`, `RacaCor`, `TipoBolsa`, `Titulacao`,
+`Localizacao`, `AreaAssentamento`, `EsferaAdministrativa`,
+`StatusInstituicao`, `TipoInstituicao`) and ~22 new `User` fields
+/ ~15 new `Instituicao` fields, including CEP-backed localisation
+(CEP, complemento, pontoReferencia, localização, áreaAssentamento,
+esferaAdministrativa, telefone, email, etc.). The Instituicao `estado`
+column was renamed to `uf`. All new columns are nullable.
+
+#### `20260707000000_add_curso_nota_enade` (2026-07-07)
+
+| Table | Change | Type |
+|-------|--------|------|
+| `Curso` | Added `notaEnade` | `DECIMAL(5,2)` NULL — fx. 75.50, max 100 |
+
+SQL applied:
+
+```sql
+ALTER TABLE "Curso" ADD COLUMN "notaEnade" DECIMAL(5,2);
+```
+
+Backend exposure:
+
+| Endpoint | Method | Behavior |
+|----------|--------|----------|
+| `/api/admin/cursos` | POST | Accepts optional `notaEnade` (number 0–100) |
+| `/api/admin/cursos/:id` | PATCH | Accepts `notaEnade` (number, or `null` to clear) |
+| `/api/admin/cursos` `/api/admin/cursos/:id` | GET | Returns `notaEnade` (number or `null`) on each `Curso` payload |
+
+Frontend exposure:
+
+| Screen | Behavior |
+|--------|----------|
+| `/admin/cursos` (list table) | Renders ENADE column (formatted to 2 dp, or `—` when null) |
+| `/admin/cursos` (create/edit modal) | Optional input — decimal 0–100 |
+| `/admin/cursos` (DetailPanel hero metric) | Color-coded: ≥60 green (`#4CAF50`) / ≥40 amber (`#f59e0b`) / else red (`#e53e3e`) / null neutral |
 
 ---
 

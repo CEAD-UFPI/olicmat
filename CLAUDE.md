@@ -1,7 +1,7 @@
 # CLAUDE.md — OLICMAT v2.0
 
-**Last updated:** 2026-06-09
-**After:** Refactor from three-pillar (OLICMAT+FORPEMAT+CONGEMAT) to OLICMAT-only platform
+**Last updated:** 2026-07-07
+**After:** Refactor from three-pillar (OLICMAT+FORPEMAT+CONGEMAT) to OLICMAT-only platform; subsequent 3-module split (2026-07-06) and DetailPanel + ENADE work (2026-07-07)
 
 ---
 
@@ -74,7 +74,7 @@ backend/src/
 |--------|---------|
 | **User** | System user with role (ALUNO, COORDENADOR_CURSO, AVALIADOR, ADMIN) |
 | **Instituicao** | University/institution (nome, sigla, estado) |
-| **Curso** | Course within an institution |
+| **Curso** | Course within an institution. **Field added 2026-07-07:** `notaEnade Decimal?(5,2)` — the ENADE score for the course (0–100, nullable) |
 | **CoordenadorCurso** | Links a coordinator user to their course(s) |
 | **Edicao** | Edition of the olympiad (year, weights, dates) |
 | **Inscricao** | Student enrollment in an edition (status: PENDENTE, CONFIRMADA, REJEITADA) |
@@ -112,10 +112,11 @@ backend/src/
 
 ### Frontend (Next.js)
 - **Forms:** react-hook-form + zod + @hookform/resolvers
-- **Styling:** Tailwind v4 with dark theme (bg-[#0a0a0f], text-[#f0ece4], accent #00d47d)
+- **Styling:** Tailwind v4 with dark theme (bg-[#0a0a0f], text-[#f0ece4], accent #E8B829); readibility-tuned utility classes (`detail-label`, `detail-value`, `section-title`, `metric-value`, `metric-label`, `data-badge`) in `globals.css`
 - **State:** Zustand stores (authStore for user/token, provaStore for exam state)
 - **API:** Axios instance in lib/api.ts with Bearer token interceptor
 - **Naming:** Portuguese for user-facing labels; TypeScript interfaces in types/index.ts
+- **Entity detail views:** Use the unified `<DetailPanel>` component at `components/ui/detail-panel.tsx` (built on top of `<Modal>`). Detail panels ship with a hero KPI slot, labeled sections, semantic-color `StatusBadge`, `InlineList` and `EmptyState` widgets — see `docs/CHANGELOG.md` for the full contract
 
 ---
 

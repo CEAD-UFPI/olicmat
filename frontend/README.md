@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OLICMAT Frontend — Next.js 16
 
-## Getting Started
+The Next.js 16 App Router frontend for the OLICMAT platform. Provides
+role-aware dashboards (ADMIN, AVALIADOR, ALUNO, COORDENADOR_CURSO,
+COMISSAO), exam execution with anti-cheating enforcement (ExamGuard),
+and the unified `<DetailPanel>` entity viewer.
 
-First, run the development server:
+> See `../README.md` for the full-stack overview and `../docs/` for the
+> PRD / BRD / SRS / API surface / frontend route map.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+| Camada | Tecnologia |
+|--------|-----------|
+| Framework | Next.js 16 (App Router) |
+| UI | React 19, Tailwind CSS v4, shadcn/ui v4 (base-ui) |
+| State | Zustand v5 (authStore, provaStore) |
+| Forms | react-hook-form + zod + @hookform/resolvers |
+| Animations | framer-motion (modal open/close, list transitions) |
+| API | Axios (`@/lib/api`) with Bearer token interceptor |
+| Theme | Forced dark mode (next-themes) — `bg-[#0a0a0f]`, `text-[#f0ece4]`, accent `#E8B829` |
+
+## Source Layout
+
+```
+src/
+├── app/
+│   ├── (auth)/            # Login, registro, password recovery
+│   ├── (dashboard)/       # Role-protected routes
+│   │   ├── admin/         # ADMIN dashboards (usuarios, instituicoes, cursos, edicoes, inscricoes, provas, avaliacao, exportar, auditoria)
+│   │   ├── avaliador/     # AVALIADOR dashboards
+│   │   ├── competidor/    # ALUNO dashboards
+│   │   ├── coordenador/   # COORDENADOR_CURSO dashboards
+│   │   └── comissao/     # COMISSAO dashboards (read-only oversight)
+│   ├── (public)/          # Regulamento, sobre
+│   └── ranking/           # Public ranking
+├── components/
+│   ├── exam/              # ExamGuard (anti-cheating wrapper)
+│   ├── layout/            # Header, Sidebar (3-module nav), Footer
+│   ├── landing/           # Hero, Sobre, Cronograma
+│   ├── prova/             # QuestaoCard, Timer
+│   └── ui/                # shadcn primitives + Modal + DetailPanel
+├── stores/                # Zustand (authStore, provaStore)
+├── lib/                   # axios client, cep, utils
+├── types/                 # TypeScript interfaces (synced to Prisma schema)
+└── middleware.ts           # Cookie-based auth check
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Conventions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Page layout: `"use client"` + `motion.div` from framer-motion for entrance animations
+- Admin pages: Tables with search/filter/pagination using client-side state
+- Colors: Prefer CSS variables (`var(--pi-dourado)`, `var(--integral-verde)`,
+  `var(--sigma-azul)`) when possible; the readability-tuned utility classes
+  (`detail-label`, `detail-value`, `section-title`, `metric-value`,
+  `metric-label`, `data-badge`) are defined in `globals.css`
+- **Entity detail views** use the unified `<DetailPanel>` component
+  at `components/ui/detail-panel.tsx`. New entity view screens should
+  NOT re-implement `Row` / `SectionTitle` / `FieldGroup` / `DetailField`
+  — feed `<DetailPanel>` a `sections` prop instead. See `docs/CHANGELOG.md`
+  for the full UX contract and the list of shared widgets (`StatusBadge`,
+  `InlineList`, `EmptyState`).
+- API calls for Module 3 (Correction) go to `/api/correcao/*` instead of
+  the old `/api/admin/avaliacao/*`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Data Types
 
-## Learn More
+`src/types/index.ts` mirrors the Prisma schema at
+`backend/prisma/schema.prisma`. Keep these in sync when adding/modifying
+fields. As of 2026-07-07, `Curso` carries an optional `notaEnade`
+field (Decimal 5,2 — 0 to 100, or null).
 
-To learn more about Next.js, take a look at the following resources:
+## Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+cp .env.example .env  # configure NEXT_PUBLIC_API_URL
+npm run dev           # http://localhost:3000
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Lint / Typecheck
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint
+npx tsc --noEmit
+```

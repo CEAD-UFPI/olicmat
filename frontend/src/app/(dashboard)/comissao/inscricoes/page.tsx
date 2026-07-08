@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { Input } from "@/components/ui/input";
-import { Modal } from "@/components/ui/modal";
 import { Pagination } from "@/components/ui/pagination";
+import { DetailPanel, INSCRICAO_STATUS, EmptyState, StatusBadge } from "@/components/ui/detail-panel";
 import { Eye, FileText } from "lucide-react";
 
 interface InscricaoItem {
@@ -19,6 +19,13 @@ interface InscricaoItem {
   periodo?: number;
   status: string;
   comprovanteUrl?: string;
+  fase1Nota?: number | null;
+  fase2Tema?: string | null;
+  fase2Nota?: number | null;
+  notaFinal?: number | null;
+  medalha?: string | null;
+  edicaoAno?: number | null;
+  edicaoTitulo?: string | null;
   createdAt?: string;
 }
 
@@ -50,6 +57,13 @@ export default function ComissaoInscricoesPage() {
           periodo: item.periodo as number,
           status: item.status as string,
           comprovanteUrl: item.comprovanteUrl as string,
+          fase1Nota: item.fase1Nota as number | null,
+          fase2Tema: item.fase2Tema as string | null,
+          fase2Nota: item.fase2Nota as number | null,
+          notaFinal: item.notaFinal as number | null,
+          medalha: item.medalha as string | null,
+          edicaoAno: (item.edicao as Record<string, number>)?.ano ?? null,
+          edicaoTitulo: (item.edicao as Record<string, string>)?.titulo ?? null,
           createdAt: item.createdAt as string,
         }));
         setInscricoes(flatData);
@@ -75,18 +89,6 @@ export default function ComissaoInscricoesPage() {
     paginaAtual * ITENS_POR_PAGINA
   );
 
-  const statusColors: Record<string, string> = {
-    CONFIRMADA: "#4CAF50",
-    PENDENTE: "#f59e0b",
-    REJEITADA: "#e53e3e",
-  };
-
-  const statusLabels: Record<string, string> = {
-    CONFIRMADA: "Confirmada",
-    PENDENTE: "Pendente",
-    REJEITADA: "Rejeitada",
-  };
-
   return (
     <motion.div
       className="space-y-6"
@@ -111,7 +113,7 @@ export default function ComissaoInscricoesPage() {
         <select
           value={statusFiltro}
           onChange={(e) => { setStatusFiltro(e.target.value); setPagina(1); }}
-          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer"
+          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
         >
           <option value="">Todos os status</option>
           <option value="PENDENTE">Pendente</option>
@@ -126,49 +128,46 @@ export default function ComissaoInscricoesPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#9895a4]">Nenhuma inscrição encontrada.</p>
+          <p className="text-[#b0adc0]">Nenhuma inscrição encontrada.</p>
         </div>
       ) : (
         <>
           <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-base">
                 <thead>
                   <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Nome</th>
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Estado</th>
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Instituição</th>
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Curso</th>
-                    <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Status</th>
-                    <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Ações</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Estado</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Instituição</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
+                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginados.map((insc) => (
                     <tr key={insc.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                      <td className="py-3 px-4 text-[#f0ece4] font-medium">{insc.nome || "-"}</td>
-                      <td className="py-3 px-4 text-[#9895a4]">{insc.estado || "-"}</td>
-                      <td className="py-3 px-4 text-[#9895a4]">{insc.instituicao || "-"}</td>
-                      <td className="py-3 px-4 text-[#9895a4]">{insc.curso || "-"}</td>
-                      <td className="py-3 px-4 text-center">
-                        <span
-                          className="text-xs font-medium px-2.5 py-0.5 rounded-full"
-                          style={{
-                            backgroundColor: `${statusColors[insc.status] || "#9895a4"}20`,
-                            color: statusColors[insc.status] || "#9895a4",
-                          }}
-                        >
-                          {statusLabels[insc.status] || insc.status}
+                      <td className="py-4 px-5 text-[#f0ece4] font-medium">{insc.nome || "-"}</td>
+                      <td className="py-4 px-5 text-[#9895a4]">{insc.estado || "-"}</td>
+                      <td className="py-4 px-5 text-[#9895a4]">{insc.instituicao || "-"}</td>
+                      <td className="py-4 px-5 text-[#9895a4]">{insc.curso || "-"}</td>
+                      <td className="py-4 px-5 text-center">
+                        <span className="inline-flex">
+                          <StatusBadge
+                            label={INSCRICAO_STATUS[insc.status]?.label ?? insc.status}
+                            tone={INSCRICAO_STATUS[insc.status]?.tone ?? "neutral"}
+                          />
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-4 px-5 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => setDetailTarget(insc)}
                             className="text-[#9895a4] hover:text-[#E8B829] transition-colors p-1 cursor-pointer"
                             title="Detalhes"
                           >
-                            <Eye size={14} />
+                            <Eye size={18} />
                           </button>
                           {insc.comprovanteUrl && (
                             <a
@@ -178,7 +177,7 @@ export default function ComissaoInscricoesPage() {
                               className="text-[#9895a4] hover:text-[#E8B829] transition-colors p-1 cursor-pointer"
                               title="Ver comprovante"
                             >
-                              <FileText size={14} />
+                              <FileText size={18} />
                             </a>
                           )}
                         </div>
@@ -194,40 +193,122 @@ export default function ComissaoInscricoesPage() {
         </>
       )}
 
-      <Modal
+      {/* Detail Panel — unified, read-only for Comissão */}
+      <DetailPanel
         aberto={!!detailTarget}
         onClose={() => setDetailTarget(null)}
         titulo="Detalhes da Inscrição"
-      >
-        {detailTarget && (
-          <div className="space-y-3 text-sm">
-            <div className="grid grid-cols-2 gap-3">
-              <div><span className="text-[#9895a4]">Nome:</span><p className="text-[#f0ece4]">{detailTarget.nome || "-"}</p></div>
-              <div><span className="text-[#9895a4]">Email:</span><p className="text-[#f0ece4]">{detailTarget.email || "-"}</p></div>
-              <div><span className="text-[#9895a4]">Estado:</span><p className="text-[#f0ece4]">{detailTarget.estado || "-"}</p></div>
-              <div><span className="text-[#9895a4]">Município:</span><p className="text-[#f0ece4]">{detailTarget.municipio || "-"}</p></div>
-              <div><span className="text-[#9895a4]">Instituição:</span><p className="text-[#f0ece4]">{detailTarget.instituicao || "-"}</p></div>
-              <div><span className="text-[#9895a4]">Curso:</span><p className="text-[#f0ece4]">{detailTarget.curso || "-"}</p></div>
-              <div><span className="text-[#9895a4]">Período:</span><p className="text-[#f0ece4]">{detailTarget.periodo ?? "-"}</p></div>
-              <div><span className="text-[#9895a4]">Status:</span>
-                <p style={{ color: statusColors[detailTarget.status] || "#9895a4" }} className="font-medium">
-                  {statusLabels[detailTarget.status] || detailTarget.status}
-                </p>
-              </div>
-            </div>
-            {detailTarget.comprovanteUrl && (
-              <a
-                href={detailTarget.comprovanteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#E8B829] hover:underline text-sm inline-block mt-2"
-              >
-                Ver comprovante →
-              </a>
-            )}
-          </div>
-        )}
-      </Modal>
+        hero={
+          detailTarget
+            ? {
+                label: "Status da Inscrição",
+                value: INSCRICAO_STATUS[detailTarget.status]?.label ?? detailTarget.status,
+                tone: INSCRICAO_STATUS[detailTarget.status]?.tone ?? "neutral",
+                hint:
+                  detailTarget.edicaoAno != null
+                    ? `Edição ${detailTarget.edicaoAno}${detailTarget.edicaoTitulo ? ` — ${detailTarget.edicaoTitulo}` : ""}`
+                    : undefined,
+              }
+            : undefined
+        }
+        sections={
+          detailTarget
+            ? [
+                {
+                  title: "Participante",
+                  fields: [
+                    { label: "Nome", value: detailTarget.nome || "", emptyText: "Não informado" },
+                    { label: "Email", value: detailTarget.email || "", emptyText: "Não informado" },
+                    { label: "Estado (UF)", value: detailTarget.estado || "", emptyText: "Não informado" },
+                    { label: "Município", value: detailTarget.municipio || "", emptyText: "Não informado" },
+                  ],
+                },
+                {
+                  title: "Vínculo Acadêmico",
+                  fields: [
+                    { label: "Instituição", value: detailTarget.instituicao || "", emptyText: "Não informada" },
+                    { label: "Curso", value: detailTarget.curso || "", emptyText: "Não informado" },
+                    {
+                      label: "Período",
+                      value: detailTarget.periodo != null ? `${detailTarget.periodo}º` : "",
+                      emptyText: "Não informado",
+                    },
+                    {
+                      label: "Comprovante de Matrícula",
+                      full: true,
+                      value: detailTarget.comprovanteUrl ? (
+                        <a
+                          href={detailTarget.comprovanteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#E8B829] hover:underline"
+                        >
+                          Ver comprovante →
+                        </a>
+                      ) : (
+                        ""
+                      ),
+                      emptyText: "Não enviado",
+                    },
+                  ],
+                },
+                {
+                  title: "Desempenho",
+                  fields: [
+                    {
+                      label: "Nota Fase 1",
+                      value: detailTarget.fase1Nota != null ? Number(detailTarget.fase1Nota).toFixed(2) : "",
+                      emptyText: "Ainda não realizada",
+                    },
+                    {
+                      label: "Tema Fase 2",
+                      value: detailTarget.fase2Tema || "",
+                      emptyText: "Não atribuído",
+                    },
+                    {
+                      label: "Nota Final",
+                      value: detailTarget.notaFinal != null ? Number(detailTarget.notaFinal).toFixed(2) : "",
+                      emptyText: "Ainda não calculada",
+                    },
+                    {
+                      label: "Medalha",
+                      value: detailTarget.medalha
+                        ? new Map<string, string>([
+                            ["OURO", "🥇 Ouro"],
+                            ["PRATA", "🥈 Prata"],
+                            ["BRONZE", "🥉 Bronze"],
+                          ]).get(detailTarget.medalha) ?? detailTarget.medalha
+                        : "",
+                      emptyText: "Sem medalha",
+                    },
+                  ],
+                },
+                {
+                  title: "Histórico",
+                  hideIfEmpty: false,
+                  children: (
+                    <>
+                      {detailTarget.createdAt && (
+                        <p className="text-sm text-[#9895a4]">
+                          Inscrição criada em{" "}
+                          <span className="text-[#f0ece4]">
+                            {new Date(detailTarget.createdAt).toLocaleDateString("pt-BR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                            })}
+                          </span>
+                        </p>
+                      )}
+                      <EmptyState message="Histórico de mudanças indisponível — o registro de auditoria ainda não é escrito pelo backend." />
+                    </>
+                  ),
+                  fields: [],
+                },
+              ]
+            : []
+        }
+      />
     </motion.div>
   );
 }

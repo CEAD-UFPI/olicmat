@@ -1,7 +1,7 @@
 # Role Permissions Matrix — OLICMAT v2.0
 
-**Version:** 1.0
-**Date:** 2026-06-09
+**Version:** 1.1
+**Date:** 2026-07-07
 
 ---
 
@@ -47,6 +47,11 @@
 | GET `/instituicoes/:id/cursos` | ✅ | ✅ | ✅ | ✅ |
 | POST `/admin/instituicoes` | — | — | — | ✅ |
 | PATCH `/admin/instituicoes/:id` | — | — | — | ✅ |
+| GET `/admin/cursos` | — | — | ✅ | ✅ |
+| GET `/admin/cursos/:id` | — | — | ✅ | ✅ |
+| POST `/admin/cursos` `{ nome, instituicaoId, notaEnade? }` | — | — | — | ✅ |
+| PATCH `/admin/cursos/:id` `{ nome?, instituicaoId?, notaEnade? }` | — | — | — | ✅ |
+| DELETE `/admin/cursos/:id` | — | — | — | ✅ |
 
 ### 2.4 Inscrição — Competidor View (`/api/olimpiada/inscricao`)
 

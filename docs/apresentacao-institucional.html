@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OLICMAT — Apresentação Institucional</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ─── Animations ─── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-12px) scale(1.04); }
+    }
+    @keyframes orbFloatCenter {
+      0%, 100% { transform: translateX(-50%) translateY(0) scale(1); }
+      50%      { transform: translateX(-50%) translateY(-12px) scale(1.04); }
+    }
+    @keyframes heroPulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(1.06); }
+    }
+    @keyframes meterFill {
+      from { width: 0; }
+    }
+    @keyframes counterPop {
+      0%   { transform: scale(0.8); opacity: 0.4; }
+      60%  { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #f0ece4;
+    }
+
+    /* Slide container */
+    .slides-container {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+    }
+    .slide {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5rem 6rem;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.65s ease, visibility 0.65s ease;
+    }
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .slide-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+    .slide.active .slide-inner {
+      animation: fadeInUp 0.7s ease both;
+    }
+    .slide.active .slide-inner > * {
+      animation: fadeIn 0.6s ease both;
+    }
+    .slide.active .slide-inner > *:nth-child(1) { animation-delay: 0.1s; }
+    .slide.active .slide-inner > *:nth-child(2) { animation-delay: 0.2s; }
+    .slide.active .slide-inner > *:nth-child(3) { animation-delay: 0.3s; }
+    .slide.active .slide-inner > *:nth-child(4) { animation-delay: 0.4s; }
+    .slide.active .slide-inner > *:nth-child(5) { animation-delay: 0.5s; }
+    .slide.active .slide-inner > *:nth-child(6) { animation-delay: 0.6s; }
+    .slide.active .slide-inner > *:nth-child(7) { animation-delay: 0.7s; }
+
+    /* Staggered card entrances */
+    .slide.active .card-grid .card,
+    .slide.active .phase-card,
+    .slide.active [style*="background:#12121a;border-radius:0.75rem"] {
+      animation: fadeInUp 0.5s ease both;
+    }
+    .slide.active .card-grid .card:nth-child(1),
+    .slide.active .phase-card:nth-child(1) { animation-delay: 0.2s; }
+    .slide.active .card-grid .card:nth-child(2),
+    .slide.active .phase-card:nth-child(2) { animation-delay: 0.3s; }
+    .slide.active .card-grid .card:nth-child(3),
+    .slide.active .phase-card:nth-child(3) { animation-delay: 0.4s; }
+    .slide.active .card-grid .card:nth-child(4),
+    .slide.active .phase-card:nth-child(4) { animation-delay: 0.5s; }
+    .slide.active .card-grid .card:nth-child(5),
+    .slide.active .phase-card:nth-child(5) { animation-delay: 0.6s; }
+    .slide.active .card-grid .card:nth-child(6),
+    .slide.active .phase-card:nth-child(6) { animation-delay: 0.7s; }
+
+    /* Timeline staggered */
+    .slide.active .timeline-item {
+      animation: fadeInUp 0.5s ease both;
+    }
+    .slide.active .timeline-item:nth-child(1) { animation-delay: 0.15s; }
+    .slide.active .timeline-item:nth-child(2) { animation-delay: 0.25s; }
+    .slide.active .timeline-item:nth-child(3) { animation-delay: 0.35s; }
+    .slide.active .timeline-item:nth-child(4) { animation-delay: 0.45s; }
+    .slide.active .timeline-item:nth-child(5) { animation-delay: 0.55s; }
+    .slide.active .timeline-item:nth-child(6) { animation-delay: 0.65s; }
+    .slide.active .timeline-item:nth-child(7) { animation-delay: 0.75s; }
+    .slide.active .timeline-item:nth-child(8) { animation-delay: 0.85s; }
+    .slide.active .timeline-item:nth-child(9) { animation-delay: 0.95s; }
+    .slide.active .timeline-item:nth-child(10) { animation-delay: 1.05s; }
+
+    /* Meter fill animation */
+    .slide.active .meter-fill {
+      animation: meterFill 1s ease both;
+    }
+    .slide.active .meter-fill:nth-child(1) { animation-delay: 0.4s; }
+    .slide.active .meter-fill:nth-child(2) { animation-delay: 0.5s; }
+    .slide.active .meter-fill:nth-child(3) { animation-delay: 0.6s; }
+    .slide.active .meter-fill:nth-child(4) { animation-delay: 0.7s; }
+    .slide.active .meter-fill:nth-child(5) { animation-delay: 0.8s; }
+
+    /* Risk table rows stagger */
+    .slide.active .risk-table tbody tr {
+      animation: fadeIn 0.5s ease both;
+    }
+    .slide.active .risk-table tbody tr:nth-child(1) { animation-delay: 0.25s; }
+    .slide.active .risk-table tbody tr:nth-child(2) { animation-delay: 0.35s; }
+    .slide.active .risk-table tbody tr:nth-child(3) { animation-delay: 0.45s; }
+    .slide.active .risk-table tbody tr:nth-child(4) { animation-delay: 0.55s; }
+    .slide.active .risk-table tbody tr:nth-child(5) { animation-delay: 0.65s; }
+
+    /* Subtle background orbs */
+    .slide::before {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .slide-orb-left::before {
+      left: -200px;
+      top: 20%;
+      background: radial-gradient(circle, rgba(232, 184, 41, 0.08), transparent 60%);
+      animation: orbFloat 8s ease-in-out infinite;
+    }
+    .slide-orb-right::before {
+      right: -200px;
+      top: 30%;
+      background: radial-gradient(circle, rgba(58, 175, 224, 0.07), transparent 60%);
+      animation: orbFloat 10s ease-in-out infinite 1s;
+    }
+    .slide-orb-center::before {
+      left: 50%;
+      top: 20%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(76, 175, 80, 0.07), transparent 60%);
+      animation: orbFloatCenter 9s ease-in-out infinite 0.5s;
+    }
+
+    /* Typography */
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 2.25rem;
+      font-weight: 600;
+      line-height: 1.25;
+      margin-bottom: 0.75rem;
+    }
+    h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 0.5rem;
+    }
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    p, li {
+      font-size: 1.125rem;
+      line-height: 1.65;
+      color: #b0adc0;
+    }
+    .small {
+      font-size: 0.9375rem;
+      color: #9895a4;
+    }
+    .gold { color: #E8B829; }
+    .green { color: #4CAF50; }
+    .blue { color: #3AAFE0; }
+    .accent { color: #E8B829; }
+
+    /* Section number tag */
+    .slide-number {
+      font-family: 'Fraunces', serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: #9895a4;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .divider {
+      width: 60px;
+      height: 3px;
+      background: #E8B829;
+      margin: 1.5rem 0;
+      border-radius: 2px;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: #b0adc0;
+      line-height: 1.6;
+      max-width: 700px;
+    }
+
+    /* Cards */
+    .card-grid {
+      display: grid;
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+    .card-grid-2 { grid-template-columns: 1fr 1fr; }
+    .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .card-grid-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+
+    .card {
+      background: #12121a;
+      border: 1px solid #2a2a3a;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      border-color: #E8B829;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .card-icon {
+      font-family: 'Fraunces', serif;
+      font-size: 1.75rem;
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .card h4 { color: #f0ece4; margin-bottom: 0.25rem; }
+    .card p, .card li { font-size: 0.9375rem; color: #9895a4; }
+    .card ul { list-style: none; padding: 0; }
+    .card li { padding: 0.2rem 0; }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      margin-right: 0.25rem;
+    }
+    .badge-gold { background: rgba(232,184,41,0.15); color: #E8B829; }
+    .badge-green { background: rgba(76,175,80,0.15); color: #4CAF50; }
+    .badge-blue { background: rgba(58,175,224,0.15); color: #3AAFE0; }
+    .badge-red { background: rgba(229,62,62,0.15); color: #e53e3e; }
+    .badge-gray { background: rgba(152,149,164,0.15); color: #9895a4; }
+
+    /* Timeline */
+    .timeline { position: relative; margin: 2rem 0; padding-left: 2rem; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0.5rem;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #2a2a3a;
+    }
+    .timeline-item {
+      position: relative;
+      padding: 0 0 1.75rem 1.5rem;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: 0.35rem;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #E8B829;
+      border: 2px solid #0a0a0f;
+    }
+    .timeline-item.dim::before { background: #2a2a3a; }
+    .timeline-date {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #E8B829;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.15rem;
+    }
+    .timeline-desc { font-size: 1rem; color: #b0adc0; }
+    .timeline-item.dim .timeline-date { color: #9895a4; }
+    .timeline-item.highlight .timeline-date { color: #4CAF50; }
+    .timeline-item.highlight::before { background: #4CAF50; }
+
+    /* Risk table */
+    .risk-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; }
+    .risk-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #9895a4;
+      border-bottom: 1px solid #2a2a3a;
+    }
+    .risk-table td {
+      padding: 0.75rem 1rem;
+      font-size: 0.9375rem;
+      color: #b0adc0;
+      border-bottom: 1px solid rgba(42,42,58,0.5);
+    }
+    .risk-table td:first-child { color: #f0ece4; font-weight: 500; }
+    .risk-high { color: #e53e3e; font-weight: 600; }
+    .risk-mid { color: #E8B829; font-weight: 600; }
+
+    /* Status indicators */
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9375rem;
+      color: #b0adc0;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Navigation */
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 2rem;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #2a2a3a;
+    }
+    .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #E8B829;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      font-size: 0.875rem;
+      color: #9895a4;
+      text-decoration: none;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #E8B829;
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: #f0ece4; }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-controls {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 50;
+      display: flex;
+      gap: 0.75rem;
+    }
+    .nav-controls button {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid #2a2a3a;
+      background: #12121a;
+      color: #f0ece4;
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      transform: scale(1);
+    }
+    .nav-controls button:hover {
+      background: #E8B829;
+      color: #0a0a0f;
+      border-color: #E8B829;
+      transform: scale(1.08);
+      box-shadow: 0 0 20px rgba(232,184,41,0.25);
+    }
+    .nav-controls button:active {
+      transform: scale(0.95);
+    }
+    .nav-controls .counter {
+      font-size: 0.875rem;
+      color: #9895a4;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Cover */
+    .cover {
+      background: radial-gradient(800px circle at 30% 40%, rgba(232,184,41,0.12), transparent 50%),
+                  radial-gradient(600px circle at 70% 60%, rgba(58,175,224,0.08), transparent 50%);
+    }
+    .cover h1 { font-size: 4rem; margin-bottom: 0.5rem; }
+    .cover .subtitle { font-size: 1.5rem; }
+    .cover .hero-symbol {
+      font-family: 'Fraunces', serif;
+      font-size: 6rem;
+      color: #E8B829;
+      opacity: 0.3;
+      position: absolute;
+      right: 10%;
+      top: 15%;
+      line-height: 1;
+      animation: heroPulse 5s ease-in-out infinite;
+    }
+
+    /* Phase modules */
+    .phase-card {
+      border-left: 3px solid;
+      border-radius: 0 1rem 1rem 0;
+      padding: 1.5rem;
+      background: #12121a;
+      border: 1px solid #2a2a3a;
+      border-left-width: 3px;
+    }
+    .phase-m1 { border-left-color: #E8B829; }
+    .phase-m2 { border-left-color: #4CAF50; }
+    .phase-m3 { border-left-color: #3AAFE0; }
+
+    /* Persona card */
+    .persona {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .persona-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    /* Maturity meters */
+    .meter {
+      width: 100%;
+      height: 8px;
+      background: #1a1a26;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+    .meter-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s;
+    }
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: #9895a4;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Next steps */
+    .next-steps {
+      background: radial-gradient(600px circle at 50% 50%, rgba(232,184,41,0.06), transparent 60%);
+    }
+
+    .center { text-align: center; }
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mt-4 { margin-top: 2rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .gap-1 { gap: 0.5rem; }
+
+    /* Print/PDF */
+    @media print {
+      .nav-bar, .nav-controls { display: none; }
+      .slides-container { position: static; }
+      .slide {
+        position: static;
+        opacity: 1 !important;
+        visibility: visible !important;
+        min-height: auto;
+        padding: 3rem 4rem;
+        page-break-after: always;
+      }
+    }
+    @media (max-width: 768px) {
+      .slide { padding: 4rem 1.5rem; }
+      h1 { font-size: 2.25rem; }
+      h2 { font-size: 1.5rem; }
+      .card-grid-2, .card-grid-3, .card-grid-4, .card-grid-5 { grid-template-columns: 1fr; }
+      .cover h1 { font-size: 2.5rem; }
+      .cover .subtitle { font-size: 1.125rem; }
+      .cover .hero-symbol { font-size: 3rem; right: 5%; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="slides-container">
+
+<!-- ==================== NAV ==================== -->
+<nav class="nav-bar">
+  <a href="#" class="nav-logo">π OLICMAT</a>
+  <div class="nav-links">
+    <a href="#" onclick="goSlide(1);return false;">Jornada</a>
+    <a href="#" onclick="goSlide(2);return false;">Cronograma</a>
+    <a href="#" onclick="goSlide(3);return false;">Quem usa</a>
+    <a href="#" onclick="goSlide(4);return false;">Fases</a>
+    <a href="#" onclick="goSlide(7);return false;">Prova</a>
+    <a href="#" onclick="goSlide(9);return false;">Riscos</a>
+    <a href="#" onclick="goSlide(10);return false;">Maturidade</a>
+    <a href="#" onclick="goSlide(12);return false;">Próximos</a>
+  </div>
+</nav>
+
+<!-- ==================== SLIDE 1 — CAPA ==================== -->
+<section id="s0" class="slide cover">
+  <span class="hero-symbol">∫</span>
+  <div class="slide-inner">
+    <p class="slide-number gold">APRESENTAÇÃO INSTITUCIONAL</p>
+    <h1>Plataforma OLICMAT<br><span class="gold">1ª Olimpíada para<br>Licenciandos em Matemática</span></h1>
+    <p class="subtitle" style="max-width:650px">
+      Como a tecnologia apoia a jornada do competidor, do cadastro à medalha —<br>
+      e o que já está pronto para 2026.
+    </p>
+    <div class="divider"></div>
+    <p class="small">Comissão Organizadora · Julho de 2026</p>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 2 — POR QUE UMA PLATAFORMA ==================== -->
+<section id="s1" class="slide slide-orb-left">
+  <div class="slide-inner">
+    <p class="slide-number gold">POR QUE UMA PLATAFORMA DIGITAL</p>
+    <h2>Centralizar a operação<br>em um único ambiente</h2>
+    <p class="subtitle mb-3">
+      Antes, cada etapa da olimpíada dependia de planilhas, e-mails e processos manuais.
+      Hoje, o competidor, o coordenador, o avaliador e a organização trabalham no mesmo sistema.
+    </p>
+    <div class="card-grid card-grid-3 mt-3">
+      <div class="card">
+        <span class="card-icon gold">π</span>
+        <h4>Cadastro e inscrição</h4>
+        <p>O aluno se cadastra, envia o comprovante de matrícula e acompanha a validação em tempo real.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon green">∫</span>
+        <h4>Prova + desafio</h4>
+        <p>Fase 1 online com correção automática. Fase 2 com envio de videoaula e portfólio digital.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon blue">∑</span>
+        <h4>Resultado e medalhas</h4>
+        <p>Ranking por estado, nota final consolidada e distribuição automática de medalhas.</p>
+      </div>
+    </div>
+    <p class="small mt-3">Os 3 símbolos acima representam os grandes momentos da olimpíada: π (matemática), ∫ (integração do conhecimento), ∑ (somatório dos resultados).</p>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 3 — CRONOGRAMA OFICIAL 2026 ==================== -->
+<section id="s2" class="slide slide-orb-right">
+  <div class="slide-inner">
+    <p class="slide-number gold">CRONOGRAMA OFICIAL — 1ª EDIÇÃO 2026</p>
+    <h2>A jornada do competidor<br>do início ao fim</h2>
+    <div class="timeline">
+      <div class="timeline-item highlight">
+        <div class="timeline-date">15 AGO 2026</div>
+        <div class="timeline-desc"><strong class="green">Live de lançamento</strong> — abertura da 1ª OLICMAT e publicação do regulamento</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">15 AGO a 05 SET 2026</div>
+        <div class="timeline-desc">Inscrições — cadastro dos competidores e envio dos comprovantes de matrícula</div>
+      </div>
+      <div class="timeline-item dim">
+        <div class="timeline-date">10 SET 2026</div>
+        <div class="timeline-desc">Divulgação das inscrições validadas</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-date">20 SET 2026</div>
+        <div class="timeline-desc"><strong class="green">Fase I</strong> — Prova de múltipla escolha (presencial nas instituições, 3h de duração)</div>
+      </div>
+      <div class="timeline-item dim">
+        <div class="timeline-date">Até 30 SET 2026</div>
+        <div class="timeline-desc">Resultado da Fase I e divulgação dos aprovados para a Fase II</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">30 SET a 10 OUT 2026</div>
+        <div class="timeline-desc">Informações sobre o Desafio Didático-Tecnológico (Fase II)</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-date">Até 20 OUT 2026</div>
+        <div class="timeline-desc"><strong class="green">Fase II</strong> — Realização do desafio e envio dos vídeos (mesmo dia)</div>
+      </div>
+      <div class="timeline-item dim">
+        <div class="timeline-date">Até 20 NOV 2026</div>
+        <div class="timeline-desc">Análise dos vídeos e portfólios pela comissão avaliadora</div>
+      </div>
+      <div class="timeline-item highlight">
+        <div class="timeline-date">03 NOV 2026</div>
+        <div class="timeline-desc"><strong class="green">Divulgação dos resultados e medalhistas</strong></div>
+      </div>
+      <div class="timeline-item dim">
+        <div class="timeline-date">Até 30 NOV 2026</div>
+        <div class="timeline-desc">Cerimônia de premiação e encerramento</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 4 — AS PERSONAS ==================== -->
+<section id="s3" class="slide slide-orb-center">
+  <div class="slide-inner">
+    <p class="slide-number gold">QUEM USA O SISTEMA</p>
+    <h2>Cinco perfis, uma plataforma</h2>
+    <p class="subtitle mb-2">Cada pessoa envolvida na olimpíada tem um papel e uma visão específica dentro do sistema.</p>
+    <div class="card-grid card-grid-3 mt-2">
+      <div class="card">
+        <div class="persona">
+          <div class="persona-avatar" style="background:rgba(58,175,224,0.15);color:#3AAFE0;">L</div>
+          <div>
+            <h4>Lucas</h4>
+            <span class="badge badge-blue">Competidor</span>
+            <p style="margin-top:0.5rem;">22 anos, 5º período de Licenciatura em Matemática na UFPI. Quer testar conhecimentos e conquistar uma medalha para fortalecer o currículo.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="persona">
+          <div class="persona-avatar" style="background:rgba(232,184,41,0.15);color:#E8B829;">W</div>
+          <div>
+            <h4>Prof. Wesley</h4>
+            <span class="badge badge-gold">Coordenador de Curso</span>
+            <p style="margin-top:0.5rem;">Professor doutor, 45 anos. Acompanha no painel quais alunos do seu curso já se inscreveram, quem está pendente e quem foi confirmado.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="persona">
+          <div class="persona-avatar" style="background:rgba(76,175,80,0.15);color:#4CAF50;">H</div>
+          <div>
+            <h4>Dra. Helena</h4>
+            <span class="badge badge-green">Avaliadora</span>
+            <p style="margin-top:0.5rem;">Professora doutora na UESPI. Cria questões, monta as provas da Fase 1 e avalia as videoaulas e portfólios da Fase 2.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="persona">
+          <div class="persona-avatar" style="background:rgba(232,184,41,0.15);color:#E8B829;">R</div>
+          <div>
+            <h4>Prof. Roberto</h4>
+            <span class="badge badge-gold">Administrador</span>
+            <p style="margin-top:0.5rem;">Coordenador estadual da OLICMAT. Valida inscrições, gerencia provas, acompanha métricas por estado e exporta dados.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="persona">
+          <div class="persona-avatar" style="background:rgba(152,149,164,0.15);color:#9895a4;">A</div>
+          <div>
+            <h4>Ana</h4>
+            <span class="badge badge-gray">Assistente Operacional</span>
+            <p style="margin-top:0.5rem;">29 anos, integrante da organização. Confere cadastros, documentos e pendências, e encaminha inconsistências ao administrador.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 5 — VISÃO GERAL DA JORNADA ==================== -->
+<section class="slide slide-orb-left">
+  <div class="slide-inner">
+    <p class="slide-number gold">JORNADA DO COMPETIDOR</p>
+    <h2>Do primeiro cadastro<br>à medalha</h2>
+    <p class="subtitle mb-3">A plataforma guia o aluno por cada etapa, sem necessidade de suporte externo.</p>
+    <div class="card-grid card-grid-2">
+      <div class="phase-card phase-m1">
+        <span class="badge badge-gold">Etapa 1</span>
+        <h4 class="mt-1 gold">Cadastro e Inscrição</h4>
+        <p>O aluno cria sua conta, informa dados pessoais e acadêmicos, escolhe instituição e curso, anexa o comprovante de matrícula e aguarda a validação.</p>
+      </div>
+      <div class="phase-card phase-m1">
+        <span class="badge badge-gold">Etapa 2</span>
+        <h4 class="mt-1 gold">Validação</h4>
+        <p>A organização confere o comprovante e confirma ou rejeita a inscrição. O aluno acompanha o status em tempo real no painel.</p>
+      </div>
+      <div class="phase-card phase-m2">
+        <span class="badge badge-green">Etapa 3</span>
+        <h4 class="mt-1 green">Fase I — Prova</h4>
+        <p>Com a inscrição confirmada, o aluno realiza a prova objetiva de 30 questões com 3 horas de duração. O sistema corrige automaticamente.</p>
+      </div>
+      <div class="phase-card phase-m2">
+        <span class="badge badge-green">Etapa 4</span>
+        <h4 class="mt-1 green">Fase II — Desafio</h4>
+        <p>Os aprovados recebem um tema gerador, produzem uma videoaula de até 20 min e enviam o link e o portfólio digital pela plataforma.</p>
+      </div>
+      <div class="phase-card phase-m3">
+        <span class="badge badge-blue">Etapa 5</span>
+        <h4 class="mt-1 blue">Avaliação</h4>
+        <p>Os avaliadores acessam cada submissão, atribuem nota e parecer. O sistema calcula a nota final com base nos pesos da edição.</p>
+      </div>
+      <div class="phase-card phase-m3">
+        <span class="badge badge-blue">Etapa 6</span>
+        <h4 class="mt-1 blue">Ranking e Medalhas</h4>
+        <p>O ranking é organizado por estado. As medalhas de ouro, prata e bronze são distribuídas automaticamente conforme o desempenho.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 6 — TRÊS MÓDULOS OPERACIONAIS ==================== -->
+<section class="slide slide-orb-right">
+  <div class="slide-inner">
+    <p class="slide-number gold">ARQUITETURA EM 3 MÓDULOS</p>
+    <h2>Três grandes blocos<br>que fazem a olimpíada funcionar</h2>
+    <div style="display:flex;flex-direction:column;gap:1rem;margin-top:2rem;">
+      <div class="phase-card phase-m1">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <span class="badge badge-gold">Módulo 1</span>
+            <h3 class="mt-1 gold">Configuração e Resultados</h3>
+            <p>Cadastro de usuários, instituições, cursos, edições. Inscrições com validação documental. Provas, questões e gabaritos. Painéis do administrador, coordenador e comissão. Exportação de dados. Auditoria.</p>
+          </div>
+          <span style="font-family:'Fraunces',serif;font-size:2rem;color:#E8B829;opacity:0.5;">π</span>
+        </div>
+      </div>
+      <div class="phase-card phase-m2">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <span class="badge badge-green">Módulo 2</span>
+            <h3 class="mt-1 green">Aplicação da Prova</h3>
+            <p>Ambiente isolado e seguro para a realização da prova online com 3 horas de duração. Inclui cronômetro regressivo, salvamento automático a cada resposta, bloqueio de abas e teclas de atalho, e finalização automática ao término do tempo.</p>
+          </div>
+          <span style="font-family:'Fraunces',serif;font-size:2rem;color:#4CAF50;opacity:0.5;">∫</span>
+        </div>
+      </div>
+      <div class="phase-card phase-m3">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <span class="badge badge-blue">Módulo 3</span>
+            <h3 class="mt-1 blue">Correção da Fase 2</h3>
+            <p>Gestão das submissões da Fase 2: lista de pendentes, atribuição de notas e pareceres, histórico de avaliações por competidor. Disponivel para avaliadores, administradores e comissão (visão somente leitura).</p>
+          </div>
+          <span style="font-family:'Fraunces',serif;font-size:2rem;color:#3AAFE0;opacity:0.5;">∑</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 7 — MÓDULOS X CRONOGRAMA ==================== -->
+<section class="slide slide-orb-center">
+  <div class="slide-inner">
+    <p class="slide-number gold">CADA MÓDULO NO SEU MOMENTO</p>
+    <h2>Quando cada parte do sistema<br>é usada ao longo do ano</h2>
+    <div style="margin-top:2rem;display:flex;flex-direction:column;gap:0.75rem;">
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;padding:1rem;background:#12121a;border-radius:0.75rem;border:1px solid #2a2a3a;">
+        <span class="badge badge-gold" style="min-width:130px;">AGO</span>
+        <div style="flex:1;">
+          <span style="color:#E8B829;font-weight:600;">Módulo 1</span>
+          <span style="color:#b0adc0;margin-left:0.5rem;">— Lançamento, cadastro de instituições, abertura das inscrições</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;padding:1rem;background:#12121a;border-radius:0.75rem;border:1px solid #2a2a3a;">
+        <span class="badge badge-gold" style="min-width:130px;">AGO–SET</span>
+        <div style="flex:1;">
+          <span style="color:#E8B829;font-weight:600;">Módulo 1</span>
+          <span style="color:#b0adc0;margin-left:0.5rem;">— Inscrições, validação de documentos, preparação das provas</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;padding:1rem;background:#12121a;border-radius:0.75rem;border:1px solid #2a2a3a;">
+        <span class="badge badge-green" style="min-width:130px;">20 SET</span>
+        <div style="flex:1;">
+          <span style="color:#4CAF50;font-weight:600;">Módulo 2</span>
+          <span style="color:#b0adc0;margin-left:0.5rem;">— Aplicação da Fase I com segurança e correção automática</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;padding:1rem;background:#12121a;border-radius:0.75rem;border:1px solid #2a2a3a;">
+        <span class="badge badge-green" style="min-width:130px;">20 OUT</span>
+        <div style="flex:1;">
+          <span style="color:#4CAF50;font-weight:600;">Módulo 2</span>
+          <span style="color:#b0adc0;margin-left:0.5rem;">— Fase II: envio dos vídeos e portfólios</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;padding:1rem;background:#12121a;border-radius:0.75rem;border:1px solid #2a2a3a;">
+        <span class="badge badge-blue" style="min-width:130px;">OUT–NOV</span>
+        <div style="flex:1;">
+          <span style="color:#3AAFE0;font-weight:600;">Módulo 3</span>
+          <span style="color:#b0adc0;margin-left:0.5rem;">— Correção das submissões, cálculo das notas finais</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;padding:1rem;background:#12121a;border-radius:0.75rem;border:1px solid #2a2a3a;">
+        <span class="badge badge-gold" style="min-width:130px;">03 NOV</span>
+        <div style="flex:1;">
+          <span style="color:#E8B829;font-weight:600;">Módulo 1</span>
+          <span style="color:#b0adc0;margin-left:0.5rem;">— Publicação do ranking e distribuição de medalhas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 8 — SEGURANÇA DA PROVA ==================== -->
+<section class="slide slide-orb-left">
+  <div class="slide-inner">
+    <p class="slide-number gold">SEGURANÇA E CONFIABILIDADE</p>
+    <h2>Como protegemos a<br>integridade da prova</h2>
+    <p class="subtitle mb-2">A Fase 1 é o momento mais crítico da olimpíada. O sistema foi desenhado para garantir que cada aluno faça a prova nas mesmas condições.</p>
+    <div class="card-grid card-grid-2 mt-2">
+      <div class="card" style="border-left:3px solid #4CAF50;">
+        <h4 class="green">✔ Salvamento automático</h4>
+        <p>Cada resposta é salva individualmente no servidor. Se a conexão cair, o aluno retoma exatamente de onde parou, sem perder nenhuma questão.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #4CAF50;">
+        <h4 class="green">✔ Tela inteira e foco</h4>
+        <p>A prova bloqueia a saída da tela cheia e detecta se o aluno tenta mudar de aba ou janela. O sistema registra cada ocorrência.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #E8B829;">
+        <h4 class="gold">⚠ Sistema de avisos</h4>
+        <p>Se o aluno perder o foco da prova, recebe um aviso na tela. Após 3 avisos, a prova é encerrada automaticamente e submetida.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #E8B829;">
+        <h4 class="gold">⚠ Bloqueio de atalhos</h4>
+        <p>Teclas como Ctrl+R, F5, Ctrl+W e menu de contexto são bloqueados durante a prova para evitar tentativas de interrupção.</p>
+      </div>
+    </div>
+    <div class="mt-3" style="background:#1a1a26;border-radius:0.75rem;padding:1rem 1.5rem;border:1px solid #2a2a3a;">
+      <p class="small" style="color:#9895a4;">
+        <strong>Limitação importante:</strong> Essas proteções funcionam no navegador e impedem ações acidentais ou tentativas simples de desvio.
+        Não substituem a supervisão presencial durante a aplicação da prova nas instituições.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 9 — AVALIAÇÃO E RANKING ==================== -->
+<section class="slide slide-orb-right">
+  <div class="slide-inner">
+    <p class="slide-number gold">AVALIAÇÃO, RANKING E MEDALHAS</p>
+    <h2>Da correção da Fase 2<br>à medalha no peito</h2>
+    <div class="card-grid card-grid-2 mt-3">
+      <div class="card">
+        <h4>Correção da Fase 1</h4>
+        <p>Automática. Ao finalizar a prova, o sistema compara cada resposta com o gabarito oficial e calcula a nota na hora. Sem fila de espera.</p>
+        <div class="meter mt-2">
+          <div class="meter-fill" style="width:100%;background:#4CAF50;"></div>
+        </div>
+        <div class="meter-label"><span>Implementado</span><span>100%</span></div>
+      </div>
+      <div class="card">
+        <h4>Correção da Fase 2</h4>
+        <p>Avaliadores e administradores acessam as submissões, atribuem nota de 0 a 100 e escrevem um parecer. O histórico fica registrado.</p>
+        <div class="meter mt-2">
+          <div class="meter-fill" style="width:100%;background:#4CAF50;"></div>
+        </div>
+        <div class="meter-label"><span>Implementado</span><span>100%</span></div>
+      </div>
+      <div class="card">
+        <h4>Cálculo da nota final</h4>
+        <p>O sistema consolida as notas das duas fases conforme os pesos definidos para a edição. Critérios de desempate configuráveis.</p>
+        <div class="meter mt-2">
+          <div class="meter-fill" style="width:80%;background:#E8B829;"></div>
+        </div>
+        <div class="meter-label"><span>Implementado</span><span>80%</span></div>
+      </div>
+      <div class="card">
+        <h4>Ranking e medalhas</h4>
+        <p>Ranking por estado com nota final. Medalhas de ouro, prata e bronze distribuídas automaticamente. Resultado visível após liberação.</p>
+        <div class="meter mt-2">
+          <div class="meter-fill" style="width:85%;background:#E8B829;"></div>
+        </div>
+        <div class="meter-label"><span>Implementado</span><span>85%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 10 — RISCOS ==================== -->
+<section class="slide">
+  <div class="slide-inner">
+    <p class="slide-number gold">GESTÃO DE RISCOS</p>
+    <h2>Riscos identificados<br>e medidas de mitigação</h2>
+    <p class="subtitle mb-1">A plataforma reduz riscos operacionais, mas alguns dependem de ação conjunta da organização.</p>
+    <table class="risk-table">
+      <thead>
+        <tr><th>Risco</th><th>Prob.</th><th>Impacto</th><th>Mitigação</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Baixa adesão de inscritos</td>
+          <td><span class="risk-mid">Média</span></td>
+          <td class="risk-high">Alto</td>
+          <td>Divulgação antecipada por instituições parceiras e canais oficiais</td>
+        </tr>
+        <tr>
+          <td>Sobrecarga do servidor no dia da prova</td>
+          <td><span class="risk-mid">Média</span></td>
+          <td class="risk-high">Alto</td>
+          <td>Testes de carga e otimização da infraestrutura</td>
+        </tr>
+        <tr>
+          <td>Problemas de conexão durante a prova</td>
+          <td class="risk-high">Alta</td>
+          <td><span class="risk-mid">Médio</span></td>
+          <td>Salvamento incremental a cada resposta; retomada controlada</td>
+        </tr>
+        <tr>
+          <td>Erros na publicação de provas ou resultados</td>
+          <td><span class="risk-mid">Média</span></td>
+          <td class="risk-high">Alto</td>
+          <td>Workflow de revisão, auditoria e publicação controlada</td>
+        </tr>
+        <tr>
+          <td>Atraso no cronograma de desenvolvimento</td>
+          <td><span class="risk-mid">Média</span></td>
+          <td class="risk-high">Alto</td>
+          <td>Entregas priorizadas e validação contínua</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 11 — ESTADO DE MATURIDADE ==================== -->
+<section class="slide slide-orb-center">
+  <div class="slide-inner">
+    <p class="slide-number gold">STATUS DO SISTEMA</p>
+    <h2>O que já funciona<br>e o que ainda precisa de atenção</h2>
+    <div class="card-grid card-grid-3 mt-2">
+      <div class="card" style="border-top:3px solid #4CAF50;">
+        <h4 class="green">✔ Pronto e testado</h4>
+        <ul>
+          <li>Cadastro e login</li>
+          <li>Inscrição com upload</li>
+          <li>Validação de documentos</li>
+          <li>Cadastro de provas e questões</li>
+          <li>Prova com cronômetro e autosave</li>
+          <li>Correção automática da Fase 1</li>
+          <li>Envio da Fase 2</li>
+          <li>Avaliação e parecer</li>
+          <li>Ranking por estado</li>
+          <li>Painéis por perfil (5 papéis)</li>
+          <li>Controle de acesso por função</li>
+          <li>Exportação CSV</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid #E8B829;">
+        <h4 class="gold">⚠ Requer atenção</h4>
+        <ul>
+          <li>Recuperação de senha (placeholder)</li>
+          <li>Confirmação de e-mail</li>
+          <li>Auditoria não está sendo populada</li>
+          <li>Cloudinary não configurado</li>
+          <li>Threshold da Fase 1 fixo em 60%</li>
+          <li>Exportação CSV sem escape de caracteres</li>
+          <li>Editor de prova duplicado (admin/avaliador)</li>
+        </ul>
+      </div>
+      <div class="card" style="border-top:3px solid #e53e3e;">
+        <h4 class="risk-high">✖ Não implementado</h4>
+        <ul>
+          <li>Testes automatizados (zero)</li>
+          <li>Rate limiting em autenticação</li>
+          <li>Ranking por instituição/curso</li>
+          <li>PWA com service worker</li>
+          <li>Notificações por e-mail</li>
+          <li>Paginação no backend</li>
+          <li>Autocomplete de instituições</li>
+          <li>Tema claro</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 12 — RESUMO DE MATURIDADE ==================== -->
+<section class="slide slide-orb-left">
+  <div class="slide-inner">
+    <p class="slide-number gold">PANORAMA GERAL</p>
+    <h2>Maturidade do sistema<br>por área funcional</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2rem;">
+      <div>
+        <div class="meter-label"><span>Autenticação e perfis</span><span class="green">95%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:95%;background:#4CAF50;"></div></div>
+        <div class="meter-label mt-2"><span>Inscrição e validação</span><span class="green">95%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:95%;background:#4CAF50;"></div></div>
+        <div class="meter-label mt-2"><span>Cadastro de provas</span><span class="green">90%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:90%;background:#4CAF50;"></div></div>
+        <div class="meter-label mt-2"><span>Aplicação da prova</span><span class="gold">85%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:85%;background:#E8B829;"></div></div>
+        <div class="meter-label mt-2"><span>Fase 2 (envio)</span><span class="green">90%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:90%;background:#4CAF50;"></div></div>
+      </div>
+      <div>
+        <div class="meter-label"><span>Avaliação da Fase 2</span><span class="green">95%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:95%;background:#4CAF50;"></div></div>
+        <div class="meter-label mt-2"><span>Ranking e medalhas</span><span class="gold">85%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:85%;background:#E8B829;"></div></div>
+        <div class="meter-label mt-2"><span>Painéis (admin/coord.)</span><span class="green">90%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:90%;background:#4CAF50;"></div></div>
+        <div class="meter-label mt-2"><span>Exportação e auditoria</span><span class="gold">70%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:70%;background:#E8B829;"></div></div>
+        <div class="meter-label mt-2"><span>Testes automatizados</span><span class="risk-high">0%</span></div>
+        <div class="meter"><div class="meter-fill" style="width:0%;background:#e53e3e;"></div></div>
+      </div>
+    </div>
+    <div style="margin-top:2rem;padding:1rem;background:#12121a;border-radius:0.75rem;border:1px solid #2a2a3a;">
+      <p class="small" style="color:#b0adc0;">
+        <strong>Visão geral:</strong> O sistema está funcional para a realização completa da 1ª edição da OLICMAT.
+        As lacunas mais críticas são a ausência de testes automatizados, a recuperação de senha e o upload de arquivos (Cloudinary).
+        Estas serão priorizadas nos próximos ciclos de desenvolvimento.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 13 — PRÓXIMOS PASSOS ==================== -->
+<section class="slide next-steps">
+  <div class="slide-inner">
+    <p class="slide-number gold">CRONOGRAMA DE DESENVOLVIMENTO</p>
+    <h2>Próximos passos até o<br>lançamento em <span class="gold">15 de agosto de 2026</span></h2>
+    <div class="card-grid card-grid-2 mt-3">
+      <div class="card" style="border-left:3px solid #E8B829;">
+        <span class="badge badge-gold">Julho — Semana 1</span>
+        <h4 class="mt-1 gold">Testes de carga</h4>
+        <p>Simulação de usuários simultâneos para garantir que o servidor suporta o pico no dia da prova.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #E8B829;">
+        <span class="badge badge-gold">Julho — Semana 2</span>
+        <h4 class="mt-1 gold">Correções de segurança</h4>
+        <p>Rate limiting em autenticação, alinhamento do token storage, revisão de validação de uploads.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #3AAFE0;">
+        <span class="badge badge-blue">Julho — Semana 3</span>
+        <h4 class="mt-1 blue">Infraestrutura</h4>
+        <p>Configuração do Cloudinary, deploy no ambiente de produção (Easypanel), ajustes de DNS e SSL.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #3AAFE0;">
+        <span class="badge badge-blue">Julho — Semana 4</span>
+        <h4 class="mt-1 blue">Testes ponta a ponta</h4>
+        <p>Validação do fluxo completo: cadastro → inscrição → prova → Fase 2 → avaliação → resultado.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #4CAF50;">
+        <span class="badge badge-green">Agosto — Semana 1</span>
+        <h4 class="mt-1 green">Preparação para o lançamento</h4>
+        <p>Cadastro das instituições participantes, seed das edições, treinamento da equipe organizadora.</p>
+      </div>
+      <div class="card" style="border-left:3px solid #4CAF50;">
+        <span class="badge badge-green">Agosto — Semana 2</span>
+        <h4 class="mt-1 green">Lançamento oficial</h4>
+        <p><strong class="green">15 de agosto de 2026</strong> — Live de lançamento, abertura das inscrições e início da 1ª OLICMAT.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== SLIDE 14 — ENCERRAMENTO ==================== -->
+<section class="slide cover center">
+  <span class="hero-symbol" style="right:8%;top:10%;font-size:7rem;">∑</span>
+  <div class="slide-inner">
+    <p class="slide-number gold">PRÓXIMOS PASSOS</p>
+    <h1>A plataforma está pronta<br>para a <span class="gold">1ª OLICMAT</span></h1>
+    <p class="subtitle" style="max-width:600px;margin:1.5rem auto;">
+      Funcional, testada e alinhada ao cronograma oficial.<br>
+      Os próximos 40 dias são dedicados a ajustes finos, infraestrutura e preparação para o lançamento.
+    </p>
+    <div style="margin:2rem auto;max-width:500px;background:#12121a;border:1px solid #2a2a3a;border-radius:1rem;padding:1.5rem;">
+      <p class="small" style="color:#b0adc0;text-align:left;">
+        <strong class="gold">Próximos marcos:</strong><br>
+        ✔ Testes de carga — Julho semanas 1-2<br>
+        ✔ Infraestrutura e deploy — Julho semanas 3-4<br>
+        ✔ Cadastro de instituições — Agosto semana 1<br>
+        <strong class="green">★ 15 de agosto de 2026 — Lançamento</strong>
+      </p>
+    </div>
+    <div class="divider" style="margin:1.5rem auto;"></div>
+    <p style="font-family:'Fraunces',serif;font-size:1.25rem;color:#9895a4;">
+      Dúvidas ou sugestões? Fale com a equipe de desenvolvimento.
+    </p>
+  </div>
+</section>
+
+<!-- ==================== NAVEGAÇÃO ==================== -->
+</div><!-- /slides-container -->
+
+<div class="nav-controls">
+  <button onclick="prevSlide()" title="Anterior">‹</button>
+  <span class="counter" id="slideCounter">1 / 14</span>
+  <button onclick="nextSlide()" title="Próximo">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+  let isTransitioning = false;
+
+  function showSlide(idx) {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === idx);
+    });
+    const counter = document.getElementById('slideCounter');
+    counter.textContent = (idx + 1) + ' / ' + slides.length;
+    counter.style.animation = 'none';
+    requestAnimationFrame(() => {
+      counter.style.animation = 'counterPop 0.35s ease';
+    });
+    setTimeout(() => { isTransitioning = false; }, 700);
+  }
+
+  function goSlide(idx) {
+    if (idx >= 0 && idx < slides.length && idx !== current) { current = idx; showSlide(current); }
+  }
+  function nextSlide() {
+    if (current < slides.length - 1) { current++; showSlide(current); }
+  }
+  function prevSlide() {
+    if (current > 0) { current--; showSlide(current); }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); nextSlide(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+  });
+
+  showSlide(0);
+</script>
+
+</body>
+</html>

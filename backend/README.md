@@ -1,98 +1,70 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# OLICMAT Backend — NestJS API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The NestJS 11 (TypeScript, ESM) backend for the OLICMAT platform. Provides
+JWT authentication, RBAC, Prisma 7.8 ORM access to PostgreSQL 16, and
+modular endpoints for the 3-module operational split
+(Config/Results · Exam · Correction).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+> See `../README.md` for the full-stack overview and `../docs/` for
+> the PRD / BRD / SRS / API surface / migration blueprint.
 
-## Description
+## Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+| Camada | Tecnologia |
+|--------|-----------|
+| Runtime | Node.js 20+ |
+| Framework | NestJS 11 (ESM) |
+| Database | PostgreSQL 16 via Prisma 7.8 |
+| Auth | Passport JWT + RBAC (`@Roles` decorator + `RolesGuard`) |
+| Validation | Zod (controllers throw `BadRequestException` on parse failure) |
+| Storage | Cloudinary (via `upload/` module) |
 
-## Project setup
+## Source Layout
 
-```bash
-$ npm install
+```
+src/
+├── auth/             # Register, login, password recovery, JWT strategy
+├── users/            # Profile + admin user management
+├── olimpiada/        # Module 1+2 — inscricao, prova (isolated), envio, ranking
+├── admin/            # Module 1 — provas, questoes, dashboard, auditoria, cursos, edicoes, instituicoes, usuarios
+├── correcao/         # Module 3 — Phase 2 evaluation (extracted from admin)
+├── coordenacao/      # Coordinator views
+├── instituicoes/     # Public institution/course catalog
+├── upload/           # Cloudinary upload service
+├── common/           # JwtAuthGuard, RolesGuard, @Roles decorator
+├── prisma.service.ts # Global PrismaModule singleton
+├── app.module.ts
+└── main.ts
 ```
 
-## Compile and run the project
+## Data Model Highlights
+
+- 5 roles: ALUNO, COORDENADOR_CURSO, AVALIADOR, ADMIN, COMISSAO
+- Core entities: User, Instituicao, Curso, Edicao, Inscricao, Prova,
+  Questao, ProvaQuestao, Resposta, EnvioFase2, AvaliacaoFase2,
+  RankingSnapshot, AuditLog
+- **Curso** has an optional `notaEnade Decimal(5,2)` field
+  (added 2026-07-07) — the ENADE score for the course (0–100).
+- See `prisma/schema.prisma` for the authoritative definition and
+  `../docs/database-migration-blueprint.md` for the change history.
+
+## Development
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
+cp .env.example .env  # configure DATABASE_URL, JWT_SECRET
+npx prisma migrate deploy
+npm run start:dev      # http://localhost:3333/api
 ```
 
-## Run tests
+## Role Expectations per `../AGENTS.md`
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Validation: Zod with `safeParse()` in controllers
+- Auth: `@UseGuards(JwtAuthGuard, RolesGuard)` + `@Roles(Role.ADMIN)`
+- Imports: ESM with `.js` extensions; Prisma client from
+  `"../../generated/prisma/client.js"`
+- PrismaService: global singleton — no need to add it to any module's
+  `providers`; import the service directly where needed
+- Naming: Portuguese for domain concepts (inscricao, prova, questao);
+  English for technical terms
+- One module per domain (controller + service + module file)

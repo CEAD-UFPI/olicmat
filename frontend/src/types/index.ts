@@ -140,6 +140,10 @@ export interface Curso {
   id: string;
   nome: string;
   instituicaoId: string;
+  notaEnade?: number | null;
+  instituicao?: { id: string; nome: string; sigla: string };
+  _count?: { usuarios: number; inscricoes: number };
+  createdAt: string;
 }
 
 export interface Resposta {

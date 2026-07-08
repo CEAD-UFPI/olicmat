@@ -35,11 +35,12 @@ export class CursosService {
     return curso;
   }
 
-  async create(data: { nome: string; instituicaoId: string }) {
+  async create(data: { nome: string; instituicaoId: string; notaEnade?: number }) {
     return this.prisma.curso.create({
       data: {
         nome: data.nome,
         instituicaoId: data.instituicaoId,
+        notaEnade: data.notaEnade ?? null,
       },
       include: {
         instituicao: { select: { id: true, nome: true, sigla: true } },
@@ -47,7 +48,7 @@ export class CursosService {
     });
   }
 
-  async update(id: string, data: { nome?: string; instituicaoId?: string }) {
+  async update(id: string, data: { nome?: string; instituicaoId?: string; notaEnade?: number | null }) {
     await this.findById(id);
     return this.prisma.curso.update({
       where: { id },

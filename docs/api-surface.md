@@ -1,8 +1,9 @@
 # API Surface — OLICMAT v2.0
 
-**Version:** 1.0
-**Date:** 2026-06-09
+**Version:** 1.1
+**Date:** 2026-07-07
 **Status:** Post-Refactor — Matches deployed code
+**Since v1.0:** Added `notaEnade` field on `Curso` (POST/PATCH `/api/admin/cursos`); documented §15 Entity Detail Panels
 
 ---
 
@@ -82,6 +83,20 @@
 |--------|------|------|-------------|
 | POST | `/admin/instituicoes` | Ad | Create institution `{ nome, sigla, estado }` |
 | PATCH | `/admin/instituicoes/:id` | Ad | Update institution |
+| GET | `/admin/cursos` | JWT (Ad, Av, Co) | List courses (query: `instituicaoId`) — response includes `notaEnade` (Decimal 5,2, nullable) |
+| GET | `/admin/cursos/:id` | JWT (Ad, Av, Co) | Get course details with `instituicao`, `_count`, `notaEnade` |
+| POST | `/admin/cursos` | Ad | Create course `{ nome, instituicaoId, notaEnade? (0–100) }` |
+| PATCH | `/admin/cursos/:id` | Ad | Update course `{ nome?, instituicaoId?, notaEnade? (0–100 \| null) }` |
+| DELETE | `/admin/cursos/:id` | Ad | Delete course |
+
+### POST `/admin/cursos`
+```json
+{
+  "nome": "string (min 2)",
+  "instituicaoId": "string (UUID)",
+  "notaEnade": "number (0-100, optional)"
+}
+```
 
 ---
 
@@ -207,20 +222,23 @@
 
 ---
 
-## 11. Admin Phase 2 Evaluation — `/api/admin/avaliacao`
+## 11. Phase 2 Evaluation — `/api/correcao` (Module 3 — Correction)
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/admin/avaliacao/pendentes` | JWT (Av, Ad) | List pending Phase 2 submissions |
-| POST | `/admin/avaliacao/:envioId/nota` | JWT (Av, Ad) | Assign grade to submission |
+| GET | `/correcao/pendentes` | JWT (Av, Ad, Co) | List pending Phase 2 submissions |
+| POST | `/correcao/:envioId/nota` | JWT (Av, Ad) | Assign grade to submission |
+| GET | `/correcao/historico` | JWT (Av, Ad, Co) | List evaluation history (paginated, query: `page`, `limit`, `nome`) |
 
-### POST `/admin/avaliacao/:envioId/nota`
+### POST `/correcao/:envioId/nota`
 ```json
 {
   "nota": "number (0-100)",
-  "parecer": "string (optional)"
+  "comentario": "string (optional)"
 }
 ```
+
+**Note:** This module was extracted from the deprecated `/api/admin/avaliacao` routes. All existing pages (`/admin/avaliacao`, `/avaliador/fase2`, `/comissao/avaliacao`) now call `/api/correcao/*`.
 
 ---
 
@@ -274,7 +292,8 @@
 | `/api/ranking` | Olimpiada | Public ranking |
 | `/api/admin/provas` | Admin | Exam CRUD, publish, duplicate |
 | `/api/admin/questoes` | Admin | Question CRUD |
-| `/api/admin/avaliacao` | Admin | Phase 2 evaluation |
+| `/api/admin/avaliacao` | Admin (deprecated) | Phase 2 evaluation — replaced by `/api/correcao` |
+| `/api/correcao` | Correcao (Module 3) | Phase 2 evaluation, grading, history |
 | `/api/admin/dashboard` | Admin | Metrics and exports |
 | `/api/admin/auditoria` | Admin | Audit log |
 | `/api/coordenacao` | Coordenacao | Coordinator views |
@@ -286,3 +305,51 @@
 | `/api/modulos` | FORPEMAT LMS |
 | `/api/certificados` | FORPEMAT LMS |
 | `/api/submissoes` | CONGEMAT Congress |
+
+---
+
+## 15. Entity Detail Panels (UI contract — 2026-07-07)
+
+All entity "view" screens on the admin and comissão dashboards are now built
+with a single shared component: `<DetailPanel>` at
+`frontend/src/components/ui/detail-panel.tsx`. The component renders:
+
+- Wider responsive panel (`max-w-3xl` ≈ 768px by default; full-screen on mobile).
+- Optional **hero metric** — a KPI card at the top with semantic color
+  (`green` / `amber` / `red` / `blue` / `gold` / `neutral`).
+- **Sections**, each with a small uppercase title, divider, and a 2-column
+  grid of labeled fields on desktop (collapses to 1-column on mobile).
+- Optional `footer` slot (e.g. related resource links or summaries).
+- Optional `onEdit` callback which surfaces a secondary "Edit" button in
+  the panel header, next to the always-present close (X) button.
+- Smooth open/close transition (fade + scale) via framer-motion.
+
+Shared widgets exported from the same file:
+
+| Widget | Purpose |
+|--------|---------|
+| `<StatusBadge label="…" tone="green|amber|red|blue|gold|neutral" />` | Semantic-colored pill badge |
+| `<InlineList items={[{id,label}]} empty="…" />` | List of related entities |
+| `<EmptyState message="…" />` | Friendly placeholder for missing data |
+
+Shared status maps for the most common enumerations:
+
+| Map | Values |
+|-----|--------|
+| `INSCRICAO_STATUS` | `CONFIRMADA` (green), `PENDENTE` (amber), `REJEITADA` (red) |
+| `EDICAO_STATUS` | `PLANEJAMENTO` (neutral), `ATIVA` (green), `ENCERRADA` (blue) |
+| `ROLE_INFO` | `ALUNO` (blue), `COORDENADOR_CURSO` (gold), `AVALIADOR` (green), `ADMIN` (red), `COMISSAO` (neutral) |
+| `INSTITUICAO_STATUS` | `ATIVA` (green), `INATIVA` (red) |
+
+The previous per-page helpers `Row`, `SectionTitle`, `FieldGroup`, `DetailField`
+have been removed. Use `<DetailPanel>` for any new entity detail screen.
+
+---
+
+## 16. Audit Log (Unwritten — Known Limitation)
+
+The `AuditLog` Prisma model exists and `/api/admin/auditoria` returns
+existing records, but **no backend code currently persists mutations into
+it** (see `AGENTS.md` "Remaining Risks"). The Registration detail view
+shows a friendly empty-state placeholder in the "Histórico" section until
+this is implemented.

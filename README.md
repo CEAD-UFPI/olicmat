@@ -24,7 +24,8 @@
 - **Fase 2** — Envio de materiais didático-tecnológicos com avaliação por avaliadores
 - **Ranking** — Público com medalhas (ouro/prata/bronze)
 - **Painéis** — Dashboards por perfil: ADMIN, AVALIADOR, ALUNO, COORDENADOR_CURSO
-- **Administração** — CRUD de provas, questões, usuários, edições, instituições, cursos; auditoria; exportação CSV
+- **Administração** — CRUD de provas, questões, usuários, edições, instituições, cursos (incluindo nota ENADE); auditoria; exportação CSV
+- **Visualização de entidades** — Telas de detalhe unificadas com componente `<DetailPanel>` (seções rotuladas, métrica herói com cor semântica, estados vazios amigáveis)
 
 ## Perfis de Acesso
 
@@ -166,6 +167,7 @@ A documentação completa está em `docs/`:
 | `frontend-route-map.md` | Mapa de rotas do frontend |
 | `api-surface.md` | Superfície da API |
 | `refactor-plan.md` | Plano de refatoração |
+| `CHANGELOG.md` | Registro de mudanças da plataforma |
 
 ## Licença
 

@@ -9,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Pagination } from "@/components/ui/pagination";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Eye } from "lucide-react";
+import { DetailPanel } from "@/components/ui/detail-panel";
 
 interface InstituicaoOption {
   id: string;
@@ -22,6 +23,7 @@ interface CursoItem {
   nome: string;
   instituicaoId: string;
   instituicao: { id: string; nome: string; sigla: string };
+  notaEnade?: number | null;
   _count: { usuarios: number; inscricoes: number };
   createdAt: string;
 }
@@ -29,9 +31,10 @@ interface CursoItem {
 interface CursoForm {
   nome: string;
   instituicaoId: string;
+  notaEnade: string;
 }
 
-const FORM_VAZIO: CursoForm = { nome: "", instituicaoId: "" };
+const FORM_VAZIO: CursoForm = { nome: "", instituicaoId: "", notaEnade: "" };
 
 export default function AdminCursosPage() {
   const [cursos, setCursos] = useState<CursoItem[]>([]);
@@ -46,6 +49,9 @@ export default function AdminCursosPage() {
   const [erro, setErro] = useState("");
 
   const [confirmDelete, setConfirmDelete] = useState<CursoItem | null>(null);
+
+  // Detail modal state
+  const [detailTarget, setDetailTarget] = useState<CursoItem | null>(null);
 
   const [pagina, setPagina] = useState(1);
   const POR_PAGINA = 20;
@@ -86,7 +92,11 @@ export default function AdminCursosPage() {
 
   const abrirEditar = (item: CursoItem) => {
     setEditando(item);
-    setForm({ nome: item.nome, instituicaoId: item.instituicaoId });
+    setForm({
+      nome: item.nome,
+      instituicaoId: item.instituicaoId,
+      notaEnade: item.notaEnade != null ? String(item.notaEnade) : "",
+    });
     setErro("");
     setModalAberto(true);
   };
@@ -95,11 +105,21 @@ export default function AdminCursosPage() {
     if (form.nome.length < 2) { setErro("Nome deve ter no mínimo 2 caracteres"); return; }
     if (!form.instituicaoId) { setErro("Selecione uma instituição"); return; }
     setErro("");
+    const notaEnadeNum = form.notaEnade === "" ? null : Number(form.notaEnade);
+    if (notaEnadeNum !== null && (Number.isNaN(notaEnadeNum) || notaEnadeNum < 0 || notaEnadeNum > 100)) {
+      setErro("Nota ENADE deve estar entre 0 e 100");
+      return;
+    }
+    const body = {
+      nome: form.nome,
+      instituicaoId: form.instituicaoId,
+      notaEnade: notaEnadeNum,
+    };
     try {
       if (editando) {
-        await api.patch(`/admin/cursos/${editando.id}`, form);
+        await api.patch(`/admin/cursos/${editando.id}`, body);
       } else {
-        await api.post("/admin/cursos", form);
+        await api.post("/admin/cursos", body);
       }
       setModalAberto(false);
       carregarTudo();
@@ -172,45 +192,56 @@ export default function AdminCursosPage() {
       ) : (
         <>
           <div className="border border-[#2a2a3a] rounded-2xl overflow-hidden bg-[#12121a]">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Nome</th>
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Instituição</th>
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Alunos</th>
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Inscrições</th>
-                  <th className="text-right py-3 px-4 text-[#9895a4] font-medium">Ações</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Instituição</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">ENADE</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Alunos</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Inscrições</th>
+                  <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {paginados.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-[#9895a4]">
+                    <td colSpan={6} className="py-16 text-center text-[#b0adc0] text-base">
                       Nenhum curso encontrado
                     </td>
                   </tr>
                 ) : (
                   paginados.map((curso) => (
                     <tr key={curso.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#1a1a26] transition-colors">
-                      <td className="py-3 px-4 text-[#f0ece4] font-medium">{curso.nome}</td>
-                      <td className="py-3 px-4 text-[#9895a4]">{curso.instituicao.sigla}</td>
-                      <td className="py-3 px-4 text-[#9895a4]">{curso._count?.usuarios ?? 0}</td>
-                      <td className="py-3 px-4 text-[#9895a4]">{curso._count?.inscricoes ?? 0}</td>
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-4 px-5 text-[#f0ece4] font-medium">{curso.nome}</td>
+                      <td className="py-4 px-5 text-[#9895a4]">{curso.instituicao.sigla}</td>
+                      <td className="py-4 px-5 text-[#9895a4]">
+                        {curso.notaEnade != null ? Number(curso.notaEnade).toFixed(2) : "—"}
+                      </td>
+                      <td className="py-4 px-5 text-[#9895a4]">{curso._count?.usuarios ?? 0}</td>
+                      <td className="py-4 px-5 text-[#9895a4]">{curso._count?.inscricoes ?? 0}</td>
+                      <td className="py-4 px-5 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setDetailTarget(curso)}
+                            className="p-1.5 text-[#9895a4] hover:text-[#3AAFE0] transition-colors"
+                            title="Detalhes"
+                          >
+                            <Eye size={18} />
+                          </button>
                           <button
                             onClick={() => abrirEditar(curso)}
                             className="p-1.5 text-[#9895a4] hover:text-[#E8B829] transition-colors"
                             title="Editar"
                           >
-                            <Pencil size={15} />
+                            <Pencil size={18} />
                           </button>
                           <button
                             onClick={() => setConfirmDelete(curso)}
                             className="p-1.5 text-[#9895a4] hover:text-red-400 transition-colors"
                             title="Excluir"
                           >
-                            <Trash2 size={15} />
+                            <Trash2 size={18} />
                           </button>
                         </div>
                       </td>
@@ -227,18 +258,19 @@ export default function AdminCursosPage() {
         </>
       )}
 
-      <Modal aberto={modalAberto} onClose={() => setModalAberto(false)}>
-        <div className="space-y-5 w-full max-w-md p-2">
-          <h2 className="text-xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
-            {editando ? "Editar Curso" : "Novo Curso"}
-          </h2>
-
+      <Modal
+        aberto={modalAberto}
+        onClose={() => setModalAberto(false)}
+        titulo={editando ? "Editar Curso" : "Novo Curso"}
+        tamanho="md"
+      >
+        <div className="space-y-5">
           {erro && (
             <p className="text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg p-3">{erro}</p>
           )}
 
           <div className="space-y-2">
-            <Label className="text-[#9895a4] text-xs">Nome do Curso</Label>
+            <Label className="text-[#b0adc0] text-sm">Nome do Curso *</Label>
             <Input
               value={form.nome}
               onChange={(e) => setForm({ ...form, nome: e.target.value })}
@@ -248,7 +280,7 @@ export default function AdminCursosPage() {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[#9895a4] text-xs">Instituição</Label>
+            <Label className="text-[#b0adc0] text-sm">Instituição *</Label>
             <select
               value={form.instituicaoId}
               onChange={(e) => setForm({ ...form, instituicaoId: e.target.value })}
@@ -259,6 +291,18 @@ export default function AdminCursosPage() {
                 <option key={inst.id} value={inst.id}>{inst.nome} ({inst.sigla})</option>
               ))}
             </select>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-[#b0adc0] text-sm">Nota ENADE (0 a 100)</Label>
+            <Input
+              value={form.notaEnade}
+              onChange={(e) => setForm({ ...form, notaEnade: e.target.value.replace(/[^\d.,]/g, "").replace(",", ".") })}
+              placeholder="Ex: 75.50"
+              className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+              inputMode="decimal"
+            />
+            <p className="text-xs text-[#9895a4]">Campo opcional. Nota contínua do Enade (Conceito Enade / 5 × 20).</p>
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -278,6 +322,68 @@ export default function AdminCursosPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Detail Panel */}
+      <DetailPanel
+        aberto={!!detailTarget}
+        onClose={() => setDetailTarget(null)}
+        titulo="Detalhes do Curso"
+        onEdit={
+          detailTarget
+            ? () => {
+                const target = detailTarget;
+                setDetailTarget(null);
+                abrirEditar(target);
+              }
+            : undefined
+        }
+        hero={
+          detailTarget
+            ? {
+                label: "Nota ENADE",
+                value: detailTarget.notaEnade != null ? Number(detailTarget.notaEnade).toFixed(2) : "—",
+                tone: detailTarget.notaEnade == null ? "neutral" : Number(detailTarget.notaEnade) >= 60 ? "green" : Number(detailTarget.notaEnade) >= 40 ? "amber" : "red",
+                hint: detailTarget.instituicao?.sigla ?? "",
+              }
+            : undefined
+        }
+        sections={
+          detailTarget
+            ? [
+                {
+                  title: "Identificação",
+                  fields: [
+                    { label: "Nome", value: detailTarget.nome },
+                    {
+                      label: "Instituição",
+                      value: detailTarget.instituicao ? `${detailTarget.instituicao.nome} (${detailTarget.instituicao.sigla})` : "",
+                      emptyText: "Sem instituição vinculada",
+                      full: true,
+                    },
+                    {
+                      label: "Nota ENADE",
+                      value: detailTarget.notaEnade != null ? Number(detailTarget.notaEnade).toFixed(2) : "",
+                      emptyText: "Não informada",
+                    },
+                  ],
+                },
+                {
+                  title: "Métricas",
+                  fields: [
+                    { label: "Alunos vinculados", value: detailTarget._count?.usuarios ?? 0 },
+                    { label: "Inscrições", value: detailTarget._count?.inscricoes ?? 0 },
+                    {
+                      label: "Cadastrado em",
+                      value: detailTarget.createdAt
+                        ? new Date(detailTarget.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
+                        : "",
+                    },
+                  ],
+                },
+              ]
+            : []
+        }
+      />
 
       <ConfirmDialog
         aberto={!!confirmDelete}

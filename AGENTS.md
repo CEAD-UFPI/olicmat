@@ -18,8 +18,9 @@ olicmat/
 │   │   ├── auth/        # Auth (register, login, JWT, password reset)
 │   │   ├── users/       # User profile
 │   │   ├── instituicoes/# Institutions & courses catalog
-│   │   ├── olimpiada/   # Core: inscricao, prova, envio, ranking
-│   │   ├── admin/       # Admin: provas, questoes, avaliacao, dashboard, auditoria
+│   │   ├── olimpiada/   # Core: inscricao, prova (mod 2), envio, ranking
+│   │   ├── admin/       # Module 1: Config (provas, questoes, dashboard, auditoria)
+│   │   ├── correcao/    # Module 3: Correction/evaluation (extracted from admin/)
 │   │   ├── coordenacao/ # Coordinator views
 │   │   ├── upload/      # Cloudinary file upload service
 │   │   ├── common/      # Guards (JwtAuthGuard, RolesGuard), decorators
@@ -38,7 +39,7 @@ olicmat/
 │   │   │   │   └── coordenador/# COORDENADOR_CURSO dashboard
 │   │   │   ├── (public)/       # Regulamento, Sobre
 │   │   │   └── ranking/        # Public ranking
-│   │   ├── components/         # layout/, landing/, prova/, ui/
+│   │   ├── components/         # layout/, landing/, prova/, ui/, exam/
 │   │   ├── stores/             # Zustand (authStore, provaStore)
 │   │   ├── lib/                # API client (Axios), utils
 │   │   ├── types/              # TypeScript interfaces
@@ -49,14 +50,25 @@ olicmat/
 └── docker-compose.prod.yml
 ```
 
+## 3-Module Architecture
+
+The system is split into three explicit operational modules:
+
+| Module | Backend Routes | Frontend Pages | Description |
+|--------|----------------|----------------|-------------|
+| **Config/Results** | `/api/auth/*`, `/api/users/*`, `/api/instituicoes/*`, `/api/admin/*`, `/api/inscricoes/*`, `/api/envio/*`, `/api/ranking/*`, `/api/coordenacao/*` | `(dashboard)/admin/*`, `/coordenador/*`, `/competidor/{inscricao,envio,resultado}`, `/avaliador/provas` | System settings, master data, registrations, results, reports, exports, audit |
+| **Exam** (isolated) | `/api/prova/*`, `POST /api/inscricoes/minha/iniciar-prova` | `/competidor/prova` (wrapped in ExamGuard) | Lightweight exam execution with anti-cheating enforcement (fullscreen, focus detection, auto-submit) |
+| **Correction** | `/api/correcao/*` | `/admin/avaliacao`, `/avaliador/fase2`, `/comissao/avaliacao` | Phase 2 evaluation: pending submissions, grading, history, evaluator queues |
+
 ## Roles
 
-| Role | Dashboard | Description |
-|------|-----------|-------------|
-| ALUNO | `/competidor` | Register, enroll, take exams, Phase 2 |
-| COORDENADOR_CURSO | `/coordenador` | View students, monitor enrollments |
-| AVALIADOR | `/avaliador` | Create questions, manage exams, evaluate Phase 2 |
-| ADMIN | `/admin` | Full access: users, enrollments, exams, exports, audit |
+| Role | Dashboard | Module Access | Description |
+|------|-----------|---------------|-------------|
+| ALUNO | `/competidor` | Config (self-service) + Exam | Register, enroll, take exams, Phase 2 |
+| COORDENADOR_CURSO | `/coordenador` | Config (read-only) | View students, monitor enrollments |
+| AVALIADOR | `/avaliador` | Config (provas) + Correction | Create questions, manage exams, evaluate Phase 2 |
+| ADMIN | `/admin` | Config (full) + Correction | Full access: users, enrollments, exams, exports, audit, evaluation |
+| COMISSAO | `/comissao` | Config (read-only) + Correction (read-only) | Oversight: monitor inscriptions, evaluations, audit |
 
 ## Production Deployment (3 Containers)
 
@@ -82,6 +94,14 @@ A aplicação roda em produção no **Easypanel** com 3 containers independentes
 - **Portuguese:** Domain entities (inscricao, prova, questao, envio)
 - **PrismaService:** Global module — no need to add `PrismaService` to any module's providers; import the service directly where needed
 
+## Recent Structural Refactor (2026-07-06)
+
+1. **3-module backend split** — `admin/avaliacao/` extracted to independent `correcao/` module at route `/api/correcao/*`; `AppModule` now groups imports with explicit module comments; `AdminModule` no longer imports `AvaliacaoModule`
+2. **3-module frontend split** — Sidebar redesigned with three explicit sections (Config, Prova, Correção); evaluation pages (`admin/avaliacao`, `avaliador/fase2`, `comissao/avaliacao`) now call `/api/correcao/*` endpoints instead of `/api/admin/avaliacao/*`
+3. **Exam security** — New `ExamGuard` component wraps the prova page with fullscreen enforcement, visibility/focus detection, warning counter (3 max), auto-submit on limit exceeded, keyboard shortcut interception, context menu and copy prevention
+4. **Data model expansion** — Migration `20260706230000_expand_user_instituicao` added 9 new enums, ~22 User fields, ~15 Instituicao fields with CEP integration
+5. **Sidebar** — Navigation now grouped by operational module with section headers (Config/Prova/Correção)
+
 ## Recent Fixes (2026-07-02)
 
 1. **PrismaService** — Made global singleton (was instantiated 10+ times)
@@ -93,9 +113,19 @@ A aplicação roda em produção no **Easypanel** com 3 containers independentes
 7. **Roles** — All controllers use `Role` enum consistently
 8. **Login redirect** — Now role-aware (not always `/competidor`)
 9. **Frontend types** — Synced with Prisma schema; missing types added (Resposta, EnvioFase2, etc.)
-10. **Medal emoji** — Fixed display (was showing "1"/"2"/"3" instead of medal emojis)
+10. **Medalha emoji** — Fixed display (was showing "1"/"2"/"3" instead of medal emojis)
 11. **Inscription form** — Added comprovante de matrícula upload
 12. **Dead deps** — Removed class-validator, class-transformer, @types/multer
+
+## DetailPanel Unification + ENADE Score (2026-07-07)
+
+1. **Unified entity viewer** — All entity detail modals (User, Institution, Course, Edition, Registration) now use a single schema-driven `<DetailPanel>` component (`frontend/src/components/ui/detail-panel.tsx`), built on top of the shared `<Modal>`. Wider (max-w-3xl), labeled sections with 2-col grid on desktop, hero KPI slot with semantic colors, secondary Edit action surfaced in the header. Supersedes the per-page helpers `Row`, `FieldGroup`, `DetailField`.
+2. **Missing view screens added** — Course and Edition admin pages now ship Eye (view) actions that open `<DetailPanel>` (previously these two entities had no view screen, only edit/delete buttons).
+3. **Registration view expanded** — Inscription details now expose `fase1Nota`, `fase2Tema`, `notaFinal`, `medalha`, edition context, and a friendly empty-state for "change history" (AuditLog remains a placeholder until the backend starts writing to it).
+4. **ENADE Score field** — New `notaEnade Decimal?(5,2)` column on `Curso` (Prisma migration `20260707000000_add_curso_nota_enade`). Backend `POST/PATCH /api/admin/cursos` accept it; frontend create/edit form exposes it; list table shows it; DetailPanel hero metric is color-coded (≥60 green / ≥40 amber / else red). Fully backwards compatible (nullable column, optional DTO field).
+5. **Shared UX contract** — New `<StatusBadge>`, `<InlineList>`, `<EmptyState>` widgets shipped from the same `detail-panel.tsx` file; the registration table on admin/comissão pages now uses `<StatusBadge>` and the shared `INSCRICAO_STATUS` map, removing per-table ad-hoc color/label dictionaries.
+6. **Smooth open/close** — Detail modal transitions are fade + scale, with staggered fade-in of inner sections, cards, timeline items and meter fills.
+7. **Documentation** — All affected docs (CLAUDE.md, AGENTS.md, SRS_OLICMAT.md, api-surface.md, database-migration-blueprint.md, refactor-summary.md, frontend-route-map.md, PRD_OLICMAT.md, role-permissions-matrix.md, README.md) updated to reflect this release. New `docs/CHANGELOG.md` was created.
 
 ## Remaining Risks / Known Issues
 
@@ -121,7 +151,9 @@ A aplicação roda em produção no **Easypanel** com 3 containers independentes
 | Issue | Priority | Notes |
 |-------|----------|-------|
 | admin/avaliador exam editor duplicated | P1 | 479+ lines duplicated in both dashboards (ProvaDetalhePage) |
-| admin/avaliador Phase 2 evaluation duplicated | P1 | Same grouping/grading logic in both |
+| admin/avaliador Phase 2 evaluation duplicated | P1 | Same grouping/grading logic in both (3 separate files call /correcao/*) |
+| ExamGuard is client-side only | P2 | Cannot prevent dedicated cheating tools; documented in docs |
+| ExamGuard auto-submit endpoint | P2 | Calls `/prova/finalizar` which may 400 if already finalized |
 | No server-side role enforcement | P2 | Middleware only checks token; roles enforced client-side |
 | Forced dark mode | P2 | No light theme support; hex values everywhere instead of CSS vars |
 | Instituicao/Curso text inputs | P2 | Should be autocomplete dropdowns from API |

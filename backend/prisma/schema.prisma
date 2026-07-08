@@ -58,22 +58,100 @@ enum StatusEnvioFase2 {
   AVALIADO
 }
 
+enum Genero {
+  MASCULINO
+  FEMININO
+  OUTRO
+  PREFIRO_NAO_INFORMAR
+}
+
+enum RacaCor {
+  BRANCA
+  PRETA
+  PARDA
+  AMARELA
+  INDIGENA
+  OUTRO
+  PREFIRO_NAO_INFORMAR
+}
+
+enum TipoBolsa {
+  PIBIC
+  PIBITI
+  PIBEX
+  PRAEC
+  PET
+  PROUNI
+  FIES
+  OUTRO
+}
+
+enum Titulacao {
+  GRADUADO
+  ESPECIALIZACAO
+  MESTRE
+  DOUTOR
+  POS_DOUTOR
+}
+
+enum Localizacao {
+  URBANA
+  RURAL
+}
+
+enum AreaAssentamento {
+  NAO_DIFERENCIADA
+  AREA_ASSENTAMENTO
+  TERRA_INDIGENA
+  AREA_REMANESCENTE_QUILOMBO
+  UNIDADE_USO_SUSTENTAVEL
+}
+
+enum EsferaAdministrativa {
+  FEDERAL
+  ESTADUAL
+  MUNICIPAL
+  INSTITUTO_FEDERAL
+  PRIVADA
+}
+
+enum StatusInstituicao {
+  ATIVA
+  INATIVA
+}
+
+enum TipoInstituicao {
+  PERMANENTE
+  TEMPORARIA
+}
+
 // ============================================
 // Catalog models
 // ============================================
 
 model Instituicao {
-  id         String   @id @default(uuid())
-  nome       String
-  sigla      String   @unique
-  codigoInep String?  @unique
-  estado     String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                  String                @id @default(uuid())
+  nome                String
+  sigla               String                @unique
+  codigoInep          String                @unique
+  uf                  String
+  cep                 String?
+  municipio           String?
+  complemento         String?
+  pontoReferencia     String?
+  localizacao         Localizacao?
+  areaAssentamento    AreaAssentamento?
+  esferaAdministrativa EsferaAdministrativa?
+  telefone            String?
+  email               String?
+  status              StatusInstituicao?    @default(ATIVA)
+  tipo                TipoInstituicao?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
 
-  cursos     Curso[]
-  usuarios   User[]
-  inscricoes Inscricao[]
+  cursos              Curso[]
+  usuarios            User[]
+  inscricoes          Inscricao[]
 }
 
 model Curso {
@@ -81,6 +159,7 @@ model Curso {
   nome           String
   instituicaoId  String
   instituicao    Instituicao       @relation(fields: [instituicaoId], references: [id], onDelete: Cascade)
+  notaEnade      Decimal?          @db.Decimal(5,2)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 
@@ -96,28 +175,53 @@ model Curso {
 // ============================================
 
 model User {
-  id              String    @id @default(uuid())
-  nome            String
-  email           String    @unique
-  cpf             String    @unique
-  senhaHash       String
-  role            Role      @default(ALUNO)
-  instituicaoId   String?
-  instituicao     Instituicao?       @relation(fields: [instituicaoId], references: [id])
-  cursoId         String?
-  curso           Curso?             @relation(fields: [cursoId], references: [id])
-  matricula       String
-  comprovanteUrl  String?
-  dataNascimento  DateTime
-  emailConfirmado Boolean   @default(false)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                    String      @id @default(uuid())
+  nome                  String
+  nomeSocial            String?
+  email                 String      @unique
+  cpf                   String      @unique
+  senhaHash             String
+  role                  Role        @default(ALUNO)
+  instituicaoId         String?
+  instituicao           Instituicao?        @relation(fields: [instituicaoId], references: [id])
+  cursoId               String?
+  curso                 Curso?              @relation(fields: [cursoId], references: [id])
+  matricula             String
+  comprovanteUrl        String?
+  dataNascimento        DateTime
+  emailConfirmado       Boolean     @default(false)
 
-  inscricoes      Inscricao[]
-  tokens          Token[]
-  coordenadorias  CoordenadorCurso[]
-  avaliacoes      AvaliacaoFase2[]
-  auditLogs       AuditLog[]
+  telefone              String?
+  celular               String?
+  genero                Genero?
+  racaCor               RacaCor?
+  possuiDeficiencia     Boolean?
+  cotista               Boolean?
+  bolsista              Boolean?
+  tipoBolsa             TipoBolsa?
+
+  documentoIdentificacao String?
+  nacionalidade         String?
+  cep                   String?
+  numero                String?
+  enderecoCompleto      String?
+  complemento           String?
+  bairro                String?
+  uf                    String?
+  municipio             String?
+  pontoReferencia       String?
+  formacao              String?
+  titulacao             Titulacao?
+  areaFormacao          String?
+
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  inscricoes            Inscricao[]
+  tokens                Token[]
+  coordenadorias        CoordenadorCurso[]
+  avaliacoes            AvaliacaoFase2[]
+  auditLogs             AuditLog[]
 }
 
 model CoordenadorCurso {

@@ -20,11 +20,13 @@ import { Role } from "../../../generated/prisma/client.js";
 const criarCursoSchema = z.object({
   nome: z.string().min(2, "Nome deve ter no mínimo 2 caracteres"),
   instituicaoId: z.string().uuid("Instituição inválida"),
+  notaEnade: z.number().min(0).max(100).optional(),
 });
 
 const atualizarCursoSchema = z.object({
   nome: z.string().min(2).optional(),
   instituicaoId: z.string().uuid().optional(),
+  notaEnade: z.number().min(0).max(100).nullable().optional(),
 });
 
 @Controller("admin/cursos")

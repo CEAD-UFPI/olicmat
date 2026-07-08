@@ -1,8 +1,9 @@
 # Frontend Route Map — OLICMAT v2.0
 
-**Version:** 1.0
-**Date:** 2026-06-09
+**Version:** 1.1
+**Date:** 2026-07-07
 **Status:** Post-Refactor — Matches deployed code
+**Since v1.0:** Course and Edition admin pages now ship Eye (view) actions. All "view" modals on the admin/comissão dashboards are built with the unified `<DetailPanel>` component (`frontend/src/components/ui/detail-panel.tsx`).
 
 ---
 
@@ -108,12 +109,26 @@ app/
 | Route | Description | API Calls |
 |-------|-------------|-----------|
 | `/admin` | Dashboard overview | GET `/admin/dashboard` |
-| `/admin/usuarios` | User management | GET `/users` (to be added), PATCH `/admin/users/:id/role` |
-| `/admin/inscricoes` | Enrollment validation | GET `/inscricoes`, PATCH `/inscricoes/:id/confirmar` |
+| `/admin/usuarios` | User management | GET `/users`, PATCH `/admin/users/:id/role` — opens `<DetailPanel>` on Eye action |
+| `/admin/instituicoes` | Institution + course management | GET `/instituicoes`, POST `/admin/instituicoes` — opens `<DetailPanel>` on Eye action |
+| `/admin/cursos` | Course management | GET `/admin/cursos`, POST `/admin/cursos` — opens `<DetailPanel>` on Eye action (was missing in v1.0); supports `notaEnade` field |
+| `/admin/edicoes` | Edition management | GET `/admin/edicoes`, POST `/admin/edicoes` — opens `<DetailPanel>` on Eye action (was missing in v1.0) |
+| `/admin/inscricoes` | Enrollment validation | GET `/inscricoes`, PATCH `/inscricoes/:id/confirmar` — opens `<DetailPanel>` on Eye action with expanded fields (fase1Nota/fase2Tema/notaFinal/medalha/edition context) |
 | `/admin/provas` | Exam management | GET/POST `/admin/provas` |
-| `/admin/avaliacao` | Phase 2 evaluation | GET `/admin/avaliacao/pendentes`, POST `/admin/avaliacao/:id/nota` |
+| `/admin/avaliacao` | Phase 2 evaluation | GET `/admin/avaliacao/pendentes`, POST `/admin/avaliacao/:id/nota` (calls `/api/correcao/*`) |
 | `/admin/exportar` | CSV exports | GET `/admin/export/inscricoes` |
 | `/admin/auditoria` | Audit log viewer | GET `/admin/auditoria` |
+
+### COMISSAO Routes (`/comissao`) — read-only oversight
+
+| Route | Description | API Calls |
+|-------|-------------|-----------|
+| `/comissao` | Dashboard overview | Quick links |
+| `/comissao/inscricoes` | Inscription read-only view | GET `/inscricoes` — opens `<DetailPanel>` on Eye action (no Edit button surfaced) |
+| `/comissao/provas` | Exam read-only view | GET `/admin/provas` |
+| `/comissao/avaliacao` | Phase 2 read-only audit | GET `/api/correcao/pendentes`, GET `/api/correcao/historico` |
+| `/comissao/auditoria` | Audit log viewer | GET `/admin/auditoria` |
+| `/comissao/exportar` | CSV exports | GET `/admin/export/inscricoes` |
 
 ---
 

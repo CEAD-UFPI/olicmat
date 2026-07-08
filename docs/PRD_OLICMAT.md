@@ -109,6 +109,8 @@ A OLICMAT é uma plataforma web unificada para a Olimpíada de Licenciandos em M
 | F5.5 | Dashboards por estado, universidade e curso | P1 |
 | F5.6 | Exportação de dados em CSV | P1 |
 | F5.7 | Auditoria de ações críticas | P1 |
+| F5.8 | Painéis de detalhe unificados | P0 — Implementado em 2026-07-07. Toda entidade administrativa (User, Instituicao, Curso, Edicao, Inscricao) possui uma tela de visualização construída a partir de um único componente `<DetailPanel>`, com seções rotuladas, métrica herói com cor semântica e estados vazios amigáveis |
+| F5.9 | Cadastro do Índice ENADE por curso | P1 — Implementado em 2026-07-07. A entidade `Curso` expõe o campo opcional `notaEnade` (0–100), exibido na listagem e detalhe, com cor semântica conforme faixas |
 
 ## 4. Fluxos Principais
 

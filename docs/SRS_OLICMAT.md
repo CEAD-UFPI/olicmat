@@ -106,6 +106,8 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular e banco
 | RF-08.4 | Dashboards operacionais | Exibe métricas por edição, estado, instituição e curso |
 | RF-08.5 | Exportação CSV | Dados podem ser exportados para uso externo |
 | RF-08.6 | Auditoria de ações críticas | Sistema registra ações administrativas relevantes |
+| RF-08.7 | Painéis de detalhe unificados | Toda entidade administrativa (User, Instituicao, Curso, Edicao, Inscricao) possui uma tela de visualização construída a partir de um único componente `<DetailPanel>`, com seções rotuladas, hierarquia tipográfica (label pequeno + valor destacado), métrica herói com cor semântica, e estados vazios amigáveis |
+| RF-08.8 | Índice ENADE por curso | O cadastro e a visualização de `Curso` expõem o campo `notaEnade` (Decimal 5,2, 0–100, opcional); o painel de detalhe colore a métrica herói conforme faixas (≥60 verde / ≥40 âmbar / else vermelho) |
 
 ## 3. Requisitos Não Funcionais
 
@@ -136,6 +138,7 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular e banco
 | RNF-14 | Mensagens de erro em português claro |
 | RNF-15 | Navegação acessível com foco visível e labels adequados |
 | RNF-16 | Feedback visual para loading, sucesso, erro e autosave |
+| RNF-21 | Telas de detalhe de entidades usam um componente unificado (`<DetailPanel>`) com seções rotuladas, métrica herói com cor semântica (verde/âmbar/vermelho/azul/dourado/neutro), estados vazios amigáveis e transições suaves (fade + scale) |
 
 ### 3.4 Manutenibilidade
 | ID | Requisito |
@@ -274,6 +277,14 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular e banco
 - cursoId
 - matricula
 - dataNascimento
+- createdAt
+- updatedAt
+
+#### Curso
+- id
+- nome
+- instituicaoId
+- notaEnade *(Decimal 5,2 — adicionado em 2026-07-07, opcional)*
 - createdAt
 - updatedAt
 
