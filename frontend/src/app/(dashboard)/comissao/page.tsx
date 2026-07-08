@@ -56,13 +56,13 @@ export default function ComissaoPage() {
       <div className="grid sm:grid-cols-3 gap-4">
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <ClipboardList size={14} style={{ color: "#E8B829" }} />
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
+              <ClipboardList size={18} style={{ color: "#E8B829" }} />
               Inscrições
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
               {resumo.totalInscricoes ?? "-"}
             </p>
           </CardContent>
@@ -70,13 +70,13 @@ export default function ComissaoPage() {
 
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <Clock size={14} style={{ color: "#f59e0b" }} />
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
+              <Clock size={18} style={{ color: "#f59e0b" }} />
               Pendentes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "#f59e0b" }}>
+            <p className="text-3xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "#f59e0b" }}>
               {resumo.pendentes ?? "-"}
             </p>
           </CardContent>
@@ -84,13 +84,13 @@ export default function ComissaoPage() {
 
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <Eye size={14} style={{ color: "#4CAF50" }} />
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
+              <Eye size={18} style={{ color: "#4CAF50" }} />
               Acesso
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-[#9895a4]">
+            <p className="text-base text-[#b0adc0]">
               Visualização de dados
             </p>
           </CardContent>
@@ -108,10 +108,10 @@ export default function ComissaoPage() {
               href={link.href}
               className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
             >
-              <link.icon size={18} style={{ color: link.cor }} />
+              <link.icon size={20} style={{ color: link.cor }} />
               <div>
-                <p className="text-sm font-medium text-[#f0ece4]">{link.label}</p>
-                <p className="text-xs text-[#9895a4]">{link.descricao}</p>
+                <p className="text-base font-medium text-[#f0ece4]">{link.label}</p>
+                <p className="text-sm text-[#b0adc0]">{link.descricao}</p>
               </div>
             </Link>
           ))}

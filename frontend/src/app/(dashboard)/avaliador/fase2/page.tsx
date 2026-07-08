@@ -38,7 +38,7 @@ export default function AvaliadorFase2Page() {
   const carregarPendentes = async () => {
     setCarregando(true);
     try {
-      const { data } = await api.get("/admin/avaliacao/pendentes");
+      const { data } = await api.get("/correcao/pendentes");
       const arr = Array.isArray(data) ? data : [];
       // Group VIDEO + PORTFOLIO by inscricaoId
       const grouped = new Map<string, Submissao>();
@@ -89,7 +89,7 @@ export default function AvaliadorFase2Page() {
     setMensagem((prev) => ({ ...prev, [id]: "" }));
 
     try {
-      await api.post(`/admin/avaliacao/${id}/nota`, {
+      await api.post(`/correcao/${id}/nota`, {
         nota,
         comentario: comentarioInput[id] || undefined,
       });
@@ -136,17 +136,17 @@ export default function AvaliadorFase2Page() {
           {submissoes.map((s) => (
             <Card key={s.id} className="border-[#2a2a3a] bg-[#12121a]">
               <CardHeader>
-                <CardTitle className="text-[#f0ece4] flex items-center justify-between">
-                  <span>{s.nome}</span>
-                  <span className="text-xs text-[#9895a4] font-normal">
+<CardTitle className="text-[#f0ece4] text-lg flex items-center justify-between">
+                   <span>{s.nome}</span>
+                   <span className="text-sm text-[#b0adc0] font-normal">
                     {s.curso} - {s.estado}
                   </span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-xs text-[#9895a4] uppercase tracking-widest">Tema</p>
-                  <p className="text-sm text-[#f0ece4]">{s.fase2Tema}</p>
+<p className="text-sm text-[#b0adc0] uppercase tracking-widest">Tema</p>
+                   <p className="text-base text-[#f0ece4]">{s.fase2Tema}</p>
                 </div>
 
                 <div className="flex gap-4">
@@ -174,7 +174,7 @@ export default function AvaliadorFase2Page() {
 
                 <div className="border-t border-[#2a2a3a] pt-4 space-y-3">
                   <div>
-                    <Label className="text-[#f0ece4] text-sm">Nota (0-100)</Label>
+                    <Label className="text-[#f0ece4] text-base">Nota (0-100)</Label>
                     <div className="flex gap-3 mt-1.5">
                       <Input
                         type="number"
@@ -201,7 +201,7 @@ export default function AvaliadorFase2Page() {
                   </div>
 
                   <div>
-                    <Label className="text-[#f0ece4] text-sm">Comentário / Parecer</Label>
+                    <Label className="text-[#f0ece4] text-base">Comentário / Parecer</Label>
                     <textarea
                       value={comentarioInput[s.id] || ""}
                       onChange={(e) =>
@@ -215,7 +215,7 @@ export default function AvaliadorFase2Page() {
 
                   {mensagem[s.id] && (
                     <p
-                      className={`text-xs ${
+                      className={`text-sm ${
                         mensagem[s.id].includes("Erro") ? "text-red-400" : "text-[#4CAF50]"
                       }`}
                     >
@@ -223,7 +223,7 @@ export default function AvaliadorFase2Page() {
                     </p>
                   )}
                   {s.fase2Nota != null && (
-                    <p className="text-xs text-[#4CAF50]">Nota atual: {s.fase2Nota}</p>
+                    <p className="text-sm text-[#4CAF50]">Nota atual: {s.fase2Nota}</p>
                   )}
                 </div>
               </CardContent>

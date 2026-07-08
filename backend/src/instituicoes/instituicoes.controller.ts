@@ -16,16 +16,51 @@ import { RolesGuard } from "../common/guards/roles.guard.js";
 import { Roles } from "../common/decorators/roles.decorator.js";
 import { Role } from "../../generated/prisma/client.js";
 
+const localizacaoEnum = z.enum(["URBANA", "RURAL"]);
+const areaAssentamentoEnum = z.enum([
+  "NAO_DIFERENCIADA", "AREA_ASSENTAMENTO", "TERRA_INDIGENA",
+  "AREA_REMANESCENTE_QUILOMBO", "UNIDADE_USO_SUSTENTAVEL",
+]);
+const esferaAdministrativaEnum = z.enum([
+  "FEDERAL", "ESTADUAL", "MUNICIPAL", "INSTITUTO_FEDERAL", "PRIVADA",
+]);
+const statusInstituicaoEnum = z.enum(["ATIVA", "INATIVA"]);
+const tipoInstituicaoEnum = z.enum(["PERMANENTE", "TEMPORARIA"]);
+
 const criarInstituicaoSchema = z.object({
   nome: z.string().min(2, "Nome deve ter no mínimo 2 caracteres"),
   sigla: z.string().min(2, "Sigla deve ter no mínimo 2 caracteres").max(10),
-  estado: z.string().length(2, "UF deve ter 2 caracteres").optional(),
+  codigoInep: z.string().min(8, "Código INEP deve ter no mínimo 8 caracteres"),
+  uf: z.string().length(2, "UF deve ter 2 caracteres").optional(),
+  cep: z.string().optional(),
+  municipio: z.string().optional(),
+  complemento: z.string().optional(),
+  pontoReferencia: z.string().optional(),
+  localizacao: localizacaoEnum.optional(),
+  areaAssentamento: areaAssentamentoEnum.optional(),
+  esferaAdministrativa: esferaAdministrativaEnum.optional(),
+  telefone: z.string().optional(),
+  email: z.string().email().optional(),
+  status: statusInstituicaoEnum.optional(),
+  tipo: tipoInstituicaoEnum.optional(),
 });
 
 const atualizarInstituicaoSchema = z.object({
   nome: z.string().min(2).optional(),
   sigla: z.string().min(2).max(10).optional(),
-  estado: z.string().length(2).optional(),
+  codigoInep: z.string().min(8).optional(),
+  uf: z.string().length(2).optional(),
+  cep: z.string().nullable().optional(),
+  municipio: z.string().nullable().optional(),
+  complemento: z.string().nullable().optional(),
+  pontoReferencia: z.string().nullable().optional(),
+  localizacao: localizacaoEnum.nullable().optional(),
+  areaAssentamento: areaAssentamentoEnum.nullable().optional(),
+  esferaAdministrativa: esferaAdministrativaEnum.nullable().optional(),
+  telefone: z.string().nullable().optional(),
+  email: z.string().email().nullable().optional(),
+  status: statusInstituicaoEnum.optional(),
+  tipo: tipoInstituicaoEnum.nullable().optional(),
 });
 
 @Controller()

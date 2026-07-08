@@ -71,7 +71,7 @@ export default function RankingPage() {
         <select
           value={estado}
           onChange={(e) => setEstado(e.target.value)}
-          className="h-12 px-4 rounded-xl bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-sm focus:outline-none focus:border-[#E8B829] min-w-[200px]"
+          className="h-12 px-4 rounded-xl bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base focus:outline-none focus:border-[#E8B829] min-w-[200px]"
         >
           <option value="">Todos os estados</option>
           {ESTADOS.map((uf) => (
@@ -104,29 +104,29 @@ export default function RankingPage() {
               </h2>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="w-full text-base">
                   <thead>
                     <tr className="border-b border-[#2a2a3a]">
-                      <th className="text-left py-3 px-4 text-[#9895a4] font-medium">#</th>
-                      <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Nome</th>
-                      <th className="text-right py-3 px-4 text-[#9895a4] font-medium">Fase 1</th>
-                      <th className="text-right py-3 px-4 text-[#9895a4] font-medium">Fase 2</th>
-                      <th className="text-right py-3 px-4 text-[#9895a4] font-medium">Final</th>
-                      <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Medalha</th>
+                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">#</th>
+                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                      <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Fase 1</th>
+                      <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Fase 2</th>
+                      <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Final</th>
+                      <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Medalha</th>
                     </tr>
                   </thead>
                   <tbody>
                     {competidores.map((c, i) => (
                       <tr key={c.inscricaoId} className="border-b border-[#2a2a3a]/50 hover:bg-[#1a1a26]/50 transition-colors">
-                        <td className="py-3 px-4 text-[#9895a4]">{i + 1}</td>
-                        <td className="py-3 px-4 text-[#f0ece4] font-medium">{c.nome}</td>
-                        <td className="py-3 px-4 text-right text-[#9895a4]">{c.fase1Nota}</td>
-                        <td className="py-3 px-4 text-right text-[#9895a4]">{c.fase2Nota || "-"}</td>
-                        <td className="py-3 px-4 text-right text-[#f0ece4] font-semibold">{c.notaFinal.toFixed(1)}</td>
-                        <td className="py-3 px-4 text-center">
+                        <td className="py-4 px-5 text-[#9895a4]">{i + 1}</td>
+                        <td className="py-4 px-5 text-[#f0ece4] font-medium">{c.nome}</td>
+                        <td className="py-4 px-5 text-right text-[#9895a4]">{c.fase1Nota}</td>
+                        <td className="py-4 px-5 text-right text-[#9895a4]">{c.fase2Nota || "-"}</td>
+                        <td className="py-4 px-5 text-right text-[#f0ece4] font-semibold">{c.notaFinal.toFixed(1)}</td>
+                        <td className="py-4 px-5 text-center">
                           {c.medalha && (
                             <span
-                              className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full"
+                              className="inline-flex items-center gap-1 text-sm font-bold px-3 py-1 rounded-full"
                               style={{
                                 backgroundColor: `${medalhaCores[c.medalha]}18`,
                                 color: medalhaCores[c.medalha],

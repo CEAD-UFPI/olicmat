@@ -46,7 +46,7 @@ export default function CoordenadorMetricasPage() {
   if (erro || !metricas) {
     return (
       <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-        <p className="text-[#9895a4]">{erro || "Nenhuma metrica disponivel."}</p>
+        <p className="text-[#b0adc0]">{erro || "Nenhuma metrica disponivel."}</p>
       </div>
     );
   }
@@ -71,34 +71,34 @@ export default function CoordenadorMetricasPage() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest">Total</CardTitle>
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest">Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{metricas.totalAlunos}</p>
+            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{metricas.totalAlunos}</p>
           </CardContent>
         </Card>
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest">Inscritos</CardTitle>
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest">Inscritos</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{metricas.totalInscricoes}</p>
+            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{metricas.totalInscricoes}</p>
           </CardContent>
         </Card>
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest">Confirmadas</CardTitle>
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest">Confirmadas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#4CAF50] font-[family-name:var(--font-fraunces)]">{metricas.confirmadas}</p>
+            <p className="text-3xl font-bold text-[#4CAF50] font-[family-name:var(--font-fraunces)]">{metricas.confirmadas}</p>
           </CardContent>
         </Card>
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest">Taxa</CardTitle>
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest">Taxa</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{taxaConfirmacao}%</p>
+            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{taxaConfirmacao}%</p>
           </CardContent>
         </Card>
       </div>
@@ -111,24 +111,24 @@ export default function CoordenadorMetricasPage() {
             </h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Curso</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Total</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Confirmadas</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Pendentes</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Rejeitadas</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Total</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Confirmadas</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Pendentes</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Rejeitadas</th>
                 </tr>
               </thead>
               <tbody>
                 {metricas.porCurso.map((c, i) => (
                   <tr key={i} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                    <td className="py-3 px-4 text-[#f0ece4] font-medium">{c.curso}</td>
-                    <td className="py-3 px-4 text-center text-[#f0ece4]">{c.total}</td>
-                    <td className="py-3 px-4 text-center text-[#4CAF50]">{c.confirmadas}</td>
-                    <td className="py-3 px-4 text-center text-[#f59e0b]">{c.pendentes}</td>
-                    <td className="py-3 px-4 text-center text-[#e53e3e]">{c.rejeitadas}</td>
+                    <td className="py-4 px-5 text-[#f0ece4] font-medium">{c.curso}</td>
+                    <td className="py-4 px-5 text-center text-[#f0ece4]">{c.total}</td>
+                    <td className="py-4 px-5 text-center text-[#4CAF50]">{c.confirmadas}</td>
+                    <td className="py-4 px-5 text-center text-[#f59e0b]">{c.pendentes}</td>
+                    <td className="py-4 px-5 text-center text-[#e53e3e]">{c.rejeitadas}</td>
                   </tr>
                 ))}
               </tbody>
@@ -138,7 +138,7 @@ export default function CoordenadorMetricasPage() {
       )}
 
       <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a]">
-        <h3 className="text-sm font-semibold text-[#f0ece4] mb-3">Resumo</h3>
+        <h3 className="text-base font-semibold text-[#f0ece4] mb-3">Resumo</h3>
         <div className="h-4 bg-[#0a0a0f] rounded-full overflow-hidden flex">
           {total > 0 && (
             <>
@@ -166,7 +166,7 @@ export default function CoordenadorMetricasPage() {
             </>
           )}
         </div>
-        <div className="flex gap-6 mt-3 text-xs text-[#9895a4]">
+        <div className="flex gap-6 mt-3 text-sm text-[#b0adc0]">
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#4CAF50" }} />
             Confirmadas

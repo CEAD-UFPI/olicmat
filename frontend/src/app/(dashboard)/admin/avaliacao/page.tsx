@@ -59,7 +59,7 @@ export default function AdminAvaliacaoPage() {
 
   useEffect(() => {
     api
-      .get("/admin/avaliacao/pendentes")
+      .get("/correcao/pendentes")
       .then(({ data }) => {
         const arr = Array.isArray(data) ? data : [];
         const grouped = new Map<string, Submissao>();
@@ -100,7 +100,7 @@ export default function AdminAvaliacaoPage() {
   const carregarHistorico = async () => {
     setCarregandoHistorico(true);
     try {
-      const { data } = await api.get("/admin/avaliacao/historico", {
+      const { data } = await api.get("/correcao/historico", {
         params: {
           page: paginaHistorico,
           limit: ITENS_POR_PAGINA,
@@ -156,7 +156,7 @@ export default function AdminAvaliacaoPage() {
     setMensagem((prev) => ({ ...prev, [id]: "" }));
 
     try {
-      await api.post(`/admin/avaliacao/${id}/nota`, {
+      await api.post(`/correcao/${id}/nota`, {
         nota,
         comentario: comentarioInput[id] || undefined,
       });
@@ -191,13 +191,13 @@ export default function AdminAvaliacaoPage() {
         <TabsList className="border-b border-[#2a2a3a] bg-transparent w-full justify-start rounded-none gap-0">
           <TabsTrigger
             value="pendentes"
-            className="text-[#9895a4] data-[state=active]:text-[#4CAF50] data-[state=active]:border-b-2 data-[state=active]:border-[#4CAF50] rounded-none bg-transparent px-4 py-2 cursor-pointer"
+            className="text-[#b0adc0] data-[state=active]:text-[#4CAF50] data-[state=active]:border-b-2 data-[state=active]:border-[#4CAF50] rounded-none bg-transparent px-5 py-2.5 cursor-pointer"
           >
             Pendentes
           </TabsTrigger>
           <TabsTrigger
             value="historico"
-            className="text-[#9895a4] data-[state=active]:text-[#4CAF50] data-[state=active]:border-b-2 data-[state=active]:border-[#4CAF50] rounded-none bg-transparent px-4 py-2 cursor-pointer"
+            className="text-[#b0adc0] data-[state=active]:text-[#4CAF50] data-[state=active]:border-b-2 data-[state=active]:border-[#4CAF50] rounded-none bg-transparent px-5 py-2.5 cursor-pointer"
           >
             Histórico
           </TabsTrigger>
@@ -221,17 +221,17 @@ export default function AdminAvaliacaoPage() {
               {submissoes.map((s) => (
                 <Card key={s.id} className="border-[#2a2a3a] bg-[#12121a]">
                   <CardHeader>
-                    <CardTitle className="text-[#f0ece4] text-base flex items-center justify-between">
-                      <span>{s.nome}</span>
-                      <span className="text-xs text-[#9895a4] font-normal">
-                        {s.curso} - {s.estado}
-                      </span>
-                    </CardTitle>
+<CardTitle className="text-[#f0ece4] text-lg flex items-center justify-between">
+                       <span>{s.nome}</span>
+                       <span className="text-sm text-[#b0adc0] font-normal">
+                         {s.curso} - {s.estado}
+                       </span>
+                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <p className="text-xs text-[#9895a4] uppercase tracking-widest">Tema</p>
-                      <p className="text-sm text-[#f0ece4]">{s.fase2Tema}</p>
+<p className="text-sm text-[#b0adc0] uppercase tracking-widest">Tema</p>
+                       <p className="text-base text-[#f0ece4]">{s.fase2Tema}</p>
                     </div>
 
                     <div className="flex gap-4">
@@ -259,7 +259,7 @@ export default function AdminAvaliacaoPage() {
 
                     <div className="border-t border-[#2a2a3a] pt-4 space-y-3">
                       <div>
-                        <Label className="text-[#f0ece4] text-sm">Nota (0-100)</Label>
+                        <Label className="text-[#f0ece4] text-base">Nota (0-100)</Label>
                         <div className="flex gap-3 mt-1.5">
                           <Input
                             type="number"
@@ -286,7 +286,7 @@ export default function AdminAvaliacaoPage() {
                       </div>
 
                       <div>
-                        <Label className="text-[#f0ece4] text-sm">Comentário / Parecer</Label>
+                        <Label className="text-[#f0ece4] text-base">Comentário / Parecer</Label>
                         <textarea
                           value={comentarioInput[s.id] || ""}
                           onChange={(e) =>
@@ -300,7 +300,7 @@ export default function AdminAvaliacaoPage() {
 
                       {mensagem[s.id] && (
                         <p
-                          className={`text-xs ${
+                          className={`text-sm ${
                             mensagem[s.id].includes("Erro") ? "text-red-400" : "text-[#4CAF50]"
                           }`}
                         >
@@ -308,7 +308,7 @@ export default function AdminAvaliacaoPage() {
                         </p>
                       )}
                       {s.fase2Nota != null && (
-                        <p className="text-xs text-[#4CAF50]">Nota atual: {s.fase2Nota}</p>
+                        <p className="text-sm text-[#4CAF50]">Nota atual: {s.fase2Nota}</p>
                       )}
                     </div>
                   </CardContent>
@@ -345,29 +345,29 @@ export default function AdminAvaliacaoPage() {
                 {historico.map((h) => (
                   <Card key={h.id} className="border-[#2a2a3a] bg-[#12121a]">
                     <CardHeader>
-                      <CardTitle className="text-[#f0ece4] text-base flex items-center justify-between">
-                        <span>{h.nome}</span>
-                        <span className="text-xs text-[#9895a4] font-normal">
-                          {h.curso} - {h.estado}
-                        </span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2 text-sm">
+<CardTitle className="text-[#f0ece4] text-lg flex items-center justify-between">
+                         <span>{h.nome}</span>
+                         <span className="text-sm text-[#b0adc0] font-normal">
+                           {h.curso} - {h.estado}
+                         </span>
+                       </CardTitle>
+                     </CardHeader>
+                     <CardContent className="space-y-2 text-base">
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <span className="text-[#9895a4]">Tema:</span>
+                          <span className="text-[#b0adc0]">Tema:</span>
                           <span className="text-[#f0ece4] ml-2">{h.fase2Tema || "-"}</span>
                         </div>
                         <div>
-                          <span className="text-[#9895a4]">Nota:</span>
+                          <span className="text-[#b0adc0]">Nota:</span>
                           <span className="text-[#4CAF50] ml-2 font-medium">{h.nota ?? "-"}</span>
                         </div>
                         <div>
-                          <span className="text-[#9895a4]">Avaliador:</span>
+                          <span className="text-[#b0adc0]">Avaliador:</span>
                           <span className="text-[#f0ece4] ml-2">{h.avaliador || "-"}</span>
                         </div>
                         <div>
-                          <span className="text-[#9895a4]">Data:</span>
+                          <span className="text-[#b0adc0]">Data:</span>
                           <span className="text-[#f0ece4] ml-2">
                             {h.avaliadoEm ? new Date(h.avaliadoEm).toLocaleDateString("pt-BR") : "-"}
                           </span>
@@ -375,8 +375,8 @@ export default function AdminAvaliacaoPage() {
                       </div>
                       {h.comentario && (
                         <div>
-                          <span className="text-[#9895a4]">Parecer:</span>
-                          <p className="text-[#f0ece4] mt-1 bg-[#0a0a0f] rounded-lg p-2 text-xs">
+<span className="text-[#b0adc0]">Parecer:</span>
+                           <p className="text-[#f0ece4] mt-1 bg-[#0a0a0f] rounded-lg p-2 text-sm">
                             {h.comentario}
                           </p>
                         </div>

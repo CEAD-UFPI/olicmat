@@ -1,1 +1,30 @@
 documentos/
+
+# Build artifacts
+backend/dist/
+backend/generated/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Cache
+.cache/
+.turbo/
+.next/
+node_modules/

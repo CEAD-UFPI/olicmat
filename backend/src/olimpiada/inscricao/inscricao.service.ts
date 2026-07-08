@@ -63,7 +63,8 @@ export class InscricaoService {
         create: {
           nome: data.instituicao,
           sigla: data.instituicao.toUpperCase(),
-          estado: data.estado.toUpperCase(),
+          codigoInep: `AUTO_${Date.now()}`,
+          uf: data.estado.toUpperCase(),
         },
         select: { id: true },
       });

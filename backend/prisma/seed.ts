@@ -15,17 +15,17 @@ async function main() {
   const ufpi = await prisma.instituicao.upsert({
     where: { sigla: "UFPI" },
     update: {},
-    create: { nome: "Universidade Federal do Piauí", sigla: "UFPI", estado: "PI" },
+    create: { nome: "Universidade Federal do Piauí", sigla: "UFPI", codigoInep: "99999999", uf: "PI" },
   });
   const ufma = await prisma.instituicao.upsert({
     where: { sigla: "UFMA" },
     update: {},
-    create: { nome: "Universidade Federal do Maranhão", sigla: "UFMA", estado: "MA" },
+    create: { nome: "Universidade Federal do Maranhão", sigla: "UFMA", codigoInep: "99999998", uf: "MA" },
   });
   const uece = await prisma.instituicao.upsert({
     where: { sigla: "UECE" },
     update: {},
-    create: { nome: "Universidade Estadual do Ceará", sigla: "UECE", estado: "CE" },
+    create: { nome: "Universidade Estadual do Ceará", sigla: "UECE", codigoInep: "99999997", uf: "CE" },
   });
 
   // --- Cursos ---

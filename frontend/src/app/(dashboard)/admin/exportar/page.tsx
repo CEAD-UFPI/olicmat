@@ -61,14 +61,14 @@ export default function AdminExportarPage() {
               <CardTitle className="text-[#f0ece4]">{op.label}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-[#9895a4] mb-4">{op.descricao}</p>
+              <p className="text-base text-[#b0adc0] mb-4">{op.descricao}</p>
               <Button
                 variant="outline"
                 onClick={() => exportarCSV(op.tipo)}
                 disabled={exportando === op.tipo}
                 className="border-[#2a2a3a] text-[#f0ece4] gap-2 cursor-pointer"
               >
-                <Download size={14} />
+                <Download size={18} />
                 {exportando === op.tipo ? "Exportando..." : `Exportar ${op.label}`}
               </Button>
             </CardContent>

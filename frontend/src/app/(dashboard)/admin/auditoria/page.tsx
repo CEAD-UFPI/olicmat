@@ -127,7 +127,7 @@ export default function AdminAuditoriaPage() {
           disabled={exportando}
           className="border-[#2a2a3a] text-[#f0ece4] gap-2 cursor-pointer"
         >
-          <Download size={14} />
+          <Download size={18} />
           {exportando ? "Exportando..." : "Exportar CSV"}
         </Button>
       </div>
@@ -145,7 +145,7 @@ export default function AdminAuditoriaPage() {
             setEntidadeFiltro(e.target.value);
             setPagina(1);
           }}
-          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer"
+          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
         >
           <option value="">Todas as entidades</option>
           {entidades.map((e) => (
@@ -180,20 +180,20 @@ export default function AdminAuditoriaPage() {
         </div>
       ) : logs.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#9895a4]">Nenhum registro de auditoria encontrado.</p>
+          <p className="text-[#b0adc0]">Nenhum registro de auditoria encontrado.</p>
         </div>
       ) : (
         <>
           <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-base">
                 <thead>
                   <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Data</th>
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Usuário</th>
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Entidade</th>
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Ação</th>
-                    <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Detalhes</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Data</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Usuário</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Entidade</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ação</th>
+                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Detalhes</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -209,14 +209,14 @@ export default function AdminAuditoriaPage() {
                     })
                     .map((log) => (
                       <tr key={log.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                        <td className="py-3 px-4 text-[#9895a4] text-xs whitespace-nowrap">
+                        <td className="py-4 px-5 text-[#9895a4] text-sm whitespace-nowrap">
                           {log.createdAt ? new Date(log.createdAt).toLocaleString("pt-BR") : "-"}
                         </td>
-                        <td className="py-3 px-4 text-[#f0ece4]">{log.usuarioNome || "-"}</td>
-                        <td className="py-3 px-4 text-[#9895a4]">{log.entidade}</td>
-                        <td className="py-3 px-4">
+                        <td className="py-4 px-5 text-[#f0ece4]">{log.usuarioNome || "-"}</td>
+                        <td className="py-4 px-5 text-[#9895a4]">{log.entidade}</td>
+                        <td className="py-4 px-5">
                           <span
-                            className="text-xs font-medium px-2 py-0.5 rounded-full"
+                            className="text-sm font-medium px-3 py-1 rounded-full"
                             style={{
                               backgroundColor: `${acaoColors[log.acao] || "#9895a4"}20`,
                               color: acaoColors[log.acao] || "#9895a4",
@@ -225,7 +225,7 @@ export default function AdminAuditoriaPage() {
                             {log.acao}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-[#9895a4] text-xs max-w-xs truncate">
+                        <td className="py-4 px-5 text-[#9895a4] text-sm max-w-xs truncate">
                           {log.detalhes || "-"}
                         </td>
                       </tr>

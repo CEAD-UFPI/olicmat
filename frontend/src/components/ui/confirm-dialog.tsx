@@ -53,7 +53,7 @@ export function ConfirmDialog({
             exit={{ opacity: 0 }}
           />
           <motion.div
-            className="relative w-full max-w-sm rounded-2xl bg-[#12121a] border border-[#2a2a3a] p-6 shadow-2xl"
+            className="relative w-full max-w-sm rounded-2xl bg-[#12121a] border border-[#2a2a3a] p-8 shadow-2xl"
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -67,10 +67,10 @@ export function ConfirmDialog({
                 <AlertTriangle size={18} style={{ color: accentColor }} />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-[#f0ece4] font-semibold font-[family-name:var(--font-fraunces)]">
+                <h3 className="text-xl text-[#f0ece4] font-semibold font-[family-name:var(--font-fraunces)]">
                   {titulo}
                 </h3>
-                <p className="text-[#9895a4] text-sm mt-1">{mensagem}</p>
+                <p className="text-[#b0adc0] text-base mt-1">{mensagem}</p>
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">

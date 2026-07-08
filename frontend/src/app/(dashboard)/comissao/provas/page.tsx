@@ -66,41 +66,41 @@ export default function ComissaoProvasPage() {
         </div>
       ) : provas.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#9895a4]">Nenhuma prova cadastrada.</p>
+          <p className="text-[#b0adc0]">Nenhuma prova cadastrada.</p>
         </div>
       ) : (
         <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Título</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Edição</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Duração</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Questões</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Status</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Título</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Edição</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Duração</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Questões</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {provas.map((prova) => (
                   <tr key={prova.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-5">
                       <Link href={`/admin/provas/${prova.id}`} className="text-[#f0ece4] font-medium hover:text-[#E8B829] transition-colors">
                         {prova.titulo || "Prova sem título"}
                       </Link>
                     </td>
-                    <td className="py-3 px-4 text-center text-[#9895a4]">
+                    <td className="py-4 px-5 text-center text-[#9895a4]">
                       {prova.edicao?.ano || "-"}
                     </td>
-                    <td className="py-3 px-4 text-center text-[#9895a4]">
+                    <td className="py-4 px-5 text-center text-[#9895a4]">
                       {prova.duracaoMinutos ? `${prova.duracaoMinutos} min` : "-"}
                     </td>
-                    <td className="py-3 px-4 text-center text-[#9895a4]">
+                    <td className="py-4 px-5 text-center text-[#9895a4]">
                       {prova._count?.questoes ?? 0}
                     </td>
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-4 px-5 text-center">
                       <span
-                        className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                        className="text-sm font-medium px-3 py-1 rounded-full"
                         style={{
                           backgroundColor: `${statusColors[prova.status || "RASCUNHO"]}20`,
                           color: statusColors[prova.status || "RASCUNHO"],

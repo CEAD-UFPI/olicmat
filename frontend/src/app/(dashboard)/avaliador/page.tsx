@@ -58,13 +58,13 @@ export default function AvaliadorPage() {
       <div className="grid sm:grid-cols-3 gap-4">
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <BookOpen size={14} className="text-[#3AAFE0]" />
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
+              <BookOpen size={18} className="text-[#3AAFE0]" />
               Provas
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
               {resumo.totalProvas ?? "-"}
             </p>
           </CardContent>
@@ -72,13 +72,13 @@ export default function AvaliadorPage() {
 
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <Clock size={14} className="text-[#f59e0b]" />
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
+              <Clock size={18} className="text-[#f59e0b]" />
               Pendentes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#f59e0b" }}>
+            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#f59e0b" }}>
               {resumo.totalPendentes ?? "-"}
             </p>
           </CardContent>
@@ -86,13 +86,13 @@ export default function AvaliadorPage() {
 
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <CheckSquare size={14} className="text-[#4CAF50]" />
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
+              <CheckSquare size={18} className="text-[#4CAF50]" />
               Avaliadas
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#4CAF50" }}>
+            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#4CAF50" }}>
               {resumo.totalAvaliadas ?? "-"}
             </p>
           </CardContent>
@@ -109,20 +109,20 @@ export default function AvaliadorPage() {
             href="/avaliador/provas"
             className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
           >
-            <BookOpen size={18} className="text-[#3AAFE0]" />
+            <BookOpen size={20} className="text-[#3AAFE0]" />
             <div>
-              <p className="text-sm font-medium text-[#f0ece4]">Gerenciar Provas</p>
-              <p className="text-xs text-[#9895a4]">Criar e editar provas da Fase 1</p>
+              <p className="text-base font-medium text-[#f0ece4]">Gerenciar Provas</p>
+              <p className="text-sm text-[#b0adc0]">Criar e editar provas da Fase 1</p>
             </div>
           </a>
           <a
             href="/avaliador/fase2"
             className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
           >
-            <CheckSquare size={18} className="text-[#4CAF50]" />
+            <CheckSquare size={20} className="text-[#4CAF50]" />
             <div>
-              <p className="text-sm font-medium text-[#f0ece4]">Avaliar Fase 2</p>
-              <p className="text-xs text-[#9895a4]">Avaliar videoaulas e portfolios</p>
+              <p className="text-base font-medium text-[#f0ece4]">Avaliar Fase 2</p>
+              <p className="text-sm text-[#b0adc0]">Avaliar videoaulas e portfolios</p>
             </div>
           </a>
         </div>

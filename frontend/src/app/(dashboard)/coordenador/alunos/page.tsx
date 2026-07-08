@@ -74,7 +74,7 @@ export default function CoordenadorAlunosPage() {
         <select
           value={statusFiltro}
           onChange={(e) => setStatusFiltro(e.target.value)}
-          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-sm"
+          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base"
         >
           <option value="">Todos os status</option>
           <option value="CONFIRMADA">Confirmada</option>
@@ -89,31 +89,31 @@ export default function CoordenadorAlunosPage() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#9895a4]">Nenhum aluno encontrado.</p>
+          <p className="text-[#b0adc0]">Nenhum aluno encontrado.</p>
         </div>
       ) : (
         <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-base">
               <thead>
                 <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Nome</th>
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Email</th>
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Matricula</th>
-                  <th className="text-left py-3 px-4 text-[#9895a4] font-medium">Curso</th>
-                  <th className="text-center py-3 px-4 text-[#9895a4] font-medium">Status</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Email</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Matricula</th>
+                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((aluno) => (
                   <tr key={aluno.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                    <td className="py-3 px-4 text-[#f0ece4] font-medium">{aluno.nome}</td>
-                    <td className="py-3 px-4 text-[#9895a4]">{aluno.email}</td>
-                    <td className="py-3 px-4 text-[#9895a4]">{aluno.matricula || "-"}</td>
-                    <td className="py-3 px-4 text-[#9895a4]">{aluno.curso || "-"}</td>
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-4 px-5 text-[#f0ece4] font-medium">{aluno.nome}</td>
+                    <td className="py-4 px-5 text-[#9895a4]">{aluno.email}</td>
+                    <td className="py-4 px-5 text-[#9895a4]">{aluno.matricula || "-"}</td>
+                    <td className="py-4 px-5 text-[#9895a4]">{aluno.curso || "-"}</td>
+                    <td className="py-4 px-5 text-center">
                       <span
-                        className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                        className="text-sm font-medium px-3 py-1 rounded-full"
                         style={{
                           backgroundColor: `${statusColors[aluno.status] || "#9895a4"}20`,
                           color: statusColors[aluno.status] || "#9895a4",

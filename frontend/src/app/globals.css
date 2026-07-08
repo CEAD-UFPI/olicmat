@@ -36,7 +36,8 @@
   --color-green: #4CAF50;
   --color-blue: #3AAFE0;
   --text-primary: #f0ece4;
-  --text-secondary: #9895a4;
+  --text-secondary: #b0adc0;
+  --text-tertiary: #9895a4;
   --border-color: #2a2a3a;
 
   --pi-dourado: #E8B829;
@@ -49,7 +50,8 @@
   --bg-secondary: #ffffff;
   --surface: #faf9f7;
   --text-primary: #1a1a2e;
-  --text-secondary: #6b7280;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
   --border-color: #e5e3df;
   --color-gold: #E8B829;
   --color-green: #4CAF50;
@@ -182,4 +184,91 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+/* ==============================
+   Data Table — improved readability
+   ============================== */
+
+.data-table {
+  width: 100%;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.data-table thead tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+  padding: 1rem 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid color-mix(in srgb, var(--border-color) 50%, transparent);
+}
+
+.data-table tbody tr:hover {
+  background-color: color-mix(in srgb, var(--bg-primary) 50%, transparent);
+}
+
+/* Status badges — larger and more readable */
+.data-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+/* Card metric values */
+.metric-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  font-family: var(--font-fraunces);
+  line-height: 1.2;
+}
+
+/* Card metric labels */
+.metric-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+/* Detail field in modals */
+.detail-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+/* Modal section titles */
+.section-title {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-gold);
 }

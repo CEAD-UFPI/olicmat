@@ -44,7 +44,8 @@ export class AuthService {
         create: {
           nome: data.instituicao,
           sigla: data.instituicao.toUpperCase(),
-          estado: "PI",
+          codigoInep: `AUTO_${Date.now()}`,
+          uf: "PI",
         },
         select: { id: true },
       });
@@ -69,11 +70,19 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         nome: restData.nome,
+        nomeSocial: restData.nomeSocial ?? null,
         email: restData.email,
         cpf: restData.cpf,
         matricula: restData.matricula,
         dataNascimento: new Date(restData.dataNascimento),
         senhaHash,
+        telefone: restData.telefone ?? null,
+        genero: restData.genero as never ?? null,
+        racaCor: restData.racaCor as never ?? null,
+        possuiDeficiencia: restData.possuiDeficiencia ?? null,
+        cotista: restData.cotista ?? null,
+        bolsista: restData.bolsista ?? null,
+        tipoBolsa: restData.tipoBolsa as never ?? null,
         instituicaoId,
         cursoId,
       },

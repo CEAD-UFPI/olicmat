@@ -8,6 +8,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Timer } from "@/components/prova/Timer";
 import { QuestaoCard } from "@/components/prova/QuestaoCard";
+import { ExamGuard } from "@/components/exam/ExamGuard";
 
 export default function ProvaPage() {
   const router = useRouter();
@@ -105,6 +106,7 @@ export default function ProvaPage() {
   const respondidas = questoes.filter((q) => q.respondida).length;
 
   return (
+    <ExamGuard onAutoSubmit={handleTimeUp}>
     <div className="max-w-4xl mx-auto">
       {/* Header bar */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
@@ -216,5 +218,6 @@ export default function ProvaPage() {
         </div>
       )}
     </div>
+    </ExamGuard>
   );
 }

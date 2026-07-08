@@ -42,7 +42,7 @@ export default function ComissaoAvaliacaoPage() {
 
   useEffect(() => {
     api
-      .get("/admin/avaliacao/pendentes")
+      .get("/correcao/pendentes")
       .then(({ data }) => {
         const arr = Array.isArray(data) ? data : [];
         const grouped = new Map<string, Submissao>();
@@ -74,7 +74,7 @@ export default function ComissaoAvaliacaoPage() {
   const carregarHistorico = async () => {
     setCarregandoHistorico(true);
     try {
-      const { data } = await api.get("/admin/avaliacao/historico", {
+      const { data } = await api.get("/correcao/historico", {
         params: { page: paginaHistorico, limit: 5, ...(filtroNome ? { nome: filtroNome } : {}) },
       });
       const envios = data.data ?? [];
@@ -127,20 +127,20 @@ export default function ComissaoAvaliacaoPage() {
       <div className="flex border-b border-[#2a2a3a]">
         <button
           onClick={() => setAba("pendentes")}
-          className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer ${
+          className={`px-5 py-2.5 text-base font-medium transition-colors cursor-pointer ${
             aba === "pendentes"
               ? "text-[#E8B829] border-b-2 border-[#E8B829]"
-              : "text-[#9895a4] hover:text-[#f0ece4]"
+              : "text-[#b0adc0] hover:text-[#f0ece4]"
           }`}
         >
           Pendentes
         </button>
         <button
           onClick={() => setAba("historico")}
-          className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer ${
+          className={`px-5 py-2.5 text-base font-medium transition-colors cursor-pointer ${
             aba === "historico"
               ? "text-[#E8B829] border-b-2 border-[#E8B829]"
-              : "text-[#9895a4] hover:text-[#f0ece4]"
+              : "text-[#b0adc0] hover:text-[#f0ece4]"
           }`}
         >
           Histórico
@@ -162,16 +162,16 @@ export default function ComissaoAvaliacaoPage() {
               {submissoes.map((s) => (
                 <Card key={s.id} className="border-[#2a2a3a] bg-[#12121a]">
                   <CardHeader>
-                    <CardTitle className="text-[#f0ece4] text-base flex items-center justify-between">
-                      <span>{s.nome}</span>
-                      <span className="text-xs text-[#9895a4] font-normal">
-                        {s.curso} — {s.estado}
-                      </span>
-                    </CardTitle>
+<CardTitle className="text-[#f0ece4] text-lg flex items-center justify-between">
+                       <span>{s.nome}</span>
+                       <span className="text-sm text-[#b0adc0] font-normal">
+                         {s.curso} — {s.estado}
+                       </span>
+                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <p className="text-xs text-[#9895a4] uppercase tracking-widest">Tema</p>
-                    <p className="text-sm text-[#f0ece4]">{s.fase2Tema}</p>
+<p className="text-sm text-[#b0adc0] uppercase tracking-widest">Tema</p>
+                     <p className="text-base text-[#f0ece4]">{s.fase2Tema}</p>
                     <div className="flex gap-4">
                       {s.fase2VideoUrl && (
                         <a href={s.fase2VideoUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-[#3AAFE0] hover:underline">
@@ -214,25 +214,25 @@ export default function ComissaoAvaliacaoPage() {
               {historico.map((h) => (
                 <Card key={h.id} className="border-[#2a2a3a] bg-[#12121a]">
                   <CardHeader>
-                    <CardTitle className="text-[#f0ece4] text-base flex items-center justify-between">
-                      <span>{h.nome}</span>
-                      <span className="text-xs text-[#9895a4] font-normal">
-                        {h.curso} — {h.estado}
-                      </span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 text-sm">
+<CardTitle className="text-[#f0ece4] text-lg flex items-center justify-between">
+                         <span>{h.nome}</span>
+                         <span className="text-sm text-[#b0adc0] font-normal">
+                           {h.curso} — {h.estado}
+                         </span>
+                       </CardTitle>
+                     </CardHeader>
+                     <CardContent className="space-y-2 text-base">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <span className="text-[#9895a4]">Nota:</span>
+                        <span className="text-[#b0adc0]">Nota:</span>
                         <span className="text-[#4CAF50] ml-2 font-medium">{h.nota ?? "-"}</span>
                       </div>
                       <div>
-                        <span className="text-[#9895a4]">Avaliador:</span>
+                        <span className="text-[#b0adc0]">Avaliador:</span>
                         <span className="text-[#f0ece4] ml-2">{h.avaliador || "-"}</span>
                       </div>
                       <div>
-                        <span className="text-[#9895a4]">Data:</span>
+                        <span className="text-[#b0adc0]">Data:</span>
                         <span className="text-[#f0ece4] ml-2">
                           {h.avaliadoEm ? new Date(h.avaliadoEm).toLocaleDateString("pt-BR") : "-"}
                         </span>
@@ -240,8 +240,8 @@ export default function ComissaoAvaliacaoPage() {
                     </div>
                     {h.comentario && (
                       <div>
-                        <span className="text-[#9895a4]">Parecer:</span>
-                        <p className="text-[#f0ece4] mt-1 bg-[#0a0a0f] rounded-lg p-2 text-xs">{h.comentario}</p>
+<span className="text-[#b0adc0]">Parecer:</span>
+                         <p className="text-[#f0ece4] mt-1 bg-[#0a0a0f] rounded-lg p-2 text-sm">{h.comentario}</p>
                       </div>
                     )}
                   </CardContent>

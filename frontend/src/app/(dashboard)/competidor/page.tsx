@@ -56,7 +56,7 @@ export default function CompetidorPage() {
           <h2 className="text-xl font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
             Você ainda não está inscrito
           </h2>
-          <p className="text-sm text-[#9895a4] mb-6 max-w-md mx-auto">
+          <p className="text-base text-[#b0adc0] mb-6 max-w-md mx-auto">
             Inscreva-se na OLICMAT para iniciar sua jornada na competição: resolva a prova online da Fase 1 e produza sua videoaula com portfólio digital na Fase 2.
           </p>
           <Button
@@ -105,7 +105,7 @@ export default function CompetidorPage() {
               <h3 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
                 Prova disponível
               </h3>
-              <p className="text-sm text-[#9895a4]">30 questões · 3 horas de duração</p>
+              <p className="text-base text-[#b0adc0]">30 questões · 3 horas de duração</p>
             </div>
             <Button
               size="lg"
@@ -137,13 +137,13 @@ function StatusCard({
   return (
     <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a] hover:border-[#3a3a4a] transition-colors">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-xs text-[#9895a4] uppercase tracking-widest">{titulo}</span>
+        <span className="text-sm text-[#b0adc0] uppercase tracking-widest">{titulo}</span>
         <span className="text-xl font-[family-name:var(--font-fraunces)]" style={{ color: cor }}>
           {simbolo}
         </span>
       </div>
-      <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{valor}</p>
-      <p className="text-sm text-[#9895a4] mt-1">{descricao}</p>
+      <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{valor}</p>
+      <p className="text-base text-[#b0adc0] mt-1">{descricao}</p>
     </div>
   );
 }

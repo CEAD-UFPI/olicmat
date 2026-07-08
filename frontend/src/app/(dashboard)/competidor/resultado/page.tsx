@@ -49,7 +49,7 @@ export default function CompetidorResultadoPage() {
 
       {!inscricao ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#9895a4]">
+          <p className="text-[#b0adc0]">
             Voce ainda nao possui inscricao. Inscreva-se para participar da OLICMAT.
           </p>
         </div>
@@ -72,26 +72,26 @@ export default function CompetidorResultadoPage() {
               >
                 Medalha de {medalhaInfo[inscricao.medalha]?.label}
               </h2>
-              <p className="text-sm text-[#9895a4] mt-1">Parabens pelo seu desempenho</p>
+              <p className="text-base text-[#b0adc0] mt-1">Parabens pelo seu desempenho</p>
             </div>
           )}
 
           <div className="grid sm:grid-cols-3 gap-4">
             <div className="border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a] text-center">
-              <p className="text-xs text-[#9895a4] uppercase tracking-widest mb-2">Fase 1</p>
-              <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+              <p className="text-sm text-[#b0adc0] uppercase tracking-widest mb-2">Fase 1</p>
+              <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
                 {inscricao.fase1Nota != null ? `${inscricao.fase1Nota} pts` : "-"}
               </p>
             </div>
             <div className="border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a] text-center">
-              <p className="text-xs text-[#9895a4] uppercase tracking-widest mb-2">Fase 2</p>
-              <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+              <p className="text-sm text-[#b0adc0] uppercase tracking-widest mb-2">Fase 2</p>
+              <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
                 {inscricao.fase2Nota != null ? `${inscricao.fase2Nota} pts` : "-"}
               </p>
             </div>
             <div className="border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a] text-center">
-              <p className="text-xs text-[#9895a4] uppercase tracking-widest mb-2">Nota Final</p>
-              <p className="text-2xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "var(--pi-laranja)" }}>
+              <p className="text-sm text-[#b0adc0] uppercase tracking-widest mb-2">Nota Final</p>
+              <p className="text-3xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "var(--pi-laranja)" }}>
                 {inscricao.notaFinal != null ? `${inscricao.notaFinal} pts` : "-"}
               </p>
             </div>

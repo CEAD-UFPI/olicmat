@@ -15,6 +15,7 @@ interface AuthState {
 
 interface RegisterData {
   nome: string;
+  nomeSocial?: string;
   email: string;
   cpf: string;
   senha: string;
@@ -22,6 +23,13 @@ interface RegisterData {
   curso: string;
   matricula: string;
   dataNascimento: string;
+  telefone: string;
+  genero: string;
+  racaCor: string;
+  possuiDeficiencia?: boolean;
+  cotista?: boolean;
+  bolsista?: boolean;
+  tipoBolsa?: string;
 }
 
 function setTokenCookie(token: string) {
