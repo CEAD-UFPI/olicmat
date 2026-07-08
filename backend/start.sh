@@ -1,26 +1,24 @@
 #!/bin/sh
-set -e
 
-echo "🚀 Starting OLICMAT Backend..."
+echo "========================================="
+echo "🚀 OLICMAT Backend Starting..."
+echo "========================================="
+echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+echo ""
 
-# Wait for database to be ready
-echo "⏳ Waiting for database..."
-until npx prisma db push --skip-generate 2>/dev/null; do
-  echo "   Database not ready, waiting..."
-  sleep 2
-done
-echo "✅ Database is ready"
+# Step 1: Run migrations
+echo "📦 Step 1: Running Prisma migrations..."
+npx prisma migrate deploy 2>&1
+echo "Migration exit code: $?"
 
-# Run migrations
-echo "📦 Running migrations..."
-npx prisma migrate deploy
-echo "✅ Migrations applied"
+# Step 2: Run seed
+echo ""
+echo "🌱 Step 2: Running database seed..."
+npx prisma db seed 2>&1
+echo "Seed exit code: $?"
 
-# Run seed (uses upsert, safe to run multiple times)
-echo "🌱 Seeding database..."
-npx prisma db seed || echo "⚠️  Seed completed with warnings (data may already exist)"
-echo "✅ Database seeded"
-
-# Start the server
+echo ""
+echo "========================================="
 echo "🚀 Starting NestJS server..."
+echo "========================================="
 exec node dist/src/main.js
