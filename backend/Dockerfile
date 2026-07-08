@@ -25,8 +25,10 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/generated ./generated
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+COPY start.sh ./
 
 RUN npx prisma generate
+RUN chmod +x start.sh
 
 EXPOSE 3333
-CMD ["node", "dist/src/main.js"]
+CMD ["./start.sh"]
