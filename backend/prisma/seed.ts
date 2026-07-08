@@ -31,18 +31,18 @@ async function main() {
   // --- Cursos ---
   const matUfpi = await prisma.curso.upsert({
     where: { nome_instituicaoId: { nome: "Licenciatura em Matemática", instituicaoId: ufpi.id } },
-    update: {},
-    create: { nome: "Licenciatura em Matemática", instituicaoId: ufpi.id },
+    update: { notaEnade: 78.50 },
+    create: { nome: "Licenciatura em Matemática", instituicaoId: ufpi.id, notaEnade: 78.50 },
   });
   const matUfma = await prisma.curso.upsert({
     where: { nome_instituicaoId: { nome: "Licenciatura em Matemática", instituicaoId: ufma.id } },
-    update: {},
-    create: { nome: "Licenciatura em Matemática", instituicaoId: ufma.id },
+    update: { notaEnade: 62.00 },
+    create: { nome: "Licenciatura em Matemática", instituicaoId: ufma.id, notaEnade: 62.00 },
   });
   const matUece = await prisma.curso.upsert({
     where: { nome_instituicaoId: { nome: "Licenciatura em Matemática", instituicaoId: uece.id } },
-    update: {},
-    create: { nome: "Licenciatura em Matemática", instituicaoId: uece.id },
+    update: { notaEnade: 45.25 },
+    create: { nome: "Licenciatura em Matemática", instituicaoId: uece.id, notaEnade: 45.25 },
   });
 
   // --- Admin user (senha: admin123) ---
