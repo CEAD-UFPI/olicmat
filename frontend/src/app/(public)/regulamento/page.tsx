@@ -58,7 +58,7 @@ export default function RegulamentoPage() {
             "A distribuição de medalhas seguirá a proporção: até 5% Ouro, até 10% Prata e até 15% Bronze do total de competidores de cada estado.",
             "Todos os participantes que concluírem a Fase II receberão certificado digital de participação.",
             "Os medalhistas receberão certificado especial e menção honrosa.",
-            "A cerimônia de premiação e encerramento será realizada em 03/11/2026, em data e local divulgados no site oficial.",
+            "A cerimônia de premiação e encerramento será realizada em 30/11/2026, em data e local divulgados no site oficial.",
             "No segundo semestre de 2027, será realizada a missão de imersão profissional e a participação na formação oferecida pela SBM no Rio de Janeiro, seguidas de workshops de disseminação.",
           ]}
         />

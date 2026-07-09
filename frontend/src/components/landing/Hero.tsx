@@ -7,10 +7,10 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 const cronogramaDestaques = [
-  { data: "15/08/2026", evento: "Live de lançamento e início das inscrições" },
-  { data: "20/09/2026", evento: "Fase I — Primeiro Teste" },
-  { data: "20/10/2026", evento: "Fase II — Desafio Didático-Tecnológico" },
-  { data: "03/11/2026", evento: "Resultado e premiação" },
+  { data: "21/07/2026", evento: "Live de lançamento e início das inscrições" },
+  { data: "21/10/2026", evento: "Fase I — Primeiro Teste" },
+  { data: "03/11 a 06/11/2026", evento: "Fase II — Desafio Didático-Tecnológico" },
+  { data: "25/11/2026", evento: "Resultado e premiação" },
 ];
 
 export function Hero() {
@@ -85,7 +85,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
-          Olimpíada para Licenciandos em Matemática — duas fases, um propósito: valorizar o conhecimento e a prática docente.
+          Olimpíada para Licenciandos em Matemática — duas fases, um propósito: Valorizar o Conhecimento e a Prática Docente.
         </motion.p>
 
         <motion.div
