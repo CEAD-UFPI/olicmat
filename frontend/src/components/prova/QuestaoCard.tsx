@@ -6,11 +6,12 @@ import type { Questao } from "@/types";
 interface QuestaoCardProps {
   questao: Questao & { respondida?: string | null };
   onResponder: (questaoId: string, alternativa: string) => void;
+  disabled?: boolean;
 }
 
 const alternativas = ["A", "B", "C", "D", "E"] as const;
 
-export function QuestaoCard({ questao, onResponder }: QuestaoCardProps) {
+export function QuestaoCard({ questao, onResponder, disabled }: QuestaoCardProps) {
   return (
     <motion.div
       key={questao.id}
@@ -48,7 +49,10 @@ export function QuestaoCard({ questao, onResponder }: QuestaoCardProps) {
             <button
               key={letra}
               onClick={() => onResponder(questao.id, letra)}
+              disabled={disabled}
               className={`w-full text-left flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 ${
+                disabled ? "opacity-50 cursor-not-allowed" : ""
+              } ${
                 selecionada
                   ? "border-[var(--pi-laranja)] bg-[var(--pi-laranja)]/10"
                   : "border-[#2a2a3a] hover:border-[#3a3a4a] hover:bg-[#1a1a26]"
@@ -61,7 +65,11 @@ export function QuestaoCard({ questao, onResponder }: QuestaoCardProps) {
                     : "bg-[#1a1a26] text-[#9895a4]"
                 }`}
               >
-                {letra}
+                {disabled && !selecionada ? (
+                  <div className="w-3 h-3 border border-[#9895a4] border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  letra
+                )}
               </span>
               <span className={`text-sm ${selecionada ? "text-[#f0ece4]" : "text-[#9895a4]"}`}>
                 {texto}

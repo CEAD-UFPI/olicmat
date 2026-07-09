@@ -19,6 +19,9 @@ export default function ProvaPage() {
     carregando,
     finalizada,
     nota,
+    salvando,
+    erro,
+    limparErro,
     carregarProva,
     responder,
     proximaQuestao,
@@ -53,7 +56,11 @@ export default function ProvaPage() {
   }, [finalizar]);
 
   const handleResponder = async (questaoId: string, alternativa: string) => {
-    await responder(questaoId, alternativa);
+    try {
+      await responder(questaoId, alternativa);
+    } catch {
+      // Erro já foi capturado pelo store (estado `erro`)
+    }
   };
 
   const handleFinalizar = async () => {
@@ -133,11 +140,23 @@ export default function ProvaPage() {
 
       {/* Questão atual */}
       <div className="mb-8">
+        {erro && (
+          <div className="mb-4 rounded-xl border border-[#e53e3e]/30 bg-[#e53e3e]/10 p-4 flex items-center justify-between gap-4">
+            <p className="text-sm text-[#e53e3e]">{erro}</p>
+            <button
+              onClick={limparErro}
+              className="text-xs text-[#9895a4] hover:text-[#f0ece4] shrink-0"
+            >
+              ✕
+            </button>
+          </div>
+        )}
         <AnimatePresence mode="wait">
           {questao && (
             <QuestaoCard
               questao={questao}
               onResponder={handleResponder}
+              disabled={salvando}
             />
           )}
         </AnimatePresence>

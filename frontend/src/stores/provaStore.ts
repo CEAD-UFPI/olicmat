@@ -15,12 +15,15 @@ interface ProvaState {
   carregando: boolean;
   finalizada: boolean;
   nota: number | null;
+  salvando: boolean;
+  erro: string | null;
   carregarProva: () => Promise<void>;
   responder: (questaoId: string, alternativa: string) => Promise<void>;
   proximaQuestao: () => void;
   questaoAnterior: () => void;
   irParaQuestao: (index: number) => void;
   finalizar: () => Promise<void>;
+  limparErro: () => void;
 }
 
 export const useProvaStore = create<ProvaState>((set, get) => ({
@@ -32,6 +35,10 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   carregando: false,
   finalizada: false,
   nota: null,
+  salvando: false,
+  erro: null,
+
+  limparErro: () => set({ erro: null }),
 
   carregarProva: async () => {
     set({ carregando: true });
@@ -46,12 +53,20 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   },
 
   responder: async (questaoId, alternativa) => {
-    await api.post("/prova/responder", { questaoId, alternativa });
-    set((state) => ({
-      questoes: state.questoes.map((q) =>
-        q.id === questaoId ? { ...q, respondida: alternativa } : q
-      ),
-    }));
+    set({ salvando: true, erro: null });
+    try {
+      await api.post("/prova/responder", { questaoId, alternativa });
+      set((state) => ({
+        questoes: state.questoes.map((q) =>
+          q.id === questaoId ? { ...q, respondida: alternativa } : q
+        ),
+        salvando: false,
+      }));
+    } catch (err: any) {
+      const msg = err.response?.data?.message || "Erro ao salvar resposta. Tente novamente.";
+      set({ erro: msg, salvando: false });
+      throw err;
+    }
   },
 
   proximaQuestao: () => {
