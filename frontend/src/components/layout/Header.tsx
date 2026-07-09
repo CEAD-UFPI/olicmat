@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const navLinks = [
   { href: "/#sobre", label: "Sobre" },
@@ -28,7 +27,7 @@ export function Header() {
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[var(--bg-primary)]/90 backdrop-blur-xl border-b border-[var(--border-color)]/50 shadow-lg shadow-black/20"
+          ? "bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-[#2a2a3a]/50 shadow-lg shadow-black/20"
           : "bg-transparent"
       }`}
     >
@@ -63,7 +62,6 @@ export function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <ThemeToggle />
           {isAuthenticated ? (
             <>
               <Button
@@ -117,7 +115,7 @@ export function Header() {
       </nav>
 
       {mobileOpen && (
-        <div className="md:hidden bg-[var(--bg-primary)]/95 backdrop-blur-xl border-t border-[var(--border-color)] px-4 py-6 flex flex-col gap-4">
+        <div className="md:hidden bg-[#0a0a0f]/95 backdrop-blur-xl border-t border-[#2a2a3a] px-4 py-6 flex flex-col gap-4">
           {navLinks.map((l) => (
             <Link
               key={l.href}
