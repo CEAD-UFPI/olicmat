@@ -1,0 +1,1012 @@
+{
+  "/home/wesley/Projetos/sites/olicmat/.claude/settings.local.json": {
+    "mtime": 1781041467.6870096,
+    "ast_hash": "4c343afd4c234f3f35505369be958eb7",
+    "semantic_hash": "4c343afd4c234f3f35505369be958eb7"
+  },
+  "/home/wesley/Projetos/sites/olicmat/.composio/project.json": {
+    "mtime": 1783027389.525973,
+    "ast_hash": "b11f6bb009ce61d4fde438cc0a7234a5",
+    "semantic_hash": "b11f6bb009ce61d4fde438cc0a7234a5"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/eslint.config.mjs": {
+    "mtime": 1778031988.0554671,
+    "ast_hash": "d7647004fcd6fc51a724065fc878a559",
+    "semantic_hash": "d7647004fcd6fc51a724065fc878a559"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/nest-cli.json": {
+    "mtime": 1778031988.0555618,
+    "ast_hash": "b6c9c4b64b7092bea720263a47b574cf",
+    "semantic_hash": "b6c9c4b64b7092bea720263a47b574cf"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/package.json": {
+    "mtime": 1783615312.73429,
+    "ast_hash": "10823e4695635538086830b53f3f435c",
+    "semantic_hash": "10823e4695635538086830b53f3f435c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/prisma.config.ts": {
+    "mtime": 1781058930.6068897,
+    "ast_hash": "31f532bbc1aa4ea4b72717f1b497d0aa",
+    "semantic_hash": "31f532bbc1aa4ea4b72717f1b497d0aa"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/prisma/migrations/20260609131525_refactor_olicmat_v2/migration.sql": {
+    "mtime": 1781010925.9247768,
+    "ast_hash": "e2f743afc982c5eca274a7b899638ef9",
+    "semantic_hash": "e2f743afc982c5eca274a7b899638ef9"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/prisma/migrations/20260702233822_fix_user_id_unique/migration.sql": {
+    "mtime": 1783035502.0317957,
+    "ast_hash": "275444c2a0e8c5399f17bfc48d4919d1",
+    "semantic_hash": "275444c2a0e8c5399f17bfc48d4919d1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/prisma/migrations/20260706230000_expand_user_instituicao/migration.json": {
+    "mtime": 1783390142.1396885,
+    "ast_hash": "5bc2178183b81481e65155a41f832ce1",
+    "semantic_hash": "5bc2178183b81481e65155a41f832ce1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/prisma/migrations/20260706230000_expand_user_instituicao/migration.sql": {
+    "mtime": 1783473669.5613606,
+    "ast_hash": "c22b73aa34b3a277ec7ad86ae68bc560",
+    "semantic_hash": "c22b73aa34b3a277ec7ad86ae68bc560"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/prisma/migrations/20260707000000_add_curso_nota_enade/migration.sql": {
+    "mtime": 1783434300.4493654,
+    "ast_hash": "6c8238abd0b1e6949e86d9e4972f6cb0",
+    "semantic_hash": "6c8238abd0b1e6949e86d9e4972f6cb0"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/prisma/migrations/20260708000000_repair_schema/migration.sql": {
+    "mtime": 1783475346.7058237,
+    "ast_hash": "1d9717a2202e65aeea4f4e185570771b",
+    "semantic_hash": "1d9717a2202e65aeea4f4e185570771b"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/prisma/seed.ts": {
+    "mtime": 1783470803.2843766,
+    "ast_hash": "338721c22b25a16a951b55e33cb2eff4",
+    "semantic_hash": "338721c22b25a16a951b55e33cb2eff4"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/admin.module.ts": {
+    "mtime": 1783391301.127089,
+    "ast_hash": "07bb7e15588e8f90e1062998855e3c89",
+    "semantic_hash": "07bb7e15588e8f90e1062998855e3c89"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/auditoria/auditoria.controller.ts": {
+    "mtime": 1783038274.686093,
+    "ast_hash": "fe06776cec9acda7d20a8c29ba14a23d",
+    "semantic_hash": "fe06776cec9acda7d20a8c29ba14a23d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/auditoria/auditoria.module.ts": {
+    "mtime": 1783037947.4954839,
+    "ast_hash": "dc5ca92723053970abd7b3b48926e0e5",
+    "semantic_hash": "dc5ca92723053970abd7b3b48926e0e5"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/auditoria/auditoria.service.ts": {
+    "mtime": 1783038570.381943,
+    "ast_hash": "33f97be78995d568e5d3cbddb59d00a4",
+    "semantic_hash": "33f97be78995d568e5d3cbddb59d00a4"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/auditoria/dto/auditoria.dto.ts": {
+    "mtime": 1781012201.0364027,
+    "ast_hash": "fdc5ff442a88e7e09bc05ae6e441d500",
+    "semantic_hash": "fdc5ff442a88e7e09bc05ae6e441d500"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/avaliacao/avaliacao.controller.ts": {
+    "mtime": 1783038273.1601043,
+    "ast_hash": "ad047773c24eed19b51ae38c5c4b248f",
+    "semantic_hash": "ad047773c24eed19b51ae38c5c4b248f"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/avaliacao/avaliacao.module.ts": {
+    "mtime": 1783035255.4126225,
+    "ast_hash": "2252e258fa7c6693551172185a94b09e",
+    "semantic_hash": "2252e258fa7c6693551172185a94b09e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/avaliacao/avaliacao.service.ts": {
+    "mtime": 1783038081.337506,
+    "ast_hash": "100ec542aa63a5a5b0851078893ce3e3",
+    "semantic_hash": "100ec542aa63a5a5b0851078893ce3e3"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/avaliacao/dto/avaliacao.dto.ts": {
+    "mtime": 1781012148.8967805,
+    "ast_hash": "f6e2bd1afc34c0b74844304d6d5491d5",
+    "semantic_hash": "f6e2bd1afc34c0b74844304d6d5491d5"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/cursos/cursos.controller.ts": {
+    "mtime": 1783434306.393324,
+    "ast_hash": "eed35b39723fbf8560131d3af7595f38",
+    "semantic_hash": "eed35b39723fbf8560131d3af7595f38"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/cursos/cursos.module.ts": {
+    "mtime": 1783041128.8654375,
+    "ast_hash": "c5a16fe3d5eede92b916b345850271a3",
+    "semantic_hash": "c5a16fe3d5eede92b916b345850271a3"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/cursos/cursos.service.ts": {
+    "mtime": 1783434348.7560272,
+    "ast_hash": "d5c913a7ecaff86e40e38ba262d8573e",
+    "semantic_hash": "d5c913a7ecaff86e40e38ba262d8573e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/dashboard/dashboard.controller.ts": {
+    "mtime": 1783041138.6853664,
+    "ast_hash": "b548bc34526f6e06b1133d3eadd7dad3",
+    "semantic_hash": "b548bc34526f6e06b1133d3eadd7dad3"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/dashboard/dashboard.module.ts": {
+    "mtime": 1783035258.6825833,
+    "ast_hash": "4687825226c3df01ad74eb797f8af52b",
+    "semantic_hash": "4687825226c3df01ad74eb797f8af52b"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/dashboard/dashboard.service.ts": {
+    "mtime": 1783041140.3003547,
+    "ast_hash": "5841cea66325819602fb256dc25844d1",
+    "semantic_hash": "5841cea66325819602fb256dc25844d1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/dashboard/dto/dashboard.dto.ts": {
+    "mtime": 1781012181.3735452,
+    "ast_hash": "629e7dd8d2f235feb17225a395aafa8d",
+    "semantic_hash": "629e7dd8d2f235feb17225a395aafa8d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/provas/dto/provas.dto.ts": {
+    "mtime": 1781012091.4121993,
+    "ast_hash": "eca061d95719bd170391d5e2be22802a",
+    "semantic_hash": "eca061d95719bd170391d5e2be22802a"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/provas/provas.controller.ts": {
+    "mtime": 1783038183.579759,
+    "ast_hash": "0b845e4757ce5fa1def9e0fabbb887cd",
+    "semantic_hash": "0b845e4757ce5fa1def9e0fabbb887cd"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/provas/provas.module.ts": {
+    "mtime": 1783035248.5570226,
+    "ast_hash": "8083d147dcc4cc307cf13021197cd346",
+    "semantic_hash": "8083d147dcc4cc307cf13021197cd346"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/provas/provas.service.ts": {
+    "mtime": 1783038057.798678,
+    "ast_hash": "cf012ee6509466cee9fdc556fc23d7a6",
+    "semantic_hash": "cf012ee6509466cee9fdc556fc23d7a6"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/questoes/dto/questoes.dto.ts": {
+    "mtime": 1781012381.604098,
+    "ast_hash": "b154f58a7f00978e0cbb07e07d23bdcc",
+    "semantic_hash": "b154f58a7f00978e0cbb07e07d23bdcc"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/questoes/questoes.controller.ts": {
+    "mtime": 1783038239.939347,
+    "ast_hash": "3a49dcd4855df02216a15f7d5a46fe60",
+    "semantic_hash": "3a49dcd4855df02216a15f7d5a46fe60"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/questoes/questoes.module.ts": {
+    "mtime": 1783035251.7519038,
+    "ast_hash": "e64a24082abc6cae9618aa73c56d778a",
+    "semantic_hash": "e64a24082abc6cae9618aa73c56d778a"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/questoes/questoes.service.ts": {
+    "mtime": 1783038066.149617,
+    "ast_hash": "e88d82f7b81aaa239f93393502d52471",
+    "semantic_hash": "e88d82f7b81aaa239f93393502d52471"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/usuarios/dto/usuarios.dto.ts": {
+    "mtime": 1783390193.8023214,
+    "ast_hash": "b81ef4437e87309e3193b74ffda8d968",
+    "semantic_hash": "b81ef4437e87309e3193b74ffda8d968"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/usuarios/usuarios.controller.ts": {
+    "mtime": 1781045109.7871516,
+    "ast_hash": "6a9a84af132b0562856b60c2307e1c76",
+    "semantic_hash": "6a9a84af132b0562856b60c2307e1c76"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/usuarios/usuarios.module.ts": {
+    "mtime": 1783035245.2367544,
+    "ast_hash": "088aad998fbc248e5187547c98dfc3b1",
+    "semantic_hash": "088aad998fbc248e5187547c98dfc3b1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/admin/usuarios/usuarios.service.ts": {
+    "mtime": 1783390251.74591,
+    "ast_hash": "8cb830e54318d0d8a6389f5c87ab211a",
+    "semantic_hash": "8cb830e54318d0d8a6389f5c87ab211a"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/app.module.ts": {
+    "mtime": 1783614232.2640831,
+    "ast_hash": "de03e560b1e8d2fa038d229fe47e960c",
+    "semantic_hash": "de03e560b1e8d2fa038d229fe47e960c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/auth/auth.controller.ts": {
+    "mtime": 1783037966.8633423,
+    "ast_hash": "dadde1e0e685ed49c897a2087ac3857e",
+    "semantic_hash": "dadde1e0e685ed49c897a2087ac3857e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/auth/auth.module.ts": {
+    "mtime": 1783614287.937681,
+    "ast_hash": "e79bf231db21bfcbd44652834f3a23d1",
+    "semantic_hash": "e79bf231db21bfcbd44652834f3a23d1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/auth/auth.service.ts": {
+    "mtime": 1783614884.8733695,
+    "ast_hash": "10e5fe0702d3da65c4497c9d1f0dc56d",
+    "semantic_hash": "10e5fe0702d3da65c4497c9d1f0dc56d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/auth/dto/login.dto.ts": {
+    "mtime": 1783614863.891521,
+    "ast_hash": "46bc20da673a7e06f824c20c69039cc6",
+    "semantic_hash": "46bc20da673a7e06f824c20c69039cc6"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/auth/strategies/jwt.strategy.ts": {
+    "mtime": 1778032968.8196604,
+    "ast_hash": "2826f29d4a1e11d005835424b9ac95da",
+    "semantic_hash": "2826f29d4a1e11d005835424b9ac95da"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/common/decorators/roles.decorator.ts": {
+    "mtime": 1778032989.8565133,
+    "ast_hash": "d0e3180fb6d87626f1e18d5521e4a8bb",
+    "semantic_hash": "d0e3180fb6d87626f1e18d5521e4a8bb"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/common/guards/jwt-auth.guard.ts": {
+    "mtime": 1778032773.6780252,
+    "ast_hash": "68416131ab08aba9e415fc3183048d1c",
+    "semantic_hash": "68416131ab08aba9e415fc3183048d1c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/common/guards/roles.guard.ts": {
+    "mtime": 1778033017.352321,
+    "ast_hash": "ee7c50825007760e5986528ab8df2fec",
+    "semantic_hash": "ee7c50825007760e5986528ab8df2fec"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/common/pagination.spec.ts": {
+    "mtime": 1783615354.8239872,
+    "ast_hash": "733f1529be4b266cb5c5aa03f72275ce",
+    "semantic_hash": "733f1529be4b266cb5c5aa03f72275ce"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/common/pagination.ts": {
+    "mtime": 1783614602.5554085,
+    "ast_hash": "1e974d0996bb27882e9269d24fa66cde",
+    "semantic_hash": "1e974d0996bb27882e9269d24fa66cde"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/coordenacao/coordenacao.controller.ts": {
+    "mtime": 1781012227.3676403,
+    "ast_hash": "65a7fec25a08231af76c9b627abe8e4e",
+    "semantic_hash": "65a7fec25a08231af76c9b627abe8e4e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/coordenacao/coordenacao.module.ts": {
+    "mtime": 1783035241.099541,
+    "ast_hash": "e2f2e69b5d93656178a05ca6708a0c0c",
+    "semantic_hash": "e2f2e69b5d93656178a05ca6708a0c0c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/coordenacao/coordenacao.service.ts": {
+    "mtime": 1781012223.4788475,
+    "ast_hash": "040a31a98f6c6c67cc1e5fd807c3fd47",
+    "semantic_hash": "040a31a98f6c6c67cc1e5fd807c3fd47"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/correcao/correcao.controller.ts": {
+    "mtime": 1783391284.9965723,
+    "ast_hash": "1c512f363e3c5d26c4b01b6fb68d261c",
+    "semantic_hash": "1c512f363e3c5d26c4b01b6fb68d261c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/correcao/correcao.module.ts": {
+    "mtime": 1783391292.677518,
+    "ast_hash": "e2b14e12afffccaf343d33f4e05bd6c7",
+    "semantic_hash": "e2b14e12afffccaf343d33f4e05bd6c7"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/correcao/correcao.service.ts": {
+    "mtime": 1783391291.085529,
+    "ast_hash": "b520ed6af7162a91f905b853600def2d",
+    "semantic_hash": "b520ed6af7162a91f905b853600def2d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/correcao/dto/correcao.dto.ts": {
+    "mtime": 1783391292.0405223,
+    "ast_hash": "f6e2bd1afc34c0b74844304d6d5491d5",
+    "semantic_hash": "f6e2bd1afc34c0b74844304d6d5491d5"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/email/email.module.ts": {
+    "mtime": 1783614210.943237,
+    "ast_hash": "4d3212d5665faf1ac4450523066acb92",
+    "semantic_hash": "4d3212d5665faf1ac4450523066acb92"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/email/email.service.spec.ts": {
+    "mtime": 1783618209.2015545,
+    "ast_hash": "b3e5cf1f5e519871fae9ba1987b5c9d2",
+    "semantic_hash": "b3e5cf1f5e519871fae9ba1987b5c9d2"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/email/email.service.ts": {
+    "mtime": 1783614205.4572768,
+    "ast_hash": "1b5d0f54d3f9f40872828e42557936dc",
+    "semantic_hash": "1b5d0f54d3f9f40872828e42557936dc"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/instituicoes/instituicoes.controller.ts": {
+    "mtime": 1783614626.5312355,
+    "ast_hash": "8a5e1e75f305fe0ef3826097bf6b4993",
+    "semantic_hash": "8a5e1e75f305fe0ef3826097bf6b4993"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/instituicoes/instituicoes.module.ts": {
+    "mtime": 1783035232.7152317,
+    "ast_hash": "ae9058d8e503f60e136d9b8b66660671",
+    "semantic_hash": "ae9058d8e503f60e136d9b8b66660671"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/instituicoes/instituicoes.service.ts": {
+    "mtime": 1783614645.693097,
+    "ast_hash": "5d7555403c77610bf174f425bce08314",
+    "semantic_hash": "5d7555403c77610bf174f425bce08314"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/main.ts": {
+    "mtime": 1778191132.1944277,
+    "ast_hash": "6d7b60c0af97c21a37c0b9132e19f85e",
+    "semantic_hash": "6d7b60c0af97c21a37c0b9132e19f85e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/envio/envio.controller.ts": {
+    "mtime": 1783038589.6834834,
+    "ast_hash": "de0aed79ef6902b610014e2208b4fe84",
+    "semantic_hash": "de0aed79ef6902b610014e2208b4fe84"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/envio/envio.service.ts": {
+    "mtime": 1783038573.3497505,
+    "ast_hash": "92d0ee4cf7cde016af53665efb5af532",
+    "semantic_hash": "92d0ee4cf7cde016af53665efb5af532"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/inscricao/dto/inscricao.dto.ts": {
+    "mtime": 1783035414.6137748,
+    "ast_hash": "1cda9a3a6119f2a6ffd2fa50ff03d632",
+    "semantic_hash": "1cda9a3a6119f2a6ffd2fa50ff03d632"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/inscricao/inscricao.controller.ts": {
+    "mtime": 1783038598.7017503,
+    "ast_hash": "2ef7772411c51db56abb5f7f12959f80",
+    "semantic_hash": "2ef7772411c51db56abb5f7f12959f80"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/inscricao/inscricao.service.ts": {
+    "mtime": 1783390435.2296064,
+    "ast_hash": "5942d81e0c245ac2b626c0f4b401c09e",
+    "semantic_hash": "5942d81e0c245ac2b626c0f4b401c09e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/olimpiada.module.ts": {
+    "mtime": 1783035237.6521044,
+    "ast_hash": "94773639aedd4270a8fe611ae475624f",
+    "semantic_hash": "94773639aedd4270a8fe611ae475624f"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/prova/dto/prova.dto.ts": {
+    "mtime": 1778078085.3676631,
+    "ast_hash": "d00c302af95b905c969bef548290922c",
+    "semantic_hash": "d00c302af95b905c969bef548290922c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/prova/prova.controller.ts": {
+    "mtime": 1778078139.699285,
+    "ast_hash": "3aecbcdd8a165235f92d209c80a7c4a6",
+    "semantic_hash": "3aecbcdd8a165235f92d209c80a7c4a6"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/prova/prova.service.ts": {
+    "mtime": 1783618115.2472253,
+    "ast_hash": "c995695097d86bc81d7991cc8fa534fe",
+    "semantic_hash": "c995695097d86bc81d7991cc8fa534fe"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/ranking/ranking.controller.ts": {
+    "mtime": 1783614690.0527766,
+    "ast_hash": "a9f7762d9b0d9b9c315f82b3a08a7b18",
+    "semantic_hash": "a9f7762d9b0d9b9c315f82b3a08a7b18"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/ranking/ranking.service.spec.ts": {
+    "mtime": 1783615284.3554938,
+    "ast_hash": "d51ef70dfc275d4d91aafccfd63ce2e8",
+    "semantic_hash": "d51ef70dfc275d4d91aafccfd63ce2e8"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/olimpiada/ranking/ranking.service.ts": {
+    "mtime": 1783614677.2237186,
+    "ast_hash": "dc95aaf62ee41822fb78bc4ca6464ffa",
+    "semantic_hash": "dc95aaf62ee41822fb78bc4ca6464ffa"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/prisma.service.ts": {
+    "mtime": 1783035216.7662609,
+    "ast_hash": "d23b6754a945b9a455e9baccc706e469",
+    "semantic_hash": "d23b6754a945b9a455e9baccc706e469"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/upload/upload.module.ts": {
+    "mtime": 1778083784.16153,
+    "ast_hash": "21e6911cbffc47b840e018721c8fb6ef",
+    "semantic_hash": "21e6911cbffc47b840e018721c8fb6ef"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/upload/upload.service.ts": {
+    "mtime": 1783038598.10597,
+    "ast_hash": "8d62051b4fd65ca84cff6c8cd9d88f27",
+    "semantic_hash": "8d62051b4fd65ca84cff6c8cd9d88f27"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/users/users.controller.ts": {
+    "mtime": 1783390242.8009734,
+    "ast_hash": "af378bfc4a03e66a912878760af5ed43",
+    "semantic_hash": "af378bfc4a03e66a912878760af5ed43"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/users/users.module.ts": {
+    "mtime": 1783035229.2359138,
+    "ast_hash": "ebfc406acd1a8d0a1781a4765376404f",
+    "semantic_hash": "ebfc406acd1a8d0a1781a4765376404f"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/src/users/users.service.ts": {
+    "mtime": 1783390237.524011,
+    "ast_hash": "5bb3c94e572790b70a85f15f8ebcd22e",
+    "semantic_hash": "5bb3c94e572790b70a85f15f8ebcd22e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/start.sh": {
+    "mtime": 1783474427.4056756,
+    "ast_hash": "0771cbb2b89e7e24f2432f2736274137",
+    "semantic_hash": "0771cbb2b89e7e24f2432f2736274137"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/test/app.e2e-spec.ts": {
+    "mtime": 1783038619.2495143,
+    "ast_hash": "7c156d4d8551c4cf3d65164767c6eec4",
+    "semantic_hash": "7c156d4d8551c4cf3d65164767c6eec4"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/test/jest-e2e.json": {
+    "mtime": 1778031988.0562394,
+    "ast_hash": "9f2f5b0e1da31d7b04e205c944e85e8d",
+    "semantic_hash": "9f2f5b0e1da31d7b04e205c944e85e8d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/tsconfig.build.json": {
+    "mtime": 1778031988.055707,
+    "ast_hash": "f73d0f011ee462dcdf7f02bbdcde284b",
+    "semantic_hash": "f73d0f011ee462dcdf7f02bbdcde284b"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/tsconfig.json": {
+    "mtime": 1778031988.0557606,
+    "ast_hash": "ae8bbc768a8e7382d2aa46d0c9140f5f",
+    "semantic_hash": "ae8bbc768a8e7382d2aa46d0c9140f5f"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/components.json": {
+    "mtime": 1778032197.501054,
+    "ast_hash": "fc5c9e9a7b93eeb2f7b4e1ce0959e4a6",
+    "semantic_hash": "fc5c9e9a7b93eeb2f7b4e1ce0959e4a6"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/eslint.config.mjs": {
+    "mtime": 1778031907.5443408,
+    "ast_hash": "dfa1f5f6a7037bf39dc510f30b180002",
+    "semantic_hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/next-env.d.ts": {
+    "mtime": 1783474992.2414713,
+    "ast_hash": "d0f8375ae1199dc7acd3977fc33b78b8",
+    "semantic_hash": "d0f8375ae1199dc7acd3977fc33b78b8"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/next.config.ts": {
+    "mtime": 1783616904.9588783,
+    "ast_hash": "a4864d2eea7e7050a77930452b74a7a2",
+    "semantic_hash": "a4864d2eea7e7050a77930452b74a7a2"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/package.json": {
+    "mtime": 1783617312.5560136,
+    "ast_hash": "d12fe1b1bfa2ade01b66671b0d1a7cdf",
+    "semantic_hash": "d12fe1b1bfa2ade01b66671b0d1a7cdf"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/postcss.config.mjs": {
+    "mtime": 1778031907.5444574,
+    "ast_hash": "239f3ebf717465dc636818a1a619398d",
+    "semantic_hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/public/manifest.json": {
+    "mtime": 1783615106.3607733,
+    "ast_hash": "dfc1904ce07a2e8b44b5c67c1a0ea089",
+    "semantic_hash": "dfc1904ce07a2e8b44b5c67c1a0ea089"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(auth)/esqueci-senha/page.tsx": {
+    "mtime": 1783038519.9337382,
+    "ast_hash": "87736e8fa586b93f468fa6d2db8e5789",
+    "semantic_hash": "87736e8fa586b93f468fa6d2db8e5789"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(auth)/login/page.tsx": {
+    "mtime": 1783616756.0529428,
+    "ast_hash": "051fd4812e755fcdf7048444ac52253f",
+    "semantic_hash": "051fd4812e755fcdf7048444ac52253f"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(auth)/recuperar-senha/page.tsx": {
+    "mtime": 1783616830.439411,
+    "ast_hash": "8bcb1cfbc31b99d87935fd35e4861512",
+    "semantic_hash": "8bcb1cfbc31b99d87935fd35e4861512"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(auth)/redefinir-senha/page.tsx": {
+    "mtime": 1783616870.9227493,
+    "ast_hash": "c61c4359fed45b872e233ce728fe0a16",
+    "semantic_hash": "c61c4359fed45b872e233ce728fe0a16"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(auth)/registro/page.tsx": {
+    "mtime": 1783616794.0946708,
+    "ast_hash": "ed7cd41c01e3f13f71ae1b0c0aeacf69",
+    "semantic_hash": "ed7cd41c01e3f13f71ae1b0c0aeacf69"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/auditoria/page.tsx": {
+    "mtime": 1783393619.6110153,
+    "ast_hash": "084b315a323187b27bcac67886256810",
+    "semantic_hash": "084b315a323187b27bcac67886256810"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/avaliacao/page.tsx": {
+    "mtime": 1783393725.8827014,
+    "ast_hash": "828096d3b6f6061fa7b265e8b122fe4e",
+    "semantic_hash": "828096d3b6f6061fa7b265e8b122fe4e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/cursos/page.tsx": {
+    "mtime": 1783434979.9010377,
+    "ast_hash": "8d756c6d691850580a7d0241c067fe64",
+    "semantic_hash": "8d756c6d691850580a7d0241c067fe64"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/edicoes/page.tsx": {
+    "mtime": 1783435111.3022163,
+    "ast_hash": "6f60af3eba10c8c8dcc2bd3b6ea9ff10",
+    "semantic_hash": "6f60af3eba10c8c8dcc2bd3b6ea9ff10"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/exportar/page.tsx": {
+    "mtime": 1783393674.8626237,
+    "ast_hash": "14954fabf89d9f35b289da62158509c1",
+    "semantic_hash": "14954fabf89d9f35b289da62158509c1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/inscricoes/page.tsx": {
+    "mtime": 1783435552.1032288,
+    "ast_hash": "b0b734cf279aa0da8d67a9a03d36038c",
+    "semantic_hash": "b0b734cf279aa0da8d67a9a03d36038c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/instituicoes/page.tsx": {
+    "mtime": 1783434752.153043,
+    "ast_hash": "48e70c1ad7d61acafc7573475a476fc5",
+    "semantic_hash": "48e70c1ad7d61acafc7573475a476fc5"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/page.tsx": {
+    "mtime": 1783393673.1796355,
+    "ast_hash": "02bc4ac375df34b311678bad9063a35d",
+    "semantic_hash": "02bc4ac375df34b311678bad9063a35d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/provas/[id]/page.tsx": {
+    "mtime": 1783038519.9382606,
+    "ast_hash": "47ee4eff8876be223ccbdf3315b605b1",
+    "semantic_hash": "47ee4eff8876be223ccbdf3315b605b1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/provas/page.tsx": {
+    "mtime": 1783393520.6337168,
+    "ast_hash": "16267d768a31eb604ed5faa9814a41d1",
+    "semantic_hash": "16267d768a31eb604ed5faa9814a41d1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/admin/usuarios/page.tsx": {
+    "mtime": 1783434492.186,
+    "ast_hash": "f29f8ec0ce0bf09cd5971d0bea893cc9",
+    "semantic_hash": "f29f8ec0ce0bf09cd5971d0bea893cc9"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/avaliador/fase2/page.tsx": {
+    "mtime": 1783393735.7871919,
+    "ast_hash": "be79acb08113198af6e31f61f9726ad6",
+    "semantic_hash": "be79acb08113198af6e31f61f9726ad6"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/avaliador/page.tsx": {
+    "mtime": 1783393686.100544,
+    "ast_hash": "8484fa1b8bfb72e31bd3efee6397b560",
+    "semantic_hash": "8484fa1b8bfb72e31bd3efee6397b560"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/avaliador/provas/[id]/page.tsx": {
+    "mtime": 1783038519.9368699,
+    "ast_hash": "d8ea33553417ff6537a3559f5b9a20b6",
+    "semantic_hash": "d8ea33553417ff6537a3559f5b9a20b6"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/avaliador/provas/page.tsx": {
+    "mtime": 1783393675.1596215,
+    "ast_hash": "5aef0759a9c08abfccac6cf243d203bf",
+    "semantic_hash": "5aef0759a9c08abfccac6cf243d203bf"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/comissao/auditoria/page.tsx": {
+    "mtime": 1783393725.2432666,
+    "ast_hash": "2dd217ae595f9fb15faef9b9d7b7df4a",
+    "semantic_hash": "2dd217ae595f9fb15faef9b9d7b7df4a"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/comissao/avaliacao/page.tsx": {
+    "mtime": 1783393750.272865,
+    "ast_hash": "5da1543b62d4f0bfbeb5af5f830c4eee",
+    "semantic_hash": "5da1543b62d4f0bfbeb5af5f830c4eee"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/comissao/exportar/page.tsx": {
+    "mtime": 1783393696.9494672,
+    "ast_hash": "6ae3ee5573d9d14f0be96c39bda0dc73",
+    "semantic_hash": "6ae3ee5573d9d14f0be96c39bda0dc73"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/comissao/inscricoes/page.tsx": {
+    "mtime": 1783435460.8148613,
+    "ast_hash": "9f7d13e3bf192de2e5c7f16aade302ce",
+    "semantic_hash": "9f7d13e3bf192de2e5c7f16aade302ce"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/comissao/page.tsx": {
+    "mtime": 1783393694.715483,
+    "ast_hash": "89750b82812ca63240e129f3ee4f006a",
+    "semantic_hash": "89750b82812ca63240e129f3ee4f006a"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/comissao/provas/page.tsx": {
+    "mtime": 1783393748.4141023,
+    "ast_hash": "ab75bce923000d0128b8631071dc8fbd",
+    "semantic_hash": "ab75bce923000d0128b8631071dc8fbd"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/competidor/envio/page.tsx": {
+    "mtime": 1783038519.93514,
+    "ast_hash": "23bb5b50f5ba3b57c5451f8c7590df20",
+    "semantic_hash": "23bb5b50f5ba3b57c5451f8c7590df20"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/competidor/inscricao/page.tsx": {
+    "mtime": 1783038519.9348273,
+    "ast_hash": "3e39df03e10643b9e33d7332962dec1b",
+    "semantic_hash": "3e39df03e10643b9e33d7332962dec1b"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/competidor/page.tsx": {
+    "mtime": 1783393693.4794917,
+    "ast_hash": "765f10cbb63cd324e7b9cb3385ded004",
+    "semantic_hash": "765f10cbb63cd324e7b9cb3385ded004"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/competidor/prova/page.tsx": {
+    "mtime": 1783618171.3107343,
+    "ast_hash": "f42c8707eac9da86ff29f8821a338c64",
+    "semantic_hash": "f42c8707eac9da86ff29f8821a338c64"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/competidor/resultado/page.tsx": {
+    "mtime": 1783393705.1904087,
+    "ast_hash": "dc8cd55dc7b34bd4c46cccae3353436d",
+    "semantic_hash": "dc8cd55dc7b34bd4c46cccae3353436d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/coordenador/alunos/page.tsx": {
+    "mtime": 1783393698.4474566,
+    "ast_hash": "9fc999f65779dc4bc524f0722c4476b4",
+    "semantic_hash": "9fc999f65779dc4bc524f0722c4476b4"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/coordenador/metricas/page.tsx": {
+    "mtime": 1783393734.338202,
+    "ast_hash": "7a613144fd1e1f8df2673612a6abd051",
+    "semantic_hash": "7a613144fd1e1f8df2673612a6abd051"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/coordenador/page.tsx": {
+    "mtime": 1783038519.935946,
+    "ast_hash": "42dfdec74c1ffdc75e8329d1e830bbd4",
+    "semantic_hash": "42dfdec74c1ffdc75e8329d1e830bbd4"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(dashboard)/layout.tsx": {
+    "mtime": 1783038519.9358184,
+    "ast_hash": "5f62fe388698abe2a7cfc825066c1112",
+    "semantic_hash": "5f62fe388698abe2a7cfc825066c1112"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(public)/cronograma/page.tsx": {
+    "mtime": 1783611913.022859,
+    "ast_hash": "19ba8332934a84c6ad6051d54da5ee46",
+    "semantic_hash": "19ba8332934a84c6ad6051d54da5ee46"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(public)/layout.tsx": {
+    "mtime": 1783038519.9402256,
+    "ast_hash": "266991b93b2177eb920683cc30ffe346",
+    "semantic_hash": "266991b93b2177eb920683cc30ffe346"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(public)/regulamento/page.tsx": {
+    "mtime": 1783611915.5657787,
+    "ast_hash": "a0480328607372b342ec5af3ebbd5967",
+    "semantic_hash": "a0480328607372b342ec5af3ebbd5967"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/(public)/sobre/page.tsx": {
+    "mtime": 1783038519.9410274,
+    "ast_hash": "dc82e89f7dd746630caa6380e13a5091",
+    "semantic_hash": "dc82e89f7dd746630caa6380e13a5091"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/layout.tsx": {
+    "mtime": 1783617296.1237862,
+    "ast_hash": "f952c8cea4c23115da1e9132248d65b5",
+    "semantic_hash": "f952c8cea4c23115da1e9132248d65b5"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/page.tsx": {
+    "mtime": 1783038519.9401007,
+    "ast_hash": "5ed6a9c19bb2f028afbfd0d9b4b44a08",
+    "semantic_hash": "5ed6a9c19bb2f028afbfd0d9b4b44a08"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/app/ranking/page.tsx": {
+    "mtime": 1783393759.8440213,
+    "ast_hash": "6e49ec574ed99d4fd06de777d811ee56",
+    "semantic_hash": "6e49ec574ed99d4fd06de777d811ee56"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/exam/ExamGuard.tsx": {
+    "mtime": 1783391318.3763354,
+    "ast_hash": "2116f090caffa47f6c11638c094a2d5b",
+    "semantic_hash": "2116f090caffa47f6c11638c094a2d5b"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/landing/Cronograma.tsx": {
+    "mtime": 1783611887.7386096,
+    "ast_hash": "7150ddb4da9d063bc6e44a72f76d9d9a",
+    "semantic_hash": "7150ddb4da9d063bc6e44a72f76d9d9a"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/landing/Hero.tsx": {
+    "mtime": 1783611893.7339356,
+    "ast_hash": "ee89571e07dd909a11b9e8be056966c2",
+    "semantic_hash": "ee89571e07dd909a11b9e8be056966c2"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/landing/Parceiros.tsx": {
+    "mtime": 1783038519.9432952,
+    "ast_hash": "daa02fc7ebd82cc29fb0376fb6941504",
+    "semantic_hash": "daa02fc7ebd82cc29fb0376fb6941504"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/landing/Sobre.tsx": {
+    "mtime": 1783041706.0908515,
+    "ast_hash": "d9e77dffd1baf1f49f679fe7f9ac149c",
+    "semantic_hash": "d9e77dffd1baf1f49f679fe7f9ac149c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/layout/Footer.tsx": {
+    "mtime": 1783038519.944603,
+    "ast_hash": "11e1a028e773d0410b26e1c5326eea57",
+    "semantic_hash": "11e1a028e773d0410b26e1c5326eea57"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/layout/Header.tsx": {
+    "mtime": 1783616571.814875,
+    "ast_hash": "0b2f3675c7097613673099d91f46fe6d",
+    "semantic_hash": "0b2f3675c7097613673099d91f46fe6d"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/layout/Sidebar.tsx": {
+    "mtime": 1783391329.837254,
+    "ast_hash": "614b537dbd9637c6ac33affa8e60488f",
+    "semantic_hash": "614b537dbd9637c6ac33affa8e60488f"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/prova/QuestaoCard.tsx": {
+    "mtime": 1783618023.7168798,
+    "ast_hash": "8db40368421961baa06130a817dc2f79",
+    "semantic_hash": "8db40368421961baa06130a817dc2f79"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/prova/Timer.tsx": {
+    "mtime": 1783038519.9452055,
+    "ast_hash": "f67023b889c124924cea44098cae94e4",
+    "semantic_hash": "f67023b889c124924cea44098cae94e4"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/shared/edicao-selector.tsx": {
+    "mtime": 1783038519.94545,
+    "ast_hash": "bda345a9ca3bce3c898ee759f264b12e",
+    "semantic_hash": "bda345a9ca3bce3c898ee759f264b12e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/button.tsx": {
+    "mtime": 1783393410.8204954,
+    "ast_hash": "671a86c7c1e8fc607bc8ecf05097e9c9",
+    "semantic_hash": "671a86c7c1e8fc607bc8ecf05097e9c9"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/card.tsx": {
+    "mtime": 1783393359.0168626,
+    "ast_hash": "7a6fd5a4adc469fc81345a1c593af6f0",
+    "semantic_hash": "7a6fd5a4adc469fc81345a1c593af6f0"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/confirm-dialog.tsx": {
+    "mtime": 1783393457.290166,
+    "ast_hash": "7e2d02c1fb4ec02234555db3efbf5bfe",
+    "semantic_hash": "7e2d02c1fb4ec02234555db3efbf5bfe"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/detail-panel.tsx": {
+    "mtime": 1783435581.2469451,
+    "ast_hash": "370d23a6196b0de5de35eb2225242e3b",
+    "semantic_hash": "370d23a6196b0de5de35eb2225242e3b"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/input.tsx": {
+    "mtime": 1783393395.4606042,
+    "ast_hash": "59abe2f8b452b8677b1622c6a04d1f30",
+    "semantic_hash": "59abe2f8b452b8677b1622c6a04d1f30"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/instituicao-autocomplete.tsx": {
+    "mtime": 1783614969.5957575,
+    "ast_hash": "3d2d235baa53c15aba8632681bf198be",
+    "semantic_hash": "3d2d235baa53c15aba8632681bf198be"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/label.tsx": {
+    "mtime": 1783393400.0505717,
+    "ast_hash": "c607f52128fd5e92c07e5c6321e2a587",
+    "semantic_hash": "c607f52128fd5e92c07e5c6321e2a587"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/modal.tsx": {
+    "mtime": 1783397828.69815,
+    "ast_hash": "0ef1656394977dcf5f679e8b0d782c6e",
+    "semantic_hash": "0ef1656394977dcf5f679e8b0d782c6e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/pagination.tsx": {
+    "mtime": 1783393423.0864084,
+    "ast_hash": "c97cb2d008917bb770405a337247cd58",
+    "semantic_hash": "c97cb2d008917bb770405a337247cd58"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/separator.tsx": {
+    "mtime": 1783038519.941867,
+    "ast_hash": "3de2dca3e47ab29c4b1f632671545628",
+    "semantic_hash": "3de2dca3e47ab29c4b1f632671545628"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/components/ui/tabs.tsx": {
+    "mtime": 1783393430.9150217,
+    "ast_hash": "a0284fdefdc72a0fadae84e9abe55d9e",
+    "semantic_hash": "a0284fdefdc72a0fadae84e9abe55d9e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/lib/api.ts": {
+    "mtime": 1783038519.9456844,
+    "ast_hash": "5c9b1758d98403b905c10ce478d56296",
+    "semantic_hash": "5c9b1758d98403b905c10ce478d56296"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/lib/cep.ts": {
+    "mtime": 1783390316.077453,
+    "ast_hash": "6204711f2b571114a7d6c77e22fef279",
+    "semantic_hash": "6204711f2b571114a7d6c77e22fef279"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/lib/utils.ts": {
+    "mtime": 1783038519.9455578,
+    "ast_hash": "5a6fd53fdcf2be529e9cc0b718fde352",
+    "semantic_hash": "5a6fd53fdcf2be529e9cc0b718fde352"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/middleware.ts": {
+    "mtime": 1783038519.94671,
+    "ast_hash": "61042d669c28c74bf31b8245e33db23c",
+    "semantic_hash": "61042d669c28c74bf31b8245e33db23c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/stores/authStore.ts": {
+    "mtime": 1783614842.974672,
+    "ast_hash": "d9d8af2b9e524f17ab35eb318f77a73c",
+    "semantic_hash": "d9d8af2b9e524f17ab35eb318f77a73c"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/stores/provaStore.ts": {
+    "mtime": 1783613500.8133628,
+    "ast_hash": "fa21aeb11b6cc047531550e5a0fa5841",
+    "semantic_hash": "fa21aeb11b6cc047531550e5a0fa5841"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/types/index.ts": {
+    "mtime": 1783470734.6557534,
+    "ast_hash": "ad41a6139f6f77d6a8f6039bb42ed428",
+    "semantic_hash": "ad41a6139f6f77d6a8f6039bb42ed428"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/src/types/next-pwa.d.ts": {
+    "mtime": 1783616898.6139235,
+    "ast_hash": "743eb1a194734d049257875fab5ca25b",
+    "semantic_hash": "743eb1a194734d049257875fab5ca25b"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/tsconfig.json": {
+    "mtime": 1778031907.5460794,
+    "ast_hash": "ee17fd1c97c735e9f3564e3f5251f125",
+    "semantic_hash": "ee17fd1c97c735e9f3564e3f5251f125"
+  },
+  "/home/wesley/Projetos/sites/olicmat/scripts/gerar_apresentacao.py": {
+    "mtime": 1778604198.4645777,
+    "ast_hash": "fb7faeaf2955c22cff253229b57fb982",
+    "semantic_hash": "fb7faeaf2955c22cff253229b57fb982"
+  },
+  "/home/wesley/Projetos/sites/olicmat/skills-lock.json": {
+    "mtime": 1783027219.5012658,
+    "ast_hash": "d0982002421d06a54c1de70475c82165",
+    "semantic_hash": "d0982002421d06a54c1de70475c82165"
+  },
+  "/home/wesley/Projetos/sites/olicmat/AGENTS.md": {
+    "mtime": 1783436038.1978433,
+    "ast_hash": "a6a43471888200f19d5ca88d821f872f",
+    "semantic_hash": "a6a43471888200f19d5ca88d821f872f"
+  },
+  "/home/wesley/Projetos/sites/olicmat/CLAUDE.md": {
+    "mtime": 1783435979.2262564,
+    "ast_hash": "3deb5933d8d9aacebb41e37c46c881ea",
+    "semantic_hash": "3deb5933d8d9aacebb41e37c46c881ea"
+  },
+  "/home/wesley/Projetos/sites/olicmat/README.md": {
+    "mtime": 1783436345.9006784,
+    "ast_hash": "f677f86b193ef6dfc01b3a1be2262d88",
+    "semantic_hash": "f677f86b193ef6dfc01b3a1be2262d88"
+  },
+  "/home/wesley/Projetos/sites/olicmat/backend/README.md": {
+    "mtime": 1783436388.8093767,
+    "ast_hash": "42a339f26e881bce385112bf19f426f6",
+    "semantic_hash": "42a339f26e881bce385112bf19f426f6"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docker-compose.prod.yml": {
+    "mtime": 1781051365.749335,
+    "ast_hash": "f8564514f46d7c315248bbc01096eaa6",
+    "semantic_hash": "f8564514f46d7c315248bbc01096eaa6"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docker-compose.yml": {
+    "mtime": 1778191703.3252664,
+    "ast_hash": "a6fe6f48eccd2a480060c7e34c2f3831",
+    "semantic_hash": "a6fe6f48eccd2a480060c7e34c2f3831"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/BRD.md": {
+    "mtime": 1780958854.740929,
+    "ast_hash": "3c0284fd6cd8e1f4c65acb3b281c5b3a",
+    "semantic_hash": "3c0284fd6cd8e1f4c65acb3b281c5b3a"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/BRD_OLICMAT.md": {
+    "mtime": 1780966790.8262112,
+    "ast_hash": "6c334a6ce1e044933fa989d25cf02334",
+    "semantic_hash": "6c334a6ce1e044933fa989d25cf02334"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/CHANGELOG.md": {
+    "mtime": 1783435927.1606193,
+    "ast_hash": "197a3ad4a9dd3a84d978f76480321727",
+    "semantic_hash": "197a3ad4a9dd3a84d978f76480321727"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/PRD.md": {
+    "mtime": 1780957880.8557885,
+    "ast_hash": "f76e6659b1cae3cb58caa271b732f0e4",
+    "semantic_hash": "f76e6659b1cae3cb58caa271b732f0e4"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/PRD_OLICMAT.md": {
+    "mtime": 1783436316.838883,
+    "ast_hash": "1d55cc81af01e47138dc7d95e6ff0b31",
+    "semantic_hash": "1d55cc81af01e47138dc7d95e6ff0b31"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/SRS.md": {
+    "mtime": 1778591660.3254573,
+    "ast_hash": "049ecfb812b263123a44de1cc7b1383a",
+    "semantic_hash": "049ecfb812b263123a44de1cc7b1383a"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md": {
+    "mtime": 1783436084.3845184,
+    "ast_hash": "226eb273c61eb8b14a037762ef3e9b0f",
+    "semantic_hash": "226eb273c61eb8b14a037762ef3e9b0f"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md": {
+    "mtime": 1783436115.690298,
+    "ast_hash": "d9c10b1ec8ad60550cd41bb8683b5608",
+    "semantic_hash": "d9c10b1ec8ad60550cd41bb8683b5608"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html": {
+    "mtime": 1783394623.3428974,
+    "ast_hash": "1b372667aef5374a5c7db39595c4c5df",
+    "semantic_hash": "1b372667aef5374a5c7db39595c4c5df"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md": {
+    "mtime": 1783436158.9419937,
+    "ast_hash": "eeb6b61b4800858bade3bfafc03fa896",
+    "semantic_hash": "eeb6b61b4800858bade3bfafc03fa896"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md": {
+    "mtime": 1783436308.6629405,
+    "ast_hash": "5417509d3e803fe2e6b4c2510b4514b2",
+    "semantic_hash": "5417509d3e803fe2e6b4c2510b4514b2"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md": {
+    "mtime": 1780976289.1015387,
+    "ast_hash": "0f0dda7ea1d8e0d109faa73fa887472e",
+    "semantic_hash": "0f0dda7ea1d8e0d109faa73fa887472e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md": {
+    "mtime": 1781013723.4805706,
+    "ast_hash": "cbff258e16f99df37a15c4935745dff7",
+    "semantic_hash": "cbff258e16f99df37a15c4935745dff7"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md": {
+    "mtime": 1780976422.9985554,
+    "ast_hash": "23e1c3362162373208da00466d226497",
+    "semantic_hash": "23e1c3362162373208da00466d226497"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md": {
+    "mtime": 1783436265.631243,
+    "ast_hash": "db79140b3e01d9cd35f4d93d8c2837c1",
+    "semantic_hash": "db79140b3e01d9cd35f4d93d8c2837c1"
+  },
+  "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md": {
+    "mtime": 1783436331.324781,
+    "ast_hash": "53baf7b6d1179c1bd94c5e441236ef58",
+    "semantic_hash": "53baf7b6d1179c1bd94c5e441236ef58"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md": {
+    "mtime": 1783391366.0799966,
+    "ast_hash": "f939566275f0505122984c0a03852a64",
+    "semantic_hash": "f939566275f0505122984c0a03852a64"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/CLAUDE.md": {
+    "mtime": 1778031944.4168224,
+    "ast_hash": "5c27369b226fcf2be8a6cfe52224e767",
+    "semantic_hash": "5c27369b226fcf2be8a6cfe52224e767"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/README.md": {
+    "mtime": 1783436424.6851244,
+    "ast_hash": "019662267174f27e297f13df08724bec",
+    "semantic_hash": "019662267174f27e297f13df08724bec"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/public/file.svg": {
+    "mtime": 1778031907.5440395,
+    "ast_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71",
+    "semantic_hash": "d09f95206c3fa0bb9bd9fefabfd0ea71"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/public/globe.svg": {
+    "mtime": 1778031907.5451372,
+    "ast_hash": "2aaafa6a49b6563925fe440891e32717",
+    "semantic_hash": "2aaafa6a49b6563925fe440891e32717"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/public/logo-semfundo.png": {
+    "mtime": 1783046648.7115164,
+    "ast_hash": "c8ddf10a1b492c9b65118ed7faf73652",
+    "semantic_hash": "c8ddf10a1b492c9b65118ed7faf73652"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/public/next.svg": {
+    "mtime": 1778031907.5451372,
+    "ast_hash": "8e061864f388b47f33a1c3780831193e",
+    "semantic_hash": "8e061864f388b47f33a1c3780831193e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/public/vercel.svg": {
+    "mtime": 1778031907.5451372,
+    "ast_hash": "c0af2f507b369b085b35ef4bbe3bcf1e",
+    "semantic_hash": "c0af2f507b369b085b35ef4bbe3bcf1e"
+  },
+  "/home/wesley/Projetos/sites/olicmat/frontend/public/window.svg": {
+    "mtime": 1778031907.5451372,
+    "ast_hash": "a2760511c65806022ad20adf74370ff3",
+    "semantic_hash": "a2760511c65806022ad20adf74370ff3"
+  }
+}

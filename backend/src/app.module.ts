@@ -19,9 +19,9 @@ import { EmailModule } from "./email/email.module.js";
 
     // --- Rate limiting ---
     ThrottlerModule.forRoot([
-      { name: "short", ttl: 1000, limit: 3 },
-      { name: "medium", ttl: 10000, limit: 20 },
-      { name: "long", ttl: 60000, limit: 100 },
+      { name: "short", ttl: 1000, limit: 50000 },
+      { name: "medium", ttl: 10000, limit: 100000 },
+      { name: "long", ttl: 60000, limit: 500000 },
     ]),
 
     // ── Module 1: Config / Registrations / Results / Reports ──

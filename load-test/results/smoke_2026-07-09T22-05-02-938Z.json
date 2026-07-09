@@ -1,0 +1,60 @@
+{
+  "scenario": "Smoke Test",
+  "target": "http://localhost:3333",
+  "connections": 10,
+  "duration": 10,
+  "timestamp": "2026-07-09T22:05:02.938Z",
+  "results": [
+    {
+      "endpoint": "GET /api/prova/questoes",
+      "latency": {
+        "average": 2.2,
+        "p50": 2,
+        "p95": null,
+        "p99": 6,
+        "max": 38
+      },
+      "rps": 3745,
+      "totalRequests": 41194,
+      "throughput": 1344535,
+      "errors": 0,
+      "timeouts": 0,
+      "non2xx": 41194,
+      "resets": 0
+    },
+    {
+      "endpoint": "POST /api/prova/responder",
+      "latency": {
+        "average": 2.8,
+        "p50": 2,
+        "p95": null,
+        "p99": 7,
+        "max": 13
+      },
+      "rps": 3046,
+      "totalRequests": 33507,
+      "throughput": 1096634,
+      "errors": 0,
+      "timeouts": 0,
+      "non2xx": 33507,
+      "resets": 0
+    },
+    {
+      "endpoint": "POST /api/prova/finalizar",
+      "latency": {
+        "average": 2.2,
+        "p50": 2,
+        "p95": null,
+        "p99": 6,
+        "max": 16
+      },
+      "rps": 3760,
+      "totalRequests": 41357,
+      "throughput": 1353588,
+      "errors": 0,
+      "timeouts": 0,
+      "non2xx": 41357,
+      "resets": 0
+    }
+  ]
+}

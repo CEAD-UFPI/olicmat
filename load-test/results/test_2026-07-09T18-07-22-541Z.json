@@ -1,0 +1,25 @@
+{
+  "target": "http://localhost:3333",
+  "connections": 20,
+  "duration": 10,
+  "timestamp": "2026-07-09T18:07:22.541Z",
+  "results": [
+    {
+      "endpoint": "questoes",
+      "latency": {
+        "average": 4,
+        "p50": 3,
+        "p95": null,
+        "p99": 8,
+        "max": 18
+      },
+      "rps": 4640,
+      "totalRequests": 51040,
+      "throughput": 1665908,
+      "errors": 0,
+      "timeouts": 0,
+      "non2xx": 51040,
+      "resets": 0
+    }
+  ]
+}

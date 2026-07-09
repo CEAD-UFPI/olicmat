@@ -10,6 +10,8 @@ export class PrismaService
   constructor() {
     const adapter = new PrismaPg({
       connectionString: process.env.DATABASE_URL,
+      max: parseInt(process.env.DB_POOL_SIZE || "20", 10),
+      idleTimeoutMillis: 30000,
     });
     super({ adapter });
   }

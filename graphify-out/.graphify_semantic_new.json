@@ -1,0 +1,5889 @@
+{
+  "nodes": [
+    {
+      "id": "OLICMAT",
+      "label": "OLICMAT Platform",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "NextJS",
+      "label": "Next.js 16 (App Router)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "NestJS",
+      "label": "NestJS 11 (ESM)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "PostgreSQL",
+      "label": "PostgreSQL 16",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "Prisma",
+      "label": "Prisma 7.8 ORM",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "Cloudinary",
+      "label": "Cloudinary Storage",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "DockerCompose",
+      "label": "Docker Compose Orchestration",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "Easypanel",
+      "label": "Easypanel Production Hosting",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "ModuleConfigResults",
+      "label": "Module 1: Config/Results",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "ModuleExam",
+      "label": "Module 2: Exam (isolated)",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "ModuleCorrection",
+      "label": "Module 3: Correction",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "AuthModule",
+      "label": "Auth Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "UsersModule",
+      "label": "Users Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "InstituicoesModule",
+      "label": "Instituicoes Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "OlimpiadaModule",
+      "label": "Olimpiada Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "AdminModule",
+      "label": "Admin Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "CorrecaoModule",
+      "label": "Correcao Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "CoordenacaoModule",
+      "label": "Coordenacao Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "UploadModule",
+      "label": "Upload Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "JwtAuthGuard",
+      "label": "JwtAuthGuard",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "RolesGuard",
+      "label": "RolesGuard",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "RolesDecorator",
+      "label": "@Roles Decorator",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "PrismaService",
+      "label": "PrismaService (Global Singleton)",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "ExamGuard",
+      "label": "ExamGuard Component",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "DetailPanel",
+      "label": "DetailPanel Component",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "StatusBadge",
+      "label": "StatusBadge Widget",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "InlineList",
+      "label": "InlineList Widget",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "EmptyState",
+      "label": "EmptyState Widget",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "Modal",
+      "label": "Modal Component",
+      "type": "function",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CHANGELOG.md"
+    },
+    {
+      "id": "RoleALUNO",
+      "label": "Role: ALUNO",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "RoleCOORDENADOR",
+      "label": "Role: COORDENADOR_CURSO",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "RoleAVALIADOR",
+      "label": "Role: AVALIADOR",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "RoleADMIN",
+      "label": "Role: ADMIN",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "RoleCOMISSAO",
+      "label": "Role: COMISSAO",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "EntityUser",
+      "label": "User Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityInstituicao",
+      "label": "Instituicao Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityCurso",
+      "label": "Curso Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityCoordenadorCurso",
+      "label": "CoordenadorCurso Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityEdicao",
+      "label": "Edicao Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityInscricao",
+      "label": "Inscricao Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityProva",
+      "label": "Prova Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityQuestao",
+      "label": "Questao Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityProvaQuestao",
+      "label": "ProvaQuestao Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityResposta",
+      "label": "Resposta Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityEnvioFase2",
+      "label": "EnvioFase2 Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityAvaliacaoFase2",
+      "label": "AvaliacaoFase2 Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityRankingSnapshot",
+      "label": "RankingSnapshot Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "EntityAuditLog",
+      "label": "AuditLog Entity",
+      "type": "entity",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "notaEnade",
+      "label": "notaEnade Field (Decimal 5,2)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "ZodValidation",
+      "label": "Zod Validation",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "JWTAuth",
+      "label": "JWT Bearer Authentication",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "RBAC",
+      "label": "Role-Based Access Control",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/SRS_OLICMAT.md"
+    },
+    {
+      "id": "Zustand",
+      "label": "Zustand State Management",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "authStore",
+      "label": "authStore (Zustand)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "provaStore",
+      "label": "provaStore (Zustand)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "ReactHookForm",
+      "label": "React Hook Form",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "TailwindCSS",
+      "label": "Tailwind CSS v4",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "shadcnUI",
+      "label": "shadcn/ui Components",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "AxiosClient",
+      "label": "Axios API Client",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "FramerMotion",
+      "label": "Framer Motion Animations",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/SRS.md"
+    },
+    {
+      "id": "ContainerDB",
+      "label": "Container: olicmat-db (PostgreSQL)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docker-compose.yml"
+    },
+    {
+      "id": "ContainerAPI",
+      "label": "Container: olicmat-api (NestJS)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docker-compose.yml"
+    },
+    {
+      "id": "ContainerWeb",
+      "label": "Container: olicmat-web (Next.js)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docker-compose.yml"
+    },
+    {
+      "id": "APIAuth",
+      "label": "API: /api/auth/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIUsers",
+      "label": "API: /api/users/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIInstituicoes",
+      "label": "API: /api/instituicoes/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIInscricoes",
+      "label": "API: /api/inscricoes/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIProva",
+      "label": "API: /api/prova/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIEnvio",
+      "label": "API: /api/envio/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIRanking",
+      "label": "API: /api/ranking/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APICorrecao",
+      "label": "API: /api/correcao/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIAdminProvas",
+      "label": "API: /api/admin/provas/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIAdminQuestoes",
+      "label": "API: /api/admin/questoes/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIAdminDashboard",
+      "label": "API: /api/admin/dashboard/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APIAdminAuditoria",
+      "label": "API: /api/admin/auditoria/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "APICoordenacao",
+      "label": "API: /api/coordenacao/*",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "MigrationV2Refactor",
+      "label": "Migration: 20260609131525_refactor_olicmat_v2",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "MigrationExpandUser",
+      "label": "Migration: 20260706230000_expand_user_instituicao",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "MigrationNotaEnade",
+      "label": "Migration: 20260707000000_add_curso_nota_enade",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "EnumRole",
+      "label": "Enum: Role",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "EnumStatusProva",
+      "label": "Enum: StatusProva",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "EnumStatusEnvioFase2",
+      "label": "Enum: StatusEnvioFase2",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "RemovedFORPEMAT",
+      "label": "FORPEMAT (Out of Scope)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "RemovedCONGEMAT",
+      "label": "CONGEMAT (Out of Scope)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "PersonaLucas",
+      "label": "Persona: Lucas (Competidor)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/PRD_OLICMAT.md"
+    },
+    {
+      "id": "PersonaWesley",
+      "label": "Persona: Prof. Wesley (Coordenador)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/PRD_OLICMAT.md"
+    },
+    {
+      "id": "PersonaHelena",
+      "label": "Persona: Dra. Helena (Avaliadora)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/PRD_OLICMAT.md"
+    },
+    {
+      "id": "PersonaRoberto",
+      "label": "Persona: Prof. Roberto (Administrador)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/PRD_OLICMAT.md"
+    },
+    {
+      "id": "PersonaAna",
+      "label": "Persona: Ana (Assistente Operacional)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/PRD_OLICMAT.md"
+    },
+    {
+      "id": "Fase1Prova",
+      "label": "Fase 1: Prova Objetiva",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md"
+    },
+    {
+      "id": "Fase2Envio",
+      "label": "Fase 2: Envio de Materiais",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md"
+    },
+    {
+      "id": "RankingPublico",
+      "label": "Public Ranking",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md"
+    },
+    {
+      "id": "MedalhaOuro",
+      "label": "Medalha: Ouro (5%)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md"
+    },
+    {
+      "id": "MedalhaPrata",
+      "label": "Medalha: Prata (10%)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md"
+    },
+    {
+      "id": "MedalhaBronze",
+      "label": "Medalha: Bronze (15%)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md"
+    },
+    {
+      "id": "PWA",
+      "label": "Progressive Web App (PWA)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md"
+    },
+    {
+      "id": "LGPD",
+      "label": "LGPD Compliance",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/BRD.md"
+    },
+    {
+      "id": "ApresentacaoHTML",
+      "label": "Apresentacao Institucional (HTML Slides)",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html"
+    },
+    {
+      "id": "DesignSystem",
+      "label": "Design System (Dark Theme, Gold Accent)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html"
+    },
+    {
+      "id": "FontFraunces",
+      "label": "Font: Fraunces (titles)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html"
+    },
+    {
+      "id": "FontInter",
+      "label": "Font: Inter (body)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html"
+    },
+    {
+      "id": "CSSAnimationFadeInUp",
+      "label": "CSS Animation: fadeInUp",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html"
+    },
+    {
+      "id": "CSSAnimationOrbFloat",
+      "label": "CSS Animation: orbFloat",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html"
+    },
+    {
+      "id": "CSSAnimationMeterFill",
+      "label": "CSS Animation: meterFill",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html"
+    },
+    {
+      "id": "RiskBaixaAdesao",
+      "label": "Risk: Baixa adesao de inscritos",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/BRD.md"
+    },
+    {
+      "id": "RiskSobrecarga",
+      "label": "Risk: Sobrecarga do servidor",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/BRD.md"
+    },
+    {
+      "id": "RiskConexao",
+      "label": "Risk: Problemas de conexao durante prova",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/BRD.md"
+    },
+    {
+      "id": "RiskErrosOperacionais",
+      "label": "Risk: Erros na publicacao de provas/resultados",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/BRD_OLICMAT.md"
+    },
+    {
+      "id": "RiskAtraso",
+      "label": "Risk: Atraso no cronograma",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/BRD.md"
+    },
+    {
+      "id": "INSCRICAO_STATUS",
+      "label": "INSCRICAO_STATUS Map",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "EDICAO_STATUS",
+      "label": "EDICAO_STATUS Map",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "ROLE_INFO",
+      "label": "ROLE_INFO Map",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "INSTITUICAO_STATUS",
+      "label": "INSTITUICAO_STATUS Map",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "ExamSecurity",
+      "label": "Exam Security Features",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "AutoSave",
+      "label": "Auto-save Respostas",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/apresentacao-institucional.html"
+    },
+    {
+      "id": "FullscreenEnforcement",
+      "label": "Fullscreen Enforcement",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "WarningCounter",
+      "label": "Warning Counter (3 max)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "AutoSubmit",
+      "label": "Auto-submit on limit exceeded",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "ShortcutInterception",
+      "label": "Keyboard Shortcut Interception",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "CSVExport",
+      "label": "CSV Export",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "DashboardMetrics",
+      "label": "Dashboard Metrics",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "SeedData",
+      "label": "Seed Data (prisma/seed.ts)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "StatusPENDENTE",
+      "label": "Status: PENDENTE",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "StatusCONFIRMADA",
+      "label": "Status: CONFIRMADA",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "StatusREJEITADA",
+      "label": "Status: REJEITADA",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "StatusRASCUNHO",
+      "label": "Status: RASCUNHO",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "StatusPUBLICADA",
+      "label": "Status: PUBLICADA",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "StatusEMANDAMENTO",
+      "label": "Status: EM_ANDAMENTO",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "StatusENCERRADA",
+      "label": "Status: ENCERRADA",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "EixoALGEBRA",
+      "label": "Eixo: ALGEBRA",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "EixoGEOMETRIA",
+      "label": "Eixo: GEOMETRIA",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "EixoANALISE",
+      "label": "Eixo: ANALISE",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "EixoESTATISTICA",
+      "label": "Eixo: ESTATISTICA",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "EixoDIDATICA",
+      "label": "Eixo: DIDATICA",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "DificuldadeFACIL",
+      "label": "Dificuldade: FACIL",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "DificuldadeMEDIO",
+      "label": "Dificuldade: MEDIO",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "DificuldadeDIFICIL",
+      "label": "Dificuldade: DIFICIL",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "NotaFinalFormula",
+      "label": "Nota Final Formula (F1*0.4 + F2*0.6)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS.md"
+    },
+    {
+      "id": "JWTSecret",
+      "label": "JWT_SECRET Environment Variable",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/README.md"
+    },
+    {
+      "id": "DatabaseURL",
+      "label": "DATABASE_URL Environment Variable",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/README.md"
+    },
+    {
+      "id": "CloudinaryEnvVars",
+      "label": "CLOUDINARY_* Environment Variables",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/README.md"
+    },
+    {
+      "id": "NextPublicAPIURL",
+      "label": "NEXT_PUBLIC_API_URL Environment Variable",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/README.md"
+    },
+    {
+      "id": "AGENTS_MD",
+      "label": "AGENTS.md (Project Guide)",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/AGENTS.md"
+    },
+    {
+      "id": "CLAUDE_MD",
+      "label": "CLAUDE.md (AI Context)",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/CLAUDE.md"
+    },
+    {
+      "id": "README_MD",
+      "label": "README.md",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/README.md"
+    },
+    {
+      "id": "BackendREADME_MD",
+      "label": "backend/README.md",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/backend/README.md"
+    },
+    {
+      "id": "DockerComposeYML",
+      "label": "docker-compose.yml",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docker-compose.yml"
+    },
+    {
+      "id": "DockerComposeProdYML",
+      "label": "docker-compose.prod.yml",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docker-compose.prod.yml"
+    },
+    {
+      "id": "BRD_OLICMAT_MD",
+      "label": "docs/BRD_OLICMAT.md",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/BRD_OLICMAT.md"
+    },
+    {
+      "id": "PRD_OLICMAT_MD",
+      "label": "docs/PRD_OLICMAT.md",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/PRD_OLICMAT.md"
+    },
+    {
+      "id": "SRS_OLICMAT_MD",
+      "label": "docs/SRS_OLICMAT.md",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS_OLICMAT.md"
+    },
+    {
+      "id": "APISurface_MD",
+      "label": "docs/api-surface.md",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/api-surface.md"
+    },
+    {
+      "id": "Changelog_MD",
+      "label": "docs/CHANGELOG.md",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/CHANGELOG.md"
+    },
+    {
+      "id": "MigrationBlueprint_MD",
+      "label": "docs/database-migration-blueprint.md",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/database-migration-blueprint.md"
+    },
+    {
+      "id": "BRD_MD",
+      "label": "docs/BRD.md (Legacy v1.0)",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/BRD.md"
+    },
+    {
+      "id": "PRD_MD",
+      "label": "docs/PRD.md (Legacy v1.0)",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/PRD.md"
+    },
+    {
+      "id": "SRS_MD",
+      "label": "docs/SRS.md (Legacy v1.0)",
+      "type": "file",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/SRS.md"
+    },
+    {
+      "id": "FrontendRouteMap",
+      "label": "Frontend Route Map",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "PublicRoutes",
+      "label": "Public Routes (No Auth)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AuthRoutes",
+      "label": "Auth Routes Group",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ALUNORoutes",
+      "label": "ALUNO Routes (/competidor)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "COORDENADORRoutes",
+      "label": "COORDENADOR_CURSO Routes (/coordenador)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AVALIADORRoutes",
+      "label": "AVALIADOR Routes (/avaliador)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ADMINRoutes",
+      "label": "ADMIN Routes (/admin)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "COMISSAORoutes",
+      "label": "COMISSAO Routes (/comissao)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "HeaderComponent",
+      "label": "Header Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "SidebarComponent",
+      "label": "Sidebar Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "FooterComponent",
+      "label": "Footer Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "MiddlewareAuth",
+      "label": "Middleware Auth Check",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "PWAConfiguration",
+      "label": "PWA Configuration",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "DeletedRoutes",
+      "label": "Deleted Routes (FORPEMAT/CONGEMAT)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "DetailPanel",
+      "label": "DetailPanel Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "RefactorAudit",
+      "label": "Refactor Audit Document",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "TechnologyStack",
+      "label": "Technology Stack",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "NextJS",
+      "label": "Next.js 16 App Router",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "NestJS",
+      "label": "NestJS 11",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "PrismaORM",
+      "label": "Prisma ORM 7.8",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "PostgreSQL",
+      "label": "PostgreSQL 16",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "Cloudinary",
+      "label": "Cloudinary File Storage",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "Zustand",
+      "label": "Zustand State Management",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ReactHookForm",
+      "label": "react-hook-form",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ZodValidation",
+      "label": "Zod Validation",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "TailwindCSS",
+      "label": "Tailwind CSS v4",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ShadcnUI",
+      "label": "shadcn/ui v4 (base-ui)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "PassportJWT",
+      "label": "Passport JWT Authentication",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "DockerCompose",
+      "label": "Docker Compose",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "PrismaModels",
+      "label": "Prisma Models",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "UserModel",
+      "label": "User Model",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "InscricaoModel",
+      "label": "Inscricao Model",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "QuestaoModel",
+      "label": "Questao Model",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "RespostaModel",
+      "label": "Resposta Model",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ModuloModel",
+      "label": "Modulo Model (FORPEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ProgressoCursoModel",
+      "label": "ProgressoCurso Model (FORPEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CertificadoModel",
+      "label": "Certificado Model (FORPEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "SubmissaoModel",
+      "label": "Submissao Model (CONGEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "InstituicaoModel",
+      "label": "Instituicao Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CursoModel",
+      "label": "Curso Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CoordenadorCursoModel",
+      "label": "CoordenadorCurso Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "EdicaoModel",
+      "label": "Edicao Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ProvaModel",
+      "label": "Prova Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ProvaQuestaoModel",
+      "label": "ProvaQuestao Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "EnvioFase2Model",
+      "label": "EnvioFase2 Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "AvaliacaoFase2Model",
+      "label": "AvaliacaoFase2 Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "RankingSnapshotModel",
+      "label": "RankingSnapshot Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "AuditLogModel",
+      "label": "AuditLog Model (NEW)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "RoleEnum",
+      "label": "Role Enum (ALUNO, COORDENADOR_CURSO, AVALIADOR, ADMIN)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "StatusInscEnum",
+      "label": "StatusInsc Enum (PENDENTE, CONFIRMADA, REJEITADA)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "MedalhaEnum",
+      "label": "Medalha Enum (OURO, PRATA, BRONZE)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "EixoEnum",
+      "label": "Eixo Enum (ALGEBRA, GEOMETRIA, ANALISE, ESTATISTICA, DIDATICA)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "DificuldadeEnum",
+      "label": "Dificuldade Enum (FACIL, MEDIO, DIFICIL)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "StatusProvaEnum",
+      "label": "StatusProva Enum (RASCUNHO, PUBLICADA, EM_ANDAMENTO, ENCERRADA)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "StatusEnvioFase2Enum",
+      "label": "StatusEnvioFase2 Enum (PENDENTE, ENVIADO, AVALIADO)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "TipoSubmEnum",
+      "label": "TipoSubm Enum (CONGEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "StatusSubmEnum",
+      "label": "StatusSubm Enum (CONGEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "BackendRouteInventory",
+      "label": "Backend Route Inventory",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "AuthAPI",
+      "label": "Auth API (/api/auth)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "UsersAPI",
+      "label": "Users API (/api/users)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "InscricaoAPI",
+      "label": "Inscricao API (/api/inscricoes)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ProvaAPI",
+      "label": "Prova API (/api/prova)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "EnvioAPI",
+      "label": "Envio API (/api/envio)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "RankingAPI",
+      "label": "Ranking API (/api/ranking)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ModulosAPI",
+      "label": "Modulos API (FORPEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CertificadosAPI",
+      "label": "Certificados API (FORPEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "SubmissoesAPI",
+      "label": "Submissoes API (CONGEMAT - REMOVED)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "AuthenticationRBAC",
+      "label": "Authentication & RBAC",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "JwtAuthGuard",
+      "label": "JwtAuthGuard",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "RolesGuard",
+      "label": "RolesGuard",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "FrontendAudit",
+      "label": "Frontend Audit",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "MigrationSeedAudit",
+      "label": "Migration & Seed Audit",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "InfrastructureConfig",
+      "label": "Infrastructure & Config",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "FORPEMATReferences",
+      "label": "FORPEMAT References (to remove)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CONGEMATReferences",
+      "label": "CONGEMAT References (to remove)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "TechnicalDebt",
+      "label": "Technical Debt & Cleanup",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "MigrationRisk",
+      "label": "Migration Risk Assessment",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "RefactorChecklist",
+      "label": "Refactor Checklist",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "SchemaDatabaseTasks",
+      "label": "Schema & Database Tasks",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "BackendRemovalTasks",
+      "label": "Backend Removal Tasks",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "BackendUpdateTasks",
+      "label": "Backend Update Tasks",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "BackendNewModules",
+      "label": "Backend New Modules",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "FrontendRemovalTasks",
+      "label": "Frontend Removal Tasks",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "FrontendUpdateTasks",
+      "label": "Frontend Update Tasks",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "FrontendNewPages",
+      "label": "Frontend New Pages",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "FrontendInfrastructure",
+      "label": "Frontend Infrastructure",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "VerificationGates",
+      "label": "Verification Gates",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "RefactorPlan",
+      "label": "Refactor Plan",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "TargetArchitecture",
+      "label": "Target Architecture",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "TargetModuleMap",
+      "label": "Target Module Map",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "TargetDatabase",
+      "label": "Target Database Schema",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "TargetAPISurface",
+      "label": "Target API Surface",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "TargetRolePermissionModel",
+      "label": "Target Role & Permission Model",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "TargetFrontendRouteMap",
+      "label": "Target Frontend Route Map",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "ImplementationSequence",
+      "label": "Implementation Sequence",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "MigrationStrategy",
+      "label": "Migration Strategy",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "RiskMitigation",
+      "label": "Risk Mitigation",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "RollbackStrategy",
+      "label": "Rollback Strategy",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "RefactorSummary",
+      "label": "Refactor Summary",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "DetailPanelUnification",
+      "label": "DetailPanel Unification",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "ThreeModuleArchitecture",
+      "label": "3-Module Architecture (Config/Exam/Correction)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "ExamGuard",
+      "label": "ExamGuard Anti-Cheating Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "MajorArchitecturalChanges",
+      "label": "Major Architectural Changes",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "RemovedModules",
+      "label": "Removed Modules (FORPEMAT/CONGEMAT)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "SchemaMigrationChanges",
+      "label": "Schema/Migration Changes",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "RouteChanges",
+      "label": "Route Changes",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "RBACChanges",
+      "label": "RBAC Changes",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "KnownLimitations",
+      "label": "Known Limitations",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "NextEngineeringSteps",
+      "label": "Next Engineering Steps",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "RolePermissionsMatrix",
+      "label": "Role Permissions Matrix",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "RoleDefinitions",
+      "label": "Role Definitions",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "APIPermissionMatrix",
+      "label": "API Permission Matrix",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "FrontendPermissionMatrix",
+      "label": "Frontend Permission Matrix",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "RoleTransitionRules",
+      "label": "Role Transition Rules",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "EnforcementModel",
+      "label": "Enforcement Model",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "AuditLoggingTriggers",
+      "label": "Audit Logging Triggers",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "FrontendAgentsDoc",
+      "label": "Frontend AGENTS.md",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "NextJSAgentRules",
+      "label": "Next.js Agent Rules",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "FrontendStack",
+      "label": "Frontend Stack",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "FrontendConventions",
+      "label": "Frontend Conventions",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "FrontendKeyFiles",
+      "label": "Frontend Key Files",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "ThreeModuleFrontendRoutes",
+      "label": "3-Module Frontend Routes",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "CommonPatterns",
+      "label": "Common Patterns",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "FrontendClaudeDoc",
+      "label": "Frontend CLAUDE.md",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/CLAUDE.md"
+    },
+    {
+      "id": "FrontendReadme",
+      "label": "Frontend README",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/README.md"
+    },
+    {
+      "id": "FrontendSourceLayout",
+      "label": "Frontend Source Layout",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/README.md"
+    },
+    {
+      "id": "DataTypes",
+      "label": "Data Types (TypeScript interfaces)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/README.md"
+    },
+    {
+      "id": "DevelopmentSetup",
+      "label": "Development Setup",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/README.md"
+    },
+    {
+      "id": "LintTypecheck",
+      "label": "Lint / Typecheck",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/README.md"
+    },
+    {
+      "id": "FileIcon",
+      "label": "file.svg — Generic document/file icon (16x16, gray)",
+      "type": "image",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/public/file.svg"
+    },
+    {
+      "id": "GlobeIcon",
+      "label": "globe.svg — Globe/world icon (16x16, gray)",
+      "type": "image",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/public/globe.svg"
+    },
+    {
+      "id": "OLICMATLogo",
+      "label": "logo-semfundo.png — OLICMAT brand logo with π∫Σ mathematical symbols (gold π, green ∫, blue Σ) on transparent background",
+      "type": "image",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/public/logo-semfundo.png"
+    },
+    {
+      "id": "NextJSLogo",
+      "label": "next.svg — Next.js framework logo (black, 394x80)",
+      "type": "image",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/public/next.svg"
+    },
+    {
+      "id": "VercelLogo",
+      "label": "vercel.svg — Vercel deployment platform logo (white triangle, 1155x1000)",
+      "type": "image",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/public/vercel.svg"
+    },
+    {
+      "id": "WindowIcon",
+      "label": "window.svg — Browser window icon (16x16, gray)",
+      "type": "image",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/public/window.svg"
+    },
+    {
+      "id": "OLICMAT",
+      "label": "OLICMAT Platform",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "FORPEMAT",
+      "label": "FORPEMAT (removed scope)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CONGEMAT",
+      "label": "CONGEMAT (removed scope)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "LMSModule",
+      "label": "LMS Module (FORPEMAT - REMOVED)",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CongressoModule",
+      "label": "Congresso Module (CONGEMAT - REMOVED)",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "AuthModule",
+      "label": "Auth Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "UsersModule",
+      "label": "Users Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "OlimpiadaModule",
+      "label": "Olimpiada Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "AdminModule",
+      "label": "Admin Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "CoordenacaoModule",
+      "label": "Coordenacao Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "InstituicoesModule",
+      "label": "Instituicoes Module",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "UploadModule",
+      "label": "Upload Module (Cloudinary)",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "CorrecaoModule",
+      "label": "Correcao Module (Phase 2 Evaluation)",
+      "type": "module",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "PrismaService",
+      "label": "PrismaService (Global Singleton)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-plan.md"
+    },
+    {
+      "id": "AuthStore",
+      "label": "authStore (Zustand)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "ProvaStore",
+      "label": "provaStore (Zustand)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "APIClient",
+      "label": "API Client (Axios with Bearer interceptor)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/AGENTS.md"
+    },
+    {
+      "id": "FramerMotion",
+      "label": "framer-motion (animations)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/README.md"
+    },
+    {
+      "id": "NotaEnade",
+      "label": "notaEnade (ENADE Score on Curso)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "StatusBadge",
+      "label": "StatusBadge Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "InlineList",
+      "label": "InlineList Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "EmptyState",
+      "label": "EmptyState Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "Modal",
+      "label": "Modal Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "ConfigModule",
+      "label": "Config Module (Module 1)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "ExamModule",
+      "label": "Exam Module (Module 2 - Isolated)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "CorrectionModule",
+      "label": "Correction Module (Module 3)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "RoleALUNO",
+      "label": "ALUNO Role (Student Competitor)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "RoleCOORDENADOR",
+      "label": "COORDENADOR_CURSO Role (Course Coordinator)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "RoleAVALIADOR",
+      "label": "AVALIADOR Role (Exam Evaluator)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "RoleADMIN",
+      "label": "ADMIN Role (System Administrator)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/role-permissions-matrix.md"
+    },
+    {
+      "id": "RoleCOMISSAO",
+      "label": "COMISSAO Role (Oversight Commission)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/frontend/README.md"
+    },
+    {
+      "id": "LandingPage",
+      "label": "Landing Page (/)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "RankingPage",
+      "label": "Ranking Page (/ranking)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "RegulamentoPage",
+      "label": "Regulamento Page (/regulamento)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "SobrePage",
+      "label": "Sobre Page (/sobre)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "LoginPage",
+      "label": "Login Page (/login)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "RegistroPage",
+      "label": "Registro Page (/registro)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "EsqueciSenhaPage",
+      "label": "Esqueci-Senha Page (/esqueci-senha)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "RedefinirSenhaPage",
+      "label": "Redefinir-Senha Page (/redefinir-senha)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "CompetidorDashboard",
+      "label": "Competidor Dashboard (/competidor)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "InscricaoPage",
+      "label": "Inscricao Page (/competidor/inscricao)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ProvaPage",
+      "label": "Prova Page (/competidor/prova)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "EnvioPage",
+      "label": "Envio Page (/competidor/envio)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ResultadoPage",
+      "label": "Resultado Page (/competidor/resultado)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "CoordenadorDashboard",
+      "label": "Coordenador Dashboard (/coordenador)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AlunosPage",
+      "label": "Alunos Page (/coordenador/alunos)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "MetricasPage",
+      "label": "Metricas Page (/coordenador/metricas)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AvaliadorDashboard",
+      "label": "Avaliador Dashboard (/avaliador)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AvaliadorProvasPage",
+      "label": "Avaliador Provas Page (/avaliador/provas)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AvaliadorFase2Page",
+      "label": "Avaliador Fase2 Page (/avaliador/fase2)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AdminDashboard",
+      "label": "Admin Dashboard (/admin)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AdminUsuariosPage",
+      "label": "Admin Usuarios Page (/admin/usuarios)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AdminInscricoesPage",
+      "label": "Admin Inscricoes Page (/admin/inscricoes)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AdminProvasPage",
+      "label": "Admin Provas Page (/admin/provas)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AdminAvaliacaoPage",
+      "label": "Admin Avaliacao Page (/admin/avaliacao)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AdminExportarPage",
+      "label": "Admin Exportar Page (/admin/exportar)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "AdminAuditoriaPage",
+      "label": "Admin Auditoria Page (/admin/auditoria)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ComissaoDashboard",
+      "label": "Comissao Dashboard (/comissao)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ComissaoInscricoesPage",
+      "label": "Comissao Inscricoes Page (/comissao/inscricoes)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ComissaoProvasPage",
+      "label": "Comissao Provas Page (/comissao/provas)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ComissaoAvaliacaoPage",
+      "label": "Comissao Avaliacao Page (/comissao/avaliacao)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ComissaoAuditoriaPage",
+      "label": "Comissao Auditoria Page (/comissao/auditoria)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ComissaoExportarPage",
+      "label": "Comissao Exportar Page (/comissao/exportar)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "DashboardLayout",
+      "label": "Dashboard Layout (Auth guard + Sidebar)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "RootLayout",
+      "label": "Root Layout (Header + Footer + ThemeProvider)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "PublicLayout",
+      "label": "Public Layout (no sidebar)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "QuestaoCard",
+      "label": "QuestaoCard Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "TimerComponent",
+      "label": "Timer Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "HeroComponent",
+      "label": "Hero Landing Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "SobreComponent",
+      "label": "Sobre Landing Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CronogramaComponent",
+      "label": "Cronograma Landing Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ParceirosComponent",
+      "label": "Parceiros Landing Component",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "ThemeProvider",
+      "label": "ThemeProvider (next-themes)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "ManifestJSON",
+      "label": "manifest.json (PWA)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/frontend-route-map.md"
+    },
+    {
+      "id": "OLICMATMigration",
+      "label": "Migration 20260609131525_refactor_olicmat_v2",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "ENADEMigration",
+      "label": "Migration 20260707000000_add_curso_nota_enade",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    },
+    {
+      "id": "SeedFile",
+      "label": "Seed File (prisma/seed.ts)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "EnvironmentVariables",
+      "label": "Environment Variables",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "DatabaseURL",
+      "label": "DATABASE_URL",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "JWTSecret",
+      "label": "JWT_SECRET",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "CloudinaryConfig",
+      "label": "Cloudinary Configuration",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "NextPublicAPIURL",
+      "label": "NEXT_PUBLIC_API_URL",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "BRD",
+      "label": "BRD_OLICMAT.md (Business Requirements)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "PRD",
+      "label": "PRD_OLICMAT.md (Product Requirements)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "SRS",
+      "label": "SRS_OLICMAT.md (System Requirements)",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-audit.md"
+    },
+    {
+      "id": "APISurface",
+      "label": "api-surface.md",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "DatabaseMigrationBlueprint",
+      "label": "database-migration-blueprint.md",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-checklist.md"
+    },
+    {
+      "id": "CHANGELOG",
+      "label": "CHANGELOG.md",
+      "type": "concept",
+      "source_file": "/home/wesley/Projetos/sites/olicmat/docs/refactor-summary.md"
+    }
+  ],
+  "edges": [
+    {
+      "source": "OLICMAT",
+      "target": "NextJS",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "NestJS",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "PostgreSQL",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "Prisma",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "Cloudinary",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "DockerCompose",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "Easypanel",
+      "type": "deployed_on",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "ModuleConfigResults",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "ModuleExam",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "ModuleCorrection",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ModuleConfigResults",
+      "target": "AuthModule",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ModuleConfigResults",
+      "target": "UsersModule",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ModuleConfigResults",
+      "target": "InstituicoesModule",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ModuleConfigResults",
+      "target": "AdminModule",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ModuleConfigResults",
+      "target": "CoordenacaoModule",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ModuleConfigResults",
+      "target": "OlimpiadaModule",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ModuleExam",
+      "target": "ExamGuard",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ModuleCorrection",
+      "target": "CorrecaoModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NestJS",
+      "target": "JwtAuthGuard",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NestJS",
+      "target": "RolesGuard",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NestJS",
+      "target": "RolesDecorator",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NestJS",
+      "target": "PrismaService",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "Prisma",
+      "target": "PrismaService",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "JWTAuth",
+      "target": "JwtAuthGuard",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RBAC",
+      "target": "RolesGuard",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RBAC",
+      "target": "RolesDecorator",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RBAC",
+      "target": "RoleALUNO",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RBAC",
+      "target": "RoleCOORDENADOR",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RBAC",
+      "target": "RoleAVALIADOR",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RBAC",
+      "target": "RoleADMIN",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RBAC",
+      "target": "RoleCOMISSAO",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextJS",
+      "target": "Zustand",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextJS",
+      "target": "TailwindCSS",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextJS",
+      "target": "shadcnUI",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextJS",
+      "target": "ReactHookForm",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextJS",
+      "target": "AxiosClient",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextJS",
+      "target": "FramerMotion",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "Zustand",
+      "target": "authStore",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "Zustand",
+      "target": "provaStore",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ZodValidation",
+      "target": "ReactHookForm",
+      "type": "integrates_with",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamGuard",
+      "target": "FullscreenEnforcement",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamGuard",
+      "target": "WarningCounter",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamGuard",
+      "target": "AutoSubmit",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamGuard",
+      "target": "ShortcutInterception",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamSecurity",
+      "target": "ExamGuard",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamSecurity",
+      "target": "AutoSave",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "Modal",
+      "type": "extends",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "StatusBadge",
+      "type": "exports",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "InlineList",
+      "type": "exports",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "EmptyState",
+      "type": "exports",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "EntityUser",
+      "type": "displays",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "EntityInstituicao",
+      "type": "displays",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "EntityCurso",
+      "type": "displays",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "EntityEdicao",
+      "type": "displays",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "EntityInscricao",
+      "type": "displays",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityCurso",
+      "target": "notaEnade",
+      "type": "has_field",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityCurso",
+      "target": "EntityInstituicao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityInscricao",
+      "target": "EntityUser",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityInscricao",
+      "target": "EntityEdicao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityInscricao",
+      "target": "EntityInstituicao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityInscricao",
+      "target": "EntityCurso",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityInscricao",
+      "target": "Fase1Prova",
+      "type": "participates_in",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "EntityInscricao",
+      "target": "Fase2Envio",
+      "type": "participates_in",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "EntityProva",
+      "target": "EntityEdicao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityProva",
+      "target": "EntityProvaQuestao",
+      "type": "has",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityProvaQuestao",
+      "target": "EntityQuestao",
+      "type": "links_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityResposta",
+      "target": "EntityInscricao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityResposta",
+      "target": "EntityProva",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityResposta",
+      "target": "EntityQuestao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityEnvioFase2",
+      "target": "EntityInscricao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityAvaliacaoFase2",
+      "target": "EntityInscricao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityCoordenadorCurso",
+      "target": "EntityUser",
+      "type": "links_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityCoordenadorCurso",
+      "target": "EntityCurso",
+      "type": "links_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityAuditLog",
+      "target": "EntityUser",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityRankingSnapshot",
+      "target": "EntityEdicao",
+      "type": "belongs_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "Fase1Prova",
+      "target": "AutoSave",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "Fase1Prova",
+      "target": "AutoSubmit",
+      "type": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "Fase2Envio",
+      "target": "Cloudinary",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RankingPublico",
+      "target": "MedalhaOuro",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RankingPublico",
+      "target": "MedalhaPrata",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RankingPublico",
+      "target": "MedalhaBronze",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NotaFinalFormula",
+      "target": "Fase1Prova",
+      "type": "calculates_from",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NotaFinalFormula",
+      "target": "Fase2Envio",
+      "type": "calculates_from",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerCompose",
+      "target": "ContainerDB",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerCompose",
+      "target": "ContainerAPI",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerCompose",
+      "target": "ContainerWeb",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ContainerAPI",
+      "target": "ContainerDB",
+      "type": "depends_on",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ContainerWeb",
+      "target": "ContainerAPI",
+      "type": "depends_on",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIAuth",
+      "target": "AuthModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIUsers",
+      "target": "UsersModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIInstituicoes",
+      "target": "InstituicoesModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIInscricoes",
+      "target": "OlimpiadaModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIProva",
+      "target": "OlimpiadaModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIEnvio",
+      "target": "OlimpiadaModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIRanking",
+      "target": "OlimpiadaModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APICorrecao",
+      "target": "CorrecaoModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIAdminProvas",
+      "target": "AdminModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIAdminQuestoes",
+      "target": "AdminModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIAdminDashboard",
+      "target": "AdminModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIAdminAuditoria",
+      "target": "AdminModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APICoordenacao",
+      "target": "CoordenacaoModule",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityInstituicao",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityCurso",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityCoordenadorCurso",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityEdicao",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityProvaQuestao",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityEnvioFase2",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityAvaliacaoFase2",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityRankingSnapshot",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EntityAuditLog",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EnumStatusProva",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationV2Refactor",
+      "target": "EnumStatusEnvioFase2",
+      "type": "creates",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationExpandUser",
+      "target": "EntityUser",
+      "type": "extends",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationExpandUser",
+      "target": "EntityInstituicao",
+      "type": "extends",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationNotaEnade",
+      "target": "EntityCurso",
+      "type": "extends",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationNotaEnade",
+      "target": "notaEnade",
+      "type": "adds",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "RemovedFORPEMAT",
+      "type": "excludes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "RemovedCONGEMAT",
+      "type": "excludes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PersonaLucas",
+      "target": "RoleALUNO",
+      "type": "maps_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PersonaWesley",
+      "target": "RoleCOORDENADOR",
+      "type": "maps_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PersonaHelena",
+      "target": "RoleAVALIADOR",
+      "type": "maps_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PersonaRoberto",
+      "target": "RoleADMIN",
+      "type": "maps_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PersonaAna",
+      "target": "RoleCOMISSAO",
+      "type": "maps_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "LGPD",
+      "type": "complies_with",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "PWA",
+      "type": "supports",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ApresentacaoHTML",
+      "target": "DesignSystem",
+      "type": "implements",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DesignSystem",
+      "target": "FontFraunces",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DesignSystem",
+      "target": "FontInter",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ApresentacaoHTML",
+      "target": "CSSAnimationFadeInUp",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ApresentacaoHTML",
+      "target": "CSSAnimationOrbFloat",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ApresentacaoHTML",
+      "target": "CSSAnimationMeterFill",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RiskBaixaAdesao",
+      "target": "OLICMAT",
+      "type": "affects",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RiskSobrecarga",
+      "target": "Fase1Prova",
+      "type": "affects",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RiskConexao",
+      "target": "AutoSave",
+      "type": "mitigated_by",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RiskErrosOperacionais",
+      "target": "EntityAuditLog",
+      "type": "mitigated_by",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "RiskAtraso",
+      "target": "OLICMAT",
+      "type": "affects",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "StatusBadge",
+      "target": "INSCRICAO_STATUS",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "StatusBadge",
+      "target": "EDICAO_STATUS",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "StatusBadge",
+      "target": "ROLE_INFO",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "StatusBadge",
+      "target": "INSTITUICAO_STATUS",
+      "type": "uses",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "INSCRICAO_STATUS",
+      "target": "StatusPENDENTE",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "INSCRICAO_STATUS",
+      "target": "StatusCONFIRMADA",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "INSCRICAO_STATUS",
+      "target": "StatusREJEITADA",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnumStatusProva",
+      "target": "StatusRASCUNHO",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnumStatusProva",
+      "target": "StatusPUBLICADA",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnumStatusProva",
+      "target": "StatusEMANDAMENTO",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnumStatusProva",
+      "target": "StatusENCERRADA",
+      "type": "includes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityQuestao",
+      "target": "EixoALGEBRA",
+      "type": "has_value",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityQuestao",
+      "target": "EixoGEOMETRIA",
+      "type": "has_value",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityQuestao",
+      "target": "EixoANALISE",
+      "type": "has_value",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityQuestao",
+      "target": "EixoESTATISTICA",
+      "type": "has_value",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityQuestao",
+      "target": "EixoDIDATICA",
+      "type": "has_value",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityQuestao",
+      "target": "DificuldadeFACIL",
+      "type": "has_value",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityQuestao",
+      "target": "DificuldadeMEDIO",
+      "type": "has_value",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EntityQuestao",
+      "target": "DificuldadeDIFICIL",
+      "type": "has_value",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AdminModule",
+      "target": "CSVExport",
+      "type": "provides",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AdminModule",
+      "target": "DashboardMetrics",
+      "type": "provides",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SeedData",
+      "target": "EntityInstituicao",
+      "type": "seeds",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SeedData",
+      "target": "EntityCurso",
+      "type": "seeds",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SeedData",
+      "target": "EntityUser",
+      "type": "seeds",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SeedData",
+      "target": "EntityEdicao",
+      "type": "seeds",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SeedData",
+      "target": "EntityQuestao",
+      "type": "seeds",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SeedData",
+      "target": "EntityProva",
+      "type": "seeds",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SeedData",
+      "target": "EntityInscricao",
+      "type": "seeds",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "JWTSecret",
+      "target": "JWTAuth",
+      "type": "configures",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DatabaseURL",
+      "target": "Prisma",
+      "type": "configures",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CloudinaryEnvVars",
+      "target": "Cloudinary",
+      "type": "configures",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextPublicAPIURL",
+      "target": "AxiosClient",
+      "type": "configures",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AGENTS_MD",
+      "target": "CLAUDE_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CLAUDE_MD",
+      "target": "BRD_OLICMAT_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CLAUDE_MD",
+      "target": "PRD_OLICMAT_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CLAUDE_MD",
+      "target": "SRS_OLICMAT_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CLAUDE_MD",
+      "target": "Changelog_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "README_MD",
+      "target": "AGENTS_MD",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "README_MD",
+      "target": "BRD_OLICMAT_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "README_MD",
+      "target": "PRD_OLICMAT_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "README_MD",
+      "target": "SRS_OLICMAT_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "README_MD",
+      "target": "APISurface_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "README_MD",
+      "target": "Changelog_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendREADME_MD",
+      "target": "README_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendREADME_MD",
+      "target": "MigrationBlueprint_MD",
+      "type": "references",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerComposeYML",
+      "target": "ContainerDB",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerComposeYML",
+      "target": "ContainerAPI",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerComposeYML",
+      "target": "ContainerWeb",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerComposeProdYML",
+      "target": "ContainerDB",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerComposeProdYML",
+      "target": "ContainerAPI",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DockerComposeProdYML",
+      "target": "ContainerWeb",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BRD_MD",
+      "target": "RemovedFORPEMAT",
+      "type": "describes_legacy",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BRD_MD",
+      "target": "RemovedCONGEMAT",
+      "type": "describes_legacy",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PRD_MD",
+      "target": "RemovedFORPEMAT",
+      "type": "describes_legacy",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PRD_MD",
+      "target": "RemovedCONGEMAT",
+      "type": "describes_legacy",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SRS_MD",
+      "target": "RemovedFORPEMAT",
+      "type": "describes_legacy",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SRS_MD",
+      "target": "RemovedCONGEMAT",
+      "type": "describes_legacy",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BRD_OLICMAT_MD",
+      "target": "OLICMAT",
+      "type": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PRD_OLICMAT_MD",
+      "target": "OLICMAT",
+      "type": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SRS_OLICMAT_MD",
+      "target": "OLICMAT",
+      "type": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIAuth",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIUsers",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIInstituicoes",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIInscricoes",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIProva",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIEnvio",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIRanking",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APICorrecao",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIAdminProvas",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIAdminQuestoes",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIAdminDashboard",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APIAdminAuditoria",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APISurface_MD",
+      "target": "APICoordenacao",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationBlueprint_MD",
+      "target": "MigrationV2Refactor",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationBlueprint_MD",
+      "target": "MigrationExpandUser",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationBlueprint_MD",
+      "target": "MigrationNotaEnade",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "Changelog_MD",
+      "target": "DetailPanel",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "Changelog_MD",
+      "target": "notaEnade",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "Changelog_MD",
+      "target": "MigrationNotaEnade",
+      "type": "documents",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "PublicRoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "AuthRoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "ALUNORoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "COORDENADORRoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "AVALIADORRoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "ADMINRoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "COMISSAORoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "HeaderComponent",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "SidebarComponent",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "FooterComponent",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "MiddlewareAuth",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "PWAConfiguration",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "DeletedRoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "DetailPanel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "TechnologyStack",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "PrismaModels",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "BackendRouteInventory",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "AuthenticationRBAC",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "FrontendAudit",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "MigrationSeedAudit",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "InfrastructureConfig",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "FORPEMATReferences",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "CONGEMATReferences",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "TechnicalDebt",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "MigrationRisk",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "NextJS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "NestJS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "PrismaORM",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "PostgreSQL",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "Cloudinary",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "Zustand",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "ReactHookForm",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "ZodValidation",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "TailwindCSS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "ShadcnUI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "PassportJWT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TechnologyStack",
+      "target": "DockerCompose",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "UserModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "InscricaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "QuestaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "RespostaModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "ModuloModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "ProgressoCursoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "CertificadoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "SubmissaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "InstituicaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "CursoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "CoordenadorCursoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "EdicaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "ProvaModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "ProvaQuestaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "EnvioFase2Model",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "AvaliacaoFase2Model",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "RankingSnapshotModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PrismaModels",
+      "target": "AuditLogModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "AuthAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "UsersAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "InscricaoAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "ProvaAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "EnvioAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "RankingAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "ModulosAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "CertificadosAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRouteInventory",
+      "target": "SubmissoesAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AuthenticationRBAC",
+      "target": "JwtAuthGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AuthenticationRBAC",
+      "target": "RolesGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AuthenticationRBAC",
+      "target": "RoleEnum",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "SchemaDatabaseTasks",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "BackendRemovalTasks",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "BackendUpdateTasks",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "BackendNewModules",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "FrontendRemovalTasks",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "FrontendUpdateTasks",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "FrontendNewPages",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "FrontendInfrastructure",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "VerificationGates",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "TargetArchitecture",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "TargetModuleMap",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "TargetDatabase",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "TargetAPISurface",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "TargetRolePermissionModel",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "TargetFrontendRouteMap",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "ImplementationSequence",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "MigrationStrategy",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "RiskMitigation",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorPlan",
+      "target": "RollbackStrategy",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "DetailPanelUnification",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "ThreeModuleArchitecture",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "ExamGuard",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "MajorArchitecturalChanges",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "RemovedModules",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "SchemaMigrationChanges",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "RouteChanges",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "RBACChanges",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "KnownLimitations",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorSummary",
+      "target": "NextEngineeringSteps",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RolePermissionsMatrix",
+      "target": "RoleDefinitions",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RolePermissionsMatrix",
+      "target": "APIPermissionMatrix",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RolePermissionsMatrix",
+      "target": "FrontendPermissionMatrix",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RolePermissionsMatrix",
+      "target": "RoleTransitionRules",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RolePermissionsMatrix",
+      "target": "EnforcementModel",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RolePermissionsMatrix",
+      "target": "AuditLoggingTriggers",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAgentsDoc",
+      "target": "NextJSAgentRules",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAgentsDoc",
+      "target": "FrontendStack",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAgentsDoc",
+      "target": "FrontendConventions",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAgentsDoc",
+      "target": "FrontendKeyFiles",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAgentsDoc",
+      "target": "ThreeModuleFrontendRoutes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAgentsDoc",
+      "target": "CommonPatterns",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendClaudeDoc",
+      "target": "FrontendAgentsDoc",
+      "type": "imports",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "FrontendSourceLayout",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "DataTypes",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "DevelopmentSetup",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "LintTypecheck",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "FORPEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMAT",
+      "target": "CONGEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "LMSModule",
+      "target": "FORPEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CongressoModule",
+      "target": "CONGEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "AuthModule",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "UsersModule",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "OlimpiadaModule",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "AdminModule",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "CoordenacaoModule",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "InstituicoesModule",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "UploadModule",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleArchitecture",
+      "target": "ConfigModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleArchitecture",
+      "target": "ExamModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleArchitecture",
+      "target": "CorrectionModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleArchitecture",
+      "target": "CorrecaoModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleArchitecture",
+      "target": "ExamGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendKeyFiles",
+      "target": "AuthStore",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendKeyFiles",
+      "target": "ProvaStore",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendKeyFiles",
+      "target": "APIClient",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendKeyFiles",
+      "target": "ExamGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendKeyFiles",
+      "target": "SidebarComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendConventions",
+      "target": "Zustand",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendConventions",
+      "target": "ReactHookForm",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendConventions",
+      "target": "ZodValidation",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendConventions",
+      "target": "ShadcnUI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendConventions",
+      "target": "TailwindCSS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendSourceLayout",
+      "target": "ExamGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendSourceLayout",
+      "target": "SidebarComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendSourceLayout",
+      "target": "HeaderComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendSourceLayout",
+      "target": "FooterComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendSourceLayout",
+      "target": "DetailPanel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendSourceLayout",
+      "target": "Modal",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendSourceLayout",
+      "target": "FramerMotion",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DataTypes",
+      "target": "PrismaORM",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DataTypes",
+      "target": "NotaEnade",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanelUnification",
+      "target": "DetailPanel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanelUnification",
+      "target": "StatusBadge",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanelUnification",
+      "target": "InlineList",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanelUnification",
+      "target": "EmptyState",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanelUnification",
+      "target": "Modal",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanelUnification",
+      "target": "NotaEnade",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SchemaMigrationChanges",
+      "target": "OLICMATMigration",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SchemaMigrationChanges",
+      "target": "ENADEMigration",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "SchemaMigrationChanges",
+      "target": "SeedFile",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "InfrastructureConfig",
+      "target": "EnvironmentVariables",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnvironmentVariables",
+      "target": "DatabaseURL",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnvironmentVariables",
+      "target": "JWTSecret",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnvironmentVariables",
+      "target": "CloudinaryConfig",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnvironmentVariables",
+      "target": "NextPublicAPIURL",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "BRD",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "PRD",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorAudit",
+      "target": "SRS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "APISurface",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "DatabaseMigrationBlueprint",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "FrontendRouteMap",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RefactorChecklist",
+      "target": "CHANGELOG",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PublicRoutes",
+      "target": "LandingPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PublicRoutes",
+      "target": "LoginPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PublicRoutes",
+      "target": "RegistroPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PublicRoutes",
+      "target": "EsqueciSenhaPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PublicRoutes",
+      "target": "RedefinirSenhaPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PublicRoutes",
+      "target": "RankingPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PublicRoutes",
+      "target": "RegulamentoPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PublicRoutes",
+      "target": "SobrePage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ALUNORoutes",
+      "target": "CompetidorDashboard",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ALUNORoutes",
+      "target": "InscricaoPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ALUNORoutes",
+      "target": "ProvaPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ALUNORoutes",
+      "target": "EnvioPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ALUNORoutes",
+      "target": "ResultadoPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COORDENADORRoutes",
+      "target": "CoordenadorDashboard",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COORDENADORRoutes",
+      "target": "AlunosPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COORDENADORRoutes",
+      "target": "MetricasPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AVALIADORRoutes",
+      "target": "AvaliadorDashboard",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AVALIADORRoutes",
+      "target": "AvaliadorProvasPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AVALIADORRoutes",
+      "target": "AvaliadorFase2Page",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ADMINRoutes",
+      "target": "AdminDashboard",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ADMINRoutes",
+      "target": "AdminUsuariosPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ADMINRoutes",
+      "target": "AdminInscricoesPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ADMINRoutes",
+      "target": "AdminProvasPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ADMINRoutes",
+      "target": "AdminAvaliacaoPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ADMINRoutes",
+      "target": "AdminExportarPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ADMINRoutes",
+      "target": "AdminAuditoriaPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COMISSAORoutes",
+      "target": "ComissaoDashboard",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COMISSAORoutes",
+      "target": "ComissaoInscricoesPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COMISSAORoutes",
+      "target": "ComissaoProvasPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COMISSAORoutes",
+      "target": "ComissaoAvaliacaoPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COMISSAORoutes",
+      "target": "ComissaoAuditoriaPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "COMISSAORoutes",
+      "target": "ComissaoExportarPage",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "DashboardLayout",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "RootLayout",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRouteMap",
+      "target": "PublicLayout",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAudit",
+      "target": "HeroComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAudit",
+      "target": "SobreComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAudit",
+      "target": "CronogramaComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAudit",
+      "target": "ParceirosComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAudit",
+      "target": "QuestaoCard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAudit",
+      "target": "TimerComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendAudit",
+      "target": "ThemeProvider",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendInfrastructure",
+      "target": "MiddlewareAuth",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendInfrastructure",
+      "target": "ManifestJSON",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "PWAConfiguration",
+      "target": "ManifestJSON",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DeletedRoutes",
+      "target": "FORPEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DeletedRoutes",
+      "target": "CONGEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RemovedModules",
+      "target": "FORPEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RemovedModules",
+      "target": "CONGEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RemovedModules",
+      "target": "LMSModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RemovedModules",
+      "target": "CongressoModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RemovedModules",
+      "target": "ModuloModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RemovedModules",
+      "target": "ProgressoCursoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RemovedModules",
+      "target": "CertificadoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RemovedModules",
+      "target": "SubmissaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RoleDefinitions",
+      "target": "RoleALUNO",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RoleDefinitions",
+      "target": "RoleCOORDENADOR",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RoleDefinitions",
+      "target": "RoleAVALIADOR",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RoleDefinitions",
+      "target": "RoleADMIN",
+      "type": "defines",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendPermissionMatrix",
+      "target": "RoleCOMISSAO",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "LMSModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "CongressoModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetModuleMap",
+      "target": "PrismaService",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendNewModules",
+      "target": "InstituicoesModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendNewModules",
+      "target": "AdminModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendNewModules",
+      "target": "CoordenacaoModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRemovalTasks",
+      "target": "LMSModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "BackendRemovalTasks",
+      "target": "CongressoModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRemovalTasks",
+      "target": "FORPEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendRemovalTasks",
+      "target": "CONGEMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendUpdateTasks",
+      "target": "HeroComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendUpdateTasks",
+      "target": "SobreComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendUpdateTasks",
+      "target": "CronogramaComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendUpdateTasks",
+      "target": "FooterComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendUpdateTasks",
+      "target": "SidebarComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "EsqueciSenhaPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "RedefinirSenhaPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "RegulamentoPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "SobrePage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "ResultadoPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "CoordenadorDashboard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AlunosPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "MetricasPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AvaliadorDashboard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AvaliadorProvasPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AvaliadorFase2Page",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AdminDashboard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AdminUsuariosPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AdminInscricoesPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AdminProvasPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AdminAvaliacaoPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AdminExportarPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendNewPages",
+      "target": "AdminAuditoriaPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleFrontendRoutes",
+      "target": "ConfigModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleFrontendRoutes",
+      "target": "ExamModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleFrontendRoutes",
+      "target": "CorrectionModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ThreeModuleFrontendRoutes",
+      "target": "ExamGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CommonPatterns",
+      "target": "FramerMotion",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CommonPatterns",
+      "target": "APIClient",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CommonPatterns",
+      "target": "TailwindCSS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ProvaPage",
+      "target": "ExamGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamGuard",
+      "target": "ProvaAPI",
+      "type": "calls",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MiddlewareAuth",
+      "target": "JwtAuthGuard",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "DashboardLayout",
+      "target": "SidebarComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DashboardLayout",
+      "target": "MiddlewareAuth",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RootLayout",
+      "target": "HeaderComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RootLayout",
+      "target": "FooterComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RootLayout",
+      "target": "ThemeProvider",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetAPISurface",
+      "target": "AuthAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetAPISurface",
+      "target": "UsersAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetAPISurface",
+      "target": "InstituicoesModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetAPISurface",
+      "target": "OlimpiadaModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetAPISurface",
+      "target": "AdminModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetAPISurface",
+      "target": "CoordenacaoModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetRolePermissionModel",
+      "target": "RoleALUNO",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetRolePermissionModel",
+      "target": "RoleCOORDENADOR",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetRolePermissionModel",
+      "target": "RoleAVALIADOR",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetRolePermissionModel",
+      "target": "RoleADMIN",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "RoleEnum",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "StatusInscEnum",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "StatusProvaEnum",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "MedalhaEnum",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "EixoEnum",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "DificuldadeEnum",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "StatusEnvioFase2Enum",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "InstituicaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "CursoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "CoordenadorCursoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "UserModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "EdicaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "InscricaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "ProvaModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "QuestaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "ProvaQuestaoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "RespostaModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "EnvioFase2Model",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "AvaliacaoFase2Model",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "RankingSnapshotModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "TargetDatabase",
+      "target": "AuditLogModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ImplementationSequence",
+      "target": "SchemaDatabaseTasks",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ImplementationSequence",
+      "target": "BackendUpdateTasks",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ImplementationSequence",
+      "target": "BackendNewModules",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ImplementationSequence",
+      "target": "FrontendRemovalTasks",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ImplementationSequence",
+      "target": "FrontendUpdateTasks",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ImplementationSequence",
+      "target": "FrontendNewPages",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "ImplementationSequence",
+      "target": "FrontendInfrastructure",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "MigrationStrategy",
+      "target": "OLICMATMigration",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "MigrationStrategy",
+      "target": "SeedFile",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "RiskMitigation",
+      "target": "NextJS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextEngineeringSteps",
+      "target": "KnownLimitations",
+      "type": "relates_to",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "AuthAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "UsersAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "InscricaoAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "ProvaAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "RankingAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "RoleALUNO",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "RoleCOORDENADOR",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "RoleAVALIADOR",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "APIPermissionMatrix",
+      "target": "RoleADMIN",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendPermissionMatrix",
+      "target": "RoleALUNO",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendPermissionMatrix",
+      "target": "RoleCOORDENADOR",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendPermissionMatrix",
+      "target": "RoleAVALIADOR",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendPermissionMatrix",
+      "target": "RoleADMIN",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendPermissionMatrix",
+      "target": "RoleCOMISSAO",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnforcementModel",
+      "target": "JwtAuthGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnforcementModel",
+      "target": "RolesGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "EnforcementModel",
+      "target": "MiddlewareAuth",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AuditLoggingTriggers",
+      "target": "AuditLogModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "AuditLoggingTriggers",
+      "target": "RoleADMIN",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "OLICMATLogo",
+      "target": "OLICMAT",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NextJSLogo",
+      "target": "NextJS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "VercelLogo",
+      "target": "DockerCompose",
+      "type": "relates_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "FileIcon",
+      "target": "FrontendSourceLayout",
+      "type": "relates_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "GlobeIcon",
+      "target": "FrontendSourceLayout",
+      "type": "relates_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "WindowIcon",
+      "target": "FrontendSourceLayout",
+      "type": "relates_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "DetailPanel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "ExamGuard",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "SidebarComponent",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "FramerMotion",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "TailwindCSS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "Zustand",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "ReactHookForm",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "ZodValidation",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "APIClient",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "NextJS",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "ShadcnUI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "RoleALUNO",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "RoleAVALIADOR",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "RoleADMIN",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "RoleCOORDENADOR",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "FrontendReadme",
+      "target": "RoleCOMISSAO",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "NotaEnade",
+      "target": "CursoModel",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "Modal",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "AdminUsuariosPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "AdminInscricoesPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "DetailPanel",
+      "target": "ComissaoInscricoesPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ConfigModule",
+      "target": "AdminModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ConfigModule",
+      "target": "AuthModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ConfigModule",
+      "target": "UsersModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ConfigModule",
+      "target": "OlimpiadaModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ConfigModule",
+      "target": "InstituicoesModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ConfigModule",
+      "target": "CoordenacaoModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamModule",
+      "target": "OlimpiadaModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ExamModule",
+      "target": "ProvaAPI",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CorrectionModule",
+      "target": "CorrecaoModule",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CorrectionModule",
+      "target": "AdminAvaliacaoPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CorrectionModule",
+      "target": "AvaliadorFase2Page",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "CorrectionModule",
+      "target": "ComissaoAvaliacaoPage",
+      "type": "relates_to",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "ProvaStore",
+      "target": "ProvaAPI",
+      "type": "calls",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "AuthStore",
+      "target": "AuthAPI",
+      "type": "calls",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "APIClient",
+      "target": "AuthAPI",
+      "type": "calls",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "APIClient",
+      "target": "UsersAPI",
+      "type": "calls",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "APIClient",
+      "target": "InscricaoAPI",
+      "type": "calls",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "APIClient",
+      "target": "ProvaAPI",
+      "type": "calls",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "APIClient",
+      "target": "RankingAPI",
+      "type": "calls",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "APIClient",
+      "target": "EnvioAPI",
+      "type": "calls",
+      "confidence": "INFERRED"
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
