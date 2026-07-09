@@ -159,16 +159,20 @@ export class ProvaService {
       throw new NotFoundException("Inscrição não encontrada");
     }
 
-    const respostas = await this.prisma.resposta.findMany({
+    const prova = await this.prisma.prova.findFirst({
+      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+    });
+
+    const totalQuestoes = prova
+      ? await this.prisma.provaQuestao.count({ where: { provaId: prova.id } })
+      : 0;
+
+    const corretas = await this.prisma.resposta.count({
       where: { inscricaoId: inscricao.id, correta: true },
     });
 
-    const totalQuestoes = await this.prisma.resposta.count({
-      where: { inscricaoId: inscricao.id },
-    });
-
     const nota =
-      totalQuestoes > 0 ? (respostas.length / totalQuestoes) * 100 : 0;
+      totalQuestoes > 0 ? (corretas / totalQuestoes) * 100 : 0;
 
     return this.prisma.inscricao.update({
       where: { id: inscricao.id },

@@ -5,13 +5,13 @@ import type { Questao } from "@/types";
 
 interface QuestaoCardProps {
   questao: Questao & { respondida?: string | null };
-  onResponder: (questaoId: string, alternativa: string) => void;
-  disabled?: boolean;
+  selecionada: string | null;
+  onSelecionar: (letra: string) => void;
 }
 
 const alternativas = ["A", "B", "C", "D", "E"] as const;
 
-export function QuestaoCard({ questao, onResponder, disabled }: QuestaoCardProps) {
+export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardProps) {
   return (
     <motion.div
       key={questao.id}
@@ -43,35 +43,29 @@ export function QuestaoCard({ questao, onResponder, disabled }: QuestaoCardProps
         {alternativas.map((letra) => {
           const key = `alternativa${letra}` as keyof Questao;
           const texto = questao[key] as string;
-          const selecionada = questao.respondida === letra;
+          const ativa = selecionada === letra;
 
           return (
             <button
               key={letra}
-              onClick={() => onResponder(questao.id, letra)}
-              disabled={disabled}
+              type="button"
+              onClick={() => onSelecionar(letra)}
               className={`w-full text-left flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 ${
-                disabled ? "opacity-50 cursor-not-allowed" : ""
-              } ${
-                selecionada
+                ativa
                   ? "border-[var(--pi-laranja)] bg-[var(--pi-laranja)]/10"
                   : "border-[#2a2a3a] hover:border-[#3a3a4a] hover:bg-[#1a1a26]"
               }`}
             >
               <span
                 className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold shrink-0 transition-colors ${
-                  selecionada
+                  ativa
                     ? "bg-[var(--pi-laranja)] text-white"
                     : "bg-[#1a1a26] text-[#9895a4]"
                 }`}
               >
-                {disabled && !selecionada ? (
-                  <div className="w-3 h-3 border border-[#9895a4] border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  letra
-                )}
+                {letra}
               </span>
-              <span className={`text-sm ${selecionada ? "text-[#f0ece4]" : "text-[#9895a4]"}`}>
+              <span className={`text-sm ${ativa ? "text-[#f0ece4]" : "text-[#9895a4]"}`}>
                 {texto}
               </span>
             </button>

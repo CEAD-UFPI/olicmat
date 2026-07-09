@@ -32,14 +32,16 @@ export default function ProvaPage() {
 
   const [iniciada, setIniciada] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [unanswered, setUnanswered] = useState<{ index: number; id: string }[] | null>(null);
+  const [selecaoLocal, setSelecaoLocal] = useState<Record<string, string | null>>({});
+  const [respondeuAtual, setRespondeuAtual] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       try {
-        // Tentar iniciar prova se ainda não foi
         await api.post("/inscricoes/minha/iniciar-prova");
       } catch {
-        // Prova já iniciada, ignorar erro
+        // Prova já iniciada
       }
       try {
         await carregarProva();
@@ -51,21 +53,60 @@ export default function ProvaPage() {
     init();
   }, [carregarProva, router]);
 
+  // Initialize local selection when loading a question
+  useEffect(() => {
+    if (questaoAtual >= 0 && questoes[questaoAtual]) {
+      const q = questoes[questaoAtual];
+      setSelecaoLocal((prev) => ({
+        ...prev,
+        [q.id]: prev[q.id] ?? q.respondida ?? null,
+      }));
+      setRespondeuAtual(!!q.respondida);
+    }
+  }, [questaoAtual, questoes]);
+
+  const handleSelecionar = (letra: string) => {
+    const q = questoes[questaoAtual];
+    if (!q) return;
+    setSelecaoLocal((prev) => ({ ...prev, [q.id]: letra }));
+    setRespondeuAtual(false);
+  };
+
+  const handleResponder = async () => {
+    const q = questoes[questaoAtual];
+    if (!q) return;
+    const selecionada = selecaoLocal[q.id];
+    if (!selecionada) return;
+
+    try {
+      await responder(q.id, selecionada);
+      setRespondeuAtual(true);
+    } catch {
+      // Erro já foi capturado pelo store
+    }
+  };
+
   const handleTimeUp = useCallback(() => {
     finalizar();
   }, [finalizar]);
 
-  const handleResponder = async (questaoId: string, alternativa: string) => {
-    try {
-      await responder(questaoId, alternativa);
-    } catch {
-      // Erro já foi capturado pelo store (estado `erro`)
+  const handleFinalizar = async () => {
+    setShowConfirm(false);
+    const semResposta = questoes
+      .map((q, i) => ({ index: i + 1, id: q.id, respondida: q.respondida }))
+      .filter((q) => !q.respondida);
+
+    if (semResposta.length > 0) {
+      setUnanswered(semResposta.map((q) => ({ index: q.index, id: q.id })));
+      return;
     }
+
+    await finalizar();
   };
 
-  const handleFinalizar = async () => {
+  const handleForcarFinalizar = async () => {
+    setUnanswered(null);
     await finalizar();
-    setShowConfirm(false);
   };
 
   if (carregando && !iniciada) {
@@ -111,6 +152,7 @@ export default function ProvaPage() {
 
   const questao = questoes[questaoAtual];
   const respondidas = questoes.filter((q) => q.respondida).length;
+  const selecionadaAtual = questao ? selecaoLocal[questao.id] ?? null : null;
 
   return (
     <ExamGuard onAutoSubmit={handleTimeUp}>
@@ -155,11 +197,30 @@ export default function ProvaPage() {
           {questao && (
             <QuestaoCard
               questao={questao}
-              onResponder={handleResponder}
-              disabled={salvando}
+              selecionada={selecionadaAtual}
+              onSelecionar={handleSelecionar}
             />
           )}
         </AnimatePresence>
+
+        {/* Botão Responder */}
+        <div className="mt-6 flex justify-end">
+          <Button
+            onClick={handleResponder}
+            disabled={!selecionadaAtual || salvando || respondeuAtual}
+            className="h-12 px-8 text-base font-semibold"
+            style={{
+              backgroundColor: respondeuAtual ? "var(--integral-verde)" : "var(--pi-laranja)",
+              color: "#fff",
+            }}
+          >
+            {salvando
+              ? "Salvando..."
+              : respondeuAtual
+              ? "✓ Respondida"
+              : "Responder"}
+          </Button>
+        </div>
       </div>
 
       {/* Navigation */}
@@ -223,14 +284,62 @@ export default function ProvaPage() {
                 onClick={() => setShowConfirm(false)}
                 className="flex-1 border-[#2a2a3a] text-[#f0ece4]"
               >
-                Cancelar
+                Continuar prova
               </Button>
               <Button
                 onClick={handleFinalizar}
                 className="flex-1"
                 style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
               >
-                Confirmar
+                Finalizar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Unanswered questions modal */}
+      {unanswered && unanswered.length > 0 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="border border-[#E8B829]/30 rounded-2xl p-8 bg-[#12121a] max-w-md w-full">
+            <h3 className="text-lg font-bold text-[#E8B829] mb-2 font-[family-name:var(--font-fraunces)] text-center">
+              Questões sem resposta
+            </h3>
+            <p className="text-sm text-[#9895a4] mb-4 text-center">
+              As questões abaixo não foram respondidas. Você pode voltar e respondê-las ou finalizar mesmo assim.
+            </p>
+            <div className="flex flex-wrap gap-2 mb-6 justify-center">
+              {unanswered.map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => {
+                    setUnanswered(null);
+                    setShowConfirm(false);
+                    irParaQuestao(q.index - 1);
+                  }}
+                  className="w-10 h-10 rounded-lg text-sm font-bold bg-[#E8B829]/10 border border-[#E8B829]/30 text-[#E8B829] hover:bg-[#E8B829]/20 transition-colors"
+                >
+                  {q.index}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setUnanswered(null);
+                  setShowConfirm(false);
+                }}
+                className="flex-1 border-[#2a2a3a] text-[#f0ece4]"
+              >
+                Voltar à prova
+              </Button>
+              <Button
+                onClick={handleForcarFinalizar}
+                className="flex-1"
+                style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
+              >
+                Finalizar mesmo assim
               </Button>
             </div>
           </div>

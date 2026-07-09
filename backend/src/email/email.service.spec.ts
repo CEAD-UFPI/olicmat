@@ -9,7 +9,7 @@ describe("EmailService", () => {
   beforeEach(() => {
     mockConfigService = {
       get: jest.fn((key: string) => {
-        const config: Record<string, string> = {
+        const config: Record<string, string | number> = {
           SMTP_HOST: "smtp.gmail.com",
           SMTP_PORT: 465,
           SMTP_USER: "test@example.com",
