@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InstituicaoAutocomplete } from "@/components/ui/instituicao-autocomplete";
+import { PasswordField } from "@/components/ui/password-field";
 
 const generoOptions = [
   { value: "MASCULINO", label: "Masculino" },
@@ -260,8 +261,24 @@ export default function RegistroPage() {
                   <div className="h-px bg-[#2a2a3a]" />
                 </div>
 
-                <Field label="Senha *" id="senha" type="password" register={form1.register} error={form1.formState.errors.senha} className={FIELD_STYLE} />
-                <Field label="Confirmar senha *" id="confirmarSenha" type="password" register={form1.register} error={form1.formState.errors.confirmarSenha} className={FIELD_STYLE} />
+                <PasswordField
+                  label="Senha *"
+                  id="senha"
+                  name="senha"
+                  value={form1.watch("senha")}
+                  onChange={(v) => form1.setValue("senha", v)}
+                  error={form1.formState.errors.senha?.message}
+                  required
+                />
+                <PasswordField
+                  label="Confirmar senha *"
+                  id="confirmarSenha"
+                  name="confirmarSenha"
+                  value={form1.watch("confirmarSenha")}
+                  onChange={(v) => form1.setValue("confirmarSenha", v)}
+                  error={form1.formState.errors.confirmarSenha?.message}
+                  required
+                />
 
                 <Button type="submit" className="w-full h-12 text-base font-semibold" style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}>
                   Continuar

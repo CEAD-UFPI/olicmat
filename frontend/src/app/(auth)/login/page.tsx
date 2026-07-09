@@ -12,6 +12,7 @@ import type { Role } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordField } from "@/components/ui/password-field";
 
 const roleHome: Record<Role, string> = {
   ALUNO: "/competidor",
@@ -37,8 +38,12 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<LoginForm>({ resolver: zodResolver(loginSchema) });
+
+  const watchSenha = watch("senha");
 
   const onSubmit = async (data: LoginForm) => {
     setLoading(true);
@@ -100,16 +105,21 @@ export default function LoginPage() {
 
             <div>
               <Label htmlFor="senha" className="text-[#f0ece4]">Senha</Label>
-              <Input
+              <PasswordField
                 id="senha"
-                type="password"
+                name="senha"
+                value={watchSenha}
+                onChange={(v) => setValue("senha", v)}
                 placeholder="••••••••"
-                {...register("senha")}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+                error={errors.senha?.message}
+                required
               />
-              {errors.senha && (
-                <p className="text-xs text-red-400 mt-1">{errors.senha.message}</p>
-              )}
+            </div>
+
+            <div className="text-right">
+              <Link href="/recuperar-senha" className="text-xs text-[#3AAFE0] hover:underline">
+                Esqueci minha senha
+              </Link>
             </div>
 
             {error && (
