@@ -5,10 +5,12 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { Throttle } from "@nestjs/throttler";
 import * as bcrypt from "bcrypt";
 import { randomBytes } from "node:crypto";
 import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
+import { EmailService } from "../email/email.service.js";
 import type { LoginDto, RegisterDto } from "./dto/login.dto.js";
 
 @Injectable()
@@ -17,6 +19,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private auditoria: AuditoriaService,
+    private emailService: EmailService,
   ) {}
 
   async register(data: RegisterDto) {
@@ -107,7 +110,7 @@ export class AuthService {
       },
     });
 
-    console.log(`[EMAIL CONFIRM] ${user.nome} <${user.email}> -> ${process.env.FRONTEND_URL ?? "http://localhost:3000"}/confirmar-email?token=${token}`);
+    await this.emailService.enviarConfirmacaoEmail(user.email, user.nome, token);
 
     const accessToken = this.generateToken(user.id, user.email, user.role);
 
@@ -145,6 +148,7 @@ export class AuthService {
     };
   }
 
+  @Throttle({ default: { limit: 3, ttl: 3600 } })
   async esqueciSenha(email: string) {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
@@ -162,7 +166,7 @@ export class AuthService {
       },
     });
 
-    console.log(`[PASSWORD RESET] ${user.nome} <${user.email}> -> ${process.env.FRONTEND_URL ?? "http://localhost:3000"}/redefinir-senha?token=${token}`);
+    await this.emailService.enviarRecuperacaoSenha(user.email, user.nome, token);
 
     return { message: "Se o email existir, um link de redefinição será enviado" };
   }

@@ -1,22 +1,43 @@
 import { Injectable, NotFoundException, ConflictException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service.js";
+import type { PaginationParams, PaginatedResult } from "../common/pagination.js";
+import { getSkipTake, paginate } from "../common/pagination.js";
 
 @Injectable()
 export class InstituicoesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    return this.prisma.instituicao.findMany({
-      include: {
-        cursos: {
-          select: { id: true, nome: true },
+  async findAll(params?: PaginationParams): Promise<PaginatedResult<any>> {
+    const { skip, take } = getSkipTake(params ?? {});
+
+    const where = params?.search
+      ? {
+          OR: [
+            { nome: { contains: params.search, mode: "insensitive" as const } },
+            { sigla: { contains: params.search, mode: "insensitive" as const } },
+          ],
+        }
+      : {};
+
+    const [data, total] = await Promise.all([
+      this.prisma.instituicao.findMany({
+        where,
+        include: {
+          cursos: {
+            select: { id: true, nome: true },
+          },
+          _count: {
+            select: { cursos: true, usuarios: true },
+          },
         },
-        _count: {
-          select: { cursos: true, usuarios: true },
-        },
-      },
-      orderBy: { nome: "asc" },
-    });
+        orderBy: { nome: "asc" },
+        skip,
+        take,
+      }),
+      this.prisma.instituicao.count({ where }),
+    ]);
+
+    return paginate(data, total, params ?? {});
   }
 
   async findById(id: string) {

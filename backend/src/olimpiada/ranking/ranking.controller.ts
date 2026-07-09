@@ -22,4 +22,11 @@ export class RankingController {
   async atualizarMedalhas() {
     return this.rankingService.atualizarMedalhas();
   }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ALUNO, Role.COORDENADOR_CURSO, Role.COMISSAO, Role.AVALIADOR, Role.ADMIN)
+  @Get("instituicoes")
+  async rankingPorInstituicao() {
+    return this.rankingService.rankingPorInstituicao();
+  }
 }

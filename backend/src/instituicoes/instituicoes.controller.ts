@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   UseGuards,
   BadRequestException,
 } from "@nestjs/common";
@@ -15,6 +16,7 @@ import { JwtAuthGuard } from "../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../common/guards/roles.guard.js";
 import { Roles } from "../common/decorators/roles.decorator.js";
 import { Role } from "../../generated/prisma/client.js";
+import type { PaginationParams, PaginatedResult } from "../common/pagination.js";
 
 const localizacaoEnum = z.enum(["URBANA", "RURAL"]);
 const areaAssentamentoEnum = z.enum([
@@ -68,8 +70,16 @@ export class InstituicoesController {
   constructor(private readonly instituicoesService: InstituicoesService) {}
 
   @Get("instituicoes")
-  async findAll() {
-    return this.instituicoesService.findAll();
+  async findAll(
+    @Query("page") page?: number,
+    @Query("limit") limit?: number,
+    @Query("search") search?: string
+  ): Promise<PaginatedResult<any>> {
+    return this.instituicoesService.findAll({
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+      search,
+    });
   }
 
   @Get("instituicoes/:id")

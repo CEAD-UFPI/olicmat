@@ -132,4 +132,116 @@ export class RankingService {
 
     return { atualizado: true, total: updates.length };
   }
+
+  async rankingPorInstituicao() {
+    const edicao = await this.prisma.edicao.findFirst({
+      orderBy: { ano: "desc" },
+    });
+
+    const whereClause: Record<string, unknown> = {
+      status: "CONFIRMADA",
+      fase1Nota: { not: null },
+    };
+    if (edicao) {
+      whereClause.edicaoId = edicao.id;
+    }
+
+    const inscricoes = await this.prisma.inscricao.findMany({
+      where: whereClause,
+      include: {
+        user: {
+          select: {
+            nome: true,
+            dataNascimento: true,
+          },
+        },
+        instituicao: {
+          select: {
+            id: true,
+            nome: true,
+            sigla: true,
+          },
+        },
+        curso: {
+          select: {
+            id: true,
+            nome: true,
+          },
+        },
+        avaliacoes: {
+          select: { nota: true },
+        },
+      },
+    });
+
+    const pesoFase1 = edicao?.pesoFase1 ?? 0.5;
+    const pesoFase2 = edicao?.pesoFase2 ?? 0.5;
+
+    const porInstituicao = new Map<string, {
+      instituicao: { id: string; nome: string; sigla: string };
+      totalAlunos: number;
+      medalhas: { OURO: number; PRATA: number; BRONZE: number };
+      mediaGeral: number;
+      alunos: Array<{
+        nome: string;
+        curso: string | null;
+        fase1Nota: number;
+        fase2Nota: number;
+        notaFinal: number;
+        medalha: string | null;
+      }>;
+    }>();
+
+    for (const i of inscricoes) {
+      if (!i.instituicao) continue;
+
+      const instId = i.instituicao.id;
+      if (!porInstituicao.has(instId)) {
+        porInstituicao.set(instId, {
+          instituicao: i.instituicao,
+          totalAlunos: 0,
+          medalhas: { OURO: 0, PRATA: 0, BRONZE: 0 },
+          mediaGeral: 0,
+          alunos: [],
+        });
+      }
+
+      const grupo = porInstituicao.get(instId)!;
+      const fase1Nota = i.fase1Nota || 0;
+      const fase2Nota =
+        i.avaliacoes.length > 0
+          ? i.avaliacoes.reduce((sum, a) => sum + a.nota, 0) / i.avaliacoes.length
+          : 0;
+      const notaFinal = i.notaFinal || fase1Nota * pesoFase1 + fase2Nota * pesoFase2;
+
+      grupo.totalAlunos++;
+      grupo.mediaGeral += notaFinal;
+
+      if (i.medalha) {
+        grupo.medalhas[i.medalha as "OURO" | "PRATA" | "BRONZE"]++;
+      }
+
+      grupo.alunos.push({
+        nome: i.user.nome,
+        curso: i.curso?.nome ?? null,
+        fase1Nota,
+        fase2Nota,
+        notaFinal,
+        medalha: i.medalha,
+      });
+    }
+
+    const resultado = Array.from(porInstituicao.values()).map((g) => ({
+      ...g,
+      mediaGeral: g.totalAlunos > 0 ? g.mediaGeral / g.totalAlunos : 0,
+      alunos: g.alunos.sort((a, b) => b.notaFinal - a.notaFinal),
+    })).sort((a, b) => {
+      if (b.medalhas.OURO !== a.medalhas.OURO) return b.medalhas.OURO - a.medalhas.OURO;
+      if (b.medalhas.PRATA !== a.medalhas.PRATA) return b.medalhas.PRATA - a.medalhas.PRATA;
+      if (b.medalhas.BRONZE !== a.medalhas.BRONZE) return b.medalhas.BRONZE - a.medalhas.BRONZE;
+      return b.mediaGeral - a.mediaGeral;
+    });
+
+    return resultado;
+  }
 }
