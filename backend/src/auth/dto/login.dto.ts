@@ -19,6 +19,7 @@ export const registerSchema = z.object({
   cpf: z.string().regex(/^\d{11}$/, "CPF deve ter 11 dígitos"),
   senha: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
   instituicao: z.string().min(2, "Instituição é obrigatória"),
+  instituicaoId: z.string().uuid().optional(),
   curso: z.string().min(2, "Curso é obrigatório"),
   matricula: z.string().min(3, "Matrícula é obrigatória"),
   dataNascimento: z.string().refine(

@@ -11,6 +11,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { InstituicaoAutocomplete } from "@/components/ui/instituicao-autocomplete";
 
 const generoOptions = [
   { value: "MASCULINO", label: "Masculino" },
@@ -79,6 +80,7 @@ export default function RegistroPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [step1Data, setStep1Data] = useState<Step1Form | null>(null);
+  const [selectedInstituicao, setSelectedInstituicao] = useState<{ id: string; nome: string; sigla: string } | null>(null);
 
   const form1 = useForm<Step1Form>({ resolver: zodResolver(step1Schema) });
   const form2 = useForm<Step2Form>({ resolver: zodResolver(step2Schema) });
@@ -109,7 +111,8 @@ export default function RegistroPage() {
         cotista: step1Data.cotista === "true",
         bolsista: step1Data.bolsista === "true",
         tipoBolsa: step1Data.bolsista === "true" ? step1Data.tipoBolsa : undefined,
-        instituicao: data.instituicao,
+        instituicao: selectedInstituicao?.sigla || data.instituicao,
+        instituicaoId: selectedInstituicao?.id,
         curso: data.curso,
         matricula: data.matricula,
       });
@@ -274,7 +277,20 @@ export default function RegistroPage() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <Field label="Instituição de Ensino *" id="instituicao" register={form2.register} error={form2.formState.errors.instituicao} placeholder="Ex: UFRJ, UFMG, IFSP" className={FIELD_STYLE} />
+                <InstituicaoAutocomplete
+                  label="Instituição de Ensino *"
+                  value={selectedInstituicao ? `${selectedInstituicao.nome} (${selectedInstituicao.sigla})` : form2.watch("instituicao") || ""}
+                  onChange={(_, inst) => {
+                    if (inst) {
+                      setSelectedInstituicao(inst);
+                      form2.setValue("instituicao", inst.sigla);
+                    } else {
+                      setSelectedInstituicao(null);
+                    }
+                  }}
+                  placeholder="Buscar instituição (ex: UFPI, UFRJ, IFSP)"
+                  error={form2.formState.errors.instituicao?.message}
+                />
                 <Field label="Curso *" id="curso" register={form2.register} error={form2.formState.errors.curso} placeholder="Licenciatura em Matemática" className={FIELD_STYLE} />
                 <Field label="Número de Matrícula *" id="matricula" register={form2.register} error={form2.formState.errors.matricula} className={FIELD_STYLE} />
 

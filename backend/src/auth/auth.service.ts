@@ -40,7 +40,9 @@ export class AuthService {
     let instituicaoId: string | undefined;
     let cursoId: string | undefined;
 
-    if (data.instituicao) {
+    if (data.instituicaoId) {
+      instituicaoId = data.instituicaoId;
+    } else if (data.instituicao) {
       const inst = await this.prisma.instituicao.upsert({
         where: { sigla: data.instituicao.toUpperCase() },
         update: {},

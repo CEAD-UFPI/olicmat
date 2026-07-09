@@ -20,6 +20,7 @@ interface RegisterData {
   cpf: string;
   senha: string;
   instituicao: string;
+  instituicaoId?: string;
   curso: string;
   matricula: string;
   dataNascimento: string;
