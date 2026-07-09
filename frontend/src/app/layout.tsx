@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Fraunces, Outfit, JetBrains_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -48,20 +47,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${fraunces.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
-      suppressHydrationWarning
-    >
+    <html lang="pt-BR" className={`${fraunces.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-full flex flex-col bg-background dot-pattern noise-overlay" suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-          <Header />
-          {children}
-          <Footer />
-        </ThemeProvider>
+      <body className="min-h-full flex flex-col bg-[#0a0a0f] text-[#f0ece4] dot-pattern noise-overlay" suppressHydrationWarning>
+        <Header />
+        {children}
+        <Footer />
       </body>
     </html>
   );

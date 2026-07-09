@@ -45,19 +45,6 @@
   --sigma-azul: #3AAFE0;
 }
 
-.light {
-  --bg-primary: #f5f3ef;
-  --bg-secondary: #ffffff;
-  --surface: #faf9f7;
-  --text-primary: #1a1a2e;
-  --text-secondary: #4b5563;
-  --text-tertiary: #6b7280;
-  --border-color: #e5e3df;
-  --color-gold: #E8B829;
-  --color-green: #4CAF50;
-  --color-blue: #3AAFE0;
-}
-
 * {
   border-color: var(--border-color);
 }
