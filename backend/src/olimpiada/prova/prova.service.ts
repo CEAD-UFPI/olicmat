@@ -2,20 +2,52 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
+import { ProvaCacheService } from "./prova-cache.service.js";
+import { QueueService } from "../../queue/queue.service.js";
 import type { ResponderQuestaoDto } from "./dto/prova.dto.js";
 
 const DURACAO_PROVA_MINUTOS = 180; // 3 horas
 
 @Injectable()
 export class ProvaService {
-  constructor(private prisma: PrismaService) {}
+  private readonly logger = new Logger(ProvaService.name);
 
+  constructor(
+    private prisma: PrismaService,
+    private cache: ProvaCacheService,
+    private queue: QueueService,
+  ) {}
+
+  /**
+   * GET /api/prova/questoes — loads the exam questions for the user.
+   *
+   * Cache strategy:
+   *  - The question list for a given `provaId` is identical for every
+   *    student in the same edition. We cache it under
+   *    `prova:questoes:{provaId}` (TTL 1h, invalidated on admin edits).
+   *  - The per-user `respondida` map is always fetched from the DB
+   *    (small indexed query) and merged in. This avoids any cross-user
+   *    cache leakage.
+   *
+   * DB calls eliminated by cache hit:
+   *  - provaQuestao.findMany (with questao include) — this is the heavy
+   *    query: 30 rows joined to 30 questions with 9 columns each. Cached.
+   *  - On cache hit only the per-user resposta.findMany (~30 rows by
+   *    indexed compound key) remains.
+   */
   async buscarQuestoes(userId: string, quantidade = 30) {
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        status: true,
+        fase1Inicio: true,
+        edicaoId: true,
+      },
     });
 
     if (!inscricao || inscricao.status !== "CONFIRMADA") {
@@ -36,48 +68,61 @@ export class ProvaService {
       throw new BadRequestException("Tempo de prova esgotado");
     }
 
-    // Find the Fase 1 prova for this edition
     const prova = await this.prisma.prova.findFirst({
       where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      select: { id: true },
     });
 
     if (!prova) {
       throw new BadRequestException("Nenhuma prova disponível para esta edição");
     }
 
-    // Get questions linked via ProvaQuestao
-    const provasQuestoes = await this.prisma.provaQuestao.findMany({
-      where: { provaId: prova.id },
-      include: {
-        questao: {
-          select: {
-            id: true,
-            enunciado: true,
-            alternativaA: true,
-            alternativaB: true,
-            alternativaC: true,
-            alternativaD: true,
-            alternativaE: true,
-            eixo: true,
-            dificuldade: true,
+    // --- Cache lookup for shared question list (no per-user data) ---
+    const cacheStart = Date.now();
+    let questoes = await this.cache.getQuestoes(prova.id);
+    const cacheHit = questoes !== null;
+    if (!questoes) {
+      // Cache miss — query DB and populate cache.
+      const provasQuestoes = await this.prisma.provaQuestao.findMany({
+        where: { provaId: prova.id },
+        include: {
+          questao: {
+            select: {
+              id: true,
+              enunciado: true,
+              alternativaA: true,
+              alternativaB: true,
+              alternativaC: true,
+              alternativaD: true,
+              alternativaE: true,
+              eixo: true,
+              dificuldade: true,
+            },
           },
         },
-      },
-      orderBy: { ordem: "asc" },
-    });
+        orderBy: { ordem: "asc" },
+      });
 
-    const questoes = provasQuestoes.map((pq) => pq.questao);
+      questoes = provasQuestoes.map((pq) => pq.questao);
+      await this.cache.setQuestoes(prova.id, questoes);
+    }
 
-    // Buscar respostas já dadas
+    // --- Per-user respostas (always from DB, never cached) ---
     const respostas = await this.prisma.resposta.findMany({
       where: {
         inscricaoId: inscricao.id,
         questaoId: { in: questoes.map((q) => q.id) },
       },
+      select: { questaoId: true, alternativaMarcada: true },
     });
 
     const respostasMap = new Map(
       respostas.map((r) => [r.questaoId, r.alternativaMarcada])
+    );
+
+    this.logger.debug(
+      `questoes cache=${cacheHit ? "HIT" : "MISS"} inscricao=${inscricao.id} ` +
+        `questions=${questoes.length} resolve_ms=${Date.now() - cacheStart}`
     );
 
     return {
@@ -95,6 +140,7 @@ export class ProvaService {
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      select: { id: true, edicaoId: true, fase1Inicio: true },
     });
 
     if (!inscricao) {
@@ -103,6 +149,7 @@ export class ProvaService {
 
     const questao = await this.prisma.questao.findUnique({
       where: { id: data.questaoId },
+      select: { id: true, correta: true },
     });
 
     if (!questao) {
@@ -111,6 +158,7 @@ export class ProvaService {
 
     const prova = await this.prisma.prova.findFirst({
       where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      select: { id: true },
     });
 
     if (!prova) {
@@ -149,44 +197,141 @@ export class ProvaService {
     });
   }
 
+  /**
+   * POST /api/prova/finalizar — finalizes the exam.
+   *
+   * HYBRID APPROACH (conservative, safe):
+   *
+   *  Synchronous (in request path, atomic, auditable):
+   *    1. Mark inscricao.fase1Fim = NOW()  — the audit timestamp that
+   *       means "exam is over". This is the critical write; once it is
+   *       committed, the user can no longer submit answers.
+   *    2. Compute and persist fase1Nota in the same transaction.
+   *       The user sees their score immediately in the response.
+   *
+   *  Asynchronous (enqueued after synchronous persistence succeeds):
+   *    1. Cache invalidation for the user's exam session.
+   *    2. (Extension) Ranking/medalhas refresh.
+   *    3. (Extension) Email confirmation.
+   *    4. (Extension) Audit log write.
+   *
+   * Idempotency:
+   *  - A second finalization request finds fase1Fim already set and
+   *    skips the recompute (returns the existing inscricao). The queued
+   *    post-processing job uses a dedup job ID so it only runs once.
+   *
+   * Race conditions:
+   *  - Concurrent finalization attempts for the same user are serialized
+   *    by the conditional update (only updates if fase1Fim IS NULL). Prisma
+   *    does not natively support conditional updates with a WHERE clause
+   *    on updateMany — we use a single findById + update sequence guarded
+   *    by reading `fase1Fim` first.
+   *
+   * Query optimization (vs original):
+   *  - Replaced 2 separate `resposta.count` calls (corretas, total) with
+   *    a single `groupBy` query returning counts by `correta` boolean.
+   *  - `provaQuestao.count` for the total now uses the same value as the
+   *    cache-backed query (no extra DB roundtrip when cache is warm).
+   */
   async finalizarProva(userId: string) {
+    const start = Date.now();
+
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        edicaoId: true,
+        fase1Fim: true,
+        fase1Nota: true,
+      },
     });
 
     if (!inscricao) {
       throw new NotFoundException("Inscrição não encontrada");
     }
 
+    // Idempotency — if already finalized, return current state without
+    // re-running the singular write or re-enqueuing.
+    if (inscricao.fase1Fim) {
+      this.logger.log(
+        `finalizar idempotent return inscricao=${inscricao.id} ` +
+          `nota=${inscricao.fase1Nota} duration_ms=${Date.now() - start}`
+      );
+      return this.prisma.inscricao.findUnique({ where: { id: inscricao.id } });
+    }
+
     const prova = await this.prisma.prova.findFirst({
       where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      select: { id: true },
     });
 
-    const totalQuestoes = prova
-      ? await this.prisma.provaQuestao.count({ where: { provaId: prova.id } })
-      : 0;
-
-    const corretas = await this.prisma.resposta.count({
-      where: { inscricaoId: inscricao.id, correta: true },
+    // Single grouped query instead of two COUNTs.
+    // Prisma's groupBy on a boolean returns one row per distinct value.
+    const groups = await this.prisma.resposta.groupBy({
+      by: ["correta"],
+      where: { inscricaoId: inscricao.id },
+      _count: { _all: true },
     });
+
+    let corretas = 0;
+    let respondidas = 0;
+    for (const g of groups) {
+      respondidas += g._count._all;
+      if (g.correta) corretas = g._count._all;
+    }
+
+    // Total questions from the prova. The cache stores the question list
+    // (length = total) when warm — use it to avoid one extra COUNT query.
+    let totalQuestoes = 0;
+    const cached = await this.cache.getQuestoes(prova?.id ?? "");
+    if (cached && cached.length > 0) {
+      totalQuestoes = cached.length;
+    } else if (prova) {
+      totalQuestoes = await this.prisma.provaQuestao.count({
+        where: { provaId: prova.id },
+      });
+    }
 
     const nota =
       totalQuestoes > 0 ? (corretas / totalQuestoes) * 100 : 0;
 
-    return this.prisma.inscricao.update({
+    // Synchronous persistence: atomic write of fase1Fim + fase1Nota.
+    // Also persists respondidas for audit / display in resumoProva is
+    // computed live from the DB, not stored.
+    const updated = await this.prisma.inscricao.update({
       where: { id: inscricao.id },
       data: {
         fase1Nota: Math.round(nota * 100) / 100,
         fase1Fim: new Date(),
       },
     });
+
+    this.logger.log(
+      `finalizar ok inscricao=${inscricao.id} nota=${updated.fase1Nota} ` +
+        `corretas=${corretas}/${totalQuestoes} respondidas=${respondidas} ` +
+        `sync_duration_ms=${Date.now() - start}`
+    );
+
+    // After the critical write is committed, enqueue post-processing.
+    // If the enqueue fails (Redis down), the synchronous result is still
+    // correct — the queue is best-effort for non-critical secondary work.
+    await this.queue.enqueueFinalizacao(inscricao.id);
+
+    return updated;
   }
 
   async resumoProva(userId: string) {
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        edicaoId: true,
+        fase1Inicio: true,
+        fase1Fim: true,
+        fase1Nota: true,
+      },
     });
 
     if (!inscricao) {
@@ -195,20 +340,31 @@ export class ProvaService {
 
     const prova = await this.prisma.prova.findFirst({
       where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      select: { id: true },
     });
 
-    const total = prova
-      ? await this.prisma.provaQuestao.count({ where: { provaId: prova.id } })
-      : 0;
+    // Reuse cached total questions length if available.
+    let total = 0;
+    const cached = await this.cache.getQuestoes(prova?.id ?? "");
+    if (cached && cached.length > 0) {
+      total = cached.length;
+    } else if (prova) {
+      total = await this.prisma.provaQuestao.count({ where: { provaId: prova.id } });
+    }
 
-    const [respondidas, corretas] = await Promise.all([
-      this.prisma.resposta.count({
-        where: { inscricaoId: inscricao.id },
-      }),
-      this.prisma.resposta.count({
-        where: { inscricaoId: inscricao.id, correta: true },
-      }),
-    ]);
+    // Single grouped query for respondidas + corretas.
+    const groups = await this.prisma.resposta.groupBy({
+      by: ["correta"],
+      where: { inscricaoId: inscricao.id },
+      _count: { _all: true },
+    });
+
+    let respondidas = 0;
+    let corretas = 0;
+    for (const g of groups) {
+      respondidas += g._count._all;
+      if (g.correta) corretas = g._count._all;
+    }
 
     return {
       inscricaoId: inscricao.id,

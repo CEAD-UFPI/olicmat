@@ -9,19 +9,19 @@ interface Etapa {
 }
 
 const cronograma: Etapa[] = [
-  { data: "21/07/2026", descricao: "Live de lançamento da 1ª OLICMAT — Ensino Superior e do Regulamento", destaque: true },
-  { data: "22/07 a 01/10/2026", descricao: "Inscrições" },
+  { data: "10/08/2026", descricao: "Lançamento da 1ª OLICMAT incluindo: Olimpíada, Formação e Congresso", destaque: true },
+  { data: "30/08 a 25/09/2026", descricao: "Inscrições" },
   { data: "05/10/2026", descricao: "Divulgação das inscrições validadas" },
-  { data: "21/10/2026", descricao: "Realização do teste I: Avaliação do conhecimento matemático pedagógico", destaque: true },
-  { data: "23/10/2026", descricao: "Divulgação do resultado do teste I e dos(as) aprovados(as) para a Fase II" },
-  { data: "26/10 a 28/10/2026", descricao: "Divulgação de informações sobre a Fase II" },
-  { data: "03/11 a 06/11/2026", descricao: "Realização do teste II e envio dos vídeos (envio no mesmo dia do desafio)", destaque: true },
-  { data: "08/11 a 18/11/2026", descricao: "Análise da Fase II" },
-  { data: "25/11/2026", descricao: "Divulgação do resultado e dos(as) medalhistas da 1ª OLICMAT — Ensino Superior", destaque: true },
-  { data: "30/11/2026", descricao: "Cerimônia de premiação e encerramento da 1ª OLICMAT — Ensino Superior" },
-  { data: "2º semestre de 2027", descricao: "Realização da missão de imersão profissional" },
-  { data: "2º semestre de 2027", descricao: "Participação na formação oferecida pela SBM no Rio de Janeiro" },
-  { data: "2027", descricao: "Workshops de disseminação" },
+  { data: "21/10/2026", descricao: "Realização do teste I", destaque: true },
+  { data: "30/10/2026", descricao: "Divulgação do resultado do teste I e dos(as) aprovados(as) para a Fase II" },
+  { data: "05/11 a 10/11/2026", descricao: "Divulgação de informações sobre a Fase II" },
+  { data: "11/11 a 13/11/2026", descricao: "Realização do teste II e envio dos vídeos (envio no mesmo dia do desafio)", destaque: true },
+  { data: "16/11 a 24/11/2026", descricao: "Análise da Fase II" },
+  { data: "25/11/2026", descricao: "Divulgação do resultado e dos(as) medalhistas da 1ª OLICMAT", destaque: true },
+  { data: "30/11/2026", descricao: "Cerimônia de premiação e encerramento da 1ª OLICMAT - Com a divulgação das/os medalhistas de ouro, prata e bronze" },
+  { data: "Novembro e Dezembro/2026", descricao: "Desenvolvimento e Realização da Formação no Programa Olicmat - Forpemat" },
+  { data: "Dezembro/2026 e Janeiro/2027", descricao: "Desenvolvimento e realização do Congresso no Programa Olicmat – Congemat" },
+  { data: "Até Março de 2027", descricao: "Demais etapas formativas e Conclusão das ações do programa Olicmat" },
 ];
 
 export default function CronogramaPage() {

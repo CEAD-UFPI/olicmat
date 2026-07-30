@@ -122,13 +122,16 @@ async function main() {
   // --- Edicao 2026 ---
   const edicao2026 = await prisma.edicao.upsert({
     where: { ano: 2026 },
-    update: {},
+    update: {
+      dataInicio: new Date("2026-08-10"),
+      dataFim: new Date("2027-03-31"),
+    },
     create: {
       ano: 2026,
       titulo: "OLICMAT 2026",
       status: "EM_ANDAMENTO",
-      dataInicio: new Date("2026-06-01"),
-      dataFim: new Date("2026-12-15"),
+      dataInicio: new Date("2026-08-10"),
+      dataFim: new Date("2027-03-31"),
       pesoFase1: 0.5,
       pesoFase2: 0.5,
     },

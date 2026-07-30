@@ -7,10 +7,10 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 const cronogramaDestaques = [
-  { data: "21/07/2026", evento: "Live de lançamento e início das inscrições" },
+  { data: "30/08/2026", evento: "Início das Inscrições" },
   { data: "21/10/2026", evento: "Fase I — Primeiro Teste" },
-  { data: "03/11 a 06/11/2026", evento: "Fase II — Desafio Didático-Tecnológico" },
-  { data: "25/11/2026", evento: "Resultado e premiação" },
+  { data: "11/11 a 13/11/2026", evento: "Fase II — Teste II e Vídeos" },
+  { data: "25/11/2026", evento: "Resultado e Medalhistas" },
 ];
 
 export function Hero() {

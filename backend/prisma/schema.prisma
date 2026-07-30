@@ -342,6 +342,7 @@ model ProvaQuestao {
 
   @@unique([provaId, questaoId])
   @@unique([provaId, ordem])
+  @@index([provaId])
 }
 
 model Resposta {
@@ -359,6 +360,8 @@ model Resposta {
   questao             Questao   @relation(fields: [questaoId], references: [id], onDelete: Cascade)
 
   @@unique([inscricaoId, provaId, questaoId])
+  @@index([inscricaoId])
+  @@index([inscricaoId, correta])
 }
 
 // ============================================

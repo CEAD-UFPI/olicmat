@@ -1,4 +1,8 @@
 documentos/
+docs/
+graphify-out/
+tree.txt
+/load-test/results/
 
 # Build artifacts
 backend/dist/
