@@ -12,21 +12,6 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
-  redis:
-    image: redis:7-alpine
-    container_name: olicmat-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redisdata:/data
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: ./backend
@@ -38,7 +23,6 @@ services:
     environment:
       DATABASE_URL: postgresql://olicmat:olicmat_dev@postgres:5432/olicmat
       JWT_SECRET: dev_secret_change_in_production
-      REDIS_URL: redis://redis:6379
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
@@ -48,9 +32,6 @@ services:
     depends_on:
       postgres:
         condition: service_started
-      redis:
-        condition: service_started
-    command: npm run start:dev
 
   frontend:
     build:
@@ -71,4 +52,3 @@ services:
 
 volumes:
   pgdata:
-  redisdata:

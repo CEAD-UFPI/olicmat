@@ -5,8 +5,6 @@ import {
   Logger,
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
-import { ProvaCacheService } from "./prova-cache.service.js";
-import { QueueService } from "../../queue/queue.service.js";
 import type { ResponderQuestaoDto } from "./dto/prova.dto.js";
 
 const DURACAO_PROVA_MINUTOS = 180; // 3 horas
@@ -17,8 +15,6 @@ export class ProvaService {
 
   constructor(
     private prisma: PrismaService,
-    private cache: ProvaCacheService,
-    private queue: QueueService,
   ) {}
 
   /**
@@ -77,37 +73,31 @@ export class ProvaService {
       throw new BadRequestException("Nenhuma prova disponível para esta edição");
     }
 
-    // --- Cache lookup for shared question list (no per-user data) ---
-    const cacheStart = Date.now();
-    let questoes = await this.cache.getQuestoes(prova.id);
-    const cacheHit = questoes !== null;
-    if (!questoes) {
-      // Cache miss — query DB and populate cache.
-      const provasQuestoes = await this.prisma.provaQuestao.findMany({
-        where: { provaId: prova.id },
-        include: {
-          questao: {
-            select: {
-              id: true,
-              enunciado: true,
-              alternativaA: true,
-              alternativaB: true,
-              alternativaC: true,
-              alternativaD: true,
-              alternativaE: true,
-              eixo: true,
-              dificuldade: true,
-            },
+    // --- Query DB for question list directly ---
+    const queryStart = Date.now();
+    const provasQuestoes = await this.prisma.provaQuestao.findMany({
+      where: { provaId: prova.id },
+      include: {
+        questao: {
+          select: {
+            id: true,
+            enunciado: true,
+            alternativaA: true,
+            alternativaB: true,
+            alternativaC: true,
+            alternativaD: true,
+            alternativaE: true,
+            eixo: true,
+            dificuldade: true,
           },
         },
-        orderBy: { ordem: "asc" },
-      });
+      },
+      orderBy: { ordem: "asc" },
+    });
 
-      questoes = provasQuestoes.map((pq) => pq.questao);
-      await this.cache.setQuestoes(prova.id, questoes);
-    }
+    const questoes = provasQuestoes.map((pq) => pq.questao);
 
-    // --- Per-user respostas (always from DB, never cached) ---
+    // --- Per-user respostas (always from DB) ---
     const respostas = await this.prisma.resposta.findMany({
       where: {
         inscricaoId: inscricao.id,
@@ -121,8 +111,8 @@ export class ProvaService {
     );
 
     this.logger.debug(
-      `questoes cache=${cacheHit ? "HIT" : "MISS"} inscricao=${inscricao.id} ` +
-        `questions=${questoes.length} resolve_ms=${Date.now() - cacheStart}`
+      `questoes loaded directly from DB. inscricao=${inscricao.id} ` +
+        `questions=${questoes.length} resolve_ms=${Date.now() - queryStart}`
     );
 
     return {
@@ -281,13 +271,9 @@ export class ProvaService {
       if (g.correta) corretas = g._count._all;
     }
 
-    // Total questions from the prova. The cache stores the question list
-    // (length = total) when warm — use it to avoid one extra COUNT query.
+    // Total questions from the prova.
     let totalQuestoes = 0;
-    const cached = await this.cache.getQuestoes(prova?.id ?? "");
-    if (cached && cached.length > 0) {
-      totalQuestoes = cached.length;
-    } else if (prova) {
+    if (prova) {
       totalQuestoes = await this.prisma.provaQuestao.count({
         where: { provaId: prova.id },
       });
@@ -310,13 +296,8 @@ export class ProvaService {
     this.logger.log(
       `finalizar ok inscricao=${inscricao.id} nota=${updated.fase1Nota} ` +
         `corretas=${corretas}/${totalQuestoes} respondidas=${respondidas} ` +
-        `sync_duration_ms=${Date.now() - start}`
+        `duration_ms=${Date.now() - start}`
     );
-
-    // After the critical write is committed, enqueue post-processing.
-    // If the enqueue fails (Redis down), the synchronous result is still
-    // correct — the queue is best-effort for non-critical secondary work.
-    await this.queue.enqueueFinalizacao(inscricao.id);
 
     return updated;
   }
@@ -343,12 +324,9 @@ export class ProvaService {
       select: { id: true },
     });
 
-    // Reuse cached total questions length if available.
+    // Fetch total questions directly from DB.
     let total = 0;
-    const cached = await this.cache.getQuestoes(prova?.id ?? "");
-    if (cached && cached.length > 0) {
-      total = cached.length;
-    } else if (prova) {
+    if (prova) {
       total = await this.prisma.provaQuestao.count({ where: { provaId: prova.id } });
     }
 

@@ -1,6 +1,5 @@
 import { Controller, Get } from "@nestjs/common";
 import { PrismaService } from "../prisma.service.js";
-import { RedisService } from "../redis/redis.service.js";
 
 interface HealthCheck {
   name: string;
@@ -13,7 +12,7 @@ interface HealthCheck {
  * HealthController — exposes liveness and readiness checks.
  *
  * GET /api/health        — liveness (always 200 if process is alive)
- * GET /api/health/ready  — readiness (checks DB + Redis connectivity)
+ * GET /api/health/ready  — readiness (checks DB connectivity)
  *
  * Usage:
  *  - Load balancer should hit /api/health for liveness (process alive).
@@ -25,7 +24,6 @@ interface HealthCheck {
 export class HealthController {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly redis: RedisService,
   ) {}
 
   @Get()
@@ -46,16 +44,6 @@ export class HealthController {
       checks.push({ name: "database", status: "down", detail: err.message, latencyMs: Date.now() - dbStart });
     }
 
-    // Redis check
-    const redisStart = Date.now();
-    const redisOk = await this.redis.ping();
-    checks.push({
-      name: "redis",
-      status: redisOk ? "up" : "down",
-      latencyMs: Date.now() - redisStart,
-      detail: redisOk ? undefined : "Redis unavailable — running in degraded mode",
-    });
-
     const allUp = checks.every((c) => c.status === "up");
     return {
       status: allUp ? "ok" : "degraded",
@@ -66,12 +54,9 @@ export class HealthController {
 
   @Get("metrics")
   async metrics() {
-    // Exposed for Prometheus-style scraping (text format would be better;
-    // JSON here keeps it simple and documented).
     return {
       timestamp: new Date().toISOString(),
-      cache: (this as any).cacheStats ?? null,
-      redis: { available: this.redis.isAvailable },
+      cache: null,
     };
   }
 }
