@@ -1,9 +1,9 @@
-# Frontend Route Map — OLICMAT v2.0
+# Frontend Route Map — OLICMAT v2.1
 
-**Version:** 1.1
-**Date:** 2026-07-07
-**Status:** Post-Refactor — Matches deployed code
-**Since v1.0:** Course and Edition admin pages now ship Eye (view) actions. All "view" modals on the admin/comissão dashboards are built with the unified `<DetailPanel>` component (`frontend/src/components/ui/detail-panel.tsx`).
+**Version:** 1.2
+**Date:** 2026-08-04
+**Status:** Post-Refactor — Standalone Exam App & Main Frontend Integration
+**Since v1.1:** Documented Standalone Exam Application routes (`exam-frontend` running under `prova.olicmat.cead.ufpi.br`): `/auth/claim`, `/prova`, `/admin/monitoring`.
 
 ---
 

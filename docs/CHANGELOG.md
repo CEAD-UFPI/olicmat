@@ -6,6 +6,36 @@ Dates use `YYYY-MM-DD` (America/Sao_Paulo timezone).
 
 ## [Unreleased]
 
+### 2026-08-04 — Standalone Exam Application Extraction & Complete Redis Removal
+
+Major architectural refactor isolating the Exam Module into a standalone application on an internal network (`10.42.0.0/16`), eliminating Redis dependencies, and unifying authentication via short-lived transition tokens.
+
+#### Added
+- **New Standalone Exam Application (`exam-app`)**
+  - **`exam-backend` (`olicmat-exam-api`)**: Independent NestJS API running on internal port 3334. Handles exam initialization, question fetching, autosave answers, auto-grading, and operational monitoring.
+  - **`exam-frontend` (`olicmat-exam-web`)**: Independent Next.js application running on internal port 3003. Features `ExamGuard` (fullscreen, focus loss warning counter, auto-submit), countdown timer, question pagination, answer autosave, and score summary.
+- **Unified Authentication & Transition Tokens**
+  - Main backend endpoint `POST /api/auth/transition-token`: Generates a short-lived transition JWT (120s TTL) for eligible students and privileged roles.
+  - Exam frontend claim route `/auth/claim` (`POST /api/auth/claim`): Validates the transition token, verifies status, and issues a 4-hour `EXAM_SESSION` JWT.
+- **Reverse Proxy Subdomain Architecture**
+  - `https://prova.olicmat.cead.ufpi.br` reverse proxied from public server to the internal exam machine (`10.42.0.x`).
+  - Total fault isolation: If the exam application suffers heavy load on exam day, the main public application (`olicmat.cead.ufpi.br`) remains fully operational.
+- **Operational Live Monitoring**
+  - `GET /api/prova/monitoring/live-stats` endpoint and `/admin/monitoring` page in the exam frontend for Admin and Coordinator oversight.
+
+#### Changed
+- **Main Frontend Integration**
+  - Competitor dashboard "Iniciar prova" button now calls `POST /api/auth/transition-token` and redirects directly to `https://prova.olicmat.cead.ufpi.br/auth/claim?token=...`.
+  - Main frontend route `/competidor/prova` updated with guidance and redirect action to the standalone portal.
+- **Docker Compose Configuration**
+  - Updated `docker-compose.yml` and `docker-compose.prod.yml` with 5 independent containers (`olicmat-db`, `olicmat-api`, `olicmat-web`, `olicmat-exam-api`, `olicmat-exam-web`).
+
+#### Removed
+- **Redis Dependencies & Services**
+  - Confirmed 100% absence of Redis packages (`ioredis`, `redis`, `bull`), environment variables, and services across codebase and startup flows. Authentication relies strictly on stateless JWTs and PostgreSQL Prisma queries.
+
+---
+
 ### 2026-07-07 — Unified DetailPanel component + ENADE Score field
 
 This release standardises all entity detail/modal views into a single

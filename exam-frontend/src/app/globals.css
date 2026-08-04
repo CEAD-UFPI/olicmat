@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --pi-laranja: #E85D04;
+  --pi-amarelo: #FAA307;
+  --sigma-azul: #3A86EF;
+  --integral-verde: #2EC4B6;
+  --bg-dark: #0a0a0f;
+  --card-dark: #12121a;
+  --border-dark: #2a2a3a;
+  --text-main: #f0ece4;
+  --text-muted: #9895a4;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  user-select: none;
+}

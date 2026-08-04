@@ -1,9 +1,32 @@
-# Refactor Summary — OLICMAT v2.0
+# Refactor Summary — OLICMAT v2.1
 
-**Version:** 2.1
-**Date:** 2026-07-07
+**Version:** 2.2
+**Date:** 2026-08-04
 **Author:** Implementation Team
-**Status:** Complete (with 3-Module architecture update + DetailPanel unification)
+**Status:** Complete (Standalone Exam Application Extraction & Complete Redis Removal)
+
+---
+
+## Standalone Exam Application & Complete Redis Removal (2026-08-04)
+
+This major architectural refactor completely extracts the Exam Module into a standalone application (`olicmat-exam-api` + `olicmat-exam-web`) running on an internal network (`10.42.0.0/16`), establishes a secure short-lived transition token authentication flow, confirms 100% Redis removal, and guarantees fault isolation between the main platform and the exam environment.
+
+### Key Highlights & Changes
+
+1. **Complete Redis Removal**: Verified zero Redis dependencies across backend packages, frontend, environment configs, and Docker services. Authentication relies 100% on stateless JWTs signed with `JWT_SECRET` and PostgreSQL Prisma database queries.
+2. **Standalone Exam Application (`exam-app`)**:
+   - `exam-backend` (`olicmat-exam-api`): Dedicated NestJS API running on internal port 3334. Implements exam start, question loading, autosave, submission, auto-correction, and real-time monitoring.
+   - `exam-frontend` (`olicmat-exam-web`): Dedicated Next.js application running on internal port 3003. Features `ExamGuard` (fullscreen, visibility detection, warning limit, auto-submit), countdown timer, question navigator, and real-time score summary.
+3. **Unified Auth & Transition Token Flow**:
+   - Main system issues short-lived transition tokens (`POST /api/auth/transition-token`, 120s TTL) for eligible students and privileged roles (ADMIN / COORDENADOR).
+   - Exam Application validates tokens at `/auth/claim` (`POST /api/auth/claim`) and issues a 4-hour `EXAM_SESSION` JWT.
+   - Shared single database (`olicmat-db`) — no duplicate databases or separate user bases.
+4. **Deployment & Subdomain Isolation**:
+   - Public server reverse proxies `https://prova.olicmat.cead.ufpi.br` over internal network (`10.42.0.x`) to the internal exam machine.
+   - If the exam application fails or experiences heavy load on exam day, the main public application (`https://olicmat.cead.ufpi.br`) remains fully operational.
+5. **Access Controls**:
+   - Students inside the exam application are restricted exclusively to active exam execution and resume flows.
+   - Admins and Coordinators gain real-time operational monitoring (`/admin/monitoring`).
 
 ---
 

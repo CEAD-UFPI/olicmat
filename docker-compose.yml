@@ -23,6 +23,7 @@ services:
     environment:
       DATABASE_URL: postgresql://olicmat:olicmat_dev@postgres:5432/olicmat
       JWT_SECRET: dev_secret_change_in_production
+      EXAM_APP_URL: http://localhost:3003
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
@@ -49,6 +50,35 @@ services:
       - /app/.next
     depends_on:
       - backend
+
+  exam-backend:
+    build:
+      context: ./exam-backend
+      dockerfile: Dockerfile
+    container_name: olicmat-exam-api
+    restart: unless-stopped
+    ports:
+      - "3334:3334"
+    environment:
+      DATABASE_URL: postgresql://olicmat:olicmat_dev@postgres:5432/olicmat
+      JWT_SECRET: dev_secret_change_in_production
+      PORT: 3334
+    depends_on:
+      postgres:
+        condition: service_started
+
+  exam-frontend:
+    build:
+      context: ./exam-frontend
+      dockerfile: Dockerfile
+    container_name: olicmat-exam-web
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    environment:
+      NEXT_PUBLIC_EXAM_API_URL: http://localhost:3334/api
+    depends_on:
+      - exam-backend
 
 volumes:
   pgdata:

@@ -132,7 +132,6 @@ export default function ProvaPage() {
         </p>
         <Button
           className="mt-8"
-          render={<div onClick={() => router.push("/competidor")} />}
           onClick={() => router.push("/competidor")}
           style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
         >
@@ -142,13 +141,36 @@ export default function ProvaPage() {
     );
   }
 
-  if (!iniciada || questoes.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-[#9895a4]">Carregando questões...</p>
+  return (
+    <div className="max-w-lg mx-auto text-center py-16 space-y-6">
+      <div className="text-6xl font-[family-name:var(--font-fraunces)]" style={{ color: "var(--pi-laranja)" }}>
+        π
       </div>
-    );
-  }
+      <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        Portal Isolado de Prova (Fase 1)
+      </h1>
+      <p className="text-[#9895a4] text-sm leading-relaxed">
+        A prova da OLICMAT é executada em uma aplicação standalone isolada e de alta performance na rede interna para garantir máxima estabilidade e segurança.
+      </p>
+      <Button
+        size="lg"
+        onClick={async () => {
+          try {
+            const { data } = await api.post("/auth/transition-token");
+            if (data?.examAppUrl) {
+              window.location.href = data.examAppUrl;
+            }
+          } catch (err: any) {
+            alert(err?.response?.data?.message || "Erro ao redirecionar para a prova");
+          }
+        }}
+        style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+        className="w-full"
+      >
+        Acessar Aplicação de Prova
+      </Button>
+    </div>
+  );
 
   const questao = questoes[questaoAtual];
   const respondidas = questoes.filter((q) => q.respondida).length;

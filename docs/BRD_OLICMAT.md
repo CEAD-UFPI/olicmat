@@ -1,13 +1,13 @@
 # BRD — OLICMAT
 
-**Versão:** 2.0  
-**Data:** 08/06/2026  
+**Versão:** 2.1  
+**Data:** 04/08/2026  
 **Autor:** Equipe OLICMAT  
-**Status:** Revisado para implementação da V2.0
+**Status:** Revisado para Arquitetura de Aplicação de Prova Standalone & Remoção do Redis
 
 ## 1. Sumário Executivo
 
-A OLICMAT é uma plataforma digital voltada à gestão e execução da Olimpíada para Licenciandos em Matemática, destinada a estudantes de instituições públicas brasileiras de ensino superior. Nesta fase do projeto, o foco exclusivo é a operacionalização da competição, cobrindo cadastro, autenticação, inscrição, prova, fase complementar, avaliação, ranking e administração, com acesso via web e dispositivos móveis por meio de PWA.
+A OLICMAT é uma plataforma digital voltada à gestão e execução da Olimpíada para Licenciandos em Matemática, destinada a estudantes de instituições públicas brasileiras de ensino superior. Nesta fase do projeto (V2.1), a aplicação da Prova (Fase 1) foi desacoplada em uma aplicação standalone de alta disponibilidade executada em rede interna (`10.42.0.0/16`), acessível via reverse proxy sob subdomínio isolado, eliminando dependências do Redis e isolando o tráfego do dia da prova em relação ao sistema principal.
 
 ## 2. Objetivos de Negócio
 
@@ -59,8 +59,8 @@ A OLICMAT é uma plataforma digital voltada à gestão e execução da Olimpíad
 | Risco | Probabilidade | Impacto | Mitigação |
 |---|---|---|---|
 | Baixa adesão de inscritos | Média | Alto | Divulgação antecipada por instituições parceiras e canais oficiais |
-| Sobrecarga do servidor no dia da prova | Média | Alto | Testes de carga, otimização de infraestrutura e escalabilidade horizontal |
-| Problemas de conexão dos alunos durante a prova | Alta | Médio | Salvamento incremental de respostas, retomada controlada e mensagens claras |
+| Sobrecarga do servidor no dia da prova | Média | Alto | Separação física e lógica da Aplicação de Prova em máquina dedicada de rede interna (10.42.0.0/16) com reverse proxy e remoção completa do Redis |
+| Problemas de conexão dos alunos durante a prova | Alta | Médio | Salvamento incremental de respostas, retomada controlada via tokens de transição e mensagens claras |
 | Erros operacionais na publicação de provas ou resultados | Média | Alto | Revisão por workflow, auditoria e publicação controlada |
 | Atraso no cronograma de desenvolvimento | Média | Alto | Planejamento incremental, validação contínua e entregas priorizadas |
 

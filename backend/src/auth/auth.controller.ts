@@ -77,4 +77,10 @@ export class AuthController {
   async me(@Req() req: ExpressReq & { user: AuthUser }) {
     return req.user;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("transition-token")
+  async gerarTransitionToken(@Req() req: ExpressReq & { user: AuthUser }) {
+    return this.authService.gerarTransitionToken(req.user.id);
+  }
 }

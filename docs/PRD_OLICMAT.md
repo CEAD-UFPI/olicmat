@@ -1,13 +1,13 @@
 # PRD — OLICMAT
 
-**Versão:** 2.0  
-**Data:** 08/06/2026  
+**Versão:** 2.1  
+**Data:** 04/08/2026  
 **Autor:** Equipe OLICMAT  
-**Status:** Revisado para implementação da V2.0
+**Status:** Revisado para Aplicação de Prova Standalone & Remoção do Redis
 
 ## 1. Visão do Produto
 
-A OLICMAT é uma plataforma web unificada para a Olimpíada de Licenciandos em Matemática de todo o Brasil, com acesso via navegador e dispositivos móveis por meio de PWA. A experiência deve ser acessível, gamificada e orientada ao autoatendimento, permitindo que o aluno navegue pela plataforma, realize seu cadastro, participe da(s) competição(ões), acompanhe seu desempenho e conclua todas as etapas da olimpíada de forma simples, segura e responsiva.
+A OLICMAT é uma plataforma web unificada para a Olimpíada de Licenciandos em Matemática de todo o Brasil, com acesso via navegador e dispositivos móveis por meio de PWA. Na versão V2.1, a aplicação e execução da Prova da Fase 1 ocorrem em um ambiente e sistema standalone totalmente isolados na rede interna (`10.42.0.0/16`), acessados via token de transição seguro e reverse proxy (`prova.olicmat.cead.ufpi.br`), garantindo resiliência operacional do sistema principal e 100% de isenção de dependências do Redis.
 
 ## 2. Personas
 
@@ -80,10 +80,11 @@ A OLICMAT é uma plataforma web unificada para a Olimpíada de Licenciandos em M
 | F3.3 | Validação de inscrição por ADMIN com status PENDENTE, CONFIRMADA ou REJEITADA | P0 |
 | F3.4 | Painel de status da inscrição com checklist de pendências | P1 |
 | F3.5 | Restrição de participação por edição e regras de elegibilidade | P0 |
-| F3.6 | Aplicação da Fase 1 com cronômetro e autosave | P0 |
+| F3.6 | Aplicação da Fase 1 desacoplada em aplicação standalone com cronômetro, ExamGuard e autosave | P0 |
 | F3.7 | Sorteio ou vinculação de tema da Fase 2 | P0 |
 | F3.8 | Upload dos materiais da Fase 2 | P0 |
 | F3.9 | Linha do tempo da jornada do competidor | P1 |
+| F3.10 | Redirecionamento via Token de Transição (JWT 120s) para o portal isolado da prova (`prova.olicmat.cead.ufpi.br`) | P0 |
 
 ### F4 — Avaliação, Resultados e Ranking
 

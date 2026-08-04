@@ -105,14 +105,23 @@ export default function CompetidorPage() {
               <h3 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
                 Prova disponível
               </h3>
-              <p className="text-base text-[#b0adc0]">30 questões · 3 horas de duração</p>
+              <p className="text-base text-[#b0adc0]">30 questões · 3 horas de duração (Ambiente Isolado)</p>
             </div>
             <Button
               size="lg"
-              render={<Link href="/competidor/prova" />}
+              onClick={async () => {
+                try {
+                  const { data } = await api.post("/auth/transition-token");
+                  if (data?.examAppUrl) {
+                    window.location.href = data.examAppUrl;
+                  }
+                } catch (err: any) {
+                  alert(err?.response?.data?.message || "Erro ao redirecionar para o portal da prova");
+                }
+              }}
               style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
             >
-              Iniciar prova
+              Ir para a prova
             </Button>
           </div>
         </motion.div>

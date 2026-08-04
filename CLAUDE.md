@@ -1,7 +1,7 @@
-# CLAUDE.md — OLICMAT v2.0
+# CLAUDE.md — OLICMAT v2.1
 
-**Last updated:** 2026-07-07
-**After:** Refactor from three-pillar (OLICMAT+FORPEMAT+CONGEMAT) to OLICMAT-only platform; subsequent 3-module split (2026-07-06) and DetailPanel + ENADE work (2026-07-07)
+**Last updated:** 2026-08-04
+**After:** Refactor isolating Exam Module into Standalone Application (`exam-app`) on internal network (`10.42.0.0/16`), unified transition token auth, and complete Redis removal.
 
 ---
 

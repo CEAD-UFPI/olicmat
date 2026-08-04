@@ -1,9 +1,9 @@
-# API Surface — OLICMAT v2.0
+# API Surface — OLICMAT v2.1
 
-**Version:** 1.1
-**Date:** 2026-07-07
-**Status:** Post-Refactor — Matches deployed code
-**Since v1.0:** Added `notaEnade` field on `Curso` (POST/PATCH `/api/admin/cursos`); documented §15 Entity Detail Panels
+**Version:** 1.2
+**Date:** 2026-08-04
+**Status:** Post-Refactor — Standalone Exam Application & Redis Removal
+**Since v1.1:** Added `POST /api/auth/transition-token` on main backend; documented Standalone Exam API (`/api/auth/claim`, `/api/prova/*`, `/api/prova/monitoring/live-stats`); confirmed 100% Redis removal.
 
 ---
 
@@ -38,6 +38,7 @@
 | POST | `/auth/esqueci-senha` | Pub | Password recovery request (placeholder) |
 | POST | `/auth/redefinir-senha` | Pub | Reset password (placeholder) |
 | GET | `/auth/me` | JWT | Get current authenticated user |
+| POST | `/auth/transition-token` | JWT | Generate short-lived transition token (120s TTL) for redirecting user to Standalone Exam App |
 
 ### POST `/auth/registro`
 ```json

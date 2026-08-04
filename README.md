@@ -38,19 +38,39 @@
 
 ## Arquitetura (Produção)
 
-A aplicação roda no **Easypanel** com 3 containers independentes:
+A aplicação roda em produção no **Easypanel** com 5 containers independentes:
 
 ```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│  olicmat-db  │◄────│  olicmat-api │◄────│ olicmat-web  │
-│  PostgreSQL  │     │  NestJS      │     │  Next.js     │
-│  :5432       │     │  :3333       │     │  :3000       │
-└──────────────┘     └──────────────┘     └──────────────┘
+                         PUBLIC INTERNET
+                                │
+                                ▼
+                   ┌─────────────────────────┐
+                   │  Reverse Proxy (Nginx)  │
+                   │   olicmat.cead.ufpi.br  │
+                   └────────────┬────────────┘
+                                │
+             ┌──────────────────┴──────────────────┐
+             │ (Tráfego Público)                   │ (Rede Interna 10.42.0.x)
+             ▼                                     ▼
+┌─────────────────────────┐           ┌─────────────────────────┐
+│ Main App (Public Server)│           │ Exam Machine (Internal) │
+│  - olicmat-web (:3000)  │           │  - olicmat-exam-web     │
+│  - olicmat-api (:3333)  │           │    (:3003)              │
+│  (Login, Admin, Rank)   │           │  - olicmat-exam-api     │
+└────────────┬────────────┘           │    (:3334)              │
+             │                        └────────────┬────────────┘
+             └──────────────────┬──────────────────┘
+                                ▼
+                   ┌─────────────────────────┐
+                   │  olicmat-db (Postgres)  │
+                   │         :5432           │
+                   └─────────────────────────┘
 ```
 
-- Cada container é independente e orquestrado via `docker-compose.yml`
+- Cada container é **independente** e orquestrado via `docker-compose.yml` / `docker-compose.prod.yml`
 - Migrations do Prisma rodam automaticamente no startup do backend
-- Variáveis de ambiente configuradas no Easypanel
+- **Isenção de Redis:** Sessões e autenticação operam 100% via JWTs stateless e PostgreSQL
+- A Aplicação de Prova roda isolada na rede interna para evitar sobrecarga no servidor principal durante a Fase 1
 
 ## Desenvolvimento Local
 

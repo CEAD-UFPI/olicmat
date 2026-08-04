@@ -117,6 +117,14 @@ A aplicação roda em produção no **Easypanel** com 3 containers independentes
 11. **Inscription form** — Added comprovante de matrícula upload
 12. **Dead deps** — Removed class-validator, class-transformer, @types/multer
 
+## Standalone Exam Application & Complete Redis Removal (2026-08-04)
+
+1. **Standalone Exam Application (`exam-app`)** — Extracted Phase 1 exam execution to an independent application (`exam-backend` + `exam-frontend`) intended to run on a separate machine in the internal network (`10.42.0.0/16`).
+2. **Unified Auth via Transition Tokens** — Student logs in on main system; clicking "Ir para a prova" calls `POST /api/auth/transition-token` (120s TTL) and redirects to `https://prova.olicmat.cead.ufpi.br/auth/claim?token=...`.
+3. **Subdomain Reverse Proxy** — Public server reverse proxies `prova.olicmat.cead.ufpi.br` to internal exam machine. If the exam app fails on exam day, the main public application remains fully operational.
+4. **Complete Redis Removal** — Confirmed 100% absence of Redis dependencies, configs, and adapters. Sessions rely strictly on stateless JWTs and PostgreSQL Prisma queries.
+5. **Operational Live Monitoring** — Exam backend exposes `/api/prova/monitoring/live-stats` for Admin and Coordinator oversight inside the exam portal (`/admin/monitoring`).
+
 ## DetailPanel Unification + ENADE Score (2026-07-07)
 
 1. **Unified entity viewer** — All entity detail modals (User, Institution, Course, Edition, Registration) now use a single schema-driven `<DetailPanel>` component (`frontend/src/components/ui/detail-panel.tsx`), built on top of the shared `<Modal>`. Wider (max-w-3xl), labeled sections with 2-col grid on desktop, hero KPI slot with semantic colors, secondary Edit action surfaced in the header. Supersedes the per-page helpers `Row`, `FieldGroup`, `DetailField`.

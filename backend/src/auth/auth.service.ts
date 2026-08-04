@@ -229,4 +229,44 @@ export class AuthService {
     const payload = { sub: userId, email, role };
     return this.jwtService.sign(payload);
   }
+
+  async gerarTransitionToken(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true, role: true, nome: true },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException("Usuário não encontrado");
+    }
+
+    if (user.role === "ALUNO") {
+      const inscricao = await this.prisma.inscricao.findFirst({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, status: true },
+      });
+
+      if (!inscricao || inscricao.status !== "CONFIRMADA") {
+        throw new BadRequestException("Inscrição não confirmada para a prova");
+      }
+    }
+
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      nome: user.nome,
+      type: "EXAM_TRANSITION",
+      nonce: randomBytes(16).toString("hex"),
+    };
+
+    const transitionToken = this.jwtService.sign(payload, { expiresIn: "120s" });
+    const examAppUrl = process.env.EXAM_APP_URL || "https://prova.olicmat.cead.ufpi.br";
+
+    return {
+      transitionToken,
+      examAppUrl: `${examAppUrl}/auth/claim?token=${transitionToken}`,
+    };
+  }
 }

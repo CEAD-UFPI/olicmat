@@ -1,17 +1,17 @@
 # SRS — OLICMAT
 
-**Versão:** 2.0  
-**Data:** 08/06/2026  
+**Versão:** 2.1  
+**Data:** 04/08/2026  
 **Autor:** Equipe OLICMAT  
-**Status:** Revisado para implementação da V2.0
+**Status:** Revisado para Aplicação de Prova Standalone & Remoção do Redis
 
 ## 1. Introdução
 
 ### 1.1 Propósito
-Este documento especifica os requisitos de software da plataforma OLICMAT, uma aplicação full-stack voltada à gestão da Olimpíada para Licenciandos em Matemática. O sistema contempla autenticação, inscrição, aplicação de prova, gestão da Fase 2, avaliação, ranking, administração e acompanhamento por coordenação de curso.
+Este documento especifica os requisitos de software da plataforma OLICMAT, uma aplicação full-stack voltada à gestão da Olimpíada para Licenciandos em Matemática. O sistema contempla autenticação, inscrição, aplicação de prova em ambiente standalone isolado, gestão da Fase 2, avaliação, ranking, administração e acompanhamento por coordenação de curso.
 
 ### 1.2 Escopo Técnico
-Aplicação web com frontend responsivo e suporte a PWA, backend modular e banco de dados relacional. O sistema deve suportar os perfis ALUNO, COORDENADOR_CURSO, AVALIADOR e ADMIN, com controle de acesso por permissões.
+Aplicação web com frontend responsivo e suporte a PWA, backend modular principal, aplicação de prova standalone isolada em rede interna (`10.42.0.0/16`) sem dependência de Redis, e banco de dados relacional PostgreSQL compartilhado. O sistema suporta os perfis ALUNO, COORDENADOR_CURSO, AVALIADOR e ADMIN, com controle de acesso por permissões.
 
 ### 1.3 Definições e Acrônimos
 | Termo | Definição |
@@ -151,18 +151,20 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular e banco
 ## 4. Arquitetura do Sistema
 
 ### 4.1 Visão Geral
-- **Frontend:** aplicação web responsiva com suporte a PWA.
-- **Backend:** API modular com autenticação, inscrição, provas, avaliação, ranking e administração.
-- **Banco de Dados:** PostgreSQL.
-- **Armazenamento de Arquivos:** serviço compatível com uploads de comprovantes e materiais da Fase 2.
-- **Containerização:** Docker e orquestração local com Docker Compose.
+- **Frontend Principal:** aplicação web Next.js 16 responsiva (`olicmat-web`).
+- **Backend Principal:** API NestJS 11 modular (`olicmat-api`) para autenticação, cadastros, Fase 2, ranking e admin.
+- **Aplicação de Prova Standalone:** Frontend Next.js (`olicmat-exam-web`) + Backend NestJS (`olicmat-exam-api`) desacoplados, executados em rede interna (`10.42.0.0/16`) e acessados via Reverse Proxy (`prova.olicmat.cead.ufpi.br`).
+- **Banco de Dados:** PostgreSQL 16 compartilhado entre a aplicação principal e a de prova.
+- **Isenção de Redis:** Sessões e autenticação operam 100% via JWTs stateless e PostgreSQL, sem nenhuma dependência de Redis.
+- **Armazenamento de Arquivos:** Cloudinary.
+- **Containerização:** Docker (5 containers independentes: `olicmat-db`, `olicmat-api`, `olicmat-web`, `olicmat-exam-api`, `olicmat-exam-web`).
 
 ### 4.2 Módulos Lógicos
-- Auth
+- Auth (com suporte a Token de Transição)
 - Users
 - Instituições e Cursos
 - Inscrições
-- Provas
+- Provas (Módulo 2 Desacoplado: `exam-backend` + `exam-frontend`)
 - Questões
 - Respostas
 - Fase 2
