@@ -9,7 +9,7 @@ interface Etapa {
 }
 
 const cronograma: Etapa[] = [
-  { data: "10/08/2026", descricao: "Lançamento da 1ª OLICMAT incluindo: Olimpíada, Formação e Congresso", destaque: true },
+  { data: "12/08/2026", descricao: "Lançamento da 1ª OLICMAT incluindo: Olimpíada, Formação e Congresso", destaque: true },
   { data: "30/08 a 25/09/2026", descricao: "Inscrições" },
   { data: "05/10/2026", descricao: "Divulgação das inscrições validadas" },
   { data: "21/10/2026", descricao: "Realização do teste I", destaque: true },
