@@ -79,8 +79,7 @@ async function seed() {
     console.log(`✅ Linked questions to prova`);
   }
 
-  const existingUsers = await prisma.user.count();
-  const startFrom = existingUsers;
+  const startFrom = 0;
   const senhaHash = await bcrypt.hash(PASSWORD, 10);
 
   console.log(`Creating ${NUM_USERS} test users...`);

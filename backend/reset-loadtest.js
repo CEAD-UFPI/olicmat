@@ -5,7 +5,7 @@ const adapter = new PrismaPg({ connectionString: 'postgresql://olicmat:olicmat_d
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const users = await prisma.user.findMany({ where: { email: { startsWith: 'loadtest' } }, take: 10 });
+  const users = await prisma.user.findMany({ where: { email: { startsWith: 'loadtest' } }, take: 100 });
   const edicao = await prisma.edicao.findFirst({ orderBy: { ano: 'desc' } });
   const instituicao = await prisma.instituicao.findFirst();
   const curso = await prisma.curso.findFirst();
