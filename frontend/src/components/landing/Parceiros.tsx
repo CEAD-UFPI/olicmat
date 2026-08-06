@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 
 const parceiros = [
   { nome: "MEC", sigla: "Ministério da Educação" },
-  { nome: "CAPES", sigla: "Coordenação de Aperfeiçoamento" },
+  { nome: "SEDUC", sigla: "Secretaria de Estado da Educação" },
   { nome: "SBM", sigla: "Sociedade Brasileira de Matemática" },
   { nome: "UAB", sigla: "Universidade Aberta do Brasil" },
-  { nome: "CNPq", sigla: "Conselho Nacional de Desenvolvimento" },
+  { nome: "UESPI", sigla: "Universidade Estadual do Piauí" },
   { nome: "IFs", sigla: "Institutos Federais" },
 ];
 
