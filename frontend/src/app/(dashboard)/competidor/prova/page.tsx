@@ -32,7 +32,7 @@ export default function ProvaPage() {
 
   const [iniciada, setIniciada] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [unanswered, setUnanswered] = useState<{ index: number; id: string }[] | null>(null);
+  const [unanswered, setUnanswered] = useState<{ index: number; id: string }[]>([]);
   const [selecaoLocal, setSelecaoLocal] = useState<Record<string, string | null>>({});
   const [respondeuAtual, setRespondeuAtual] = useState(false);
 
@@ -105,7 +105,7 @@ export default function ProvaPage() {
   };
 
   const handleForcarFinalizar = async () => {
-    setUnanswered(null);
+    setUnanswered([]);
     await finalizar();
   };
 
@@ -190,7 +190,7 @@ export default function ProvaPage() {
           </p>
         </div>
         <div className="flex items-center gap-4">
-          {fim && <Timer fim={fim} onTimeUp={handleTimeUp} />}
+          {fim && <Timer fim={fim as string} onTimeUp={handleTimeUp} />}
           <Button
             variant="outline"
             size="sm"
@@ -321,7 +321,7 @@ export default function ProvaPage() {
       )}
 
       {/* Unanswered questions modal */}
-      {unanswered && unanswered.length > 0 && (
+      {unanswered.length > 0 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="border border-[#E8B829]/30 rounded-2xl p-8 bg-[#12121a] max-w-md w-full">
             <h3 className="text-lg font-bold text-[#E8B829] mb-2 font-[family-name:var(--font-fraunces)] text-center">
@@ -335,7 +335,7 @@ export default function ProvaPage() {
                 <button
                   key={q.id}
                   onClick={() => {
-                    setUnanswered(null);
+                    setUnanswered([]);
                     setShowConfirm(false);
                     irParaQuestao(q.index - 1);
                   }}
@@ -349,7 +349,7 @@ export default function ProvaPage() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setUnanswered(null);
+                  setUnanswered([]);
                   setShowConfirm(false);
                 }}
                 className="flex-1 border-[#2a2a3a] text-[#f0ece4]"

@@ -19,7 +19,7 @@ export class ProvaService {
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
-      select: { id: true, status: true, fase1Inicio: true, fase1Fim: true },
+      select: { id: true, status: true, fase1Inicio: true, fase1Fim: true, edicaoId: true },
     });
 
     if (!inscricao || inscricao.status !== "CONFIRMADA") {
@@ -28,6 +28,23 @@ export class ProvaService {
 
     if (inscricao.fase1Fim) {
       throw new BadRequestException("Prova já foi finalizada");
+    }
+
+    const prova = await this.prisma.prova.findFirst({
+      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      select: { id: true, janelaInicio: true, janelaFim: true },
+    });
+
+    if (!prova) {
+      throw new BadRequestException("Nenhuma prova disponível para esta edição");
+    }
+
+    const agora = new Date();
+    if (prova.janelaInicio && agora < prova.janelaInicio) {
+      throw new BadRequestException("A prova ainda não está disponível para realização");
+    }
+    if (prova.janelaFim && agora > prova.janelaFim) {
+      throw new BadRequestException("A janela de realização desta prova já se encerrou");
     }
 
     if (!inscricao.fase1Inicio) {
@@ -62,21 +79,27 @@ export class ProvaService {
       throw new BadRequestException("Prova não foi iniciada");
     }
 
-    const fimProva = new Date(
-      inscricao.fase1Inicio.getTime() + DURACAO_PROVA_MINUTOS * 60 * 1000
-    );
-
-    if (new Date() > fimProva || inscricao.fase1Fim) {
-      throw new BadRequestException("Tempo de prova esgotado ou já finalizada");
-    }
-
     const prova = await this.prisma.prova.findFirst({
       where: { edicaoId: inscricao.edicaoId, fase: 1 },
-      select: { id: true },
+      select: { id: true, duracaoMinutos: true, janelaFim: true },
     });
 
     if (!prova) {
       throw new BadRequestException("Nenhuma prova disponível para esta edição");
+    }
+
+    const agora = new Date();
+    if (prova.janelaFim && agora > prova.janelaFim) {
+      throw new BadRequestException("A janela de realização desta prova já se encerrou");
+    }
+
+    const duracaoMinutos = prova.duracaoMinutos || 180;
+    const fimProva = new Date(
+      inscricao.fase1Inicio.getTime() + duracaoMinutos * 60 * 1000
+    );
+
+    if (agora > fimProva || inscricao.fase1Fim) {
+      throw new BadRequestException("Tempo de prova esgotado ou já finalizada");
     }
 
     const provasQuestoes = await this.prisma.provaQuestao.findMany({
@@ -150,18 +173,24 @@ export class ProvaService {
 
     const prova = await this.prisma.prova.findFirst({
       where: { edicaoId: inscricao.edicaoId, fase: 1 },
-      select: { id: true },
+      select: { id: true, duracaoMinutos: true, janelaFim: true },
     });
 
     if (!prova) {
       throw new BadRequestException("Nenhuma prova disponível para esta edição");
     }
 
+    const agora = new Date();
+    if (prova.janelaFim && agora > prova.janelaFim) {
+      throw new BadRequestException("A janela de realização desta prova já se encerrou");
+    }
+
+    const duracaoMinutos = prova.duracaoMinutos || 180;
     const fimProva = inscricao.fase1Inicio
-      ? new Date(inscricao.fase1Inicio.getTime() + DURACAO_PROVA_MINUTOS * 60 * 1000)
+      ? new Date(inscricao.fase1Inicio.getTime() + duracaoMinutos * 60 * 1000)
       : null;
 
-    if (fimProva && new Date() > fimProva) {
+    if (fimProva && agora > fimProva) {
       throw new BadRequestException("Tempo de prova esgotado");
     }
 

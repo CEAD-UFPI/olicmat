@@ -23,9 +23,10 @@ const TEST_PASSWORD = 'loadtest123';
 // Login to get a token
 // ============================================================================
 async function getToken() {
+  const loginUrl = process.env.LOGIN_URL || 'http://localhost:3333';
   for (let i = 0; i < 100; i++) {
     try {
-      const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      const res = await fetch(`${loginUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: `loadtest${i}@olicmat.com`, senha: TEST_PASSWORD }),
@@ -46,8 +47,10 @@ async function testEndpoint(name, config, connections, duration) {
   console.log(`\n  Testing: ${name}`);
   console.log(`  Connections: ${connections} | Duration: ${duration}s`);
 
+  const loginUrl = process.env.LOGIN_URL || 'http://localhost:3333';
+  const targetBase = name === 'login' ? loginUrl : BASE_URL;
   const result = await autocannon({
-    url: BASE_URL,
+    url: `${targetBase}${config.path}`,
     connections,
     duration,
     pipelining: 1,

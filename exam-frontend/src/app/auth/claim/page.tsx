@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
 
-export default function ClaimTokenPage() {
+function ClaimTokenContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { setSession } = useAuthStore();
@@ -56,5 +56,18 @@ export default function ClaimTokenPage() {
       <div className="w-10 h-10 border-4 border-[#E85D04] border-t-transparent rounded-full animate-spin" />
       <p className="text-[#9895a4] font-medium">Validando token de acesso ao portal de prova...</p>
     </div>
+  );
+}
+
+export default function ClaimTokenPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-4">
+        <div className="w-10 h-10 border-4 border-[#E85D04] border-t-transparent rounded-full animate-spin" />
+        <p className="text-[#9895a4] font-medium">Carregando portal de prova...</p>
+      </div>
+    }>
+      <ClaimTokenContent />
+    </Suspense>
   );
 }

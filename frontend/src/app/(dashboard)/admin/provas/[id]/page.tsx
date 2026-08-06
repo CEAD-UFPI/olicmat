@@ -12,6 +12,8 @@ import { Modal } from "@/components/ui/modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { ArrowLeft, Plus, Trash2, Pencil } from "lucide-react";
 
+import { MathText } from "@/components/ui/math-text";
+
 interface QuestaoNested {
   id: string;
   enunciado: string;
@@ -343,7 +345,7 @@ export default function AdminProvaDetalhePage() {
                     </span>
                     <div className="min-w-0">
                       <span className="text-sm text-[#f0ece4] truncate block max-w-md">
-                        {pq.questao.enunciado}
+                        <MathText text={pq.questao.enunciado} />
                       </span>
                       <span className="text-xs text-[#9895a4]">
                         {pq.questao.eixo} · {pq.questao.dificuldade} · Gabarito: {pq.questao.correta}

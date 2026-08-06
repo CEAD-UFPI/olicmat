@@ -37,7 +37,8 @@ function getUser(index) {
 // Authentication Helper
 // ============================================================================
 async function login(email, senha) {
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
+  const loginUrl = process.env.LOGIN_URL || 'http://localhost:3333';
+  const res = await fetch(`${loginUrl}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, senha }),
@@ -51,18 +52,30 @@ async function login(email, senha) {
 // Pre-authenticate users and build token pool
 // ============================================================================
 async function buildTokenPool(count = 50) {
-  console.log(`🔑 Authenticating ${count} test users...`);
+  console.log(`🔑 Authenticating and initiating exams for ${count} test users...`);
   const tokens = [];
   for (let i = 0; i < count; i++) {
     const user = getUser(i);
     const token = await login(user.email, user.senha);
     if (token) {
       tokens.push(token);
+      // Initiate exam on the exam backend
+      try {
+        await fetch('http://localhost:3334/api/prova/iniciar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      } catch (e) {
+        console.warn(`⚠️  Failed to initiate exam for ${user.email}:`, e.message);
+      }
     } else {
       console.warn(`⚠️  Failed to login user ${user.email}`);
     }
   }
-  console.log(`✅ ${tokens.length} tokens ready`);
+  console.log(`✅ ${tokens.length} tokens ready and exams initiated`);
   return tokens;
 }
 
@@ -182,22 +195,61 @@ async function runScenario(scenarioKey, tokens) {
 
   const results = {};
 
+  // Fetch a real question ID to make the responder endpoint test realistic
+  let questaoId = 'test-id';
+  try {
+    const res = await fetch(`${BASE_URL}/api/prova/questoes`, {
+      headers: { Authorization: `Bearer ${tokens[0]}` },
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.questoes && data.questoes.length > 0) {
+        questaoId = data.questoes[0].id;
+        console.log(`🎯 Using real question ID for responder test: ${questaoId}`);
+      }
+    }
+  } catch (e) {
+    console.warn("Could not fetch real questaoId for load test:", e.message);
+  }
+
+  const loginUrl = process.env.LOGIN_URL || 'http://localhost:3333';
   for (const ep of endpoints) {
     console.log(`\n  Testing ${ep.name}...`);
 
-    // Replace @TOKEN with actual token from pool
+    const targetBase = ep.name.includes('/auth/login') ? loginUrl : BASE_URL;
+
+    // Configure autocannon with requests array for dynamic per-request manipulation
     const config = {
-      ...ep.config,
-      url: BASE_URL,
+      url: targetBase,
       connections: scenario.connections,
       pipelining: scenario.pipelining,
       duration: scenario.duration,
-    };
+      requests: [
+        {
+          method: ep.config.method,
+          path: ep.config.path,
+          body: ep.config.body,
+          headers: { ...ep.config.headers },
+          setupRequest: (req, context) => {
+            // Pick a random token from the pool for dynamic load distribution
+            const randomToken = tokens[Math.floor(Math.random() * tokens.length)];
+            if (req.headers) {
+              if (req.headers['Authorization']) {
+                req.headers['Authorization'] = `Bearer ${randomToken}`;
+              } else if (req.headers['authorization']) {
+                req.headers['authorization'] = `Bearer ${randomToken}`;
+              }
+            }
 
-    // For endpoints that need auth, rotate tokens
-    if (config.headers?.Authorization?.includes('@TOKEN')) {
-      config.headers.Authorization = `Bearer ${tokens[0]}`;
-    }
+            // Replace questaoId placeholder dynamically if present
+            if (req.body && typeof req.body === 'string' && req.body.includes('__QUESTAO_ID__')) {
+              req.body = req.body.replace('__QUESTAO_ID__', questaoId);
+            }
+            return req;
+          }
+        }
+      ]
+    };
 
     const result = await autocannon(config);
     results[ep.name] = {
@@ -224,7 +276,7 @@ async function runScenario(scenarioKey, tokens) {
       resets: result.resets,
     };
 
-    console.log(`    ✅ p95: ${result.latency.p95.toFixed(0)}ms | p99: ${result.latency.p99.toFixed(0)}ms | errors: ${result.errors} | non2xx: ${result.non2xx}`);
+    console.log(`    ✅ p95: ${result.latency.p95?.toFixed(0) ?? 'N/A'}ms | p99: ${result.latency.p99?.toFixed(0) ?? 'N/A'}ms | errors: ${result.errors} | non2xx: ${result.non2xx}`);
   }
 
   // Save results

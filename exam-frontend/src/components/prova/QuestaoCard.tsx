@@ -1,6 +1,7 @@
 "use client";
 
 import type { Questao } from "@/stores/provaStore";
+import { MathText } from "../ui/math-text";
 
 interface QuestaoCardProps {
   questao: Questao;
@@ -25,7 +26,7 @@ export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardP
       </div>
 
       <div className="text-lg font-medium leading-relaxed text-[#f0ece4] whitespace-pre-wrap">
-        {questao.enunciado}
+        <MathText text={questao.enunciado} />
       </div>
 
       <div className="space-y-3">
@@ -48,7 +49,9 @@ export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardP
               >
                 {letra}
               </span>
-              <span className="text-base pt-0.5 leading-snug">{texto}</span>
+              <span className="text-base pt-0.5 leading-snug">
+                <MathText text={texto} />
+              </span>
             </button>
           );
         })}

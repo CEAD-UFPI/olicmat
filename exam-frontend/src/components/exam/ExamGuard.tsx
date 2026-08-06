@@ -9,6 +9,10 @@ interface ExamGuardProps {
 }
 
 export function ExamGuard({ children, onAutoSubmit, maxWarnings = 3 }: ExamGuardProps) {
+  if (process.env.NEXT_PUBLIC_DISABLE_EXAM_GUARD === "true") {
+    return <>{children}</>;
+  }
+
   const [warnings, setWarnings] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
@@ -92,8 +96,12 @@ export function ExamGuard({ children, onAutoSubmit, maxWarnings = 3 }: ExamGuard
       setShowWarningModal(true);
 
       if (next >= maxWarnings && !submittedRef.current) {
-        submittedRef.current = true;
-        onAutoSubmit();
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`[ExamGuard] Limite de advertências atingido, mas ignorado em modo de desenvolvimento.`);
+        } else {
+          submittedRef.current = true;
+          onAutoSubmit();
+        }
       }
       return next;
     });

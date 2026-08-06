@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { Questao } from "@/types";
+import { MathText } from "../ui/math-text";
 
 interface QuestaoCardProps {
   questao: Questao & { respondida?: string | null };
@@ -35,9 +36,9 @@ export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardP
         <span className="text-xs text-[#9895a4] capitalize">{questao.dificuldade.toLowerCase()}</span>
       </div>
 
-      <p className="text-[#f0ece4] text-base lg:text-lg leading-relaxed mb-8">
-        {questao.enunciado}
-      </p>
+      <div className="text-[#f0ece4] text-base lg:text-lg leading-relaxed mb-8">
+        <MathText text={questao.enunciado} />
+      </div>
 
       <div className="space-y-3">
         {alternativas.map((letra) => {
@@ -66,7 +67,7 @@ export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardP
                 {letra}
               </span>
               <span className={`text-sm ${ativa ? "text-[#f0ece4]" : "text-[#9895a4]"}`}>
-                {texto}
+                <MathText text={texto} />
               </span>
             </button>
           );
