@@ -84,20 +84,12 @@ export function Header() {
           ) : (
             <>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 render={<Link href="/login" />}
-                className="text-[#9895a4] hover:text-[#f0ece4]"
+                className="border-[#2a2a3a] text-[#f0ece4] hover:bg-[#1a1a26]"
               >
                 Entrar
-              </Button>
-              <Button
-                size="sm"
-                render={<Link href="/registro" />}
-                style={{ backgroundColor: "var(--color-gold)", color: "#fff" }}
-                className="hover:opacity-90 transition-opacity"
-              >
-                Cadastre-se
               </Button>
             </>
           )}
@@ -138,11 +130,8 @@ export function Header() {
               </>
             ) : (
               <>
-                <Button variant="outline" size="sm" render={<Link href="/login" onClick={() => setMobileOpen(false)} />} className="border-[#2a2a3a] text-[#f0ece4] flex-1">
+                <Button variant="outline" size="sm" render={<Link href="/login" onClick={() => setMobileOpen(false)} />} className="border-[#2a2a3a] text-[#f0ece4] w-full">
                   Entrar
-                </Button>
-                <Button size="sm" render={<Link href="/registro" onClick={() => setMobileOpen(false)} />} style={{ backgroundColor: "var(--color-gold)", color: "#fff" }} className="flex-1">
-                  Cadastre-se
                 </Button>
               </>
             )}

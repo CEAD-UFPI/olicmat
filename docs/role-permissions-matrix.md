@@ -22,21 +22,22 @@
 
 | Endpoint | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN |
 |----------|-------|-------------------|-----------|-------|
-| POST `/auth/registro` | ✅ | ✅ | ✅ | ✅ |
+| POST `/auth/registro` | — | — | — | — | *(Desativado/Removido - cadastro apenas administrativo)* |
 | POST `/auth/login` | ✅ | ✅ | ✅ | ✅ |
 | POST `/auth/esqueci-senha` | ✅ | ✅ | ✅ | ✅ |
 | POST `/auth/redefinir-senha` | ✅ | ✅ | ✅ | ✅ |
 | GET `/auth/me` | ✅ | ✅ | ✅ | ✅ |
 
-### 2.2 Users (`/api/users`)
+### 2.2 Users (`/api/users` & `/api/admin/usuarios`)
 
-| Endpoint | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN |
-|----------|-------|-------------------|-----------|-------|
-| GET `/users/me` | ✅ | ✅ | ✅ | ✅ |
-| PATCH `/users/me` | ✅ | ✅ | ✅ | ✅ |
-| GET `/admin/users` | — | — | — | ✅ |
-| PATCH `/admin/users/:id/role` | — | — | — | ✅ |
-| PATCH `/admin/users/:id` | — | — | — | ✅ |
+| Endpoint | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN | COMISSAO |
+|----------|-------|-------------------|-----------|-------|----------|
+| GET `/users/me` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| PATCH `/users/me` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| GET `/admin/usuarios` | — | ✅ *(Alunos sob coord.)* | — | ✅ | ✅ *(Alunos, Avals, Coords)* |
+| POST `/admin/usuarios` | — | ✅ *(Criar Aluno)* | — | ✅ | ✅ *(Criar Aluno, Aval, Coord)* |
+| PATCH `/admin/usuarios/:id` | — | ✅ *(Editar Aluno)* | — | ✅ | ✅ *(Editar Aluno, Aval, Coord)* |
+| DELETE `/admin/usuarios/:id` | — | ✅ *(Excluir Aluno)* | — | ✅ | ✅ *(Excluir Aluno, Aval, Coord)* |
 
 ### 2.3 Instituições (`/api/instituicoes`)
 
@@ -129,6 +130,7 @@
 | Endpoint | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN |
 |----------|-------|-------------------|-----------|-------|
 | GET `/coordenacao/alunos` | — | ✅ (own cursos) | — | — |
+| GET `/coordenacao/cursos` | — | ✅ (own cursos) | — | — |
 | GET `/coordenacao/inscricoes` | — | ✅ (own cursos) | — | ✅ |
 | GET `/coordenacao/metricas` | — | ✅ (own cursos) | — | ✅ |
 
@@ -151,38 +153,44 @@
 
 ## 3. Permission Matrix — Frontend Routes
 
-| Route | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN |
-|-------|-------|-------------------|-----------|-------|
-| `/` | ✅ | ✅ | ✅ | ✅ |
-| `/login` | ✅ | ✅ | ✅ | ✅ |
-| `/registro` | ✅ | ✅ | ✅ | ✅ |
-| `/esqueci-senha` | ✅ | ✅ | ✅ | ✅ |
-| `/redefinir-senha` | ✅ | ✅ | ✅ | ✅ |
-| `/ranking` | ✅ | ✅ | ✅ | ✅ |
-| `/regulamento` | ✅ | ✅ | ✅ | ✅ |
-| `/sobre` | ✅ | ✅ | ✅ | ✅ |
-| `/competidor` | ✅ | — | — | — |
-| `/competidor/inscricao` | ✅ | — | — | — |
-| `/competidor/prova` | ✅ | — | — | — |
-| `/competidor/envio` | ✅ | — | — | — |
-| `/competidor/resultado` | ✅ | — | — | — |
-| `/coordenador` | — | ✅ | — | — |
-| `/coordenador/alunos` | — | ✅ | — | — |
-| `/coordenador/metricas` | — | ✅ | — | — |
-| `/avaliador` | — | — | ✅ | — |
-| `/avaliador/provas` | — | — | ✅ | — |
-| `/avaliador/provas/[id]` | — | — | ✅ | — |
-| `/avaliador/provas/[id]/questoes` | — | — | ✅ | — |
-| `/avaliador/fase2` | — | — | ✅ | — |
-| `/admin` | — | — | — | ✅ |
-| `/admin/usuarios` | — | — | — | ✅ |
-| `/admin/inscricoes` | — | — | — | ✅ |
-| `/admin/provas` | — | — | — | ✅ |
-| `/admin/provas/[id]` | — | — | — | ✅ |
-| `/admin/provas/[id]/questoes` | — | — | — | ✅ |
-| `/admin/avaliacao` | — | — | — | ✅ |
-| `/admin/exportar` | — | — | — | ✅ |
-| `/admin/auditoria` | — | — | — | ✅ |
+| Route | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN | COMISSAO |
+|-------|-------|-------------------|-----------|-------|----------|
+| `/` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/login` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/registro` | ⚠️ *(Informativo)* | ⚠️ *(Informativo)* | ⚠️ *(Informativo)* | ⚠️ *(Informativo)* | ⚠️ *(Informativo)* |
+| `/esqueci-senha` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/redefinir-senha` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/ranking` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/regulamento` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/sobre` | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `/competidor` | ✅ | — | — | — | — |
+| `/competidor/inscricao` | ✅ | — | — | — | — |
+| `/competidor/prova` | ✅ | — | — | — | — |
+| `/competidor/envio` | ✅ | — | — | — | — |
+| `/competidor/resultado` | ✅ | — | — | — | — |
+| `/coordenador` | — | ✅ | — | — | — |
+| `/coordenador/alunos` | — | ✅ *(CRUD Alunos)* | — | — | — |
+| `/coordenador/metricas` | — | ✅ | — | — | — |
+| `/avaliador` | — | — | ✅ | — | — |
+| `/avaliador/provas` | — | — | ✅ | — | — |
+| `/avaliador/provas/[id]` | — | — | ✅ | — | — |
+| `/avaliador/provas/[id]/questoes` | — | — | ✅ | — | — |
+| `/avaliador/fase2` | — | — | ✅ | — | — |
+| `/comissao` | — | — | — | — | ✅ |
+| `/comissao/usuarios` | — | — | — | — | ✅ *(CRUD scoped)* |
+| `/comissao/inscricoes` | — | — | — | — | ✅ |
+| `/comissao/provas` | — | — | — | — | ✅ |
+| `/comissao/exportar` | — | — | — | — | ✅ |
+| `/comissao/auditoria` | — | — | — | — | ✅ |
+| `/admin` | — | — | — | ✅ | — |
+| `/admin/usuarios` | — | — | — | ✅ | — |
+| `/admin/inscricoes` | — | — | — | ✅ | — |
+| `/admin/provas` | — | — | — | ✅ | — |
+| `/admin/provas/[id]` | — | — | — | ✅ | — |
+| `/admin/provas/[id]/questoes` | — | — | ✅ | — |
+| `/admin/avaliacao` | — | — | — | ✅ | — |
+| `/admin/exportar` | — | — | — | ✅ | — |
+| `/admin/auditoria` | — | — | — | ✅ | — |
 
 ---
 

@@ -61,10 +61,21 @@ export default function AdminCursosPage() {
     try {
       const [cursosRes, instRes] = await Promise.all([
         api.get("/admin/cursos"),
-        api.get("/instituicoes"),
+        api.get("/instituicoes?limit=99999"),
       ]);
       setCursos(cursosRes.data);
-      setInstituicoes(instRes.data.map((i: { id: string; nome: string; sigla: string; cursos: unknown[] }) => ({ id: i.id, nome: i.nome, sigla: i.sigla })));
+      const rawInst = Array.isArray(instRes.data)
+        ? instRes.data
+        : Array.isArray(instRes.data?.data)
+        ? instRes.data.data
+        : [];
+      setInstituicoes(
+        rawInst.map((i: { id: string; nome: string; sigla: string; cursos: unknown[] }) => ({
+          id: i.id,
+          nome: i.nome,
+          sigla: i.sigla,
+        }))
+      );
     } catch {
       console.error("Erro ao carregar dados");
     } finally {

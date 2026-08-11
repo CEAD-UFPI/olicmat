@@ -77,8 +77,6 @@ const ROLES: { value: string; label: string; cor: string }[] = [
   { value: "ALUNO", label: "Aluno", cor: "#3AAFE0" },
   { value: "COORDENADOR_CURSO", label: "Coordenador", cor: "#E8B829" },
   { value: "AVALIADOR", label: "Avaliador", cor: "#4CAF50" },
-  { value: "ADMIN", label: "Admin", cor: "#e53e3e" },
-  { value: "COMISSAO", label: "Comissão", cor: "#9b59b6" },
 ];
 
 const ESTADOS = [
@@ -90,7 +88,7 @@ const selectClasses = "mt-1.5 w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border bo
 
 import { maskCPF, maskPhone, maskCEP, validarCPF } from "@/lib/utils";
 
-export default function AdminUsuariosPage() {
+export default function ComissaoUsuariosPage() {
   const [usuarios, setUsuarios] = useState<UsuarioItem[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [filtro, setFiltro] = useState("");
@@ -279,7 +277,6 @@ export default function AdminUsuariosPage() {
     setCepFieldsFetched({ uf: false, municipio: false, enderecoCompleto: false, bairro: false });
     setModalAberto(true);
 
-    // Load full profile
     try {
       const { data } = await api.get(`/admin/usuarios/${u.id}`);
       if (data) {
@@ -496,7 +493,7 @@ export default function AdminUsuariosPage() {
           <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
             Usuários
           </h1>
-          <p className="text-[#9895a4] mt-1">Gerenciamento de usuários da plataforma</p>
+          <p className="text-[#9895a4] mt-1">Gerenciamento de Coordenadores, Avaliadores e Alunos</p>
         </div>
         <Button
           onClick={abrirNovo}

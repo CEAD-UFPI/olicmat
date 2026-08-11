@@ -178,6 +178,7 @@ model User {
   id                    String      @id @default(uuid())
   nome                  String
   nomeSocial            String?
+  nomeMae               String?
   email                 String      @unique
   cpf                   String      @unique
   senhaHash             String

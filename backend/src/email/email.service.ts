@@ -49,7 +49,7 @@ export class EmailService {
   }
 
   async enviarRecuperacaoSenha(email: string, nome: string, token: string) {
-    const link = `${this.configService.get("FRONTEND_URL")}/recuperar-senha?token=${token}`;
+    const link = `${this.configService.get("FRONTEND_URL")}/redefinir-senha?token=${token}`;
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #E8B829;">OLICMAT — Recuperação de Senha</h2>
@@ -59,10 +59,27 @@ export class EmailService {
         <a href="${link}" style="display: inline-block; background-color: #E8B829; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 16px 0;">
           Redefinir Senha
         </a>
-        <p style="color: #666; font-size: 12px;">Este link expira em 1 hora. Se você não solicitou a redefinição, ignore este e-mail.</p>
+        <p style="color: #666; font-size: 12px;">Este link expira em 2 horas. Se você não solicitou a redefinição, ignore este e-mail.</p>
       </div>
     `;
     await this.sendMail(email, "Recuperação de Senha — OLICMAT", html);
+  }
+
+  async enviarDefinicaoSenha(email: string, nome: string, token: string) {
+    const link = `${this.configService.get("FRONTEND_URL")}/redefinir-senha?token=${token}`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #E8B829;">OLICMAT — Criação de Senha</h2>
+        <p>Olá, <strong>${nome}</strong>!</p>
+        <p>Você foi cadastrado na plataforma OLICMAT.</p>
+        <p>Para criar a sua senha de acesso ao sistema, clique no botão abaixo:</p>
+        <a href="${link}" style="display: inline-block; background-color: #E8B829; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 16px 0;">
+          Criar Minha Senha
+        </a>
+        <p style="color: #666; font-size: 12px;">Este link expira em 24 horas. Se você não esperava este cadastro, ignore este e-mail.</p>
+      </div>
+    `;
+    await this.sendMail(email, "Criação de Senha — OLICMAT", html);
   }
 
   async enviarResultadoProva(email: string, nome: string, nota: number, medalha?: string) {

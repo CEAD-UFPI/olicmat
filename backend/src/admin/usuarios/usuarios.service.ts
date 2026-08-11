@@ -3,10 +3,13 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  ForbiddenException,
 } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
+import { randomBytes } from "crypto";
 import { PrismaService } from "../../prisma.service.js";
 import { AuditoriaService } from "../auditoria/auditoria.service.js";
+import { EmailService } from "../../email/email.service.js";
 import type { CriarUsuarioDto, AtualizarUsuarioDto } from "./dto/usuarios.dto.js";
 
 @Injectable()
@@ -14,10 +17,89 @@ export class AdminUsuariosService {
   constructor(
     private prisma: PrismaService,
     private auditoria: AuditoriaService,
+    private emailService: EmailService,
   ) {}
 
-  async findAll() {
+  private async getCoordenadorCursos(coordenadorId: string) {
+    const cursos = await this.prisma.coordenadorCurso.findMany({
+      where: { userId: coordenadorId },
+      select: { cursoId: true },
+    });
+    return cursos.map((c) => c.cursoId);
+  }
+
+  private async enforceScope(
+    actor: { id: string; role: string },
+    targetUser: { role: string; instituicaoId: string | null; cursoId: string | null }
+  ) {
+    if (actor.role === "ADMIN") {
+      return;
+    }
+
+    if (actor.role === "COMISSAO") {
+      const allowedRoles = ["COORDENADOR_CURSO", "AVALIADOR", "ALUNO"];
+      if (!allowedRoles.includes(targetUser.role)) {
+        throw new ForbiddenException(
+          "A Comissão só pode gerenciar Coordenadores de Curso, Avaliadores e Alunos"
+        );
+      }
+      return;
+    }
+
+    if (actor.role === "COORDENADOR_CURSO") {
+      if (targetUser.role !== "ALUNO") {
+        throw new ForbiddenException("Coordenadores de Curso só podem gerenciar Alunos");
+      }
+
+      const coordUser = await this.prisma.user.findUnique({
+        where: { id: actor.id },
+        select: { instituicaoId: true },
+      });
+
+      if (!coordUser || !coordUser.instituicaoId) {
+        throw new ForbiddenException("Coordenador não possui instituição vinculada");
+      }
+
+      if (targetUser.instituicaoId !== coordUser.instituicaoId) {
+        throw new ForbiddenException("O Aluno deve pertencer à mesma instituição do Coordenador");
+      }
+
+      const coordinatedCourses = await this.getCoordenadorCursos(actor.id);
+      if (!targetUser.cursoId || !coordinatedCourses.includes(targetUser.cursoId)) {
+        throw new ForbiddenException("O Aluno deve pertencer a um curso sob coordenação");
+      }
+      return;
+    }
+
+    throw new ForbiddenException("Acesso negado");
+  }
+
+  async findAll(actor: { id: string; role: string }) {
+    const where: any = {};
+
+    if (actor.role === "COMISSAO") {
+      where.role = { in: ["COORDENADOR_CURSO", "AVALIADOR", "ALUNO"] };
+    } else if (actor.role === "COORDENADOR_CURSO") {
+      const coordUser = await this.prisma.user.findUnique({
+        where: { id: actor.id },
+        select: { instituicaoId: true }
+      });
+      if (!coordUser || !coordUser.instituicaoId) {
+        return [];
+      }
+      const coordinatedCourses = await this.getCoordenadorCursos(actor.id);
+      if (coordinatedCourses.length === 0) {
+        return [];
+      }
+      where.role = "ALUNO";
+      where.instituicaoId = coordUser.instituicaoId;
+      where.cursoId = { in: coordinatedCourses };
+    } else if (actor.role !== "ADMIN") {
+      throw new ForbiddenException("Acesso negado");
+    }
+
     const users = await this.prisma.user.findMany({
+      where,
       select: {
         id: true,
         nome: true,
@@ -45,20 +127,45 @@ export class AdminUsuariosService {
     }));
   }
 
-  async findById(id: string) {
+  async findById(id: string, actor: { id: string; role: string }) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
         id: true,
         nome: true,
+        nomeSocial: true,
+        nomeMae: true,
         email: true,
         cpf: true,
         role: true,
         matricula: true,
-        dataNascimento: true,
         comprovanteUrl: true,
+        dataNascimento: true,
+        telefone: true,
+        celular: true,
+        genero: true,
+        racaCor: true,
+        possuiDeficiencia: true,
+        cotista: true,
+        bolsista: true,
+        tipoBolsa: true,
+        documentoIdentificacao: true,
+        nacionalidade: true,
+        cep: true,
+        numero: true,
+        enderecoCompleto: true,
+        complemento: true,
+        bairro: true,
+        uf: true,
+        municipio: true,
+        pontoReferencia: true,
+        formacao: true,
+        titulacao: true,
+        areaFormacao: true,
         createdAt: true,
         updatedAt: true,
+        instituicaoId: true,
+        cursoId: true,
         instituicao: { select: { id: true, nome: true, sigla: true } },
         curso: { select: { id: true, nome: true } },
         inscricoes: {
@@ -71,10 +178,18 @@ export class AdminUsuariosService {
       throw new NotFoundException("Usuário não encontrado");
     }
 
+    await this.enforceScope(actor, user);
+
     return user;
   }
 
-  async create(data: CriarUsuarioDto, actorId?: string) {
+  async create(data: CriarUsuarioDto, actor: { id: string; role: string }) {
+    await this.enforceScope(actor, {
+      role: data.role,
+      instituicaoId: data.instituicaoId ?? null,
+      cursoId: data.cursoId ?? null,
+    });
+
     const existing = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: data.email }, { cpf: data.cpf }],
@@ -85,16 +200,18 @@ export class AdminUsuariosService {
       throw new ConflictException("Email ou CPF já cadastrado");
     }
 
-    const senhaHash = await bcrypt.hash(data.senha, 10);
+    const rawSenha = data.senha || randomBytes(16).toString("hex");
+    const senhaHash = await bcrypt.hash(rawSenha, 10);
     const { senha, ...rest } = data;
 
     const user = await this.prisma.user.create({
       data: {
         nome: rest.nome,
         nomeSocial: rest.nomeSocial ?? null,
+        nomeMae: rest.nomeMae,
         email: rest.email,
         cpf: rest.cpf,
-        role: rest.role,
+        role: rest.role as any,
         matricula: rest.matricula ?? "",
         dataNascimento: new Date(rest.dataNascimento),
         senhaHash,
@@ -131,21 +248,46 @@ export class AdminUsuariosService {
       },
     });
 
-    if (actorId) {
-      await this.auditoria.log(actorId, "CRIAR_USUARIO", "User", user.id, {
-        email: data.email,
-        role: data.role,
-      });
+    const tokenValue = randomBytes(32).toString("hex");
+    await this.prisma.token.create({
+      data: {
+        userId: user.id,
+        tipo: "PASSWORD_RESET",
+        token: tokenValue,
+        expiraEm: new Date(Date.now() + 24 * 60 * 60 * 1000), // expira em 24h
+      },
+    });
+
+    try {
+      await this.emailService.enviarDefinicaoSenha(user.email, user.nome, tokenValue);
+    } catch (emailErr) {
+      // Log do erro sem interromper o fluxo principal
+      this.prisma.token.delete({ where: { token: tokenValue } }).catch(() => {});
+      console.error(`Erro ao enviar email de definicao de senha para ${user.email}:`, emailErr);
     }
+
+    await this.auditoria.log(actor.id, "CRIAR_USUARIO", "User", user.id, {
+      email: data.email,
+      role: data.role,
+    });
 
     return user;
   }
 
-  async update(id: string, data: AtualizarUsuarioDto, actorId?: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
-    if (!user) {
+  async update(id: string, data: AtualizarUsuarioDto, actor: { id: string; role: string }) {
+    const targetUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
       throw new NotFoundException("Usuário não encontrado");
     }
+
+    await this.enforceScope(actor, targetUser);
+
+    const updatedState = {
+      role: data.role ?? targetUser.role,
+      instituicaoId: data.instituicaoId !== undefined ? data.instituicaoId : targetUser.instituicaoId,
+      cursoId: data.cursoId !== undefined ? data.cursoId : targetUser.cursoId,
+    };
+    await this.enforceScope(actor, updatedState);
 
     if (data.email) {
       const existing = await this.prisma.user.findFirst({
@@ -156,9 +298,29 @@ export class AdminUsuariosService {
       }
     }
 
+    const updateData: Record<string, unknown> = {};
+    const allowedFields: (keyof AtualizarUsuarioDto)[] = [
+      "nome", "nomeSocial", "nomeMae", "email", "role", "matricula",
+      "instituicaoId", "cursoId", "comprovanteUrl", "telefone", "celular",
+      "genero", "racaCor", "possuiDeficiencia", "cotista", "bolsista",
+      "tipoBolsa", "documentoIdentificacao", "nacionalidade", "cep",
+      "numero", "enderecoCompleto", "complemento", "bairro", "uf",
+      "municipio", "pontoReferencia", "formacao", "titulacao", "areaFormacao",
+    ];
+
+    for (const field of allowedFields) {
+      if (data[field] !== undefined) {
+        updateData[field] = data[field] === null ? null : data[field];
+      }
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      throw new BadRequestException("Nenhum campo para atualizar");
+    }
+
     const result = await this.prisma.user.update({
       where: { id },
-      data,
+      data: updateData,
       select: {
         id: true,
         nome: true,
@@ -170,14 +332,12 @@ export class AdminUsuariosService {
       },
     });
 
-    if (actorId) {
-      await this.auditoria.log(actorId, "ATUALIZAR_USUARIO", "User", id, data);
-    }
+    await this.auditoria.log(actor.id, "ATUALIZAR_USUARIO", "User", id, updateData);
 
     return result;
   }
 
-  async delete(id: string, actorId?: string) {
+  async delete(id: string, actor: { id: string; role: string }) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: { inscricoes: { select: { id: true } } },
@@ -187,6 +347,8 @@ export class AdminUsuariosService {
       throw new NotFoundException("Usuário não encontrado");
     }
 
+    await this.enforceScope(actor, user);
+
     if (user.inscricoes?.length) {
       throw new BadRequestException(
         "Não é possível excluir usuário com inscrições ativas. Remova as inscrições primeiro.",
@@ -195,9 +357,7 @@ export class AdminUsuariosService {
 
     await this.prisma.user.delete({ where: { id } });
 
-    if (actorId) {
-      await this.auditoria.log(actorId, "DELETAR_USUARIO", "User", id);
-    }
+    await this.auditoria.log(actor.id, "DELETAR_USUARIO", "User", id);
 
     return { message: "Usuário excluído com sucesso" };
   }

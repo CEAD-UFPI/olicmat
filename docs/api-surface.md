@@ -33,27 +33,11 @@
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| POST | `/auth/registro` | Pub | Register new user |
 | POST | `/auth/login` | Pub | Login, returns `{ token, user }` |
 | POST | `/auth/esqueci-senha` | Pub | Password recovery request (placeholder) |
 | POST | `/auth/redefinir-senha` | Pub | Reset password (placeholder) |
 | GET | `/auth/me` | JWT | Get current authenticated user |
 | POST | `/auth/transition-token` | JWT | Generate short-lived transition token (120s TTL) for redirecting user to Standalone Exam App |
-
-### POST `/auth/registro`
-```json
-{
-  "nome": "string (min 3)",
-  "email": "string (email)",
-  "cpf": "string (11 digits)",
-  "senha": "string (min 6)",
-  "instituicao": "string (min 2)",
-  "curso": "string (min 2)",
-  "matricula": "string (min 3)",
-  "dataNascimento": "string (ISO date)"
-}
-```
-→ `{ token, user }`
 
 ### POST `/auth/login`
 ```json
@@ -65,9 +49,28 @@
 
 ## 2. Users — `/api/users`
 
+### 2.1 Profile — `/api/users`
+
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/users/me` | JWT (A, C, Av, Ad) | Get current user profile |
+| GET | `/users/me` | JWT (A, C, Av, Ad, Co) | Get current user profile |
+| PATCH | `/users/me` | JWT (A, C, Av, Ad, Co) | Update own profile |
+
+### 2.2 Administrative User Management — `/api/admin/usuarios`
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/admin/usuarios` | JWT (Ad, Co, C) | List users (scoped access) |
+| GET | `/admin/usuarios/:id` | JWT (Ad, Co, C) | Get user by ID (scoped access) |
+| POST | `/admin/usuarios` | JWT (Ad, Co, C) | Create new user (scoped access) |
+| PATCH | `/admin/usuarios/:id` | JWT (Ad, Co, C) | Update user details (scoped access) |
+| DELETE | `/admin/usuarios/:id` | JWT (Ad, Co, C) | Delete user (scoped access) |
+
+**Scoped Access Rules:**
+- **ADMIN (Ad):** Can manage (create, read, update, delete) all users in the system without restrictions.
+- **COMISSAO (Co):** Can manage only COORDENADOR_CURSO, AVALIADOR, and ALUNO roles. Cannot manage ADMIN or other COMISSAO users.
+- **COORDENADOR_CURSO (C):** Can manage only ALUNO roles, and only those belonging to the same institution and course that they coordinate.
+- **ALUNO (A) / AVALIADOR (Av):** No access to administrative user management endpoints.
 
 ---
 

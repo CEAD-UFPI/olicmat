@@ -92,6 +92,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
       case "COMISSAO":
         return [
           { href: "/comissao", label: "Visão Geral", icon: <LayoutDashboard size={18} /> },
+          { href: "/comissao/usuarios", label: "Usuários", icon: <Users size={18} /> },
           { href: "/comissao/inscricoes", label: "Inscrições", icon: <ClipboardList size={18} /> },
           { href: "/comissao/provas", label: "Provas", icon: <BookOpen size={18} /> },
           { href: "/comissao/exportar", label: "Exportar", icon: <Download size={18} /> },

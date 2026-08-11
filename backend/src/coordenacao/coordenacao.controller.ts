@@ -30,6 +30,11 @@ export class CoordenacaoController {
     return this.coordenacaoService.listAlunos(req.user.id);
   }
 
+  @Get("cursos")
+  async listCursos(@Req() req: ExpressReq & { user: AuthUser }) {
+    return this.coordenacaoService.listCursos(req.user.id);
+  }
+
   @Get("inscricoes")
   async listInscricoes(
     @Req() req: ExpressReq & { user: AuthUser },

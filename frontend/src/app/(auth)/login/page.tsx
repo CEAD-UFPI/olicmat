@@ -136,11 +136,8 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <p className="text-sm text-[#9895a4] text-center mt-6">
-            Não tem conta?{" "}
-            <Link href="/registro" className="text-[#3AAFE0] hover:underline">
-              Cadastre-se
-            </Link>
+          <p className="text-xs text-[#9895a4] text-center mt-6 leading-relaxed">
+            O cadastro de novos usuários é gerenciado pelos Coordenadores de Curso ou Administradores do sistema.
           </p>
         </div>
       </motion.div>

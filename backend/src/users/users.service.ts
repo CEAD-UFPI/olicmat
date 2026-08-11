@@ -13,6 +13,7 @@ export class UsersService {
         id: true,
         nome: true,
         nomeSocial: true,
+        nomeMae: true,
         email: true,
         cpf: true,
         role: true,
@@ -66,7 +67,7 @@ export class UsersService {
     const updateData: Record<string, unknown> = {};
 
     const perfilFields: (keyof AtualizarPerfilDto)[] = [
-      "nome", "nomeSocial", "telefone", "celular", "genero", "racaCor",
+      "nome", "nomeSocial", "nomeMae", "telefone", "celular", "genero", "racaCor",
       "possuiDeficiencia", "cotista", "bolsista", "tipoBolsa",
       "documentoIdentificacao", "nacionalidade", "cep", "numero",
       "enderecoCompleto", "complemento", "bairro", "uf", "municipio",
@@ -87,6 +88,7 @@ export class UsersService {
         id: true,
         nome: true,
         nomeSocial: true,
+        nomeMae: true,
         email: true,
         role: true,
         telefone: true,

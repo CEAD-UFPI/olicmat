@@ -96,11 +96,11 @@ export function Hero() {
         >
           <Button
             size="lg"
-            render={<Link href="/registro" />}
+            render={<Link href="/login" />}
             className="h-14 px-8 text-base font-semibold"
             style={{ backgroundColor: "var(--color-gold)", color: "#fff" }}
           >
-            Faça seu cadastro
+            Acessar plataforma
           </Button>
           <Button
             variant="outline"

@@ -40,6 +40,7 @@ export type RegisterDto = z.infer<typeof registerSchema>;
 export const atualizarPerfilSchema = z.object({
   nome: z.string().min(3).optional(),
   nomeSocial: z.string().nullable().optional(),
+  nomeMae: z.string().min(2, "Nome da mãe é obrigatório").optional(),
   telefone: z.string().min(10).optional(),
   celular: z.string().min(10).optional(),
   genero: generoEnum.nullable().optional(),

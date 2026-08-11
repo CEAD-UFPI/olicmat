@@ -17,6 +17,29 @@ export class CoordenacaoService {
     return cursos.map((c) => c.cursoId);
   }
 
+  async listCursos(coordenadorId: string) {
+    const coordCursos = await this.prisma.coordenadorCurso.findMany({
+      where: { userId: coordenadorId },
+      include: {
+        curso: {
+          select: {
+            id: true,
+            nome: true,
+            instituicaoId: true,
+            instituicao: {
+              select: {
+                id: true,
+                nome: true,
+                sigla: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return coordCursos.map((cc) => cc.curso);
+  }
+
   async listAlunos(coordenadorId: string) {
     const cursosIds = await this.getCoordenadorCursos(coordenadorId);
 

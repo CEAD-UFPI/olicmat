@@ -6,6 +6,55 @@ Dates use `YYYY-MM-DD` (America/Sao_Paulo timezone).
 
 ## [Unreleased]
 
+### 2026-08-10 — Restricting Administrative User Management, RBAC Scoping, CEP Lookup, Mother's Name, Registration Password Link & Robust Input Validation
+
+Centralized the user registration system, fully disabling self-registration, implemented hierarchical, scoped user CRUD interfaces for Admin, Comissão, and Coordenador de Curso, integrated "Nome da Mãe" and automated "CEP Lookup" fields, automated sending password creation links via email upon registration, and hardened all input fields with CPF mathematical validation, CEP/phone formatting masks, and selective address manual overrides.
+
+#### Added
+- **Automated Password Setup Email on User Creation**
+  - Integrated `EmailService` with `AdminUsuariosService` to automatically generate a `PASSWORD_RESET` token and email a secure link to any newly registered user.
+  - Added new `enviarDefinicaoSenha` method to `EmailService` to send a localized password creation email template (expires in 24 hours).
+  - Automatically generates a secure random fallback password on the backend during user registration.
+  - Made the `senha` input field optional in the backend `criarUsuarioSchema` DTO and completely removed it from the frontend registration forms (Admin, Comissão, and Coordenador) for a cleaner creation workflow.
+  - Fixed a routing issue in `enviarRecuperacaoSenha` to correctly link to `/redefinir-senha` instead of `/recuperar-senha` for password redefinition.
+- **CEP Lookup Integration via ViaCEP API**
+  - Integrated automatic CEP lookup in both Admin (`/admin/usuarios`) and Comissão (`/comissao/usuarios`) user management forms.
+  - Dynamically fetches address details (UF, municipality, street/address, neighborhood) when an 8-digit CEP is entered.
+  - Added UI states (`buscandoCep`, `cepSucesso`, `cepErro`) with user feedback messages.
+- **CPF mathematical validation & masking**
+  - Implemented robust mathematical CPF verification (validating check digits) on both frontend forms and backend DTO schemas.
+  - Prevented creation of users with invalid CPF numbers, raising user-friendly errors in real-time.
+  - Integrated real-time input formatting masks for CPF (`000.000.000-00`), CEP (`00000-000`), Telefone (`(00) 0000-0000`), and Celular (`(00) 00000-0000`) across Admin, Comissão, and Coordenador dashboards.
+- **Address Auto-population Selective Locks**
+  - Refactored ViaCEP integration to lock only the fields successfully returned by the API (e.g. UF, municipality, street, neighborhood).
+  - Unreturned fields remain editable so users can fill them manually (e.g. in small towns or areas where street details are missing).
+  - If CEP lookup fails entirely, all fields are unlocked for manual entry.
+- **Mandatory "Nome da Mãe" Field**
+  - Expanded backend `User` model with a new optional-in-DB, mandatory-in-form `nomeMae` string field.
+  - Added `nomeMae` validation to backend DTO schemas (`criarUsuarioSchema` and `atualizarUsuarioSchema`) and services.
+  - Integrated "Nome da Mãe *" input field into Admin, Comissão, and Coordenador Alunos user forms.
+  - Displayed "Nome da Mãe" in `DetailPanel` views across all administrative dashboards.
+- **Scoped Course Listing for Coordinators**
+  - Backend endpoint `GET /coordenacao/cursos`: Lists courses coordinated by the authenticated Coordinator.
+- **Comissão User Dashboard (`/comissao/usuarios`)**
+  - Dedicated administrative view allowing Comissão members to manage Coordenadores, Avaliadores, and Alunos.
+- **Coordenador Alunos Dashboard (`/coordenador/alunos` CRUD)**
+  - Enhanced course coordinator dashboard to support creating, editing, and deleting students scoped to their coordinated courses.
+
+#### Changed
+- **Deactivated Public Self-Registration**
+  - Removed `POST /auth/registro` backend endpoint and updated the frontend `/registro` route to serve as an informative landing directing prospective users to contact coordinators.
+- **Scoped User Management RBAC Enforcement**
+  - Updated the backend `AdminUsuariosService` and `enforceScope` logic to restrict managers:
+    - `ADMIN` retains full unrestricted control over all roles.
+    - `COMISSAO` can manage `COORDENADOR_CURSO`, `AVALIADOR`, and `ALUNO`.
+    - `COORDENADOR_CURSO` can manage only `ALUNO` role scoped to their coordinated institution and courses.
+- **Enhanced Frontend User Form & Details Panel**
+  - Integrated `instituicaoId` and `cursoId` fields into the administrative user modal (Modal & DetailPanel) for dynamic selection based on the active catalog.
+  - Automatically cleaned up formatting characters (dots, hyphens, parentheses) in phone and CEP strings on submission.
+
+---
+
 ### 2026-08-04 — Standalone Exam Application Extraction & Complete Redis Removal
 
 Major architectural refactor isolating the Exam Module into a standalone application on an internal network (`10.42.0.0/16`), eliminating Redis dependencies, and unifying authentication via short-lived transition tokens.

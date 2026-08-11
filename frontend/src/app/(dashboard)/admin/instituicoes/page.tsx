@@ -66,8 +66,8 @@ export default function AdminInstituicoesPage() {
   const carregar = async () => {
     setCarregando(true);
     try {
-      const { data } = await api.get("/instituicoes");
-      setInstituicoes(data);
+      const { data } = await api.get("/instituicoes?limit=99999");
+      setInstituicoes(Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : []);
     } catch {
       console.error("Erro ao carregar instituições");
     } finally {
