@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 
+const MAIN_APP_URL = process.env.NEXT_PUBLIC_MAIN_APP_URL || "https://olicmat.cead.ufpi.br";
+
 export default function Home() {
   const router = useRouter();
   const { user } = useAuthStore();
@@ -27,7 +29,7 @@ export default function Home() {
           Esta é a aplicação isolada da prova. Por favor, inicie sua prova através do sistema principal.
         </p>
         <a
-          href="https://olicmat.cead.ufpi.br/competidor"
+          href={`${MAIN_APP_URL}/competidor`}
           className="block w-full py-3 bg-[#E85D04] text-white rounded-xl font-semibold hover:bg-[#d05303] transition-colors"
         >
           Ir para o Sistema Principal

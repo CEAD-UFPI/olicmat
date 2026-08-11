@@ -73,14 +73,15 @@ services:
       context: ./exam-frontend
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_EXAM_API_URL=http://localhost:3334/api
+        - NEXT_PUBLIC_EXAM_API_URL=/api
         - NEXT_PUBLIC_DISABLE_EXAM_GUARD=true
+        - NEXT_PUBLIC_MAIN_APP_URL=http://localhost:3000
     container_name: olicmat-exam-web
     restart: unless-stopped
     ports:
       - "3006:3003"
     environment:
-      NEXT_PUBLIC_EXAM_API_URL: http://localhost:3334/api
+      EXAM_API_URL: http://exam-backend:3334/api
       NEXT_PUBLIC_DISABLE_EXAM_GUARD: "true"
     depends_on:
       - exam-backend

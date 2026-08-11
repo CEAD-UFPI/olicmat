@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/stores/authStore";
 
+const MAIN_APP_URL = process.env.NEXT_PUBLIC_MAIN_APP_URL || "https://olicmat.cead.ufpi.br";
+
 interface LiveStats {
   emAndamento: number;
   finalizadas: number;
@@ -43,7 +45,7 @@ export default function AdminMonitoringPage() {
           </p>
         </div>
         <a
-          href="https://olicmat.cead.ufpi.br/admin"
+          href={`${MAIN_APP_URL}/admin`}
           className="px-4 py-2 bg-[#2a2a3a] text-[#f0ece4] rounded-xl text-sm font-semibold hover:bg-[#3a3a4a]"
         >
           Voltar ao Admin Principal

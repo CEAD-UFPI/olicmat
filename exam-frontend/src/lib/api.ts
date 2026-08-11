@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_EXAM_API_URL || "http://localhost:3334/api";
+const MAIN_APP_URL = process.env.NEXT_PUBLIC_MAIN_APP_URL || "https://olicmat.cead.ufpi.br";
 
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -25,7 +25,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && typeof window !== "undefined") {
       localStorage.removeItem("olicmat_exam_token");
       localStorage.removeItem("olicmat_exam_user");
-      window.location.href = "https://olicmat.cead.ufpi.br/competidor";
+      window.location.href = `${MAIN_APP_URL}/competidor`;
     }
     return Promise.reject(error);
   }

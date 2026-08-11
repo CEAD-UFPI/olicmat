@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
 
+const MAIN_APP_URL = process.env.NEXT_PUBLIC_MAIN_APP_URL || "https://olicmat.cead.ufpi.br";
+
 function ClaimTokenContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -41,7 +43,7 @@ function ClaimTokenContent() {
           <h1 className="text-xl font-bold text-[#f0ece4]">Falha de Autenticação</h1>
           <p className="text-sm text-[#9895a4]">{erro}</p>
           <a
-            href="https://olicmat.cead.ufpi.br/competidor"
+            href={`${MAIN_APP_URL}/competidor`}
             className="block w-full py-3 bg-[#E85D04] text-white rounded-xl font-semibold hover:bg-[#d05303]"
           >
             Retornar ao Sistema Principal

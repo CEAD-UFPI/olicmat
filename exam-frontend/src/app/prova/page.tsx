@@ -9,6 +9,8 @@ import { Timer } from "@/components/prova/Timer";
 import { QuestaoCard } from "@/components/prova/QuestaoCard";
 import { ExamGuard } from "@/components/exam/ExamGuard";
 
+const MAIN_APP_URL = process.env.NEXT_PUBLIC_MAIN_APP_URL || "https://olicmat.cead.ufpi.br";
+
 export default function ProvaStandalonePage() {
   const router = useRouter();
   const { user } = useAuthStore();
@@ -111,7 +113,7 @@ export default function ProvaStandalonePage() {
         <p className="text-[#9895a4]">Sua nota na Fase 1 foi registrada com sucesso:</p>
         <p className="text-5xl font-bold text-[#E85D04]">{nota != null ? `${nota.toFixed(1)} pts` : "---"}</p>
         <a
-          href="https://olicmat.cead.ufpi.br/competidor"
+          href={`${MAIN_APP_URL}/competidor`}
           className="inline-block w-full py-3.5 bg-[#E85D04] text-white font-semibold rounded-xl hover:bg-[#d05303] transition-colors"
         >
           Voltar ao Sistema Principal OLICMAT
@@ -125,7 +127,7 @@ export default function ProvaStandalonePage() {
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-4">
         <p className="text-[#e53e3e] font-semibold">{erro || "Nenhuma questão disponível"}</p>
         <a
-          href="https://olicmat.cead.ufpi.br/competidor"
+          href={`${MAIN_APP_URL}/competidor`}
           className="py-2.5 px-6 bg-[#2a2a3a] text-[#f0ece4] rounded-xl font-medium"
         >
           Voltar ao Painel
