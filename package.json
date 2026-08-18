@@ -1,0 +1,34 @@
+{
+  "name": "olicmat",
+  "version": "2.1.0",
+  "private": true,
+  "description": "OLICMAT — monorepo (WEB, Cadastro/Configurações, Provas)",
+  "workspaces": [
+    "packages/*",
+    "apps/web",
+    "apps/admin/web",
+    "apps/admin/api",
+    "apps/exam/web",
+    "apps/exam/api"
+  ],
+  "scripts": {
+    "build:shared": "npm run build -w @olicmat/shared",
+    "build:admin-api": "npm run build -w @olicmat/admin-api",
+    "build:exam-api": "npm run build -w @olicmat/exam-api",
+    "build:web": "npm run build -w @olicmat/web",
+    "build:admin-web": "npm run build -w @olicmat/admin-web",
+    "build:exam-web": "npm run build -w @olicmat/exam-web",
+    "build": "npm run build:shared && npm run build:admin-api && npm run build:exam-api && npm run build:web && npm run build:admin-web && npm run build:exam-web",
+    "dev:admin-api": "npm run start:dev -w @olicmat/admin-api",
+    "dev:exam-api": "npm run start:dev -w @olicmat/exam-api",
+    "dev:web": "npm run dev -w @olicmat/web",
+    "dev:admin-web": "npm run dev -w @olicmat/admin-web",
+    "dev:exam-web": "npm run dev -w @olicmat/exam-web"
+  },
+  "dependencies": {
+    "openrtk": "^0.1.0"
+  },
+  "devDependencies": {
+    "autocannon": "^8.0.0"
+  }
+}

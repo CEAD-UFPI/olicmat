@@ -1,0 +1,436 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// Enums
+// ============================================
+
+enum Role {
+  ALUNO
+  COORDENADOR_CURSO
+  AVALIADOR
+  ADMIN
+  COMISSAO
+}
+
+enum StatusInsc {
+  PENDENTE
+  CONFIRMADA
+  REJEITADA
+}
+
+enum StatusProva {
+  RASCUNHO
+  PUBLICADA
+  EM_ANDAMENTO
+  ENCERRADA
+}
+
+enum Medalha {
+  OURO
+  PRATA
+  BRONZE
+}
+
+enum Eixo {
+  ALGEBRA
+  GEOMETRIA
+  ANALISE
+  ESTATISTICA
+  DIDATICA
+}
+
+enum Dificuldade {
+  FACIL
+  MEDIO
+  DIFICIL
+}
+
+enum StatusEnvioFase2 {
+  PENDENTE
+  ENVIADO
+  AVALIADO
+}
+
+enum Genero {
+  MASCULINO
+  FEMININO
+  OUTRO
+  PREFIRO_NAO_INFORMAR
+}
+
+enum RacaCor {
+  BRANCA
+  PRETA
+  PARDA
+  AMARELA
+  INDIGENA
+  OUTRO
+  PREFIRO_NAO_INFORMAR
+}
+
+enum TipoBolsa {
+  PIBIC
+  PIBITI
+  PIBEX
+  PRAEC
+  PET
+  PROUNI
+  FIES
+  OUTRO
+}
+
+enum Titulacao {
+  GRADUADO
+  ESPECIALIZACAO
+  MESTRE
+  DOUTOR
+  POS_DOUTOR
+}
+
+enum Localizacao {
+  URBANA
+  RURAL
+}
+
+enum AreaAssentamento {
+  NAO_DIFERENCIADA
+  AREA_ASSENTAMENTO
+  TERRA_INDIGENA
+  AREA_REMANESCENTE_QUILOMBO
+  UNIDADE_USO_SUSTENTAVEL
+}
+
+enum EsferaAdministrativa {
+  FEDERAL
+  ESTADUAL
+  MUNICIPAL
+  INSTITUTO_FEDERAL
+  PRIVADA
+}
+
+enum StatusInstituicao {
+  ATIVA
+  INATIVA
+}
+
+enum TipoInstituicao {
+  PERMANENTE
+  TEMPORARIA
+}
+
+// ============================================
+// Catalog models
+// ============================================
+
+model Instituicao {
+  id                  String                @id @default(uuid())
+  nome                String
+  sigla               String                @unique
+  codigoInep          String                @unique
+  uf                  String
+  cep                 String?
+  municipio           String?
+  complemento         String?
+  pontoReferencia     String?
+  localizacao         Localizacao?
+  areaAssentamento    AreaAssentamento?
+  esferaAdministrativa EsferaAdministrativa?
+  telefone            String?
+  email               String?
+  status              StatusInstituicao?    @default(ATIVA)
+  tipo                TipoInstituicao?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  cursos              Curso[]
+  usuarios            User[]
+  inscricoes          Inscricao[]
+}
+
+model Curso {
+  id             String            @id @default(uuid())
+  nome           String
+  instituicaoId  String
+  instituicao    Instituicao       @relation(fields: [instituicaoId], references: [id], onDelete: Cascade)
+  notaEnade      Decimal?          @db.Decimal(5,2)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  coordenadores  CoordenadorCurso[]
+  usuarios       User[]
+  inscricoes     Inscricao[]
+
+  @@unique([nome, instituicaoId])
+}
+
+// ============================================
+// Auth / User
+// ============================================
+
+model User {
+  id                    String      @id @default(uuid())
+  nome                  String
+  nomeSocial            String?
+  email                 String      @unique
+  cpf                   String      @unique
+  senhaHash             String
+  role                  Role        @default(ALUNO)
+  instituicaoId         String?
+  instituicao           Instituicao?        @relation(fields: [instituicaoId], references: [id])
+  cursoId               String?
+  curso                 Curso?              @relation(fields: [cursoId], references: [id])
+  matricula             String
+  comprovanteUrl        String?
+  dataNascimento        DateTime
+  emailConfirmado       Boolean     @default(false)
+
+  telefone              String?
+  celular               String?
+  genero                Genero?
+  racaCor               RacaCor?
+  possuiDeficiencia     Boolean?
+  cotista               Boolean?
+  bolsista              Boolean?
+  tipoBolsa             TipoBolsa?
+
+  documentoIdentificacao String?
+  nacionalidade         String?
+  cep                   String?
+  numero                String?
+  enderecoCompleto      String?
+  complemento           String?
+  bairro                String?
+  uf                    String?
+  municipio             String?
+  pontoReferencia       String?
+  formacao              String?
+  titulacao             Titulacao?
+  areaFormacao          String?
+
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  inscricoes            Inscricao[]
+  tokens                Token[]
+  coordenadorias        CoordenadorCurso[]
+  avaliacoes            AvaliacaoFase2[]
+  auditLogs             AuditLog[]
+}
+
+model CoordenadorCurso {
+  id      String @id @default(uuid())
+  userId  String @unique
+  cursoId String
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  curso   Curso  @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+}
+
+// ============================================
+// Edition
+// ============================================
+
+model Edicao {
+  id              String    @id @default(uuid())
+  ano             Int       @unique
+  titulo          String
+  status          String    @default("PLANEJAMENTO")
+  dataInicio      DateTime?
+  dataFim         DateTime?
+  pesoFase1       Float     @default(0.5)
+  pesoFase2       Float     @default(0.5)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  provas          Prova[]
+  inscricoes      Inscricao[]
+}
+
+// ============================================
+// Enrollment
+// ============================================
+
+model Inscricao {
+  id              String      @id @default(uuid())
+  userId          String
+  edicaoId        String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  edicao          Edicao      @relation(fields: [edicaoId], references: [id])
+  status          StatusInsc  @default(PENDENTE)
+  estado          String
+  municipio       String?
+  instituicaoId   String
+  cursoId         String
+  periodo         Int?
+  comprovanteUrl  String?
+  fase1Nota              Float?
+  fase1Inicio            DateTime?
+  fase1Fim               DateTime?
+  fase1TempoExtraMinutos Int          @default(0)
+  fase2Tema       String?
+  notaFinal       Float?
+  medalha         Medalha?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  instituicao     Instituicao   @relation(fields: [instituicaoId], references: [id])
+  curso           Curso         @relation(fields: [cursoId], references: [id])
+  respostas       Resposta[]
+  enviosFase2     EnvioFase2[]
+  avaliacoes      AvaliacaoFase2[]
+
+  @@unique([userId, edicaoId])
+}
+
+// ============================================
+// Exam
+// ============================================
+
+model Prova {
+  id              String      @id @default(uuid())
+  edicaoId        String
+  fase            Int
+  titulo          String
+  duracaoMinutos  Int
+  status          StatusProva @default(RASCUNHO)
+  publicadaEm     DateTime?
+  janelaInicio    DateTime?
+  janelaFim       DateTime?
+  versao          Int         @default(1)
+  createdBy       String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  edicao          Edicao       @relation(fields: [edicaoId], references: [id])
+  questoes        ProvaQuestao[]
+  respostas       Resposta[]
+}
+
+model Questao {
+  id            String       @id @default(uuid())
+  enunciado     String
+  alternativaA  String
+  alternativaB  String
+  alternativaC  String
+  alternativaD  String
+  alternativaE  String
+  correta       String
+  eixo          Eixo
+  dificuldade   Dificuldade
+  createdBy     String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  provas        ProvaQuestao[]
+  respostas     Resposta[]
+}
+
+model ProvaQuestao {
+  id        String @id @default(uuid())
+  provaId   String
+  questaoId String
+  ordem     Int
+
+  prova     Prova   @relation(fields: [provaId], references: [id], onDelete: Cascade)
+  questao   Questao @relation(fields: [questaoId], references: [id], onDelete: Cascade)
+
+  @@unique([provaId, questaoId])
+  @@unique([provaId, ordem])
+  @@index([provaId])
+}
+
+model Resposta {
+  id                  String   @id @default(uuid())
+  inscricaoId         String
+  provaId             String
+  questaoId           String
+  alternativaMarcada  String
+  correta             Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  inscricao           Inscricao @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+  prova               Prova     @relation(fields: [provaId], references: [id])
+  questao             Questao   @relation(fields: [questaoId], references: [id], onDelete: Cascade)
+
+  @@unique([inscricaoId, provaId, questaoId])
+  @@index([inscricaoId])
+  @@index([inscricaoId, correta])
+}
+
+// ============================================
+// Phase 2
+// ============================================
+
+model EnvioFase2 {
+  id          String            @id @default(uuid())
+  inscricaoId String
+  tipo        String
+  arquivoUrl  String
+  videoLink   String?
+  status      StatusEnvioFase2  @default(PENDENTE)
+  enviadoEm   DateTime          @default(now())
+
+  inscricao   Inscricao         @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+}
+
+model AvaliacaoFase2 {
+  id          String    @id @default(uuid())
+  inscricaoId String
+  avaliadorId String
+  nota        Float
+  parecer     String?
+  avaliadoEm  DateTime  @default(now())
+
+  inscricao   Inscricao @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+  avaliador   User      @relation(fields: [avaliadorId], references: [id])
+
+  @@unique([inscricaoId, avaliadorId])
+}
+
+// ============================================
+// Ranking & Audit
+// ============================================
+
+model Token {
+  id        String   @id @default(uuid())
+  userId    String
+  tipo      String
+  token     String   @unique
+  expiraEm  DateTime
+  usadoEm   DateTime?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model RankingSnapshot {
+  id          String    @id @default(uuid())
+  edicaoId    String
+  estado      String?
+  dados       Json
+  publicadoEm DateTime?
+  createdAt   DateTime  @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorId     String
+  acao        String
+  entidade    String
+  entidadeId  String
+  payload     Json?
+  createdAt   DateTime @default(now())
+
+  actor       User     @relation(fields: [actorId], references: [id])
+}

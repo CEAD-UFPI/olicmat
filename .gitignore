@@ -5,8 +5,10 @@ tree.txt
 /load-test/results/
 
 # Build artifacts
-backend/dist/
-backend/generated/
+apps/**/dist/
+apps/**/generated/
+packages/shared/dist/
+*.tsbuildinfo
 
 # Logs
 *.log
@@ -38,6 +40,5 @@ node_modules/
 .opencode/
 fix-migration.sh
 
-# Root package files (created by opencode plugin)
-/package.json
-/package-lock.json
+# NOTE: the root package.json / package-lock.json are TRACKED — they define
+# the npm workspaces monorepo (apps/*, packages/*) and must be committed.

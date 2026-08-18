@@ -1,0 +1,54 @@
+# ============================================================================
+# OLICMAT v2.1 — Docker Compose (PRODUÇÃO — Máquina 2: Módulo Provas)
+#
+# Máquina 2 fica na rede interna (10.42.0.0/16), SEM acesso externo direto.
+# Roda apenas o Módulo Provas, isolado:
+#   - exam-api  : Provas (NestJS)     127.0.0.1:3334
+#   - exam-web  : Provas (Next.js)    127.0.0.1:3003
+#
+# O DATABASE_URL aponta para o PostgreSQL na Máquina 3 (rede interna).
+# JWT_SECRET deve ser IDÊNTICO ao da Máquina 1 (auth unificada).
+#
+# Uso:  docker compose -f docker-compose.exam.prod.yml up -d --build
+# ============================================================================
+
+name: olicmat-exam-prod
+
+services:
+  exam-api:
+    build:
+      context: .
+      dockerfile: apps/exam/api/Dockerfile
+    container_name: olicmat-exam-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3334:3334"
+    environment:
+      NODE_ENV: production
+      PORT: 3334
+      DATABASE_URL: ${DATABASE_URL}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      JWT_SECRET: ${JWT_SECRET}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3334/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  exam-web:
+    build:
+      context: .
+      dockerfile: apps/exam/web/Dockerfile
+      args:
+        NEXT_PUBLIC_EXAM_API_URL: /api
+        NEXT_PUBLIC_MAIN_APP_URL: ${NEXT_PUBLIC_MAIN_APP_URL:-https://olicmat.cead.ufpi.br}
+    container_name: olicmat-exam-web
+    restart: unless-stopped
+    depends_on:
+      - exam-api
+    ports:
+      - "127.0.0.1:3003:3003"
+    environment:
+      NODE_ENV: production
+      EXAM_API_URL: http://exam-api:3334/api

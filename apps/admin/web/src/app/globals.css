@@ -1,0 +1,261 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-primary: var(--color-gold);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--bg-secondary);
+  --color-secondary-foreground: var(--text-primary);
+  --color-accent: var(--color-blue);
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #e53e3e;
+  --color-muted: var(--bg-secondary);
+  --color-muted-foreground: var(--text-secondary);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--text-primary);
+  --color-border: var(--border-color);
+  --color-input: var(--border-color);
+  --color-ring: var(--color-gold);
+  --radius: 0.75rem;
+
+  --font-fraunces: "Fraunces", serif;
+  --font-outfit: "Outfit", sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --surface: #1a1a26;
+  --color-gold: #E8B829;
+  --color-green: #4CAF50;
+  --color-blue: #3AAFE0;
+  --text-primary: #f0ece4;
+  --text-secondary: #b0adc0;
+  --text-tertiary: #9895a4;
+  --border-color: #2a2a3a;
+
+  --pi-dourado: #E8B829;
+  --integral-verde: #4CAF50;
+  --sigma-azul: #3AAFE0;
+}
+
+* {
+  border-color: var(--border-color);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-outfit), sans-serif;
+}
+
+/* ==============================
+   Utility Patterns
+   ============================== */
+
+.dot-pattern {
+  background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.noise-overlay {
+  position: relative;
+}
+.noise-overlay::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  opacity: 0.015;
+  pointer-events: none;
+  z-index: 100;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* Gradient orbs */
+.gradient-orb-sigma {
+  background: radial-gradient(600px circle at 30% 50%, rgba(58, 175, 224, 0.15), transparent 60%);
+  pointer-events: none;
+}
+
+.gradient-orb-integral {
+  background: radial-gradient(600px circle at 70% 50%, rgba(76, 175, 80, 0.12), transparent 60%);
+  pointer-events: none;
+}
+
+.gradient-orb-gold {
+  background: radial-gradient(600px circle at 50% 50%, rgba(232, 184, 41, 0.1), transparent 60%);
+  pointer-events: none;
+}
+
+/* Stagger reveal for lists */
+.stagger-reveal > * {
+  opacity: 0;
+  animation: fadeSlideUp 0.5s ease forwards;
+}
+
+.stagger-reveal > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-reveal > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-reveal > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-reveal > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-reveal > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-reveal > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-reveal > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-reveal > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-reveal > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-reveal > *:nth-child(10) { animation-delay: 0.5s; }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Math grid background */
+.math-grid {
+  background-image:
+    linear-gradient(var(--border-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Border glow */
+.border-glow {
+  position: relative;
+}
+.border-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--color-gold), var(--color-blue));
+  z-index: -1;
+  opacity: 0.3;
+  transition: opacity 0.3s;
+}
+.border-glow:hover::after {
+  opacity: 0.6;
+}
+
+/* Floating geometry animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-10px) rotate(1deg); }
+  66% { transform: translateY(5px) rotate(-0.5deg); }
+}
+
+.animate-float-geometry {
+  animation: float 8s ease-in-out infinite;
+}
+
+/* Timer urgency pulse */
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-timer-urgent {
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ==============================
+   Data Table — improved readability
+   ============================== */
+
+.data-table {
+  width: 100%;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.data-table thead tr {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+  padding: 1rem 1.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid color-mix(in srgb, var(--border-color) 50%, transparent);
+}
+
+.data-table tbody tr:hover {
+  background-color: color-mix(in srgb, var(--bg-primary) 50%, transparent);
+}
+
+/* Status badges — larger and more readable */
+.data-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+/* Card metric values */
+.metric-value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  font-family: var(--font-fraunces);
+  line-height: 1.2;
+}
+
+/* Card metric labels */
+.metric-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+/* Detail field in modals */
+.detail-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+/* Modal section titles */
+.section-title {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-gold);
+}

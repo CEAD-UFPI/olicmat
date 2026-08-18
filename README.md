@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="frontend/public/logo-semfundo.png" alt="OLICMAT" height="120" />
   <h1>OLICMAT</h1>
   <p><strong>Olimpíada para Licenciandos em Matemática</strong></p>
   <p>Plataforma web full-stack para gestão de olimpíadas acadêmicas — inscrição, provas, avaliação e ranking.</p>
@@ -9,23 +8,49 @@
 
 | Camada | Tecnologia |
 |--------|-----------|
-| Frontend | Next.js 16 (App Router, React 19, Tailwind CSS v4, shadcn/ui v4) |
+| Frontend | Next.js (App Router, React 19, Tailwind CSS v4, shadcn/ui v4) |
 | Backend | NestJS 11 (TypeScript, ESM, Zod) |
 | Database | PostgreSQL 16 + Prisma 7.8 |
-| Auth | JWT (Passport) + RBAC |
+| Auth | JWT (Passport) + RBAC — unificada entre módulos |
 | Storage | Cloudinary |
-| Orquestração | Docker Compose |
+| Orquestração | Docker Compose (dev + prod multi-máquina) |
+
+## Arquitetura em 3 Módulos
+
+A plataforma foi reorganizada em um **monorepo** (npm workspaces) com três módulos
+independentes de build e deploy:
+
+| Módulo | Pasta | Descrição | Acesso |
+|--------|-------|-----------|--------|
+| **WEB** | `apps/web` | Landing pública (institucional, cronograma, regulamento, ranking público) | Público |
+| **Cadastro/Configurações** | `apps/admin/web` + `apps/admin/api` | Área administrativa completa: usuários, instituições, cursos, edições, provas, questões, inscrições, avaliações, dashboard, exportações, auditoria | ADMIN / COORDENADOR / AVALIADOR / ALUNO |
+| **Provas** | `apps/exam/web` + `apps/exam/api` | Execução de prova **isolada** (apenas ALUNO e admin) | ALUNO |
+
+- **`packages/shared`** — código compartilhado (constantes JWT, tipos de token, segredo JWT, TTLs).
+
+```
+apps/
+  web/                # Módulo WEB (Next.js 16 — landing pública)
+  admin/
+    web/              # Cadastro/Configurações (Next.js 16)
+    api/              # Cadastro/Configurações (NestJS 11 + Prisma)
+  exam/
+    web/              # Provas (Next.js 15 — isolado)
+    api/              # Provas (NestJS 11 + Prisma — isolado)
+packages/
+  shared/             # Código compartilhado (auth, constantes, tipos)
+```
 
 ## Funcionalidades
 
-- **Autenticação** — Cadastro, login, recuperação de senha, JWT com refresh
-- **Inscrição** — Fluxo completo com upload de comprovante de matrícula
-- **Fase 1** — Prova objetiva online com correção automática
-- **Fase 2** — Envio de materiais didático-tecnológicos com avaliação por avaliadores
-- **Ranking** — Público com medalhas (ouro/prata/bronze)
-- **Painéis** — Dashboards por perfil: ADMIN, AVALIADOR, ALUNO, COORDENADOR_CURSO
+- **Autenticação unificada** — cadastro, login, recuperação de senha; o Módulo Provas valida tokens do backend principal
+- **Inscrição** — fluxo completo com upload de comprovante de matrícula
+- **Fase 1** — prova objetiva online com correção automática e anti-cola (ExamGuard)
+- **Fase 2** — envio de materiais didático-tecnológicos com avaliação por avaliadores
+- **Ranking** — público com medalhas (ouro/prata/bronze)
+- **Painéis** — dashboards por perfil: ADMIN, AVALIADOR, ALUNO, COORDENADOR_CURSO
 - **Administração** — CRUD de provas, questões, usuários, edições, instituições, cursos (incluindo nota ENADE); auditoria; exportação CSV
-- **Visualização de entidades** — Telas de detalhe unificadas com componente `<DetailPanel>` (seções rotuladas, métrica herói com cor semântica, estados vazios amigáveis)
+- **Detalhe de entidades** — componente unificado `<DetailPanel>`
 
 ## Perfis de Acesso
 
@@ -34,160 +59,66 @@
 | ALUNO | `/competidor` | Cadastro, inscrição, prova, envio Fase 2, resultado |
 | COORDENADOR_CURSO | `/coordenador` | Visualizar alunos, monitorar inscrições |
 | AVALIADOR | `/avaliador` | Criar questões, gerenciar provas, avaliar Fase 2 |
-| ADMIN | `/admin` | Full access: usuários, inscrições, provas, auditoria, exportação |
+| ADMIN | `/admin` | Acesso total: usuários, inscrições, provas, auditoria, exportação |
 
-## Arquitetura (Produção)
-
-A aplicação roda em produção no **Easypanel** com 5 containers independentes:
-
-```
-                         PUBLIC INTERNET
-                                │
-                                ▼
-                   ┌─────────────────────────┐
-                   │  Reverse Proxy (Nginx)  │
-                   │   olicmat.cead.ufpi.br  │
-                   └────────────┬────────────┘
-                                │
-             ┌──────────────────┴──────────────────┐
-             │ (Tráfego Público)                   │ (Rede Interna 10.42.0.x)
-             ▼                                     ▼
-┌─────────────────────────┐           ┌─────────────────────────┐
-│ Main App (Public Server)│           │ Exam Machine (Internal) │
-│  - olicmat-web (:3000)  │           │  - olicmat-exam-web     │
-│  - olicmat-api (:3333)  │           │    (:3003)              │
-│  (Login, Admin, Rank)   │           │  - olicmat-exam-api     │
-└────────────┬────────────┘           │    (:3334)              │
-             │                        └────────────┬────────────┘
-             └──────────────────┬──────────────────┘
-                                ▼
-                   ┌─────────────────────────┐
-                   │  olicmat-db (Postgres)  │
-                   │         :5432           │
-                   └─────────────────────────┘
-```
-
-- Cada container é **independente** e orquestrado via `docker-compose.yml` / `docker-compose.prod.yml`
-- Migrations do Prisma rodam automaticamente no startup do backend
-- **Isenção de Redis:** Sessões e autenticação operam 100% via JWTs stateless e PostgreSQL
-- A Aplicação de Prova roda isolada na rede interna para evitar sobrecarga no servidor principal durante a Fase 1
-
-## Desenvolvimento Local
+## Desenvolvimento Local (Docker Compose)
 
 ```bash
-# Clone
-git clone https://github.com/CEAD-UFPI/olicmat.git
-cd olicmat
-
-# Inicie os containers
-docker compose up -d
-
-# Acesse
-# - Frontend: http://localhost:3002
-# - Backend:  http://localhost:3333/api
-# - DB:       localhost:5433
+cp .env.example .env
+docker compose up -d --build
 ```
+
+| Serviço | URL |
+|---------|-----|
+| WEB (landing) | http://localhost:3005 |
+| Cadastro/Configurações | http://localhost:3006 |
+| Provas | http://localhost:3007 |
+| API Cadastro | http://localhost:3333/api |
+| API Provas | http://localhost:3334/api |
+| PostgreSQL | localhost:5433 |
+
+> As portas `3005`/`3006`/`3007` são os hosts locais de desenvolvimento (escolhidas
+> para não colidir com outros projetos da máquina). Ajuste em `docker-compose.yml`
+> e `.env` se necessário.
 
 ### Sem Docker
 
 ```bash
-# Backend
-cd backend
-cp .env.example .env  # configure DATABASE_URL
-npm install
-npx prisma migrate deploy
-npm run start:dev
-
-# Frontend
-cd frontend
-cp .env.example .env  # configure NEXT_PUBLIC_API_URL
-npm install
-npm run dev
+npm install                 # raiz (instala todos os workspaces)
+npm run build:shared        # compila packages/shared
+npm run dev:admin-api       # NestJS :3333
+npm run dev:exam-api        # NestJS :3334
+npm run dev:web             # Next.js :3000
+npm run dev:admin-web       # Next.js :3001
+npm run dev:exam-web        # Next.js :3003
 ```
 
-## Variáveis de Ambiente
+> Fora do Docker, `DATABASE_URL` usa `localhost:5433` (veja `.env.example`).
 
-### Backend
+## Deploy em Produção
 
-| Variável | Descrição |
-|----------|-----------|
-| `DATABASE_URL` | String de conexão PostgreSQL |
-| `JWT_SECRET` | Chave secreta para assinatura JWT |
-| `CLOUDINARY_CLOUD_NAME` | Cloud name do Cloudinary |
-| `CLOUDINARY_API_KEY` | API key do Cloudinary |
-| `CLOUDINARY_API_SECRET` | API secret do Cloudinary |
+Topologia em **3 máquinas** (apenas a Máquina 1 tem acesso externo):
 
-### Frontend
+| Máquina | Serviços | Arquivo Compose |
+|---------|----------|-----------------|
+| **1** | WEB + Cadastro/Configurações (reverse proxy público) | `docker-compose.prod.yml` |
+| **2** | Provas (rede interna `10.42.0.0/16`) | `docker-compose.exam.prod.yml` |
+| **3** | PostgreSQL (rede interna) | — |
 
-| Variável | Descrição |
-|----------|-----------|
-| `NEXT_PUBLIC_API_URL` | URL pública da API (ex.: `https://api.olicmat.com.br/api`) |
-
-## Scripts
-
-### Backend
-
-| Comando | Descrição |
-|---------|-----------|
-| `npm run start:dev` | Iniciar em modo dev |
-| `npm run build` | Compilar para produção |
-| `npm run start:prod` | Iniciar produção |
-| `npx prisma migrate deploy` | Aplicar migrations |
-| `npx prisma migrate dev` | Criar nova migration |
-| `npx prisma seed` | Executar seed |
-
-### Frontend
-
-| Comando | Descrição |
-|---------|-----------|
-| `npm run dev` | Iniciar em modo dev |
-| `npm run build` | Build de produção |
-| `npm run start` | Servir build |
-| `npm run lint` | Verificar lint |
-
-## Estrutura do Projeto
-
-```
-olicmat/
-├── backend/             # API NestJS
-│   ├── prisma/          # Schema, migrations, seed
-│   ├── src/
-│   │   ├── admin/       # Admin: provas, questões, avaliação, dashboard, auditoria, cursos
-│   │   ├── auth/        # Autenticação (register, login, JWT, password reset)
-│   │   ├── coordenacao/ # Views do coordenador
-│   │   ├── instituicoes/# Catálogo de instituições e cursos
-│   │   ├── olimpiada/   # Core: inscrição, prova, envio, ranking
-│   │   ├── upload/      # Cloudinary
-│   │   ├── users/       # Perfil de usuário
-│   │   └── common/      # Guards, decorators
-│   └── Dockerfile
-├── frontend/            # Next.js 16 App Router
-│   ├── src/
-│   │   ├── app/         # Rotas: (auth), (dashboard), (public), ranking
-│   │   ├── components/  # UI, layout, landing, prova
-│   │   ├── stores/      # Zustand (authStore, provaStore)
-│   │   ├── lib/         # API client (Axios), utils
-│   │   └── types/       # TypeScript interfaces
-│   └── Dockerfile
-├── docs/                # PRD, BRD, SRS, refactor plans
-├── docker-compose.yml   # Desenvolvimento
-└── docker-compose.prod.yml
-```
+Instruções completas: [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Documentação
 
-A documentação completa está em `docs/`:
-
 | Documento | Descrição |
 |-----------|-----------|
-| `PRD_OLICMAT.md` | Product Requirements Document |
-| `BRD_OLICMAT.md` | Business Requirements Document |
-| `SRS_OLICMAT.md` | Software Requirements Specification |
-| `role-permissions-matrix.md` | Matriz de permissões por perfil |
-| `frontend-route-map.md` | Mapa de rotas do frontend |
-| `api-surface.md` | Superfície da API |
-| `refactor-plan.md` | Plano de refatoração |
-| `CHANGELOG.md` | Registro de mudanças da plataforma |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Decisões de arquitetura e fluxos |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Guia de deploy (dev / homologação / produção) |
+| `docs/` | PRD, BRD, SRS, matriz de permissões, changelog |
+
+## Escopo
+
+O escopo ativo é **apenas OLICMAT**. Os módulos FORPEMAT (LMS) e CONGEMAT (congresso)
+foram removidos no refactor v2.0 e **não devem ser reintroduzidos**.
 
 ## Licença
 

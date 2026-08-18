@@ -1,90 +1,133 @@
+# ============================================================================
+# OLICMAT v2.1 — Docker Compose (Ambiente de DESENVOLVIMENTO)
+#
+# Sobe os 3 módulos + PostgreSQL localmente, todos no mesmo host:
+#   - postgres  : banco único (compartilhado entre Cadastro e Provas)
+#   - admin-api : Módulo Cadastro/Configurações (NestJS)          host :3333
+#   - exam-api  : Módulo Provas (NestJS, isolado)                 host :3334
+#   - admin-web : Módulo Cadastro/Configurações (Next.js)         host :3006
+#   - web       : Módulo WEB — landing pública (Next.js)          host :3005
+#   - exam-web  : Módulo Provas (Next.js, isolado)                host :3007
+#
+# Uso:  docker compose up -d --build
+# ============================================================================
+
+name: olicmat
+
 services:
   postgres:
     image: postgres:16-alpine
     container_name: olicmat-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: olicmat
-      POSTGRES_PASSWORD: olicmat_dev
-      POSTGRES_DB: olicmat
+      POSTGRES_USER: ${DB_USER:-olicmat}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-olicmat_dev}
+      POSTGRES_DB: ${DB_NAME:-olicmat}
     ports:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     command: ["postgres", "-c", "max_connections=300"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-olicmat} -d ${DB_NAME:-olicmat}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
-  backend:
+  admin-api:
     build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    container_name: olicmat-api
+      context: .
+      dockerfile: apps/admin/api/Dockerfile
+    container_name: olicmat-admin-api
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3333
+      DATABASE_URL: postgresql://${DB_USER:-olicmat}:${DB_PASSWORD:-olicmat_dev}@postgres:5432/${DB_NAME:-olicmat}?schema=public
+      DB_POOL_SIZE: "10"
+      JWT_SECRET: ${JWT_SECRET:-dev_secret_change_in_production}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3006}
+      EXAM_APP_URL: ${EXAM_APP_URL:-http://localhost:3007}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
     ports:
       - "3333:3333"
-    environment:
-      DATABASE_URL: postgresql://olicmat:olicmat_dev@postgres:5432/olicmat?connection_limit=100
-      JWT_SECRET: dev_secret_change_in_production
-      EXAM_APP_URL: http://localhost:3006
-      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
-      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
-      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    depends_on:
-      postgres:
-        condition: service_started
 
-  frontend:
+  exam-api:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    container_name: olicmat-web
-    restart: unless-stopped
-    ports:
-      - "3002:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:3333/api
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
-    depends_on:
-      - backend
-
-  exam-backend:
-    build:
-      context: ./exam-backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/exam/api/Dockerfile
     container_name: olicmat-exam-api
     restart: unless-stopped
-    ports:
-      - "3334:3334"
-    environment:
-      DATABASE_URL: postgresql://olicmat:olicmat_dev@postgres:5432/olicmat?connection_limit=100
-      JWT_SECRET: dev_secret_change_in_production
-      PORT: 3334
     depends_on:
       postgres:
-        condition: service_started
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3334
+      DATABASE_URL: postgresql://${DB_USER:-olicmat}:${DB_PASSWORD:-olicmat_dev}@postgres:5432/${DB_NAME:-olicmat}?schema=public
+      DB_POOL_SIZE: "10"
+      JWT_SECRET: ${JWT_SECRET:-dev_secret_change_in_production}
+    ports:
+      - "3334:3334"
 
-  exam-frontend:
+  admin-web:
     build:
-      context: ./exam-frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/admin/web/Dockerfile
       args:
-        - NEXT_PUBLIC_EXAM_API_URL=/api
-        - NEXT_PUBLIC_DISABLE_EXAM_GUARD=true
-        - NEXT_PUBLIC_MAIN_APP_URL=http://localhost:3000
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3333/api}
+    container_name: olicmat-admin-web
+    restart: unless-stopped
+    depends_on:
+      - admin-api
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3006:3000"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3333/api}
+        NEXT_PUBLIC_ADMIN_URL: ${NEXT_PUBLIC_ADMIN_URL:-http://localhost:3006}
+    container_name: olicmat-web
+    restart: unless-stopped
+    depends_on:
+      - admin-api
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3005:3000"
+
+  exam-web:
+    build:
+      context: .
+      dockerfile: apps/exam/web/Dockerfile
+      args:
+        NEXT_PUBLIC_EXAM_API_URL: /api
+        NEXT_PUBLIC_MAIN_APP_URL: ${NEXT_PUBLIC_MAIN_APP_URL:-http://localhost:3006}
+        NEXT_PUBLIC_DISABLE_EXAM_GUARD: ${NEXT_PUBLIC_DISABLE_EXAM_GUARD:-}
     container_name: olicmat-exam-web
     restart: unless-stopped
-    ports:
-      - "3006:3003"
-    environment:
-      EXAM_API_URL: http://exam-backend:3334/api
-      NEXT_PUBLIC_DISABLE_EXAM_GUARD: "true"
     depends_on:
-      - exam-backend
+      - exam-api
+    environment:
+      NODE_ENV: production
+      EXAM_API_URL: http://exam-api:3334/api
+    ports:
+      - "3007:3003"
 
 volumes:
   pgdata:
