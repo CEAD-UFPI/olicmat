@@ -3,6 +3,7 @@ import { z } from "zod";
 export const criarInscricaoSchema = z.object({
   estado: z.string().length(2, "UF deve ter 2 caracteres"),
   municipio: z.string().optional(),
+  edicaoId: z.string().uuid("ID da edição inválido").optional(),
   instituicaoId: z.string().uuid("ID da instituição inválido").optional(),
   cursoId: z.string().uuid("ID do curso inválido").optional(),
   instituicao: z.string().min(2, "Instituição é obrigatória").optional(),
