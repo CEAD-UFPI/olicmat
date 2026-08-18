@@ -15,6 +15,7 @@ import { DetailPanel, EDICAO_STATUS } from "@/components/ui/detail-panel";
 interface EdicaoItem {
   id: string;
   ano: number;
+  semestre: number;
   titulo: string;
   status: string;
   dataInicio?: string | null;
@@ -26,17 +27,51 @@ interface EdicaoItem {
 
 interface EdicaoForm {
   ano: string;
+  semestre: string;
   titulo: string;
   status: string;
+  dataInicio: string;
+  dataFim: string;
+  pesoFase1: string;
+  pesoFase2: string;
 }
 
-const FORM_VAZIO: EdicaoForm = { ano: "", titulo: "", status: "PLANEJAMENTO" };
+const FORM_VAZIO: EdicaoForm = {
+  ano: "",
+  semestre: "1",
+  titulo: "",
+  status: "PLANEJAMENTO",
+  dataInicio: "",
+  dataFim: "",
+  pesoFase1: "",
+  pesoFase2: "",
+};
 
 const STATUS_OPCOES = [
   { value: "PLANEJAMENTO", label: "Planejamento", cor: "#9895a4" },
   { value: "ATIVA", label: "Ativa", cor: "#4CAF50" },
   { value: "ENCERRADA", label: "Encerrada", cor: "#3AAFE0" },
 ];
+
+const SEMESTRES = [
+  { value: "1", label: "1º Semestre" },
+  { value: "2", label: "2º Semestre" },
+];
+
+// Converte ISO (backend) → valor do input datetime-local (local, sem segundos/fuso).
+const toLocalInput = (iso?: string | null) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
+
+// Converte valor do datetime-local → ISO para o backend.
+const fromLocalInput = (value: string) => {
+  if (!value) return undefined;
+  return new Date(value).toISOString();
+};
 
 export default function AdminEdicoesPage() {
   const [edicoes, setEdicoes] = useState<EdicaoItem[]>([]);
@@ -49,7 +84,6 @@ export default function AdminEdicoesPage() {
 
   const [confirmDelete, setConfirmDelete] = useState<EdicaoItem | null>(null);
 
-  // Detail modal state
   const [detailTarget, setDetailTarget] = useState<EdicaoItem | null>(null);
 
   const carregar = async () => {
@@ -78,20 +112,49 @@ export default function AdminEdicoesPage() {
 
   const abrirEditar = (item: EdicaoItem) => {
     setEditando(item);
-    setForm({ ano: String(item.ano), titulo: item.titulo, status: item.status });
+    setForm({
+      ano: String(item.ano),
+      semestre: String(item.semestre),
+      titulo: item.titulo,
+      status: item.status,
+      dataInicio: toLocalInput(item.dataInicio),
+      dataFim: toLocalInput(item.dataFim),
+      pesoFase1: item.pesoFase1 != null ? String(item.pesoFase1 * 100) : "",
+      pesoFase2: item.pesoFase2 != null ? String(item.pesoFase2 * 100) : "",
+    });
     setErro("");
     setModalAberto(true);
   };
 
   const salvar = async () => {
     const anoNum = parseInt(form.ano, 10);
+    const semestreNum = parseInt(form.semestre, 10);
     if (!anoNum || anoNum < 2020) { setErro("Ano deve ser no mínimo 2020"); return; }
     if (form.titulo.length < 2) { setErro("Título deve ter no mínimo 2 caracteres"); return; }
+
+    const peso1 = form.pesoFase1.trim() === "" ? undefined : parseFloat(form.pesoFase1) / 100;
+    const peso2 = form.pesoFase2.trim() === "" ? undefined : parseFloat(form.pesoFase2) / 100;
+    if (peso1 != null && (isNaN(peso1) || peso1 < 0 || peso1 > 1)) { setErro("Peso Fase 1 deve estar entre 0 e 100"); return; }
+    if (peso2 != null && (isNaN(peso2) || peso2 < 0 || peso2 > 1)) { setErro("Peso Fase 2 deve estar entre 0 e 100"); return; }
+
     setErro("");
     try {
       const body = editando
-        ? { titulo: form.titulo, status: form.status }
-        : { ano: anoNum, titulo: form.titulo };
+        ? {
+            titulo: form.titulo,
+            status: form.status,
+            dataInicio: form.dataInicio ? fromLocalInput(form.dataInicio) : null,
+            dataFim: form.dataFim ? fromLocalInput(form.dataFim) : null,
+            pesoFase1: peso1,
+            pesoFase2: peso2,
+          }
+        : {
+            ano: anoNum,
+            semestre: semestreNum,
+            titulo: form.titulo,
+            dataInicio: fromLocalInput(form.dataInicio),
+            dataFim: fromLocalInput(form.dataFim),
+          };
 
       if (editando) {
         await api.patch(`/admin/edicoes/${editando.id}`, body);
@@ -149,7 +212,7 @@ export default function AdminEdicoesPage() {
           <table className="w-full text-base">
             <thead>
               <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ano</th>
+                <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Edição</th>
                 <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Título</th>
                 <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
                 <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
@@ -168,7 +231,7 @@ export default function AdminEdicoesPage() {
                   return (
                     <tr key={ed.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#1a1a26] transition-colors">
                       <td className="py-4 px-5 text-[#f0ece4] font-medium font-[family-name:var(--font-fraunces)]">
-                        {ed.ano}
+                        {ed.ano}.{ed.semestre}
                       </td>
                       <td className="py-4 px-5 text-[#f0ece4]">{ed.titulo}</td>
                       <td className="py-4 px-5">
@@ -227,9 +290,9 @@ export default function AdminEdicoesPage() {
           {editando ? (
             <>
               <div className="space-y-2">
-                <Label className="text-[#b0adc0] text-sm">Ano</Label>
+                <Label className="text-[#b0adc0] text-sm">Edição</Label>
                 <div className="h-10 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] flex items-center px-3 text-[#f0ece4] text-sm">
-                  {editando.ano}
+                  {editando.ano}.{editando.semestre}
                 </div>
               </div>
               <div className="space-y-2">
@@ -237,7 +300,7 @@ export default function AdminEdicoesPage() {
                 <Input
                   value={form.titulo}
                   onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-                  placeholder="Ex: OLICMAT 2026"
+                  placeholder="Ex: OLICMAT 2026.1"
                   className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
                 />
               </div>
@@ -253,28 +316,110 @@ export default function AdminEdicoesPage() {
                   ))}
                 </select>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[#b0adc0] text-sm">Início das inscrições</Label>
+                  <Input
+                    type="datetime-local"
+                    value={form.dataInicio}
+                    onChange={(e) => setForm({ ...form, dataInicio: e.target.value })}
+                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[#b0adc0] text-sm">Fim das inscrições</Label>
+                  <Input
+                    type="datetime-local"
+                    value={form.dataFim}
+                    onChange={(e) => setForm({ ...form, dataFim: e.target.value })}
+                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[#b0adc0] text-sm">Peso Fase 1 (%)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={form.pesoFase1}
+                    onChange={(e) => setForm({ ...form, pesoFase1: e.target.value })}
+                    placeholder="50"
+                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[#b0adc0] text-sm">Peso Fase 2 (%)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value={form.pesoFase2}
+                    onChange={(e) => setForm({ ...form, pesoFase2: e.target.value })}
+                    placeholder="50"
+                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  />
+                </div>
+              </div>
             </>
           ) : (
             <>
-              <div className="space-y-2">
-                <Label className="text-[#b0adc0] text-sm">Ano</Label>
-                <Input
-                  type="number"
-                  value={form.ano}
-                  onChange={(e) => setForm({ ...form, ano: e.target.value })}
-                  placeholder="Ex: 2026"
-                  min={2020}
-                  className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[#b0adc0] text-sm">Ano</Label>
+                  <Input
+                    type="number"
+                    value={form.ano}
+                    onChange={(e) => setForm({ ...form, ano: e.target.value })}
+                    placeholder="Ex: 2026"
+                    min={2020}
+                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[#b0adc0] text-sm">Semestre</Label>
+                  <select
+                    value={form.semestre}
+                    onChange={(e) => setForm({ ...form, semestre: e.target.value })}
+                    className="w-full h-10 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]"
+                  >
+                    {SEMESTRES.map((s) => (
+                      <option key={s.value} value={s.value}>{s.label}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-[#b0adc0] text-sm">Título</Label>
                 <Input
                   value={form.titulo}
                   onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-                  placeholder="Ex: OLICMAT 2026"
+                  placeholder="Ex: OLICMAT 2026.1"
                   className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-[#b0adc0] text-sm">Início das inscrições</Label>
+                  <Input
+                    type="datetime-local"
+                    value={form.dataInicio}
+                    onChange={(e) => setForm({ ...form, dataInicio: e.target.value })}
+                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[#b0adc0] text-sm">Fim das inscrições</Label>
+                  <Input
+                    type="datetime-local"
+                    value={form.dataFim}
+                    onChange={(e) => setForm({ ...form, dataFim: e.target.value })}
+                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  />
+                </div>
               </div>
             </>
           )}
@@ -300,7 +445,7 @@ export default function AdminEdicoesPage() {
       <ConfirmDialog
         aberto={!!confirmDelete}
         titulo="Excluir edição"
-        mensagem={`Tem certeza que deseja excluir a edição ${confirmDelete?.ano} - "${confirmDelete?.titulo}"? Esta ação não pode ser desfeita.`}
+        mensagem={`Tem certeza que deseja excluir a edição ${confirmDelete ? `${confirmDelete.ano}.${confirmDelete.semestre}` : ""} - "${confirmDelete?.titulo}"? Esta ação não pode ser desfeita.`}
         onConfirm={deletar}
         onClose={() => setConfirmDelete(null)}
       />
@@ -336,6 +481,7 @@ export default function AdminEdicoesPage() {
                   title: "Identificação",
                   fields: [
                     { label: "Ano", value: detailTarget.ano },
+                    { label: "Semestre", value: `${detailTarget.semestre}º Semestre` },
                     { label: "Título", value: detailTarget.titulo, full: true },
                   ],
                 },
