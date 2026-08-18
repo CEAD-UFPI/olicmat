@@ -129,7 +129,7 @@ async function main() {
     create: {
       ano: 2026,
       titulo: "OLICMAT 2026",
-      status: "EM_ANDAMENTO",
+      status: "ATIVA",
       dataInicio: new Date("2026-08-10"),
       dataFim: new Date("2027-03-31"),
       pesoFase1: 0.5,
