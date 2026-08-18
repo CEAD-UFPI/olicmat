@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -36,12 +36,32 @@ export default function InscricaoPage() {
   const [comprovante, setComprovante] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [edicoesAbertas, setEdicoesAbertas] = useState<
+    { id: string; ano: number; semestre: number; titulo: string }[]
+  >([]);
+  const [edicaoId, setEdicaoId] = useState("");
+  const [carregandoEdicoes, setCarregandoEdicoes] = useState(true);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<InscricaoForm>({ resolver: zodResolver(inscricaoSchema) });
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await api.get("/inscricoes/edicoes-abertas");
+        const lista = Array.isArray(data) ? data : [];
+        setEdicoesAbertas(lista);
+        if (lista.length > 1) setEdicaoId(lista[0].id);
+      } catch {
+        setEdicoesAbertas([]);
+      } finally {
+        setCarregandoEdicoes(false);
+      }
+    })();
+  }, []);
 
   const onSubmit = async (data: InscricaoForm) => {
     setLoading(true);
@@ -63,6 +83,7 @@ export default function InscricaoPage() {
       await api.post("/inscricoes", {
         ...data,
         periodo: data.periodo ? parseInt(data.periodo) : undefined,
+        edicaoId: edicaoId || undefined,
         comprovanteUrl,
       });
       setSucesso(true);
@@ -106,6 +127,30 @@ export default function InscricaoPage() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-5">
+        {carregandoEdicoes ? (
+          <p className="text-sm text-[#9895a4]">Carregando edições...</p>
+        ) : edicoesAbertas.length === 0 ? (
+          <div className="text-sm text-[#FAA307] bg-[#FAA307]/10 border border-[#FAA307]/20 rounded-lg p-3">
+            Nenhuma edição aberta para inscrição no momento.
+          </div>
+        ) : edicoesAbertas.length > 1 ? (
+          <div>
+            <Label htmlFor="edicao" className="text-[#f0ece4]">Edição</Label>
+            <select
+              id="edicao"
+              value={edicaoId}
+              onChange={(e) => setEdicaoId(e.target.value)}
+              className="mt-1.5 w-full h-10 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]"
+            >
+              {edicoesAbertas.map((ed) => (
+                <option key={ed.id} value={ed.id}>
+                  {ed.ano}.{ed.semestre} — {ed.titulo}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+
         <div>
           <Label htmlFor="estado" className="text-[#f0ece4]">Estado (UF)</Label>
           <select
@@ -176,7 +221,7 @@ export default function InscricaoPage() {
             onClick={() => router.push("/competidor")}>
             Cancelar
           </Button>
-          <Button type="submit" disabled={loading || uploading} className="flex-1"
+          <Button type="submit" disabled={loading || uploading || carregandoEdicoes || edicoesAbertas.length === 0} className="flex-1"
             style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}>
             {uploading ? "Enviando comprovante..." : loading ? "Enviando..." : "Confirmar inscrição"}
           </Button>
