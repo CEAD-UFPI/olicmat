@@ -130,6 +130,7 @@ export class MonitoramentoService {
       select: {
         id: true,
         userId: true,
+        edicaoId: true,
         fase1Inicio: true,
         fase1Fim: true,
         fase1TempoExtraMinutos: true,
@@ -139,6 +140,8 @@ export class MonitoramentoService {
     if (!inscricao) {
       throw new NotFoundException("Inscrição não encontrada");
     }
+
+    await this.validarJanelaFase1(inscricao.edicaoId);
 
     const estadoAnterior = {
       fase1Inicio: inscricao.fase1Inicio?.toISOString() ?? null,
@@ -180,6 +183,7 @@ export class MonitoramentoService {
       select: {
         id: true,
         userId: true,
+        edicaoId: true,
         fase1Inicio: true,
         fase1Fim: true,
         fase1TempoExtraMinutos: true,
@@ -189,6 +193,8 @@ export class MonitoramentoService {
     if (!inscricao) {
       throw new NotFoundException("Inscrição não encontrada");
     }
+
+    await this.validarJanelaFase1(inscricao.edicaoId);
 
     if (!inscricao.fase1Inicio) {
       throw new BadRequestException(
@@ -233,6 +239,26 @@ export class MonitoramentoService {
       fase1TempoExtraMinutos: updated.fase1TempoExtraMinutos,
       tempoExtraTotal: novoTempoExtra,
     };
+  }
+
+  private async validarJanelaFase1(edicaoId: string) {
+    const agora = new Date();
+    const prova = await this.prisma.prova.findFirst({
+      where: { edicaoId, fase: 1 },
+      select: { janelaInicio: true, janelaFim: true },
+    });
+
+    if (
+      !prova ||
+      !prova.janelaInicio ||
+      !prova.janelaFim ||
+      agora < prova.janelaInicio ||
+      agora > prova.janelaFim
+    ) {
+      throw new BadRequestException(
+        "Só é possível ajustar tempo dentro da janela de realização da prova",
+      );
+    }
   }
 
   private derivarStatusProva(
