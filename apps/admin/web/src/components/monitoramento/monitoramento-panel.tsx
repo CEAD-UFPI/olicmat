@@ -65,6 +65,14 @@ function formatarTempo(minutos: number): string {
   return `${m}min`;
 }
 
+function dentroDaJanela(prova: ProvaMonitor, agora: Date): boolean {
+  if (!prova.janelaInicio || !prova.janelaFim) return false;
+  const ini = new Date(prova.janelaInicio).getTime();
+  const fim = new Date(prova.janelaFim).getTime();
+  const t = agora.getTime();
+  return t >= ini && t <= fim;
+}
+
 export function MonitoramentoPanel() {
   const [edicoes, setEdicoes] = useState<EdicaoMonitor[]>([]);
   const [carregandoEdicoes, setCarregandoEdicoes] = useState(true);
@@ -410,6 +418,9 @@ function TabelaAlunos({
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<"todos" | StatusAluno>("todos");
 
+  const agora = new Date();
+  const janelaAberta = dentroDaJanela(prova, agora);
+
   const normalizar = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
@@ -468,6 +479,12 @@ function TabelaAlunos({
         {filtradas.length} de {inscricoes.length} aluno(s)
         {termo ? ` — filtro: "${busca.trim()}"` : ""}
       </p>
+
+      {!janelaAberta && (
+        <div className="text-sm text-[#FAA307] bg-[#FAA307]/10 border border-[#FAA307]/20 rounded-xl p-3">
+          Fora da janela de realização da prova — resetar/adicionar tempo está bloqueado.
+        </div>
+      )}
 
       {carregando ? (
         <div className="flex items-center justify-center h-48">
@@ -536,15 +553,17 @@ function TabelaAlunos({
                           <>
                             <button
                               type="button"
+                              disabled={!janelaAberta}
                               onClick={() => onReset(insc)}
-                              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#E8B829]/40 text-[#E8B829] hover:bg-[#E8B829]/10 transition-colors"
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#E8B829]/40 text-[#E8B829] hover:bg-[#E8B829]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                               Resetar
                             </button>
                             <button
                               type="button"
+                              disabled={!janelaAberta}
                               onClick={() => onTempo(insc)}
-                              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#3A86EF]/40 text-[#3A86EF] hover:bg-[#3A86EF]/10 transition-colors"
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#3A86EF]/40 text-[#3A86EF] hover:bg-[#3A86EF]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                               + Tempo
                             </button>
