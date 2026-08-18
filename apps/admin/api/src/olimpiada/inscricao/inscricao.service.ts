@@ -63,24 +63,56 @@ export class InscricaoService {
     throw new ForbiddenException("Acesso negado");
   }
 
+  async listarEdicoesAbertas() {
+    const agora = new Date();
+    return this.prisma.edicao.findMany({
+      where: {
+        status: "ATIVA",
+        dataInicio: { lte: agora },
+        dataFim: { gte: agora },
+      },
+      select: { id: true, ano: true, semestre: true, titulo: true },
+      orderBy: [{ ano: "desc" }, { semestre: "desc" }],
+    });
+  }
+
   async criar(userId: string, data: CriarInscricaoDto) {
-    let edicao = await this.prisma.edicao.findFirst({
-      where: { status: "PLANEJAMENTO" },
-      orderBy: { ano: "desc" },
+    const agora = new Date();
+
+    const edicoesAbertas = await this.prisma.edicao.findMany({
+      where: {
+        status: "ATIVA",
+        dataInicio: { lte: agora },
+        dataFim: { gte: agora },
+      },
+      select: { id: true, ano: true, semestre: true },
+      orderBy: [{ ano: "desc" }, { semestre: "desc" }],
     });
 
-    if (!edicao) {
-      edicao = await this.prisma.edicao.create({
-        data: {
-          ano: new Date().getFullYear(),
-          titulo: `OLICMAT ${new Date().getFullYear()}`,
-          status: "PLANEJAMENTO",
-        },
-      });
+    if (edicoesAbertas.length === 0) {
+      throw new BadRequestException("Nenhuma edição aberta para inscrição");
+    }
+
+    let edicaoId: string;
+
+    if (data.edicaoId) {
+      const edicaoValida = edicoesAbertas.find((e) => e.id === data.edicaoId);
+      if (!edicaoValida) {
+        throw new BadRequestException(
+          "A edição informada não está aberta para inscrição",
+        );
+      }
+      edicaoId = edicaoValida.id;
+    } else if (edicoesAbertas.length === 1) {
+      edicaoId = edicoesAbertas[0].id;
+    } else {
+      throw new BadRequestException(
+        "Há mais de uma edição aberta; informe edicaoId",
+      );
     }
 
     const existente = await this.prisma.inscricao.findUnique({
-      where: { userId_edicaoId: { userId, edicaoId: edicao.id } },
+      where: { userId_edicaoId: { userId, edicaoId } },
     });
 
     if (existente) {
@@ -120,7 +152,7 @@ export class InscricaoService {
     return this.prisma.inscricao.create({
       data: {
         userId,
-        edicaoId: edicao.id,
+        edicaoId,
         estado: data.estado.toUpperCase(),
         municipio: data.municipio,
         instituicaoId: instituicaoId!,
