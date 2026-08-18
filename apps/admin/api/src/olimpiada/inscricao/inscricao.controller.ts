@@ -53,6 +53,12 @@ export class InscricaoController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get("edicoes-abertas")
+  async listarEdicoesAbertas() {
+    return this.inscricaoService.listarEdicoesAbertas();
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get("minha")
   async minha(@Request() req: ExpressReq & { user: AuthUser }) {
     return this.inscricaoService.buscarPorUsuario(req.user.id);
