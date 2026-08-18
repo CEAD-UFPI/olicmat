@@ -18,15 +18,38 @@ import { RolesGuard } from "../../common/guards/roles.guard.js";
 import { Roles } from "../../common/decorators/roles.decorator.js";
 import { Role } from "../../../generated/prisma/client.js";
 
-const criarEdicaoSchema = z.object({
-  ano: z.number().int().min(2020, "Ano mínimo 2020"),
-  titulo: z.string().min(2, "Título deve ter no mínimo 2 caracteres"),
-});
+const criarEdicaoSchema = z
+  .object({
+    ano: z.number().int().min(2020, "Ano mínimo 2020"),
+    semestre: z.number().int().min(1).max(2).default(1),
+    titulo: z.string().min(2, "Título deve ter no mínimo 2 caracteres"),
+    dataInicio: z.string().datetime().optional(),
+    dataFim: z.string().datetime().optional(),
+  })
+  .refine(
+    (d) =>
+      !d.dataInicio ||
+      !d.dataFim ||
+      new Date(d.dataFim) >= new Date(d.dataInicio),
+    { message: "dataFim deve ser posterior a dataInicio", path: ["dataFim"] },
+  );
 
-const atualizarEdicaoSchema = z.object({
-  titulo: z.string().min(2).optional(),
-  status: z.enum(["PLANEJAMENTO", "ATIVA", "ENCERRADA"]).optional(),
-});
+const atualizarEdicaoSchema = z
+  .object({
+    titulo: z.string().min(2).optional(),
+    status: z.enum(["PLANEJAMENTO", "ATIVA", "ENCERRADA"]).optional(),
+    dataInicio: z.string().datetime().nullable().optional(),
+    dataFim: z.string().datetime().nullable().optional(),
+    pesoFase1: z.number().min(0).max(1).optional(),
+    pesoFase2: z.number().min(0).max(1).optional(),
+  })
+  .refine(
+    (d) =>
+      !d.dataInicio ||
+      !d.dataFim ||
+      new Date(d.dataFim) >= new Date(d.dataInicio),
+    { message: "dataFim deve ser posterior a dataInicio", path: ["dataFim"] },
+  );
 
 @Controller("admin")
 @UseGuards(JwtAuthGuard, RolesGuard)

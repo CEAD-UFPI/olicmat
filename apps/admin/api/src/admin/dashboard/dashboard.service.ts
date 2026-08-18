@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, ConflictException } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
 
 function escapeCsv(val: unknown): string {
@@ -232,25 +232,75 @@ export class DashboardService {
 
   async listEdicoes() {
     return this.prisma.edicao.findMany({
-      select: { id: true, ano: true, titulo: true, status: true },
-      orderBy: { ano: "desc" },
+      select: {
+        id: true,
+        ano: true,
+        semestre: true,
+        titulo: true,
+        status: true,
+        dataInicio: true,
+        dataFim: true,
+        pesoFase1: true,
+        pesoFase2: true,
+        createdAt: true,
+      },
+      orderBy: [{ ano: "desc" }, { semestre: "desc" }],
     });
   }
 
-  async createEdicao(data: { ano: number; titulo: string }) {
+  async createEdicao(data: {
+    ano: number;
+    semestre: number;
+    titulo: string;
+    dataInicio?: string;
+    dataFim?: string;
+  }) {
+    const existente = await this.prisma.edicao.findUnique({
+      where: { ano_semestre: { ano: data.ano, semestre: data.semestre } },
+    });
+
+    if (existente) {
+      throw new ConflictException(
+        `Já existe uma edição ${data.ano}.${data.semestre}`,
+      );
+    }
+
     return this.prisma.edicao.create({
       data: {
         ano: data.ano,
+        semestre: data.semestre,
         titulo: data.titulo,
         status: "PLANEJAMENTO",
+        dataInicio: data.dataInicio ? new Date(data.dataInicio) : undefined,
+        dataFim: data.dataFim ? new Date(data.dataFim) : undefined,
       },
     });
   }
 
-  async updateEdicao(id: string, data: { titulo?: string; status?: string }) {
+  async updateEdicao(
+    id: string,
+    data: {
+      titulo?: string;
+      status?: string;
+      dataInicio?: string | null;
+      dataFim?: string | null;
+      pesoFase1?: number;
+      pesoFase2?: number;
+    },
+  ) {
+    const parseData = (v: string | null | undefined) =>
+      v === undefined ? undefined : v === null ? null : new Date(v);
+
     return this.prisma.edicao.update({
       where: { id },
-      data,
+      data: {
+        titulo: data.titulo,
+        status: data.status,
+        dataInicio: parseData(data.dataInicio),
+        dataFim: parseData(data.dataFim),
+        pesoFase1: data.pesoFase1,
+        pesoFase2: data.pesoFase2,
+      },
     });
   }
 
