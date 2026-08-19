@@ -53,7 +53,7 @@ A barra de progresso e o contador (`1 / 20`) ficam no rodapé do palco.
 - **Roteiro** — os 5 blocos
 1. **A Plataforma** — o que é, as duas fases, público-alvo, landing page
 2. **Cadastro & Configuração** — entidades, 5 perfis de acesso, dashboards/exportações/auditoria
-3. **Fluxo de Inscrição** — passo a passo, estados PENDENTE/CONFIRMADA/REJEITADA, documentos
+3. **Fluxo de Inscrição** — cadastro pelo coordenador, e-mail de ativação + senha, inscrição do aluno (sem documentos)
 4. **Sistema de Prova** — execução cronometrada, autosave, antifraude
 5. **Correção & Classificação** — Fase 1 automática / Fase 2 manual, nota final + desempate, ranking + medalhas, publicação controlada
 - **Encerramento** — CTA "Inscrições abertas em 30/08/2026" + link + QR + cronograma resumido

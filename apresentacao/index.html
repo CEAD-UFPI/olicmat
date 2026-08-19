@@ -728,49 +728,53 @@ h1, h2, h3 { font-family: var(--font-fraunces); }
         <div class="reveal"><span class="symbol accent-green" style="font-size:120px;">∫</span></div>
         <div class="reveal d1"><span class="eyebrow">Bloco 03</span></div>
         <h1 class="title-1 reveal d2">Fluxo de Inscrição</h1>
-        <p class="lead reveal d3" style="max-width:640px;">Do cadastro à validação — simples para o aluno, controlado para a organização.</p>
+        <p class="lead reveal d3" style="max-width:640px;">Do cadastro feito pelo coordenador à inscrição do aluno — sem burocracia de documentos.</p>
       </div>
     </section>
 
     <section class="slide" data-label="Passo a passo">
       <div class="section-head reveal">
         <div class="kicker"><span class="symbol accent-green" style="font-size:30px;">∫</span>
-        <span class="eyebrow">Jornada do aluno</span></div>
-        <h2 class="title-2">Inscrição em cinco passos</h2>
+        <span class="eyebrow">Jornada de cadastro</span></div>
+        <h2 class="title-2">Cadastro em quatro passos</h2>
       </div>
       <div class="grow reveal d1" style="display:flex;align-items:center;">
         <div class="flow" style="width:100%;">
-          <div class="step"><div class="step-num">1</div><div style="font-weight:700;">Cadastro</div><p class="muted" style="font-size:13px;margin-top:6px;">Conta com dados pessoais e perfil ALUNO</p></div>
-          <div class="step"><div class="step-num">2</div><div style="font-weight:700;">Instituição</div><p class="muted" style="font-size:13px;margin-top:6px;">Seleção de instituição e curso</p></div>
-          <div class="step"><div class="step-num">3</div><div style="font-weight:700;">Documentos</div><p class="muted" style="font-size:13px;margin-top:6px;">Upload do comprovante de matrícula</p></div>
-          <div class="step"><div class="step-num">4</div><div style="font-weight:700;">Envio</div><p class="muted" style="font-size:13px;margin-top:6px;">Submissão da inscrição na edição</p></div>
-          <div class="step"><div class="step-num">5</div><div style="font-weight:700;">Validação</div><p class="muted" style="font-size:13px;margin-top:6px;">Análise pela organização</p></div>
+          <div class="step"><div class="step-num">1</div><div style="font-weight:700;">Coordenador cadastra</div><p class="muted" style="font-size:13px;margin-top:6px;">Registra os alunos do seu curso e instituição</p></div>
+          <div class="step"><div class="step-num">2</div><div style="font-weight:700;">E-mail de ativação</div><p class="muted" style="font-size:13px;margin-top:6px;">O aluno recebe um e-mail para concluir o cadastro</p></div>
+          <div class="step"><div class="step-num">3</div><div style="font-weight:700;">Dados + senha</div><p class="muted" style="font-size:13px;margin-top:6px;">Preenche os demais dados e cria a senha</p></div>
+          <div class="step"><div class="step-num">4</div><div style="font-weight:700;">Inscrição</div><p class="muted" style="font-size:13px;margin-top:6px;">Se inscreve na edição da OLICMAT</p></div>
         </div>
       </div>
     </section>
 
-    <section class="slide" data-label="Estados + documentos">
+    <section class="slide" data-label="Quem faz o quê">
       <div class="section-head reveal">
         <div class="kicker"><span class="symbol accent-green" style="font-size:30px;">∫</span>
-        <span class="eyebrow">Controle</span></div>
-        <h2 class="title-2">Estados e documentos</h2>
+        <span class="eyebrow">Divisão de papéis</span></div>
+        <h2 class="title-2">Dois papéis, um fluxo</h2>
       </div>
       <div class="row grow" style="align-items:center;gap:30px;">
         <div class="col reveal d1" style="flex:1;gap:16px;">
-          <div class="card" style="border-left:3px solid var(--gold);"><div class="row" style="align-items:center;justify-content:space-between;"><span style="font-weight:700;">PENDENTE</span><span class="badge gold">aguardando análise</span></div></div>
-          <div class="card" style="border-left:3px solid var(--green);"><div class="row" style="align-items:center;justify-content:space-between;"><span style="font-weight:700;">CONFIRMADA</span><span class="badge green">apto a participar</span></div></div>
-          <div class="card" style="border-left:3px solid #e53e3e;"><div class="row" style="align-items:center;justify-content:space-between;"><span style="font-weight:700;">REJEITADA</span><span class="badge" style="color:#e5534b;background:rgba(229,62,62,.12);border:1px solid rgba(229,62,62,.3);">documento inválido</span></div></div>
+          <div class="card" style="border-left:3px solid var(--gold);">
+            <div class="accent-gold" style="font-weight:700;margin-bottom:8px;">🛡️ Coordenador de Curso</div>
+            <p class="muted" style="font-size:14px;line-height:1.5;">Cadastra os alunos do seu próprio curso e instituição — sem documentos, pois já conhece os dados de cada um.</p>
+          </div>
+          <div class="card" style="border-left:3px solid var(--blue);">
+            <div class="accent-blue" style="font-weight:700;margin-bottom:8px;">📚 Curso & Instituição</div>
+            <p class="muted" style="font-size:14px;line-height:1.5;">Cada coordenador registra somente os alunos do curso e da instituição aos quais está vinculado.</p>
+          </div>
         </div>
         <div class="col reveal d2" style="flex:1;gap:14px;">
-          <div class="card">
-            <div class="accent-gold" style="font-weight:700;margin-bottom:8px;">📎 Documentos exigidos</div>
+          <div class="card" style="border-left:3px solid var(--green);">
+            <div class="accent-green" style="font-weight:700;margin-bottom:8px;">🎓 Aluno</div>
             <div class="col" style="gap:8px;">
-              <span class="pill">✓ Comprovante de matrícula</span>
-              <span class="pill">✓ Documento de identidade</span>
-              <span class="pill">✓ Declaração de curso (se necessário)</span>
+              <span class="pill">✓ Recebe o e-mail de ativação</span>
+              <span class="pill">✓ Preenche os demais dados</span>
+              <span class="pill">✓ Cria a senha e se inscreve</span>
             </div>
           </div>
-          <p class="muted" style="font-size:14px;">Armazenamento seguro via Cloudinary, com validação pela comissão organizadora.</p>
+          <p class="muted" style="font-size:14px;">Sem comprovação documental: quem garante os dados do aluno é o coordenador do curso.</p>
         </div>
       </div>
     </section>
