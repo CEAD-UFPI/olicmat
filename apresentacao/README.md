@@ -63,6 +63,6 @@ A barra de progresso e o contador (`1 / 20`) ficam no rodapé do palco.
 Os tokens de design são declarados no topo do `index.html` (bloco `:root`) e espelham
 `apps/*/web/src/app/globals.css`:
 
-- **Cores:** `#0a0a0f` (fundo), `#12121a`, `#1a1a26` (superfícies), `#E8B829` (ouro), `#4CAF50` (verde), `#3AAFE0` (azul), `#f0ece4` / `#b0adc0` / `#9895a4` (textos), `#2a2a3a` (bordas)
+- **Cores:** `#171722` (fundo), `#20202e`, `#262636` (superfícies), `#F4C840` (ouro), `#5FC964` (verde), `#4FC0F0` (azul), `#ffffff` / `#d6d2e4` / `#b6b2c4` (textos), `#45455c` (bordas)
 - **Fontes:** Fraunces (títulos), Outfit (corpo), JetBrains Mono (mono/dados)
 - **Símbolos:** π = Fase 1, ∫ = Fase 2, Σ = Premiação / Cadastro
