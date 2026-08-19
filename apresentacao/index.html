@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OLICMAT — Lançamento Oficial</title>
+<meta name="theme-color" content="#0a0a0f" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+/* ============================================================
+   OLICMAT — Design tokens (espelham apps/*/web/src/app/globals.css)
+   ============================================================ */
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --surface: #1a1a26;
+  --gold: #E8B829;
+  --green: #4CAF50;
+  --blue: #3AAFE0;
+  --text-primary: #f0ece4;
+  --text-secondary: #b0adc0;
+  --text-tertiary: #9895a4;
+  --border: #2a2a3a;
+
+  --font-fraunces: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-outfit: "Outfit", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: #050508;
+  overflow: hidden;
+  font-family: var(--font-outfit);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Stage (16:9, escalado para caber na viewport) ---------- */
+#viewport {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#stage {
+  position: relative;
+  width: 1280px;
+  height: 720px;
+  background: var(--bg-primary);
+  overflow: hidden;
+  box-shadow: 0 40px 120px rgba(0,0,0,.7);
+  transform-origin: center center;
+}
+
+/* Fundo decorativo (dot pattern + orbs) */
+#stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: .5;
+  pointer-events: none;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.orb-sigma { width: 640px; height: 640px; top: -220px; right: -180px;
+  background: radial-gradient(circle, rgba(58,175,224,.16), transparent 62%); }
+.orb-gold  { width: 620px; height: 620px; bottom: -240px; left: -180px;
+  background: radial-gradient(circle, rgba(232,184,41,.12), transparent 62%); }
+.orb-integral { width: 520px; height: 520px; top: 40%; left: 55%;
+  background: radial-gradient(circle, rgba(76,175,80,.10), transparent 62%); }
+.geo-ring {
+  position: absolute;
+  border: 1px solid rgba(232,184,41,.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ---------- Slides ---------- */
+.slide {
+  position: absolute;
+  inset: 0;
+  padding: 64px 80px;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .45s ease, transform .45s ease, visibility .45s;
+  transform: translateY(14px);
+}
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.slide.exit {
+  opacity: 0;
+  transform: translateY(-14px);
+}
+
+/* Conteúdo com entrada escalonada */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .55s cubic-bezier(.16,1,.3,1), transform .55s cubic-bezier(.16,1,.3,1);
+}
+.slide.active .reveal { opacity: 1; transform: translateY(0); }
+.slide.active .reveal.d1 { transition-delay: .08s; }
+.slide.active .reveal.d2 { transition-delay: .16s; }
+.slide.active .reveal.d3 { transition-delay: .24s; }
+.slide.active .reveal.d4 { transition-delay: .32s; }
+.slide.active .reveal.d5 { transition-delay: .40s; }
+.slide.active .reveal.d6 { transition-delay: .48s; }
+.slide.active .reveal.d7 { transition-delay: .56s; }
+
+/* ---------- Tipografia / hierarquia ---------- */
+.eyebrow {
+  font-family: var(--font-outfit);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.eyebrow.gold { color: var(--gold); }
+h1, h2, h3 { font-family: var(--font-fraunces); }
+.title-1 { font-size: 64px; font-weight: 700; line-height: 1.05; letter-spacing: -.01em; }
+.title-2 { font-size: 44px; font-weight: 700; line-height: 1.1; letter-spacing: -.01em; }
+.title-3 { font-size: 26px; font-weight: 700; line-height: 1.15; }
+.lead { font-size: 21px; line-height: 1.5; color: var(--text-secondary); }
+.muted { color: var(--text-tertiary); }
+.mono { font-family: var(--font-mono); }
+.accent-gold { color: var(--gold); }
+.accent-green { color: var(--green); }
+.accent-blue { color: var(--blue); }
+
+/* ---------- Componentes (espelham shadcn / landing) ---------- */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+}
+.card.surface { background: var(--surface); }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 13px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.badge.gold  { color: var(--gold);  background: rgba(232,184,41,.12); border: 1px solid rgba(232,184,41,.30); }
+.badge.green { color: var(--green); background: rgba(76,175,80,.12);  border: 1px solid rgba(76,175,80,.30); }
+.badge.blue  { color: var(--blue);  background: rgba(58,175,224,.12); border: 1px solid rgba(58,175,224,.30); }
+.badge.gray  { color: var(--text-secondary); background: rgba(176,173,192,.10); border: 1px solid var(--border); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  background: rgba(26,26,38,.5);
+}
+.metric {
+  font-family: var(--font-fraunces);
+  font-size: 60px;
+  font-weight: 700;
+  line-height: 1;
+}
+.metric-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.symbol {
+  font-family: var(--font-fraunces);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Layout helpers */
+.center { align-items: center; justify-content: center; text-align: center; }
+.row { display: flex; gap: 20px; }
+.col { display: flex; flex-direction: column; gap: 20px; }
+.grid { display: grid; gap: 18px; }
+.grow { flex: 1; }
+.section-head { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; }
+.kicker { display: flex; align-items: center; gap: 14px; }
+
+/* ---------- Chroma / mocks de interface ---------- */
+.mock {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg-secondary);
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0,0,0,.45);
+}
+.mock-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(26,26,38,.6);
+}
+.mock-bar .dot { width: 9px; height: 9px; border-radius: 50%; }
+.mock-bar .dot.r { background: #e5534b; }
+.mock-bar .dot.y { background: #d29922; }
+.mock-bar .dot.g { background: #2da44e; }
+.mock-url {
+  margin-left: 8px;
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  background: var(--bg-primary);
+  border-radius: 6px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mock-body { padding: 18px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid transparent;
+}
+.btn.gold { background: var(--gold); color: #fff; }
+.btn.outline { border-color: var(--border); color: var(--text-primary); background: transparent; }
+
+/* ---------- Rodapé fixo (progresso / contador) ---------- */
+#hud {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 80px 22px;
+  pointer-events: none;
+}
+#progress-track {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+#progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--blue));
+  transition: width .4s ease;
+}
+#counter {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+#brand-mini {
+  font-family: var(--font-fraunces);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-secondary);
+  letter-spacing: .06em;
+}
+
+/* ---------- Presenter mode ---------- */
+#presenter {
+  position: fixed;
+  top: 18px; right: 18px;
+  z-index: 50;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(10,10,15,.92);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-secondary);
+  backdrop-filter: blur(8px);
+}
+#presenter.visible { display: flex; }
+#presenter .p-big { font-size: 26px; font-weight: 700; color: var(--text-primary); }
+#presenter .p-label { color: var(--gold); letter-spacing: .12em; text-transform: uppercase; font-size: 11px; }
+
+#help {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  z-index: 50;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  background: rgba(10,10,15,.7);
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+#help kbd {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 6px;
+  margin: 0 2px;
+}
+
+/* Nav arrows */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(18,18,26,.8);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+}
+.nav-arrow:hover { color: var(--gold); border-color: rgba(232,184,41,.4); }
+#prev { left: 20px; }
+#next { right: 20px; }
+
+/* ============================================================
+   Estilos específicos de blocos
+   ============================================================ */
+
+/* Opening */
+#slide-open .brand-mark {
+  font-size: 120px;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  font-family: var(--font-fraunces);
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.brand-mark b { font-weight: 700; }
+.brand-mark .o { color: var(--gold); }
+.brand-mark .l { color: var(--green); }
+.brand-mark .i { color: var(--blue); }
+.brand-mark .rest { color: var(--text-primary); }
+
+.logo-hero { height: 150px; width: auto; }
+
+/* Cards triplos (Sobre) */
+.triple { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.feature-card { position: relative; overflow: hidden; }
+.feature-card .sym { font-size: 56px; line-height: 1; margin-bottom: 14px; }
+.feature-card .tag {
+  font-size: 11px; letter-spacing: .24em; text-transform: uppercase;
+  font-weight: 600; margin-bottom: 12px;
+}
+
+/* Fluxo (passos) */
+.flow { display: flex; align-items: stretch; gap: 0; }
+.step {
+  flex: 1;
+  position: relative;
+  padding: 22px 18px;
+  text-align: center;
+}
+.step + .step::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  width: 24px;
+  height: 2px;
+  background: var(--border);
+}
+.step-num {
+  width: 44px; height: 44px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: rgba(232,184,41,.10);
+  color: var(--gold);
+  font-family: var(--font-fraunces);
+  font-size: 20px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Podium */
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 18px; height: 230px; }
+.podium-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.podium-block {
+  width: 110px;
+  border-radius: 10px 10px 0 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-fraunces);
+  font-weight: 700;
+  color: var(--bg-primary);
+}
+.podium-1 { height: 150px; background: var(--gold); }
+.podium-2 { height: 110px; background: #c0c6d0; }
+.podium-3 { height: 80px;  background: #c98a4b; }
+.medal { font-size: 30px; }
+
+/* Timer mock */
+.timer-chip {
+  font-family: var(--font-mono);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(232,184,41,.10);
+  border: 1px solid rgba(232,184,41,.30);
+  padding: 10px 20px;
+  border-radius: 12px;
+  letter-spacing: .04em;
+}
+.alt-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  background: rgba(26,26,38,.5);
+  font-size: 14px;
+}
+.alt-row .letter {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.alt-row.sel { border-color: var(--gold); background: rgba(232,184,41,.08); }
+.alt-row.sel .letter { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+/* Toggle de publicação */
+.toggle {
+  width: 56px; height: 30px;
+  border-radius: 999px;
+  background: var(--border);
+  position: relative;
+  display: inline-block;
+}
+.toggle.on { background: var(--green); }
+.toggle .knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform .25s ease;
+}
+.toggle.on .knob { transform: translateX(26px); }
+</style>
+</head>
+<body>
+
+<div id="viewport">
+  <div id="stage">
+
+    <!-- fundo decorativo -->
+    <div class="orb orb-sigma"></div>
+    <div class="orb orb-gold"></div>
+    <div class="orb orb-integral"></div>
+    <div class="geo-ring" style="width:460px;height:460px;top:-120px;left:-120px;"></div>
+    <div class="geo-ring" style="width:320px;height:320px;bottom:-80px;right:-60px;"></div>
+
+    <!-- ================= SLIDE 0 — ABERTURA ================= -->
+    <section class="slide center active" id="slide-open" data-label="Abertura">
+      <div class="col center" style="gap:26px;">
+        <img class="logo-hero reveal" src="logo-semfundo.png" alt="OLICMAT" />
+        <div class="brand-mark reveal d1">
+          <b class="o">O</b><b class="l">L</b><b class="i">I</b><b class="rest">CMAT</b>
+        </div>
+        <div class="reveal d2">
+          <span class="eyebrow gold">Lançamento Oficial · 1ª Edição</span>
+        </div>
+        <p class="lead reveal d3" style="max-width:760px;">
+          A Olimpíada para Licenciandos em Matemática — duas fases, um propósito:
+          <span style="color:var(--text-primary)">valorizar o conhecimento e a prática docente</span>.
+        </p>
+        <div class="reveal d4 row" style="gap:10px;">
+          <span class="badge gold">π Fase 1 · Prova Objetiva</span>
+          <span class="badge green">∫ Fase 2 · Videoaula + Portfólio</span>
+          <span class="badge blue">Σ Medalhas · Ranking Nacional</span>
+        </div>
+        <p class="muted reveal d5" style="font-family:var(--font-mono);font-size:14px;">19 de agosto de 2026</p>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 1 — ROTEIRO ================= -->
+    <section class="slide" data-label="Roteiro">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-gold" style="font-size:34px;">π</span>
+        <h2 class="title-2">O que vamos ver hoje</h2></div>
+        <p class="lead">Cinco blocos que contam a OLICMAT de ponta a ponta.</p>
+      </div>
+      <div class="grid grow" style="grid-template-columns:repeat(5,1fr);align-content:center;gap:16px;">
+        <div class="card reveal d1" style="text-align:center;"><div class="symbol accent-gold" style="font-size:44px;">π</div><div class="mono" style="font-size:12px;color:var(--text-tertiary);">01</div><h3 class="title-3" style="font-size:18px;margin-top:8px;">A Plataforma</h3><p class="muted" style="font-size:13px;">Landing pública</p></div>
+        <div class="card reveal d2" style="text-align:center;"><div class="symbol accent-blue" style="font-size:44px;">Σ</div><div class="mono" style="font-size:12px;color:var(--text-tertiary);">02</div><h3 class="title-3" style="font-size:18px;margin-top:8px;">Cadastro</h3><p class="muted" style="font-size:13px;">Configuração</p></div>
+        <div class="card reveal d3" style="text-align:center;"><div class="symbol accent-green" style="font-size:44px;">∫</div><div class="mono" style="font-size:12px;color:var(--text-tertiary);">03</div><h3 class="title-3" style="font-size:18px;margin-top:8px;">Inscrição</h3><p class="muted" style="font-size:13px;">Fluxo completo</p></div>
+        <div class="card reveal d4" style="text-align:center;"><div class="symbol accent-gold" style="font-size:44px;">∮</div><div class="mono" style="font-size:12px;color:var(--text-tertiary);">04</div><h3 class="title-3" style="font-size:18px;margin-top:8px;">Prova</h3><p class="muted" style="font-size:13px;">Execução online</p></div>
+        <div class="card reveal d5" style="text-align:center;"><div class="symbol accent-blue" style="font-size:44px;">≅</div><div class="mono" style="font-size:12px;color:var(--text-tertiary);">05</div><h3 class="title-3" style="font-size:18px;margin-top:8px;">Correção</h3><p class="muted" style="font-size:13px;">Classificação</p></div>
+      </div>
+      <p class="muted reveal d6" style="margin-top:26px;text-align:center;">Use <kbd style="font-family:var(--font-mono);color:var(--text-primary);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:1px 6px;">←</kbd> <kbd style="font-family:var(--font-mono);color:var(--text-primary);background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:1px 6px;">→</kbd> para navegar</p>
+    </section>
+
+    <!-- ================= BLOCO 1 — PLATAFORMA ================= -->
+    <section class="slide center" data-label="01 · A Plataforma">
+      <div class="col center" style="gap:20px;">
+        <div class="reveal"><span class="symbol accent-gold" style="font-size:120px;">π</span></div>
+        <div class="reveal d1"><span class="eyebrow">Bloco 01</span></div>
+        <h1 class="title-1 reveal d2">A Plataforma</h1>
+        <p class="lead reveal d3" style="max-width:640px;">A vitrine pública da OLCIAT — apresenta a competição, o cronograma e o ranking.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-label="O que é + público-alvo">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-gold" style="font-size:30px;">π</span>
+        <span class="eyebrow">O que é</span></div>
+        <h2 class="title-2">Uma competição em duas fases</h2>
+      </div>
+      <div class="triple grow reveal d1">
+        <div class="card feature-card">
+          <div class="sym accent-gold">π</div>
+          <div class="tag" style="color:var(--gold)">OLICMAT</div>
+          <h3 class="title-3">Fase 1</h3>
+          <p class="muted" style="font-size:14px;margin-top:10px;">Prova online com <b style="color:var(--text-primary)">30 questões</b> de múltipla escolha — matemática e didática. Duração de 3 horas.</p>
+          <div class="row" style="gap:8px;margin-top:14px;"><span class="pill">Cronometrada</span><span class="pill">30 questões</span><span class="pill">Online</span></div>
+        </div>
+        <div class="card feature-card">
+          <div class="sym accent-green">∫</div>
+          <div class="tag" style="color:var(--green)">OLICMAT</div>
+          <h3 class="title-3">Fase 2</h3>
+          <p class="muted" style="font-size:14px;margin-top:10px;">Sorteio de tema gerador + produção de <b style="color:var(--text-primary)">videoaula de 20 min</b> e portfólio digital.</p>
+          <div class="row" style="gap:8px;margin-top:14px;"><span class="pill">Videoaula 20min</span><span class="pill">Portfólio</span><span class="pill">Sorteio</span></div>
+        </div>
+        <div class="card feature-card">
+          <div class="sym accent-blue">Σ</div>
+          <div class="tag" style="color:var(--blue)">OLICMAT</div>
+          <h3 class="title-3">Premiação</h3>
+          <p class="muted" style="font-size:14px;margin-top:10px;">Medalhas de <b style="color:var(--text-primary)">ouro, prata e bronze</b> por estado, ranking nacional e certificados digitais.</p>
+          <div class="row" style="gap:8px;margin-top:14px;"><span class="pill">Medalhas</span><span class="pill">Ranking</span><span class="pill">Certificado</span></div>
+        </div>
+      </div>
+      <div class="row reveal d2" style="margin-top:24px;align-items:center;gap:14px;">
+        <span class="badge gray">👥 Público-alvo</span>
+        <p class="muted" style="font-size:16px;">Licenciandos em Matemática de todo o Brasil, seus coordenadores de curso e avaliadores.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Seções da landing">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-gold" style="font-size:30px;">π</span>
+        <span class="eyebrow">Página pública</span></div>
+        <h2 class="title-2">Landing page responsiva</h2>
+      </div>
+      <div class="row grow" style="align-items:stretch;">
+        <div class="mock reveal d1" style="flex:1.4;">
+          <div class="mock-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span class="mock-url">olicmat.cead.ufpi.br</span>
+          </div>
+          <div class="mock-body" style="display:flex;flex-direction:column;gap:12px;">
+            <div class="row" style="align-items:center;justify-content:space-between;">
+              <div style="font-family:var(--font-fraunces);font-weight:700;font-size:20px;"><span style="color:var(--gold)">O</span><span style="color:var(--green)">L</span><span style="color:var(--blue)">I</span><span>CMAT</span></div>
+              <div class="row" style="gap:14px;font-size:12px;color:var(--text-tertiary);"><span>Sobre</span><span>Cronograma</span><span>Ranking</span><span>Realização</span></div>
+            </div>
+            <div style="text-align:center;padding:26px 16px;background:var(--bg-primary);border-radius:12px;border:1px solid var(--border);">
+              <div class="accent-gold" style="font-family:var(--font-fraunces);font-size:26px;font-weight:700;">Duas fases, um propósito</div>
+              <div class="muted" style="font-size:13px;margin-top:6px;">Valorizar o conhecimento e a prática docente</div>
+              <div class="row center" style="gap:10px;margin-top:14px;">
+                <span class="btn gold" style="height:32px;font-size:12px;">Acessar plataforma</span>
+                <span class="btn outline" style="height:32px;font-size:12px;">Ver cronograma</span>
+              </div>
+            </div>
+            <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:8px;">
+              <div class="card surface" style="padding:10px;font-size:11px;"><span class="accent-gold" style="font-weight:700;">30/08</span><br/><span class="muted">Inscrições</span></div>
+              <div class="card surface" style="padding:10px;font-size:11px;"><span class="accent-gold" style="font-weight:700;">21/10</span><br/><span class="muted">Fase I</span></div>
+              <div class="card surface" style="padding:10px;font-size:11px;"><span class="accent-gold" style="font-weight:700;">11–13/11</span><br/><span class="muted">Fase II</span></div>
+              <div class="card surface" style="padding:10px;font-size:11px;"><span class="accent-gold" style="font-weight:700;">25/11</span><br/><span class="muted">Medalhistas</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col reveal d2" style="flex:1;justify-content:center;gap:14px;">
+          <div class="card"><span class="accent-gold" style="font-weight:700;">Hero</span> <span class="muted" style="font-size:14px;">— logo, tagline e CTA principal</span></div>
+          <div class="card"><span class="accent-green" style="font-weight:700;">Sobre</span> <span class="muted" style="font-size:14px;">— as duas fases e a premiação</span></div>
+          <div class="card"><span class="accent-blue" style="font-weight:700;">Cronograma</span> <span class="muted" style="font-size:14px;">— datas e prazos oficiais</span></div>
+          <div class="card"><span style="color:var(--text-primary);font-weight:700;">Ranking</span> <span class="muted" style="font-size:14px;">— medalhistas públicos</span></div>
+          <div class="card"><span class="accent-gold" style="font-weight:700;">Realização</span> <span class="muted" style="font-size:14px;">— parceiros e instituições</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BLOCO 2 — CADASTRO & CONFIG ================= -->
+    <section class="slide center" data-label="02 · Cadastro & Configuração">
+      <div class="col center" style="gap:20px;">
+        <div class="reveal"><span class="symbol accent-blue" style="font-size:120px;">Σ</span></div>
+        <div class="reveal d1"><span class="eyebrow">Bloco 02</span></div>
+        <h1 class="title-1 reveal d2">Cadastro &amp; Configuração</h1>
+        <p class="lead reveal d3" style="max-width:640px;">O painel administrativo que estrutura toda a competição — de instituições a provas.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Entidades do domínio">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-blue" style="font-size:30px;">Σ</span>
+        <span class="eyebrow">Modelo de dados</span></div>
+        <h2 class="title-2">Entidades do domínio</h2>
+      </div>
+      <div class="grid grow reveal d1" style="grid-template-columns:repeat(4,1fr);align-content:center;">
+        <div class="card" style="border-left:3px solid var(--gold);"><div class="mono" style="font-size:11px;color:var(--text-tertiary);">identity</div><h3 class="title-3" style="font-size:19px;">User</h3><p class="muted" style="font-size:13px;">perfis e autenticação</p></div>
+        <div class="card" style="border-left:3px solid var(--blue);"><div class="mono" style="font-size:11px;color:var(--text-tertiary);">catalog</div><h3 class="title-3" style="font-size:19px;">Instituição · Curso</h3><p class="muted" style="font-size:13px;">catálogo e nota ENADE</p></div>
+        <div class="card" style="border-left:3px solid var(--green);"><div class="mono" style="font-size:11px;color:var(--text-tertiary);">competition</div><h3 class="title-3" style="font-size:19px;">Edição · Prova</h3><p class="muted" style="font-size:13px;">2 edições/ano, fases</p></div>
+        <div class="card" style="border-left:3px solid var(--gold);"><div class="mono" style="font-size:11px;color:var(--text-tertiary);">content</div><h3 class="title-3" style="font-size:19px;">Questão</h3><p class="muted" style="font-size:13px;">5 alternativas, eixo, dificuldade</p></div>
+        <div class="card" style="border-left:3px solid var(--blue);"><div class="mono" style="font-size:11px;color:var(--text-tertiary);">enrollment</div><h3 class="title-3" style="font-size:19px;">Inscrição</h3><p class="muted" style="font-size:13px;">estados e documentos</p></div>
+        <div class="card" style="border-left:3px solid var(--green);"><div class="mono" style="font-size:11px;color:var(--text-tertiary);">response</div><h3 class="title-3" style="font-size:19px;">Resposta · Envio</h3><p class="muted" style="font-size:13px;">Fase 1 e Fase 2</p></div>
+        <div class="card" style="border-left:3px solid var(--gold);"><div class="mono" style="font-size:11px;color:var(--text-tertiary);">result</div><h3 class="title-3" style="font-size:19px;">Avaliação</h3><p class="muted" style="font-size:13px;">notas por fase</p></div>
+        <div class="card" style="border-left:3px solid var(--blue);"><div class="mono" style="font-size:11px;color:var(--text-tertiary);">publish</div><h3 class="title-3" style="font-size:19px;">RankingSnapshot</h3><p class="muted" style="font-size:13px;">publicação controlada</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="5 perfis de acesso">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-blue" style="font-size:30px;">Σ</span>
+        <span class="eyebrow">Controle de acesso</span></div>
+        <h2 class="title-2">Cinco perfis, uma plataforma</h2>
+      </div>
+      <div class="row grow" style="align-items:center;">
+        <div class="col center reveal d1" style="flex:0 0 220px;gap:4px;">
+          <div class="metric accent-gold">5</div>
+          <div class="metric-label">perfis de acesso</div>
+        </div>
+        <div class="grid" style="flex:1;grid-template-columns:repeat(2,1fr);gap:14px;">
+          <div class="card reveal d2" style="border-left:3px solid var(--blue);"><div class="row" style="align-items:center;gap:10px;"><span class="badge blue">ALUNO</span></div><p class="muted" style="font-size:14px;margin-top:8px;">Inscreve-se, faz a prova, envia a Fase 2 e acompanha resultados.</p></div>
+          <div class="card reveal d3" style="border-left:3px solid var(--green);"><div class="row" style="align-items:center;gap:10px;"><span class="badge green">COORDENADOR_CURSO</span></div><p class="muted" style="font-size:14px;margin-top:8px;">Acompanha os alunos do curso e o status das inscrições.</p></div>
+          <div class="card reveal d4" style="border-left:3px solid var(--gold);"><div class="row" style="align-items:center;gap:10px;"><span class="badge gold">AVALIADOR</span></div><p class="muted" style="font-size:14px;margin-top:8px;">Cria questões, gerencia provas e avalia a Fase 2.</p></div>
+          <div class="card reveal d5" style="border-left:3px solid var(--blue);"><div class="row" style="align-items:center;gap:10px;"><span class="badge blue">ADMIN</span></div><p class="muted" style="font-size:14px;margin-top:8px;">Tudo: usuários, validação, publicação, exportações e auditoria.</p></div>
+          <div class="card reveal d6" style="border-left:3px solid var(--green);grid-column:1/-1;"><div class="row" style="align-items:center;gap:10px;"><span class="badge gray">COMISSAO</span></div><p class="muted" style="font-size:14px;margin-top:8px;">Comissão organizadora — monitora provas em tempo real e acompanha a classificação.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Dashboards + exportação + auditoria">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-blue" style="font-size:30px;">Σ</span>
+        <span class="eyebrow">Operação</span></div>
+        <h2 class="title-2">Dashboards, exportações e auditoria</h2>
+      </div>
+      <div class="row grow" style="align-items:stretch;">
+        <div class="mock reveal d1" style="flex:1.5;">
+          <div class="mock-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="mock-url">admin · dashboard</span></div>
+          <div class="mock-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:10px;">
+              <div class="card surface" style="padding:14px;"><div class="metric" style="font-size:30px;color:var(--gold);">1.204</div><div class="metric-label" style="font-size:11px;">Inscrições</div></div>
+              <div class="card surface" style="padding:14px;"><div class="metric" style="font-size:30px;color:var(--green);">96%</div><div class="metric-label" style="font-size:11px;">Validadas</div></div>
+              <div class="card surface" style="padding:14px;"><div class="metric" style="font-size:30px;color:var(--blue);">68</div><div class="metric-label" style="font-size:11px;">Instituições</div></div>
+              <div class="card surface" style="padding:14px;"><div class="metric" style="font-size:30px;color:var(--text-primary);">3</div><div class="metric-label" style="font-size:11px;">Provas ativas</div></div>
+            </div>
+            <div class="mock-bar" style="border-radius:8px;"><span style="font-size:11px;color:var(--text-tertiary);">Inscrições recentes</span></div>
+            <div style="font-size:12px;color:var(--text-tertiary);display:flex;flex-direction:column;gap:8px;">
+              <div class="row" style="justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:6px;"><span>Lucas Silva</span><span class="badge green" style="font-size:11px;">CONFIRMADA</span></div>
+              <div class="row" style="justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:6px;"><span>Maria Souza</span><span class="badge gold" style="font-size:11px;">PENDENTE</span></div>
+              <div class="row" style="justify-content:space-between;"><span>João Lima</span><span class="badge green" style="font-size:11px;">CONFIRMADA</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col reveal d2" style="flex:1;justify-content:center;gap:16px;">
+          <div class="card">
+            <div class="accent-gold" style="font-weight:700;margin-bottom:6px;">⬇ Exportações</div>
+            <p class="muted" style="font-size:14px;">Relatórios em CSV de inscrições, resultados e ranking — um clique.</p>
+          </div>
+          <div class="card">
+            <div class="accent-green" style="font-weight:700;margin-bottom:6px;">🗂 Auditoria</div>
+            <p class="muted" style="font-size:14px;">Trilha de auditoria de cada ação crítica — quem fez, quando e o quê.</p>
+          </div>
+          <div class="card">
+            <div class="accent-blue" style="font-weight:700;margin-bottom:6px;">📅 Edições</div>
+            <p class="muted" style="font-size:14px;">Até duas edições por ano (semestre 1 e 2), com janelas de inscrição.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BLOCO 3 — INSCRIÇÃO ================= -->
+    <section class="slide center" data-label="03 · Fluxo de Inscrição">
+      <div class="col center" style="gap:20px;">
+        <div class="reveal"><span class="symbol accent-green" style="font-size:120px;">∫</span></div>
+        <div class="reveal d1"><span class="eyebrow">Bloco 03</span></div>
+        <h1 class="title-1 reveal d2">Fluxo de Inscrição</h1>
+        <p class="lead reveal d3" style="max-width:640px;">Do cadastro à validação — simples para o aluno, controlado para a organização.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Passo a passo">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-green" style="font-size:30px;">∫</span>
+        <span class="eyebrow">Jornada do aluno</span></div>
+        <h2 class="title-2">Inscrição em cinco passos</h2>
+      </div>
+      <div class="grow reveal d1" style="display:flex;align-items:center;">
+        <div class="flow" style="width:100%;">
+          <div class="step"><div class="step-num">1</div><div style="font-weight:700;">Cadastro</div><p class="muted" style="font-size:13px;margin-top:6px;">Conta com dados pessoais e perfil ALUNO</p></div>
+          <div class="step"><div class="step-num">2</div><div style="font-weight:700;">Instituição</div><p class="muted" style="font-size:13px;margin-top:6px;">Seleção de instituição e curso</p></div>
+          <div class="step"><div class="step-num">3</div><div style="font-weight:700;">Documentos</div><p class="muted" style="font-size:13px;margin-top:6px;">Upload do comprovante de matrícula</p></div>
+          <div class="step"><div class="step-num">4</div><div style="font-weight:700;">Envio</div><p class="muted" style="font-size:13px;margin-top:6px;">Submissão da inscrição na edição</p></div>
+          <div class="step"><div class="step-num">5</div><div style="font-weight:700;">Validação</div><p class="muted" style="font-size:13px;margin-top:6px;">Análise pela organização</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Estados + documentos">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-green" style="font-size:30px;">∫</span>
+        <span class="eyebrow">Controle</span></div>
+        <h2 class="title-2">Estados e documentos</h2>
+      </div>
+      <div class="row grow" style="align-items:center;gap:30px;">
+        <div class="col reveal d1" style="flex:1;gap:16px;">
+          <div class="card" style="border-left:3px solid var(--gold);"><div class="row" style="align-items:center;justify-content:space-between;"><span style="font-weight:700;">PENDENTE</span><span class="badge gold">aguardando análise</span></div></div>
+          <div class="card" style="border-left:3px solid var(--green);"><div class="row" style="align-items:center;justify-content:space-between;"><span style="font-weight:700;">CONFIRMADA</span><span class="badge green">apto a participar</span></div></div>
+          <div class="card" style="border-left:3px solid #e53e3e;"><div class="row" style="align-items:center;justify-content:space-between;"><span style="font-weight:700;">REJEITADA</span><span class="badge" style="color:#e5534b;background:rgba(229,62,62,.12);border:1px solid rgba(229,62,62,.3);">documento inválido</span></div></div>
+        </div>
+        <div class="col reveal d2" style="flex:1;gap:14px;">
+          <div class="card">
+            <div class="accent-gold" style="font-weight:700;margin-bottom:8px;">📎 Documentos exigidos</div>
+            <div class="col" style="gap:8px;">
+              <span class="pill">✓ Comprovante de matrícula</span>
+              <span class="pill">✓ Documento de identidade</span>
+              <span class="pill">✓ Declaração de curso (se necessário)</span>
+            </div>
+          </div>
+          <p class="muted" style="font-size:14px;">Armazenamento seguro via Cloudinary, com validação pela comissão organizadora.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BLOCO 4 — PROVA ================= -->
+    <section class="slide center" data-label="04 · Sistema de Prova">
+      <div class="col center" style="gap:20px;">
+        <div class="reveal"><span class="symbol accent-gold" style="font-size:120px;">∮</span></div>
+        <div class="reveal d1"><span class="eyebrow">Bloco 04</span></div>
+        <h1 class="title-1 reveal d2">Sistema de Prova</h1>
+        <p class="lead reveal d3" style="max-width:640px;">Execução online da Fase 1 — cronometrada, com autosave e antifraude.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Execução da prova">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-gold" style="font-size:30px;">∮</span>
+        <span class="eyebrow">Fase 1</span></div>
+        <h2 class="title-2">Prova cronometrada com autosave</h2>
+      </div>
+      <div class="row grow" style="align-items:stretch;gap:24px;">
+        <div class="mock reveal d1" style="flex:1.3;">
+          <div class="mock-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="mock-url">prova.olicmat.cead.ufpi.br</span></div>
+          <div class="mock-body" style="display:flex;flex-direction:column;gap:12px;">
+            <div class="row" style="align-items:center;justify-content:space-between;">
+              <span style="font-size:13px;color:var(--text-secondary);">Questão <b style="color:var(--text-primary);">7</b> de <b style="color:var(--text-primary);">30</b></span>
+              <span class="timer-chip">02:41:07</span>
+            </div>
+            <div class="card surface" style="font-size:14px;line-height:1.5;">Se a função quadrática <i style="color:var(--gold)">f(x) = x² − 4x + 3</i> possui raízes α e β, determine suas raízes:</div>
+            <div class="col" style="gap:0;">
+              <div class="alt-row"><span class="letter">A</span> α = 1 e β = 3</div>
+              <div class="alt-row sel"><span class="letter">B</span> α = 2 e β = 2</div>
+              <div class="alt-row"><span class="letter">C</span> α = 0 e β = 4</div>
+              <div class="alt-row"><span class="letter">D</span> α = −1 e β = −3</div>
+              <div class="alt-row"><span class="letter">E</span> α = 1 e β = 4</div>
+            </div>
+          </div>
+        </div>
+        <div class="col reveal d2" style="flex:1;justify-content:center;gap:22px;">
+          <div class="card surface center">
+            <div class="metric accent-gold">30</div>
+            <div class="metric-label">questões</div>
+          </div>
+          <div class="card surface center">
+            <div class="metric accent-blue">180</div>
+            <div class="metric-label">minutos</div>
+          </div>
+          <div class="col" style="gap:8px;">
+            <span class="pill">💾 Autosave a cada resposta</span>
+            <span class="pill">✅ Finalização manual</span>
+            <span class="pill">⏱ Envio automático ao expirar</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Antifraude">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-gold" style="font-size:30px;">∮</span>
+        <span class="eyebrow">Integridade</span></div>
+        <h2 class="title-2">Antifraude e integridade da prova</h2>
+      </div>
+      <div class="grid grow reveal d1" style="grid-template-columns:repeat(2,1fr);align-content:center;gap:16px;">
+        <div class="card"><span class="symbol accent-gold" style="font-size:30px;">⛶</span><h3 class="title-3" style="font-size:19px;margin-top:8px;">Tela cheia</h3><p class="muted" style="font-size:14px;">A prova exige fullscreen; sair da tela gera alerta.</p></div>
+        <div class="card"><span class="symbol accent-blue" style="font-size:30px;">👁</span><h3 class="title-3" style="font-size:19px;margin-top:8px;">Detecção de visibilidade</h3><p class="muted" style="font-size:14px;">Troca de aba minimiza e registra a ocorrência.</p></div>
+        <div class="card"><span class="symbol accent-green" style="font-size:30px;">⚠</span><h3 class="title-3" style="font-size:19px;margin-top:8px;">Avisos progressivos</h3><p class="muted" style="font-size:14px;">Contador de infrações com aviso antes do envio automático.</p></div>
+        <div class="card"><span class="symbol accent-gold" style="font-size:30px;">⇄</span><h3 class="title-3" style="font-size:19px;margin-top:8px;">Ordem aleatória</h3><p class="muted" style="font-size:14px;">Questões e alternativas embaralhadas por aluno.</p></div>
+      </div>
+    </section>
+
+    <!-- ================= BLOCO 5 — CORREÇÃO & CLASSIFICAÇÃO ================= -->
+    <section class="slide center" data-label="05 · Correção & Classificação">
+      <div class="col center" style="gap:20px;">
+        <div class="reveal"><span class="symbol accent-blue" style="font-size:120px;">≅</span></div>
+        <div class="reveal d1"><span class="eyebrow">Bloco 05</span></div>
+        <h1 class="title-1 reveal d2">Correção &amp; Classificação</h1>
+        <p class="lead reveal d3" style="max-width:640px;">Da correção automática à publicação do ranking — com medalhas e desempate.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Fase 1 auto vs Fase 2 manual">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-blue" style="font-size:30px;">≅</span>
+        <span class="eyebrow">Correção</span></div>
+        <h2 class="title-2">Duas fases, dois modelos</h2>
+      </div>
+      <div class="row grow" style="align-items:stretch;">
+        <div class="card reveal d1" style="flex:1;border-top:3px solid var(--gold);">
+          <div class="symbol accent-gold" style="font-size:40px;">π</div>
+          <h3 class="title-3" style="margin-top:8px;">Fase 1 — Automática</h3>
+          <p class="muted" style="font-size:15px;margin-top:10px;">Gabarito corrige as 30 questões de múltipla escolha em tempo real, sem intervenção humana.</p>
+          <div class="row" style="gap:8px;margin-top:14px;"><span class="badge gold">Instantânea</span><span class="badge gold">Objetiva</span></div>
+        </div>
+        <div class="card reveal d2" style="flex:1;border-top:3px solid var(--green);">
+          <div class="symbol accent-green" style="font-size:40px;">∫</div>
+          <h3 class="title-3" style="margin-top:8px;">Fase 2 — Manual</h3>
+          <p class="muted" style="font-size:15px;margin-top:10px;">Avaliadores analisam videoaula e portfólio com rubricas padronizadas.</p>
+          <div class="row" style="gap:8px;margin-top:14px;"><span class="badge green">Rubrica</span><span class="badge green">Avaliadores</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Nota final + ranking + medalhas">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-blue" style="font-size:30px;">≅</span>
+        <span class="eyebrow">Classificação</span></div>
+        <h2 class="title-2">Nota final, desempate e medalhas</h2>
+      </div>
+      <div class="row grow" style="align-items:center;gap:30px;">
+        <div class="col reveal d1" style="flex:1;gap:16px;">
+          <div class="card"><div class="mono" style="font-size:12px;color:var(--text-tertiary);">nota final</div><div class="metric" style="font-size:40px;">0,5 · F1 <span style="color:var(--gold)">+</span> 0,5 · F2</div><p class="muted" style="font-size:14px;margin-top:6px;">Pesos configuráveis por edição.</p></div>
+          <div class="card"><div class="accent-gold" style="font-weight:700;">⚖ Desempate</div><p class="muted" style="font-size:14px;margin-top:6px;">Critérios objetivos ordenam candidatos empatados.</p></div>
+          <div class="card"><div class="accent-blue" style="font-weight:700;">📊 Ranking</div><p class="muted" style="font-size:14px;margin-top:6px;">Estadual e nacional, com certificados digitais.</p></div>
+        </div>
+        <div class="col reveal d2" style="flex:1;align-items:center;">
+          <div class="podium">
+            <div class="podium-col"><span class="medal">🥈</span><div class="podium-block podium-2">2</div><div class="metric-label">Prata</div></div>
+            <div class="podium-col"><span class="medal">🥇</span><div class="podium-block podium-1">1</div><div class="metric-label">Ouro</div></div>
+            <div class="podium-col"><span class="medal">🥉</span><div class="podium-block podium-3">3</div><div class="metric-label">Bronze</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Publicação controlada">
+      <div class="section-head reveal">
+        <div class="kicker"><span class="symbol accent-blue" style="font-size:30px;">≅</span>
+        <span class="eyebrow">Publicação</span></div>
+        <h2 class="title-2">Publicação controlada do resultado</h2>
+      </div>
+      <div class="row grow" style="align-items:center;gap:30px;">
+        <div class="mock reveal d1" style="flex:1.2;">
+          <div class="mock-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span><span class="mock-url">admin · ranking</span></div>
+          <div class="mock-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="row" style="align-items:center;justify-content:space-between;">
+              <div><div style="font-weight:700;">Ranking público</div><div class="muted" style="font-size:12px;">RankingSnapshot · 25/11/2026</div></div>
+              <span class="toggle on"><span class="knob"></span></span>
+            </div>
+            <div class="mock-bar" style="border-radius:8px;"><span style="font-size:11px;color:var(--text-tertiary);">Top 3 · Nacional</span></div>
+            <div style="font-size:13px;display:flex;flex-direction:column;gap:8px;">
+              <div class="row" style="justify-content:space-between;"><span>🥇 1º — Ana Beatriz</span><span class="accent-gold">94,5</span></div>
+              <div class="row" style="justify-content:space-between;"><span>🥈 2º — Lucas Silva</span><span class="accent-gold">91,2</span></div>
+              <div class="row" style="justify-content:space-between;"><span>🥉 3º — Maria Souza</span><span class="accent-gold">89,8</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col reveal d2" style="flex:1;justify-content:center;gap:16px;">
+          <div class="card"><div class="accent-green" style="font-weight:700;margin-bottom:6px;">🔒 Publicação sob demanda</div><p class="muted" style="font-size:14px;">O resultado só aparece quando a organização publica o snapshot.</p></div>
+          <div class="card"><div class="accent-gold" style="font-weight:700;margin-bottom:6px;">🕘 Histórico</div><p class="muted" style="font-size:14px;">Cada publicação fica versionada e auditável.</p></div>
+          <div class="card"><div class="accent-blue" style="font-weight:700;margin-bottom:6px;">🎖 Medalhas</div><p class="muted" style="font-size:14px;">Ouro, prata e bronze por estado, com destaque nacional.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ENCERRAMENTO ================= -->
+    <section class="slide center" data-label="Encerramento">
+      <div class="col center" style="gap:22px;">
+        <div class="reveal"><span class="eyebrow gold">Inscrições abertas</span></div>
+        <h1 class="title-1 reveal d1">30 de agosto de 2026</h1>
+        <p class="lead reveal d2" style="max-width:680px;">Participe da 1ª Olimpíada para Licenciandos em Matemática. As inscrições vão de <b style="color:var(--text-primary)">30/08 a 25/09/2026</b>.</p>
+        <div class="row reveal d3" style="align-items:center;gap:20px;">
+          <div class="card surface center" style="min-width:180px;">
+            <img id="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Folicmat.cead.ufpi.br&bgcolor=1a1a26&color=f0ece4" alt="QR Code" width="120" height="120" style="border-radius:8px;background:#f0ece4;padding:6px;" />
+            <div class="mono" style="font-size:12px;color:var(--text-secondary);margin-top:10px;">olicmat.cead.ufpi.br</div>
+          </div>
+          <div class="col" style="gap:10px;text-align:left;">
+            <a class="btn gold" href="https://olicmat.cead.ufpi.br" target="_blank" style="font-size:15px;height:48px;text-decoration:none;">Acessar a plataforma →</a>
+            <span class="badge blue">π Fase I · 21/10</span>
+            <span class="badge green">∫ Fase II · 11–13/11</span>
+            <span class="badge gold">Σ Medalhistas · 25/11</span>
+          </div>
+        </div>
+        <p class="reveal d4" style="font-size:26px;font-family:var(--font-fraunces);font-weight:700;margin-top:4px;">
+          <span class="accent-gold">O</span><span class="accent-green">L</span><span class="accent-blue">I</span><span>CMAT — Vamos começar! 🚀</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- HUD fixo -->
+    <div id="hud">
+      <span id="brand-mini">OLICMAT</span>
+      <div id="progress-track"><div id="progress-fill"></div></div>
+      <span id="counter">1 / 20</span>
+    </div>
+  </div>
+</div>
+
+<!-- Overlay do apresentador -->
+<div id="presenter">
+  <span class="p-label">Apresentador</span>
+  <span class="p-big" id="p-counter">1 / 20</span>
+  <span id="p-label">Abertura</span>
+</div>
+
+<div id="help"><kbd>←</kbd><kbd>→</kbd> navegar · <kbd>Espaço</kbd> avançar · <kbd>P</kbd> apresentador · <kbd>F</kbd> tela cheia · <kbd>G</kbd> ir para slide</div>
+
+<button class="nav-arrow" id="prev" aria-label="Anterior">‹</button>
+<button class="nav-arrow" id="next" aria-label="Próximo">›</button>
+
+<script>
+(function () {
+  const stage = document.getElementById('stage');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const counter = document.getElementById('counter');
+  const progressFill = document.getElementById('progress-fill');
+  const presenter = document.getElementById('presenter');
+  const pCounter = document.getElementById('p-counter');
+  const pLabel = document.getElementById('p-label');
+  const total = slides.length;
+  let current = 0;
+  let presenterOn = false;
+
+  // --- Escala 16:9 para caber na viewport ---
+  function fit() {
+    const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    stage.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  // --- Render ---
+  function render() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+      if (i !== current) s.classList.remove('exit');
+    });
+    counter.textContent = (current + 1) + ' / ' + total;
+    pCounter.textContent = (current + 1) + ' / ' + total;
+    pLabel.textContent = slides[current].dataset.label || '';
+    progressFill.style.width = (((current + 1) / total) * 100) + '%';
+    document.title = 'OLICMAT — ' + (slides[current].dataset.label || 'Lançamento');
+  }
+
+  function go(n) {
+    if (n < 0 || n >= total || n === current) return;
+    slides[current].classList.add('exit');
+    current = n;
+    render();
+  }
+  const next = () => go(current + 1);
+  const prev = () => go(current - 1);
+
+  // --- Input ---
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End') { e.preventDefault(); go(total - 1); }
+    else if (e.key.toLowerCase() === 'p') { presenterOn = !presenterOn; presenter.classList.toggle('visible', presenterOn); }
+    else if (e.key.toLowerCase() === 'f') { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen(); }
+    else if (e.key.toLowerCase() === 'g') {
+      const target = prompt('Ir para o slide (1-' + total + '):');
+      if (target) { const t = parseInt(target, 10); if (t >= 1 && t <= total) go(t - 1); }
+    }
+  });
+
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+
+  // Clique para avançar (ignora cliques em links/botões)
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.nav-arrow') || e.target.closest('a') || e.target.closest('button')) return;
+    next();
+  });
+
+  // Swipe (touch)
+  let touchX = null, touchY = null;
+  document.addEventListener('touchstart', (e) => {
+    touchX = e.touches[0].clientX; touchY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX;
+    const dy = e.changedTouches[0].clientY - touchY;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      dx < 0 ? next() : prev();
+    }
+    touchX = null;
+  }, { passive: true });
+
+  render();
+})();
+</script>
+</body>
+</html>
