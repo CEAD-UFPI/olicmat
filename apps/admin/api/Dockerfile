@@ -54,6 +54,7 @@ COPY --from=builder /app/apps/admin/api/node_modules   ./node_modules
 COPY --from=builder /app/apps/admin/api/dist           ./dist
 COPY --from=builder /app/apps/admin/api/package.json   ./package.json
 COPY --from=builder /app/apps/admin/api/prisma         ./prisma
+COPY --from=builder /app/apps/admin/api/generated      ./generated
 COPY --from=builder /app/apps/admin/api/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/apps/admin/api/start.sh       ./start.sh
 
