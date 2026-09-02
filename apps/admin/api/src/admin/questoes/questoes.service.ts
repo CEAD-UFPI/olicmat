@@ -3,6 +3,8 @@ import { PrismaService } from "../../prisma.service.js";
 import { AuditoriaService } from "../auditoria/auditoria.service.js";
 import type { CriarQuestaoDto, VincularQuestaoDto, AtualizarQuestaoDto } from "./dto/questoes.dto.js";
 import type { ProvaQuestao } from "../../../generated/prisma/client.js";
+import type { PaginationParams } from "../../common/pagination.js";
+import { getSkipTake, paginate } from "../../common/pagination.js";
 
 @Injectable()
 export class QuestoesService {
@@ -108,15 +110,27 @@ export class QuestoesService {
     return questao;
   }
 
-  async findAll(filters?: { eixo?: string; dificuldade?: string }) {
+  async findAll(
+    filters?: { eixo?: string; dificuldade?: string },
+    params?: PaginationParams
+  ) {
     const where: Record<string, unknown> = {};
     if (filters?.eixo) where.eixo = filters.eixo;
     if (filters?.dificuldade) where.dificuldade = filters.dificuldade;
 
-    return this.prisma.questao.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    });
+    const orderBy = { createdAt: "desc" as const };
+
+    if (params?.page === undefined && params?.limit === undefined) {
+      return this.prisma.questao.findMany({ where, orderBy });
+    }
+
+    const { skip, take } = getSkipTake(params);
+    const [data, total] = await Promise.all([
+      this.prisma.questao.findMany({ where, orderBy, skip, take }),
+      this.prisma.questao.count({ where }),
+    ]);
+
+    return paginate(data, total, params);
   }
 
   async findExamQuestions(provaId: string) {

@@ -1,0 +1,27 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": [
+      "ts-jest",
+      {
+        "tsconfig": {
+          "module": "commonjs",
+          "moduleResolution": "node",
+          "resolvePackageJsonExports": false,
+          "verbatimModuleSyntax": false,
+          "esModuleInterop": true,
+          "allowSyntheticDefaultImports": true,
+          "target": "ES2022"
+        }
+      }
+    ]
+  },
+  "moduleNameMapper": {
+    "prisma\\.service\\.js$": "<rootDir>/../src/test/__mocks__/prisma.service.ts",
+    "^@olicmat/shared$": "<rootDir>/../../../../packages/shared/src/index.ts",
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  }
+}

@@ -27,6 +27,7 @@ enum StatusInsc {
 
 enum StatusProva {
   RASCUNHO
+  EM_REVISAO
   PUBLICADA
   EM_ANDAMENTO
   ENCERRADA
@@ -248,11 +249,13 @@ model Edicao {
   dataFim         DateTime?
   pesoFase1       Float     @default(0.5)
   pesoFase2       Float     @default(0.5)
+  desempate       String[]  @default(["NOTA_FASE2", "NOTA_FASE1", "IDADE"])
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   provas          Prova[]
   inscricoes      Inscricao[]
+  rankingSnapshots RankingSnapshot[]
 
   @@unique([ano, semestre])
 }
@@ -421,10 +424,13 @@ model Token {
 model RankingSnapshot {
   id          String    @id @default(uuid())
   edicaoId    String
+  edicao      Edicao    @relation(fields: [edicaoId], references: [id], onDelete: Cascade)
   estado      String?
   dados       Json
   publicadoEm DateTime?
   createdAt   DateTime  @default(now())
+
+  @@index([edicaoId])
 }
 
 model AuditLog {

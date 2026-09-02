@@ -11,6 +11,8 @@ import { PrismaService } from "../../prisma.service.js";
 import { AuditoriaService } from "../auditoria/auditoria.service.js";
 import { EmailService } from "../../email/email.service.js";
 import type { CriarUsuarioDto, AtualizarUsuarioDto } from "./dto/usuarios.dto.js";
+import type { PaginationParams } from "../../common/pagination.js";
+import { getSkipTake, paginate } from "../../common/pagination.js";
 
 @Injectable()
 export class AdminUsuariosService {
@@ -74,7 +76,7 @@ export class AdminUsuariosService {
     throw new ForbiddenException("Acesso negado");
   }
 
-  async findAll(actor: { id: string; role: string }) {
+  async findAll(actor: { id: string; role: string }, params?: PaginationParams) {
     const where: any = {};
 
     if (actor.role === "COMISSAO") {
@@ -98,23 +100,20 @@ export class AdminUsuariosService {
       throw new ForbiddenException("Acesso negado");
     }
 
-    const users = await this.prisma.user.findMany({
-      where,
-      select: {
-        id: true,
-        nome: true,
-        email: true,
-        role: true,
-        matricula: true,
-        comprovanteUrl: true,
-        createdAt: true,
-        instituicao: { select: { nome: true, sigla: true } },
-        curso: { select: { nome: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const select = {
+      id: true,
+      nome: true,
+      email: true,
+      role: true,
+      matricula: true,
+      comprovanteUrl: true,
+      createdAt: true,
+      instituicao: { select: { nome: true, sigla: true } },
+      curso: { select: { nome: true } },
+    };
+    const orderBy = { createdAt: "desc" as const };
 
-    return users.map((u) => ({
+    const toDto = (u: any) => ({
       id: u.id,
       nome: u.nome,
       email: u.email,
@@ -124,7 +123,20 @@ export class AdminUsuariosService {
       createdAt: u.createdAt,
       instituicao: u.instituicao?.sigla ?? u.instituicao?.nome ?? undefined,
       curso: u.curso?.nome ?? undefined,
-    }));
+    });
+
+    if (params?.page === undefined && params?.limit === undefined) {
+      const users = await this.prisma.user.findMany({ where, select, orderBy });
+      return users.map(toDto);
+    }
+
+    const { skip, take } = getSkipTake(params);
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({ where, select, orderBy, skip, take }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return paginate(users.map(toDto), total, params);
   }
 
   async findById(id: string, actor: { id: string; role: string }) {

@@ -25,3 +25,9 @@ export const publicarProvaSchema = z.object({
 });
 
 export type PublicarProvaDto = z.infer<typeof publicarProvaSchema>;
+
+export const rejeitarProvaSchema = z.object({
+  observacao: z.string().min(3, "Observação deve ter no mínimo 3 caracteres").optional(),
+});
+
+export type RejeitarProvaDto = z.infer<typeof rejeitarProvaSchema>;

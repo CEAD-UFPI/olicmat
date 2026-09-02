@@ -41,7 +41,17 @@ export default function RankingPage() {
     setCarregando(true);
     try {
       const { data } = await api.get(`/ranking${uf ? `?estado=${uf}` : ""}`);
-      setRanking(uf ? { [uf]: [...(data.OURO || []), ...(data.PRATA || []), ...(data.BRONZE || [])] } : data);
+      if (uf) {
+        setRanking({ [uf]: [...(data.OURO || []), ...(data.PRATA || []), ...(data.BRONZE || [])] });
+      } else {
+        const agrupado: Record<string, Competidor[]> = {};
+        for (const [est, grupo] of Object.entries<
+          { OURO?: Competidor[]; PRATA?: Competidor[]; BRONZE?: Competidor[] }
+        >(data)) {
+          agrupado[est] = [...(grupo.OURO || []), ...(grupo.PRATA || []), ...(grupo.BRONZE || [])];
+        }
+        setRanking(agrupado);
+      }
     } catch {
       setRanking({});
     } finally {

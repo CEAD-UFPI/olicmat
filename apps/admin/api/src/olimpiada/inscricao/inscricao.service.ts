@@ -8,6 +8,8 @@ import {
 import { PrismaService } from "../../prisma.service.js";
 import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
 import type { CriarInscricaoDto, EditarInscricaoDto } from "./dto/inscricao.dto.js";
+import type { PaginationParams } from "../../common/pagination.js";
+import { getSkipTake, paginate } from "../../common/pagination.js";
 
 const TEMAS_GERADORES = [
   "Funções no Cotidiano",
@@ -258,7 +260,13 @@ export class InscricaoService {
     });
   }
 
-  async listarTodas(userRole?: string, userId?: string, cursoId?: string, status?: string) {
+  async listarTodas(
+    userRole?: string,
+    userId?: string,
+    cursoId?: string,
+    status?: string,
+    params?: PaginationParams
+  ) {
     const where: Record<string, unknown> = {};
 
     if (status) {
@@ -273,22 +281,31 @@ export class InscricaoService {
     }
     // ADMIN, COMISSAO, AVALIADOR see all
 
-    return this.prisma.inscricao.findMany({
-      where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            nome: true,
-            email: true,
-            instituicao: { select: { id: true, nome: true, sigla: true } },
-          },
+    const include = {
+      user: {
+        select: {
+          id: true,
+          nome: true,
+          email: true,
+          instituicao: { select: { id: true, nome: true, sigla: true } },
         },
-        instituicao: { select: { id: true, nome: true, sigla: true } },
-        curso: { select: { id: true, nome: true } },
       },
-      orderBy: { createdAt: "desc" },
-    });
+      instituicao: { select: { id: true, nome: true, sigla: true } },
+      curso: { select: { id: true, nome: true } },
+    };
+    const orderBy = { createdAt: "desc" as const };
+
+    if (params?.page === undefined && params?.limit === undefined) {
+      return this.prisma.inscricao.findMany({ where, include, orderBy });
+    }
+
+    const { skip, take } = getSkipTake(params);
+    const [data, total] = await Promise.all([
+      this.prisma.inscricao.findMany({ where, include, orderBy, skip, take }),
+      this.prisma.inscricao.count({ where }),
+    ]);
+
+    return paginate(data, total, params);
   }
 
   async atualizarStatus(inscricaoId: string, status: string, actor: { id: string; role: string }) {

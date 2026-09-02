@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, ClipboardList, Clock, BookOpen, Building2, GraduationCap, Calendar } from "lucide-react";
+import { Users, ClipboardList, Clock, BookOpen, Building2, GraduationCap, Calendar, Trophy } from "lucide-react";
 
 interface AdminResumo {
   totalUsuarios?: number;
@@ -45,6 +45,7 @@ export default function AdminPage() {
     { href: "/admin/provas", label: "Provas", descricao: "Criar e gerenciar provas", icon: BookOpen, cor: "#4CAF50" },
     { href: "/admin/avaliacao", label: "Avaliacao", descricao: "Avaliar Fase 2", icon: ClipboardList, cor: "#E8B829" },
     { href: "/admin/exportar", label: "Exportar", descricao: "Exportar dados dos resultados", icon: BookOpen, cor: "#3AAFE0" },
+    { href: "/admin/ranking", label: "Ranking", descricao: "Calcular medalhas e publicar resultado", icon: Trophy, cor: "#f59e0b" },
     { href: "/admin/auditoria", label: "Auditoria", descricao: "Log de acoes do sistema", icon: Clock, cor: "#9895a4" },
   ];
 

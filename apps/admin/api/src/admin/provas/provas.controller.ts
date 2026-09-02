@@ -12,8 +12,16 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { ProvasService } from "./provas.service.js";
-import { criarProvaSchema, atualizarProvaSchema } from "./dto/provas.dto.js";
-import type { CriarProvaDto, AtualizarProvaDto } from "./dto/provas.dto.js";
+import {
+  criarProvaSchema,
+  atualizarProvaSchema,
+  rejeitarProvaSchema,
+} from "./dto/provas.dto.js";
+import type {
+  CriarProvaDto,
+  AtualizarProvaDto,
+  RejeitarProvaDto,
+} from "./dto/provas.dto.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
 import { Roles } from "../../common/decorators/roles.decorator.js";
@@ -47,8 +55,15 @@ export class ProvasController {
 
   @Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO)
   @Get()
-  async findAll(@Query("edicaoId") edicaoId?: string) {
-    return this.provasService.findAll(edicaoId);
+  async findAll(
+    @Query("edicaoId") edicaoId?: string,
+    @Query("page") page?: number,
+    @Query("limit") limit?: number
+  ) {
+    return this.provasService.findAll(edicaoId, {
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+    });
   }
 
   @Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO)
@@ -79,7 +94,7 @@ export class ProvasController {
       }
     }
 
-    return this.provasService.update(id, parsed.data);
+    return this.provasService.update(id, parsed.data, req.user.id);
   }
 
   @Roles(Role.ADMIN)
@@ -88,10 +103,36 @@ export class ProvasController {
     return this.provasService.delete(id);
   }
 
+  @Roles(Role.AVALIADOR, Role.ADMIN)
+  @Post(":id/submeter")
+  async submeter(
+    @Param("id") id: string,
+    @Req() req: ExpressReq & { user: AuthUser }
+  ) {
+    return this.provasService.submeterRevisao(id, req.user.id);
+  }
+
+  @Roles(Role.ADMIN)
+  @Post(":id/rejeitar")
+  async rejeitar(
+    @Param("id") id: string,
+    @Req() req: ExpressReq & { user: AuthUser },
+    @Body() body: RejeitarProvaDto
+  ) {
+    const parsed = rejeitarProvaSchema.safeParse(body ?? {});
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten().fieldErrors);
+    }
+    return this.provasService.rejeitar(id, req.user.id, parsed.data.observacao);
+  }
+
   @Roles(Role.ADMIN)
   @Post(":id/publicar")
-  async publicar(@Param("id") id: string) {
-    return this.provasService.publicar(id);
+  async publicar(
+    @Param("id") id: string,
+    @Req() req: ExpressReq & { user: AuthUser }
+  ) {
+    return this.provasService.publicar(id, req.user.id);
   }
 
   @Roles(Role.AVALIADOR, Role.ADMIN)

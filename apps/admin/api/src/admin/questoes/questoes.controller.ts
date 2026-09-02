@@ -53,9 +53,17 @@ export class QuestoesController {
   @Get("admin/questoes")
   async findAll(
     @Query("eixo") eixo?: string,
-    @Query("dificuldade") dificuldade?: string
+    @Query("dificuldade") dificuldade?: string,
+    @Query("page") page?: number,
+    @Query("limit") limit?: number
   ) {
-    return this.questoesService.findAll({ eixo, dificuldade });
+    return this.questoesService.findAll(
+      { eixo, dificuldade },
+      {
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+      }
+    );
   }
 
   @Roles(Role.AVALIADOR, Role.ADMIN, Role.COMISSAO)

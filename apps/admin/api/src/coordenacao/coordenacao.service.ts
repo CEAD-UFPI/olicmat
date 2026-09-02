@@ -1,5 +1,7 @@
 import { Injectable, ForbiddenException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service.js";
+import type { PaginationParams } from "../common/pagination.js";
+import { getSkipTake, paginate } from "../common/pagination.js";
 
 @Injectable()
 export class CoordenacaoService {
@@ -40,35 +42,49 @@ export class CoordenacaoService {
     return coordCursos.map((cc) => cc.curso);
   }
 
-  async listAlunos(coordenadorId: string) {
+  async listAlunos(coordenadorId: string, params?: PaginationParams) {
     const cursosIds = await this.getCoordenadorCursos(coordenadorId);
 
     if (cursosIds.length === 0) {
       throw new ForbiddenException("Você não coordena nenhum curso");
     }
 
-    return this.prisma.user.findMany({
-      where: {
-        role: "ALUNO",
-        cursoId: { in: cursosIds },
-      },
-      select: {
-        id: true,
-        nome: true,
-        email: true,
-        matricula: true,
-        curso: { select: { id: true, nome: true } },
-        instituicao: { select: { id: true, nome: true, sigla: true } },
-        createdAt: true,
-      },
-      orderBy: { nome: "asc" },
-    });
+    const where = {
+      role: "ALUNO" as const,
+      cursoId: { in: cursosIds },
+    };
+    const select = {
+      id: true,
+      nome: true,
+      email: true,
+      matricula: true,
+      curso: { select: { id: true, nome: true } },
+      instituicao: { select: { id: true, nome: true, sigla: true } },
+      createdAt: true,
+    };
+    const orderBy = { nome: "asc" as const };
+
+    if (params?.page === undefined && params?.limit === undefined) {
+      return this.prisma.user.findMany({ where, select, orderBy });
+    }
+
+    const { skip, take } = getSkipTake(params);
+    const [data, total] = await Promise.all([
+      this.prisma.user.findMany({ where, select, orderBy, skip, take }),
+      this.prisma.user.count({ where }),
+    ]);
+
+    return paginate(data, total, params);
   }
 
-  async listInscricoes(coordenadorId: string, filters?: {
-    cursoId?: string;
-    status?: string;
-  }) {
+  async listInscricoes(
+    coordenadorId: string,
+    filters?: {
+      cursoId?: string;
+      status?: string;
+    },
+    params?: PaginationParams
+  ) {
     const cursosIds = await this.getCoordenadorCursos(coordenadorId);
 
     if (cursosIds.length === 0) {
@@ -90,23 +106,32 @@ export class CoordenacaoService {
       where.status = filters.status;
     }
 
-    return this.prisma.inscricao.findMany({
-      where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            nome: true,
-            email: true,
-            matricula: true,
-          },
+    const include = {
+      user: {
+        select: {
+          id: true,
+          nome: true,
+          email: true,
+          matricula: true,
         },
-        instituicao: { select: { id: true, nome: true, sigla: true } },
-        curso: { select: { id: true, nome: true } },
-        edicao: { select: { id: true, ano: true, titulo: true } },
       },
-      orderBy: { createdAt: "desc" },
-    });
+      instituicao: { select: { id: true, nome: true, sigla: true } },
+      curso: { select: { id: true, nome: true } },
+      edicao: { select: { id: true, ano: true, titulo: true } },
+    };
+    const orderBy = { createdAt: "desc" as const };
+
+    if (params?.page === undefined && params?.limit === undefined) {
+      return this.prisma.inscricao.findMany({ where, include, orderBy });
+    }
+
+    const { skip, take } = getSkipTake(params);
+    const [data, total] = await Promise.all([
+      this.prisma.inscricao.findMany({ where, include, orderBy, skip, take }),
+      this.prisma.inscricao.count({ where }),
+    ]);
+
+    return paginate(data, total, params);
   }
 
   async listMonitoramentoInscricoes(coordenadorId: string) {

@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   UseGuards,
   Req,
   BadRequestException,
@@ -35,8 +36,15 @@ export class AdminUsuariosController {
   constructor(private readonly usuariosService: AdminUsuariosService) {}
 
   @Get()
-  async findAll(@Req() req: Request & { user: ReqUser }) {
-    return this.usuariosService.findAll(req.user);
+  async findAll(
+    @Req() req: Request & { user: ReqUser },
+    @Query("page") page?: number,
+    @Query("limit") limit?: number
+  ) {
+    return this.usuariosService.findAll(req.user, {
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+    });
   }
 
   @Get(":id")

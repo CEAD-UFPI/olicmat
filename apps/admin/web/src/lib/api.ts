@@ -21,6 +21,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
+        // Clear the token cookie too, so the server middleware (which gates on
+        // the cookie) does not keep an authenticated-looking state after a 401.
+        document.cookie = "token=; path=/; max-age=0; SameSite=Lax";
         window.location.href = "/login";
       }
     }

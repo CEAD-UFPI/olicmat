@@ -84,8 +84,19 @@ export class InscricaoController {
   async listar(
     @Request() req: ExpressReq & { user: AuthUser },
     @Query("status") status?: string,
+    @Query("page") page?: number,
+    @Query("limit") limit?: number,
   ) {
-    return this.inscricaoService.listarTodas(req.user.role, req.user.id, undefined, status);
+    return this.inscricaoService.listarTodas(
+      req.user.role,
+      req.user.id,
+      undefined,
+      status,
+      {
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+      }
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

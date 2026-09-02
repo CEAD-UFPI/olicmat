@@ -3,6 +3,8 @@ import { PrismaService } from "../../prisma.service.js";
 import { AuditoriaService } from "../auditoria/auditoria.service.js";
 import type { CriarProvaDto, AtualizarProvaDto } from "./dto/provas.dto.js";
 import type { ProvaQuestao } from "../../../generated/prisma/client.js";
+import type { PaginationParams } from "../../common/pagination.js";
+import { getSkipTake, paginate } from "../../common/pagination.js";
 
 @Injectable()
 export class ProvasService {
@@ -33,16 +35,25 @@ export class ProvasService {
     return prova;
   }
 
-  async findAll(edicaoId?: string) {
+  async findAll(edicaoId?: string, params?: PaginationParams) {
     const where = edicaoId ? { edicaoId } : {};
-    return this.prisma.prova.findMany({
-      where,
-      include: {
-        edicao: { select: { id: true, ano: true, titulo: true } },
-        _count: { select: { questoes: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
+    const include = {
+      edicao: { select: { id: true, ano: true, titulo: true } },
+      _count: { select: { questoes: true } },
+    };
+    const orderBy = { createdAt: "desc" as const };
+
+    if (params?.page === undefined && params?.limit === undefined) {
+      return this.prisma.prova.findMany({ where, include, orderBy });
+    }
+
+    const { skip, take } = getSkipTake(params);
+    const [data, total] = await Promise.all([
+      this.prisma.prova.findMany({ where, include, orderBy, skip, take }),
+      this.prisma.prova.count({ where }),
+    ]);
+
+    return paginate(data, total, params);
   }
 
   async findById(id: string) {
@@ -76,6 +87,7 @@ export class ProvasService {
         ...(data.duracaoMinutos !== undefined && { duracaoMinutos: data.duracaoMinutos }),
         ...(data.janelaInicio && { janelaInicio: new Date(data.janelaInicio) }),
         ...(data.janelaFim && { janelaFim: new Date(data.janelaFim) }),
+        versao: { increment: 1 },
       },
     });
 
@@ -104,8 +116,64 @@ export class ProvasService {
     return { deleted: true };
   }
 
+  async submeterRevisao(id: string, userId: string) {
+    const prova = await this.findById(id);
+
+    if (prova.status !== "RASCUNHO") {
+      throw new BadRequestException(
+        "Apenas provas em rascunho podem ser submetidas para revisão",
+      );
+    }
+
+    const questaoCount = await this.prisma.provaQuestao.count({
+      where: { provaId: id },
+    });
+
+    if (questaoCount === 0) {
+      throw new BadRequestException(
+        "Não é possível submeter uma prova sem questões",
+      );
+    }
+
+    const result = await this.prisma.prova.update({
+      where: { id },
+      data: { status: "EM_REVISAO" },
+    });
+
+    await this.auditoria.log(userId, "SUBMETER_PROVA_REVISAO", "Prova", id);
+
+    return result;
+  }
+
+  async rejeitar(id: string, userId: string, observacao?: string) {
+    const prova = await this.findById(id);
+
+    if (prova.status !== "EM_REVISAO") {
+      throw new BadRequestException(
+        "Apenas provas em revisão podem ser rejeitadas",
+      );
+    }
+
+    const result = await this.prisma.prova.update({
+      where: { id },
+      data: { status: "RASCUNHO" },
+    });
+
+    await this.auditoria.log(userId, "REJEITAR_PROVA", "Prova", id, {
+      observacao,
+    });
+
+    return result;
+  }
+
   async publicar(id: string, userId?: string) {
-    await this.findById(id);
+    const prova = await this.findById(id);
+
+    if (prova.status !== "RASCUNHO" && prova.status !== "EM_REVISAO") {
+      throw new BadRequestException(
+        "Apenas provas em rascunho ou revisão podem ser publicadas",
+      );
+    }
 
     const questaoCount = await this.prisma.provaQuestao.count({
       where: { provaId: id },
@@ -119,7 +187,7 @@ export class ProvasService {
 
     const result = await this.prisma.prova.update({
       where: { id },
-      data: { status: "PUBLICADA" },
+      data: { status: "PUBLICADA", publicadaEm: new Date() },
     });
 
     if (userId) {

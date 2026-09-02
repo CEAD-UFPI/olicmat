@@ -26,8 +26,15 @@ export class CoordenacaoController {
   constructor(private readonly coordenacaoService: CoordenacaoService) {}
 
   @Get("alunos")
-  async listAlunos(@Req() req: ExpressReq & { user: AuthUser }) {
-    return this.coordenacaoService.listAlunos(req.user.id);
+  async listAlunos(
+    @Req() req: ExpressReq & { user: AuthUser },
+    @Query("page") page?: number,
+    @Query("limit") limit?: number
+  ) {
+    return this.coordenacaoService.listAlunos(req.user.id, {
+      page: page ? Number(page) : undefined,
+      limit: limit ? Number(limit) : undefined,
+    });
   }
 
   @Get("cursos")
@@ -39,12 +46,18 @@ export class CoordenacaoController {
   async listInscricoes(
     @Req() req: ExpressReq & { user: AuthUser },
     @Query("cursoId") cursoId?: string,
-    @Query("status") status?: string
+    @Query("status") status?: string,
+    @Query("page") page?: number,
+    @Query("limit") limit?: number
   ) {
-    return this.coordenacaoService.listInscricoes(req.user.id, {
-      cursoId,
-      status,
-    });
+    return this.coordenacaoService.listInscricoes(
+      req.user.id,
+      { cursoId, status },
+      {
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+      }
+    );
   }
 
   @Get("monitoramento-inscricoes")
