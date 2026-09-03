@@ -3,8 +3,8 @@
 #
 # Máquina 2 fica na rede interna (10.42.0.0/16), SEM acesso externo direto.
 # Roda apenas o Módulo Provas, isolado:
-#   - exam-api  : Provas (NestJS)     127.0.0.1:3334
-#   - exam-web  : Provas (Next.js)    127.0.0.1:3003
+#   - exam-api  : Provas (NestJS)     127.0.0.1:3334  (só a rede do compose)
+#   - exam-web  : Provas (Next.js)    :3003           (alcançável pela Máquina 1)
 #
 # O DATABASE_URL aponta para o PostgreSQL na Máquina 3 (rede interna).
 # JWT_SECRET deve ser IDÊNTICO ao da Máquina 1 (auth unificada).
@@ -47,8 +47,12 @@ services:
     restart: unless-stopped
     depends_on:
       - exam-api
+    # O Nginx da Máquina 1 alcança este serviço pela rede interna
+    # (http://<MÁQUINA_2_IP>:3003), então o bind NÃO pode ser loopback.
+    # Defina EXAM_WEB_BIND_IP com o IP interno da Máquina 2 (ex.: 10.42.0.20)
+    # para restringir a publicação a essa interface.
     ports:
-      - "127.0.0.1:3003:3003"
+      - "${EXAM_WEB_BIND_IP:-0.0.0.0}:3003:3003"
     environment:
       NODE_ENV: production
       EXAM_API_URL: http://exam-api:3334/api

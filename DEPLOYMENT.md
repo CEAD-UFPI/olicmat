@@ -98,6 +98,17 @@ rede interna `10.42.0.0/16`.
                    └─────────────────────────┘
 ```
 
+> **Memória durante o build:** `docker compose build` compila os serviços em
+> paralelo, e vários `npm ci` simultâneos derrubam o build por falta de memória
+> (`npm error Exit handler never called!`). Em máquina com pouca RAM, builde um
+> serviço por vez:
+>
+> ```bash
+> for s in admin-api admin-web web; do
+>   docker compose -f docker-compose.prod.yml build "$s" || break
+> done
+> ```
+
 ### Máquina 1 — WEB + Cadastro/Configurações
 
 ```bash
@@ -117,8 +128,19 @@ docker compose -f docker-compose.prod.yml --profile with-db up -d --build
 ```bash
 # Na Máquina 2 (rede interna)
 # Mesmo JWT_SECRET e DATABASE_URL da Máquina 1
+# EXAM_WEB_BIND_IP = IP interno desta máquina (ex.: 10.42.0.20)
 docker compose -f docker-compose.exam.prod.yml up -d --build
 ```
+
+> **Bind do `exam-web`:** o Nginx da Máquina 1 alcança este serviço por
+> `http://<MÁQUINA_2_IP>:3003`. Publicar em `127.0.0.1` deixaria o módulo de
+> Provas inacessível (connection refused). Defina `EXAM_WEB_BIND_IP` com o IP
+> interno da Máquina 2; em branco, publica em `0.0.0.0`.
+>
+> O `exam-api` (`:3334`) permanece restrito à rede do Compose — quem fala com
+> ele é o `exam-web`, por `http://exam-api:3334/api`. O `admin-api` **não** faz
+> chamadas servidor-a-servidor para Provas: usa `EXAM_APP_URL` apenas para
+> montar um redirect de navegador.
 
 ### Máquina 3 — PostgreSQL
 
@@ -149,7 +171,8 @@ Exemplo de roteamento Nginx:
 | Variável | Onde | Descrição |
 |----------|------|-----------|
 | `DATABASE_URL` | admin-api, exam-api | Conexão PostgreSQL (Máquina 3) |
-| `JWT_SECRET` | admin-api, exam-api | **IDÊNTICO** nos dois módulos |
+| `JWT_SECRET` | admin-api, exam-api | **IDÊNTICO** nos dois módulos. Obrigatório em produção, mín. 32 chars — as APIs **não sobem** sem ele (`openssl rand -base64 48`) |
+| `EXAM_WEB_BIND_IP` | exam-web (Máquina 2) | IP interno onde o `exam-web` é publicado para o proxy da Máquina 1 |
 | `DB_POOL_SIZE` | admin-api, exam-api | Tamanho do pool (default 10) |
 | `FRONTEND_URL` | admin-api | Base para links de e-mail/redirects |
 | `EXAM_APP_URL` | admin-api | Base do Módulo Provas (redirect transition) |
