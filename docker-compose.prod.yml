@@ -47,8 +47,13 @@ services:
       dockerfile: apps/admin/api/Dockerfile
     container_name: olicmat-admin-api
     restart: unless-stopped
+    # APP_BIND_IP define em qual interface os serviços são publicados.
+    # 127.0.0.1 (padrão) serve quando o reverse proxy roda NESTA máquina.
+    # Quando o proxy é externo — um Nginx Proxy Manager em outro host, por
+    # exemplo — defina o IP interno desta máquina (ex.: 10.42.2.55), senão o
+    # proxy recebe "connection refused" no loopback.
     ports:
-      - "127.0.0.1:3333:3333"
+      - "${APP_BIND_IP:-127.0.0.1}:3333:3333"
     environment:
       NODE_ENV: production
       PORT: 3333
@@ -83,7 +88,7 @@ services:
     depends_on:
       - admin-api
     ports:
-      - "127.0.0.1:3001:3000"
+      - "${APP_BIND_IP:-127.0.0.1}:3001:3000"
     environment:
       NODE_ENV: production
 
@@ -99,7 +104,7 @@ services:
     depends_on:
       - admin-api
     ports:
-      - "127.0.0.1:3000:3000"
+      - "${APP_BIND_IP:-127.0.0.1}:3000:3000"
     environment:
       NODE_ENV: production
 
