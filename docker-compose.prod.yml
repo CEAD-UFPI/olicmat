@@ -53,7 +53,7 @@ services:
     # exemplo — defina o IP interno desta máquina (ex.: 10.42.2.55), senão o
     # proxy recebe "connection refused" no loopback.
     ports:
-      - "${APP_BIND_IP:-127.0.0.1}:3333:3333"
+      - "${APP_BIND_IP:-127.0.0.1}:${ADMIN_API_HOST_PORT:-3333}:3333"
     environment:
       NODE_ENV: production
       PORT: 3333
@@ -88,7 +88,7 @@ services:
     depends_on:
       - admin-api
     ports:
-      - "${APP_BIND_IP:-127.0.0.1}:3001:3000"
+      - "${APP_BIND_IP:-127.0.0.1}:${ADMIN_WEB_HOST_PORT:-3001}:3000"
     environment:
       NODE_ENV: production
 
@@ -103,8 +103,10 @@ services:
     restart: unless-stopped
     depends_on:
       - admin-api
+    # WEB_HOST_PORT existe porque o proxy externo pode esperar a landing na
+    # porta 80 do host, e não na 3000 (é o caso do NPM do CEAD).
     ports:
-      - "${APP_BIND_IP:-127.0.0.1}:3000:3000"
+      - "${APP_BIND_IP:-127.0.0.1}:${WEB_HOST_PORT:-3000}:3000"
     environment:
       NODE_ENV: production
 
