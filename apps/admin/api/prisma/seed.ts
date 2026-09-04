@@ -45,6 +45,28 @@ async function main() {
     create: { nome: "Licenciatura em Matemática", instituicaoId: uece.id, notaEnade: 45.25 },
   });
 
+  // ==========================================================================
+  // Daqui em diante é DADO DE DEMONSTRAÇÃO: usuários com senha conhecida,
+  // questões, prova de exemplo, inscrição e logs de auditoria.
+  //
+  // Só é criado quando SEED_DEMO_DATA=true — nunca defina essa variável em
+  // produção. As senhas abaixo estão em texto claro num repositório público:
+  // criá-las em produção entregaria uma conta ADMIN a qualquer pessoa que
+  // leia este arquivo no GitHub.
+  //
+  // Acima desta linha ficam apenas instituições e cursos, que são dados de
+  // referência legítimos e continuam sendo criados em qualquer ambiente.
+  // ==========================================================================
+  if (process.env.SEED_DEMO_DATA !== "true") {
+    console.log(
+      "Seed concluído: apenas dados de referência (instituições e cursos).",
+    );
+    console.log(
+      "Contas e dados de demonstração ignorados — defina SEED_DEMO_DATA=true para criá-los.",
+    );
+    return;
+  }
+
   // --- Admin user (senha: admin123) ---
   const adminHash = await bcrypt.hash("admin123", 10);
   const admin = await prisma.user.upsert({
