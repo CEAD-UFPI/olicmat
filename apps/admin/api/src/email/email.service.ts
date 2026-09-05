@@ -65,6 +65,34 @@ export class EmailService {
     await this.sendMail(email, "Recuperação de Senha — OLICMAT", html);
   }
 
+  /**
+   * Convite para quem ainda não tem cadastro. Diferente de
+   * `enviarDefinicaoSenha`, que pressupõe um usuário já criado, este link
+   * leva a um formulário onde a própria pessoa informa os dados que a
+   * organização não tem — CPF, data de nascimento — e escolhe a senha.
+   */
+  async enviarConvite(
+    email: string,
+    nome: string,
+    token: string,
+    papel: string,
+  ) {
+    const link = `${this.configService.get("FRONTEND_URL")}/convite?token=${token}`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #E8B829;">OLICMAT — Convite de Cadastro</h2>
+        <p>Olá, <strong>${nome}</strong>!</p>
+        <p>Você foi convidado a integrar a plataforma da OLICMAT como <strong>${papel}</strong>.</p>
+        <p>Para concluir seu cadastro e definir sua senha, clique no botão abaixo:</p>
+        <a href="${link}" style="display: inline-block; background-color: #E8B829; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 16px 0;">
+          Concluir Meu Cadastro
+        </a>
+        <p style="color: #666; font-size: 12px;">Este link expira em 7 dias e só pode ser usado uma vez. Se você não esperava este convite, ignore este e-mail.</p>
+      </div>
+    `;
+    await this.sendMail(email, "Convite de Cadastro — OLICMAT", html);
+  }
+
   async enviarDefinicaoSenha(email: string, nome: string, token: string) {
     const link = `${this.configService.get("FRONTEND_URL")}/redefinir-senha?token=${token}`;
     const html = `

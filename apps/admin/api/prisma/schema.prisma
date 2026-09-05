@@ -444,3 +444,29 @@ model AuditLog {
 
   actor       User     @relation(fields: [actorId], references: [id])
 }
+
+/// Convite para cadastro de membros da comissão, coordenadores e avaliadores.
+///
+/// Existe porque a organização conhece apenas nome, e-mail e papel dessas
+/// pessoas — não o CPF, nome da mãe ou data de nascimento, que são
+/// obrigatórios em User. O convite guarda o pouco que se sabe e é trocado por
+/// um User completo quando a própria pessoa aceita e preenche o restante.
+///
+/// Modelado à parte de User de propósito: criar usuários incompletos exigiria
+/// tornar o CPF anulável, enfraquecendo a unicidade dessa identidade para
+/// todos os participantes.
+model Convite {
+  id        String    @id @default(uuid())
+  nome      String
+  email     String    @unique
+  role      Role
+  token     String    @unique
+  expiraEm  DateTime
+  usadoEm   DateTime?
+  criadoPor String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([token])
+  @@index([email])
+}

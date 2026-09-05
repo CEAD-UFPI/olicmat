@@ -7,6 +7,9 @@ const publicPaths = [
   '/confirmar-email',
   '/esqueci-senha',
   '/redefinir-senha',
+  // Quem chega por convite ainda não tem conta: exigir sessão aqui mandaria
+  // a pessoa para um login que ela não tem como fazer.
+  '/convite',
 ]
 
 export function middleware(request: NextRequest) {

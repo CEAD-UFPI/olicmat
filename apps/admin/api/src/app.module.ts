@@ -12,6 +12,7 @@ import { AdminModule } from "./admin/admin.module.js";
 import { CoordenacaoModule } from "./coordenacao/coordenacao.module.js";
 import { CorrecaoModule } from "./correcao/correcao.module.js";
 import { EmailModule } from "./email/email.module.js";
+import { ConvitesModule } from "./convites/convites.module.js";
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { EmailModule } from "./email/email.module.js";
 
     // ── Module 3: Correction / Evaluation ──
     CorrecaoModule,
+    ConvitesModule,
   ],
   providers: [
     // Apply throttler globally to all controllers.
