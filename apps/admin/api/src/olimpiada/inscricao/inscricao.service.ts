@@ -121,8 +121,29 @@ export class InscricaoService {
       throw new ConflictException("Você já possui uma inscrição nesta edição");
     }
 
-    let instituicaoId = data.instituicaoId;
-    let cursoId = data.cursoId;
+    // Quem foi convidado pela coordenação já tem curso e instituição
+    // definidos por ela, e eles prevalecem sobre o que vier na requisição.
+    //
+    // Não é formalidade: a Fase 1 classifica até 50% dos participantes DE CADA
+    // INSTITUIÇÃO e as bolsas são distribuídas por instituição. Deixar o
+    // próprio inscrito declarar onde estuda permitiria escolher contra quem
+    // competir — e, pelo upsert abaixo, até inventar uma instituição.
+    const vinculo = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        instituicaoId: true,
+        cursoId: true,
+        curso: { select: { instituicaoId: true } },
+      },
+    });
+
+    // A instituição é lida do curso, e não do campo do usuário: se os dois
+    // divergirem por qualquer motivo, o curso é a fonte de verdade.
+    const cursoVinculado = vinculo?.cursoId ?? null;
+    let cursoId = cursoVinculado ?? data.cursoId;
+    let instituicaoId = cursoVinculado
+      ? (vinculo?.curso?.instituicaoId ?? vinculo?.instituicaoId)
+      : data.instituicaoId;
 
     if (!instituicaoId && data.instituicao) {
       const inst = await this.prisma.instituicao.upsert({
