@@ -184,6 +184,42 @@ export class ConvitesService {
       throw new BadRequestException("Já existe um cadastro com este e-mail");
     }
 
+    // O coordenador precisa do curso: é por ele que o painel filtra alunos e
+    // inscrições. Sem o vínculo, o papel existe mas a tela vem vazia, e a
+    // pessoa não tem como se corrigir sozinha.
+    const ehCoordenador = convite.role === Role.COORDENADOR_CURSO;
+    if (ehCoordenador && !dados.cursoId) {
+      throw new BadRequestException(
+        "Selecione a instituição e o curso que você coordena",
+      );
+    }
+
+    let cursoId: string | null = null;
+    let instituicaoId: string | null = null;
+
+    if (dados.cursoId) {
+      const curso = await this.prisma.curso.findUnique({
+        where: { id: dados.cursoId },
+        select: { id: true, instituicaoId: true },
+      });
+      if (!curso) {
+        throw new BadRequestException("Curso não encontrado");
+      }
+      // A instituição vem do curso, não do formulário: assim não há como
+      // gravar um par instituição/curso incoerente.
+      cursoId = curso.id;
+      instituicaoId = curso.instituicaoId;
+    } else if (dados.instituicaoId) {
+      const instituicao = await this.prisma.instituicao.findUnique({
+        where: { id: dados.instituicaoId },
+        select: { id: true },
+      });
+      if (!instituicao) {
+        throw new BadRequestException("Instituição não encontrada");
+      }
+      instituicaoId = instituicao.id;
+    }
+
     const senhaHash = await bcrypt.hash(dados.senha, 10);
 
     // Criar o usuário e queimar o convite precisam acontecer juntos: sem a
@@ -200,11 +236,21 @@ export class ConvitesService {
           dataNascimento: new Date(dados.dataNascimento),
           nomeMae: dados.nomeMae ?? null,
           telefone: dados.telefone ?? null,
+          instituicaoId,
+          cursoId,
           // O convite chegou pelo e-mail; clicar no link já comprova o acesso.
           emailConfirmado: true,
         },
         select: { id: true, nome: true, email: true, role: true },
       });
+
+      // O painel do coordenador lê os cursos desta tabela, não do campo
+      // cursoId do usuário. Sem esta linha o dashboard fica vazio.
+      if (ehCoordenador && cursoId) {
+        await tx.coordenadorCurso.create({
+          data: { userId: criado.id, cursoId },
+        });
+      }
 
       await tx.convite.update({
         where: { id: convite.id },

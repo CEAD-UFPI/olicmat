@@ -43,6 +43,11 @@ export const aceitarConviteSchema = z.object({
     ),
   nomeMae: z.string().min(2).nullable().optional(),
   matricula: z.string().nullable().optional(),
+  // Obrigatórios para COORDENADOR_CURSO — sem o curso, o vínculo
+  // CoordenadorCurso não existe e o painel do coordenador fica vazio. A
+  // exigência é aplicada no serviço, que é onde o papel do convite se conhece.
+  instituicaoId: z.string().uuid("Instituição inválida").nullable().optional(),
+  cursoId: z.string().uuid("Curso inválido").nullable().optional(),
   telefone: z
     .string()
     .nullable()

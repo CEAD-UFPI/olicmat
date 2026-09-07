@@ -39,12 +39,27 @@ interface Convite {
   role: string;
 }
 
+interface Curso {
+  id: string;
+  nome: string;
+}
+
+interface Instituicao {
+  id: string;
+  nome: string;
+  sigla: string;
+  cursos: Curso[];
+}
+
 function ConviteContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
   const [convite, setConvite] = useState<Convite | null>(null);
   const [carregando, setCarregando] = useState(true);
+  const [instituicoes, setInstituicoes] = useState<Instituicao[]>([]);
+  const [instituicaoId, setInstituicaoId] = useState("");
+  const [cursoId, setCursoId] = useState("");
   const [cpf, setCpf] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [telefone, setTelefone] = useState("");
@@ -54,6 +69,10 @@ function ConviteContent() {
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [pronto, setPronto] = useState(false);
+
+  const exigeCurso = convite?.role === "COORDENADOR_CURSO";
+  const cursosDaInstituicao =
+    instituicoes.find((i) => i.id === instituicaoId)?.cursos ?? [];
 
   useEffect(() => {
     if (!token) {
@@ -72,6 +91,13 @@ function ConviteContent() {
         ),
       )
       .finally(() => setCarregando(false));
+
+    // Limite alto porque a lista alimenta um seletor: paginar aqui só
+    // esconderia instituições de quem precisa se encontrar nela.
+    api
+      .get("/instituicoes?limit=200")
+      .then((r) => setInstituicoes(r.data?.data ?? []))
+      .catch(() => setInstituicoes([]));
   }, [token]);
 
   const enviar = async () => {
@@ -96,6 +122,11 @@ function ConviteContent() {
       return;
     }
 
+    if (exigeCurso && !cursoId) {
+      setErro("Selecione a instituição e o curso que você coordena.");
+      return;
+    }
+
     setEnviando(true);
     setErro("");
     try {
@@ -105,6 +136,8 @@ function ConviteContent() {
         dataNascimento: parsed.data.dataNascimento,
         telefone: parsed.data.telefone || undefined,
         nomeMae: parsed.data.nomeMae || undefined,
+        instituicaoId: instituicaoId || undefined,
+        cursoId: cursoId || undefined,
       });
       setPronto(true);
     } catch (e: any) {
@@ -199,6 +232,44 @@ function ConviteContent() {
           onChange={setDataNascimento}
           type="date"
         />
+        <Selecao
+          label={exigeCurso ? "Instituição *" : "Instituição"}
+          id="instituicao"
+          value={instituicaoId}
+          onChange={(v) => {
+            setInstituicaoId(v);
+            // Trocar de instituição invalida o curso escolhido antes.
+            setCursoId("");
+          }}
+          vazio="Selecione a instituição"
+          opcoes={instituicoes.map((i) => ({
+            valor: i.id,
+            rotulo: i.sigla ? `${i.sigla} — ${i.nome}` : i.nome,
+          }))}
+        />
+        <Selecao
+          label={exigeCurso ? "Curso *" : "Curso"}
+          id="curso"
+          value={cursoId}
+          onChange={setCursoId}
+          vazio={
+            instituicaoId
+              ? "Selecione o curso"
+              : "Escolha a instituição primeiro"
+          }
+          desabilitado={!instituicaoId}
+          opcoes={cursosDaInstituicao.map((c) => ({
+            valor: c.id,
+            rotulo: c.nome,
+          }))}
+        />
+        {exigeCurso && (
+          <p className="text-xs text-[#6f6c7a] -mt-2">
+            Como coordenação de curso, seu painel mostra os alunos do curso
+            selecionado aqui.
+          </p>
+        )}
+
         <Campo
           label="Telefone"
           id="telefone"
@@ -250,6 +321,47 @@ function ConviteContent() {
         </Button>
       </div>
     </>
+  );
+}
+
+function Selecao({
+  label,
+  id,
+  value,
+  onChange,
+  opcoes,
+  vazio,
+  desabilitado,
+}: {
+  label: string;
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  opcoes: { valor: string; rotulo: string }[];
+  vazio: string;
+  desabilitado?: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <label htmlFor={id} className="block text-sm text-[#9895a4]">
+        {label}
+      </label>
+      <select
+        id={id}
+        name={id}
+        value={value}
+        disabled={desabilitado}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full h-12 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-4 text-[#f0ece4] focus:outline-none focus:border-[#3AAFE0] disabled:opacity-50"
+      >
+        <option value="">{vazio}</option>
+        {opcoes.map((o) => (
+          <option key={o.valor} value={o.valor}>
+            {o.rotulo}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }
 
