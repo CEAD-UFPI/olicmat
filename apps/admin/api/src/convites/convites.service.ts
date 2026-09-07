@@ -18,6 +18,7 @@ const ROTULO_PAPEL: Record<string, string> = {
   COORDENADOR_CURSO: "coordenador de curso",
   AVALIADOR: "avaliador",
   ADMIN: "administrador",
+  ALUNO: "participante",
 };
 
 export interface ConviteEntrada {
@@ -55,6 +56,7 @@ export class ConvitesService {
   async criarEmLote(
     entradas: ConviteEntrada[],
     criadoPor: string,
+    cursoId?: string,
   ): Promise<ResultadoLote> {
     const enviados: ResultadoLote["enviados"] = [];
     const ignorados: ResultadoLote["ignorados"] = [];
@@ -87,6 +89,7 @@ export class ConvitesService {
             expiraEm,
             usadoEm: null,
             criadoPor,
+            cursoId: cursoId ?? null,
           },
           create: {
             nome: entrada.nome,
@@ -95,6 +98,7 @@ export class ConvitesService {
             token,
             expiraEm,
             criadoPor,
+            cursoId: cursoId ?? null,
           },
         });
 
@@ -124,9 +128,68 @@ export class ConvitesService {
     return { enviados, ignorados, falhaEnvio };
   }
 
+  /**
+   * Convites de alunos disparados pela coordenação.
+   *
+   * O curso não vem do pedido: é conferido contra os cursos que a pessoa
+   * realmente coordena, para que ninguém convide alunos para curso alheio.
+   */
+  async convidarAlunos(
+    entradas: Omit<ConviteEntrada, "role">[],
+    coordenadorId: string,
+    cursoId: string,
+    criadoPor: string,
+  ): Promise<ResultadoLote> {
+    const vinculo = await this.prisma.coordenadorCurso.findFirst({
+      where: { userId: coordenadorId, cursoId },
+      select: { id: true },
+    });
+    if (!vinculo) {
+      throw new BadRequestException(
+        "Você não coordena este curso. Escolha um dos seus cursos.",
+      );
+    }
+
+    return this.criarEmLote(
+      entradas.map((e) => ({ ...e, role: Role.ALUNO })),
+      criadoPor,
+      cursoId,
+    );
+  }
+
+  /** Convites emitidos para os cursos indicados, para a coordenação acompanhar. */
+  async listarPorCursos(cursoIds: string[]) {
+    if (!cursoIds.length) return [];
+    return this.prisma.convite.findMany({
+      where: { cursoId: { in: cursoIds } },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        role: true,
+        expiraEm: true,
+        usadoEm: true,
+        createdAt: true,
+        curso: { select: { id: true, nome: true } },
+      },
+      orderBy: [{ usadoEm: "asc" }, { nome: "asc" }],
+    });
+  }
+
   /** Dados mínimos para a tela de aceite se apresentar a quem clicou no link. */
   async buscarPorToken(token: string) {
-    const convite = await this.prisma.convite.findUnique({ where: { token } });
+    const convite = await this.prisma.convite.findUnique({
+      where: { token },
+      include: {
+        curso: {
+          select: {
+            id: true,
+            nome: true,
+            instituicao: { select: { id: true, nome: true, sigla: true } },
+          },
+        },
+      },
+    });
 
     if (!convite) {
       throw new NotFoundException("Convite não encontrado");
@@ -144,6 +207,15 @@ export class ConvitesService {
       nome: convite.nome,
       email: convite.email,
       role: convite.role,
+      // Quando o convite já traz curso, a tela o exibe fixo em vez de
+      // oferecer os seletores.
+      curso: convite.curso
+        ? {
+            id: convite.curso.id,
+            nome: convite.curso.nome,
+            instituicao: convite.curso.instituicao,
+          }
+        : null,
     };
   }
 
@@ -188,7 +260,13 @@ export class ConvitesService {
     // inscrições. Sem o vínculo, o papel existe mas a tela vem vazia, e a
     // pessoa não tem como se corrigir sozinha.
     const ehCoordenador = convite.role === Role.COORDENADOR_CURSO;
-    if (ehCoordenador && !dados.cursoId) {
+
+    // Quando quem convidou já definiu o curso — caso do aluno convidado pela
+    // coordenação — ele prevalece sobre qualquer valor vindo do formulário.
+    // Aceitar o do corpo aqui permitiria ao convidado entrar em outro curso.
+    const cursoEscolhido = convite.cursoId ?? dados.cursoId ?? null;
+
+    if (ehCoordenador && !cursoEscolhido) {
       throw new BadRequestException(
         "Selecione a instituição e o curso que você coordena",
       );
@@ -197,9 +275,9 @@ export class ConvitesService {
     let cursoId: string | null = null;
     let instituicaoId: string | null = null;
 
-    if (dados.cursoId) {
+    if (cursoEscolhido) {
       const curso = await this.prisma.curso.findUnique({
-        where: { id: dados.cursoId },
+        where: { id: cursoEscolhido },
         select: { id: true, instituicaoId: true },
       });
       if (!curso) {

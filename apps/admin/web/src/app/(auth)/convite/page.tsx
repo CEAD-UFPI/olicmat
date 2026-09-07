@@ -37,6 +37,12 @@ interface Convite {
   nome: string;
   email: string;
   role: string;
+  /** Presente quando quem convidou já definiu o curso (aluno da coordenação). */
+  curso: {
+    id: string;
+    nome: string;
+    instituicao: { nome: string; sigla: string };
+  } | null;
 }
 
 interface Curso {
@@ -63,6 +69,7 @@ function ConviteContent() {
   const [cpf, setCpf] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [telefone, setTelefone] = useState("");
+  const [matricula, setMatricula] = useState("");
   const [nomeMae, setNomeMae] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
@@ -70,7 +77,10 @@ function ConviteContent() {
   const [enviando, setEnviando] = useState(false);
   const [pronto, setPronto] = useState(false);
 
-  const exigeCurso = convite?.role === "COORDENADOR_CURSO";
+  // Quando o convite já traz o curso, não há o que escolher: a coordenação
+  // definiu, e oferecer um seletor aqui só criaria chance de erro.
+  const cursoPredefinido = convite?.curso ?? null;
+  const exigeCurso = convite?.role === "COORDENADOR_CURSO" && !cursoPredefinido;
   const cursosDaInstituicao =
     instituicoes.find((i) => i.id === instituicaoId)?.cursos ?? [];
 
@@ -136,6 +146,7 @@ function ConviteContent() {
         dataNascimento: parsed.data.dataNascimento,
         telefone: parsed.data.telefone || undefined,
         nomeMae: parsed.data.nomeMae || undefined,
+        matricula: matricula || undefined,
         instituicaoId: instituicaoId || undefined,
         cursoId: cursoId || undefined,
       });
@@ -232,6 +243,19 @@ function ConviteContent() {
           onChange={setDataNascimento}
           type="date"
         />
+        {cursoPredefinido ? (
+          <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 space-y-1">
+            <p className="text-xs uppercase tracking-[0.08em] text-[#6f6c7a]">
+              Curso
+            </p>
+            <p className="text-sm text-[#f0ece4]">{cursoPredefinido.nome}</p>
+            <p className="text-sm text-[#9895a4]">
+              {cursoPredefinido.instituicao.sigla} —{" "}
+              {cursoPredefinido.instituicao.nome}
+            </p>
+          </div>
+        ) : (
+          <>
         <Selecao
           label={exigeCurso ? "Instituição *" : "Instituição"}
           id="instituicao"
@@ -269,6 +293,16 @@ function ConviteContent() {
             selecionado aqui.
           </p>
         )}
+          </>
+        )}
+
+        <Campo
+          label="Matrícula"
+          id="matricula"
+          value={matricula}
+          onChange={setMatricula}
+          placeholder={cursoPredefinido ? "Sua matrícula no curso" : "Opcional"}
+        />
 
         <Campo
           label="Telefone"

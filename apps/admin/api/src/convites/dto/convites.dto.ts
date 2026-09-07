@@ -28,6 +28,27 @@ export const criarConvitesSchema = z.object({
     .max(500, "Envie no máximo 500 convites por vez"),
 });
 
+/**
+ * Convite de alunos pela coordenação. O papel é sempre ALUNO e o curso vem
+ * daqui, não da escolha do convidado — por isso nenhum dos dois aparece no
+ * formulário de aceite.
+ */
+export const convidarAlunosSchema = z.object({
+  cursoId: z.string().uuid("Selecione o curso"),
+  alunos: z
+    .array(
+      z.object({
+        nome: z.string().min(3, "Nome deve ter no mínimo 3 caracteres"),
+        email: z
+          .string()
+          .email("Email inválido")
+          .transform((v) => v.toLowerCase().trim()),
+      }),
+    )
+    .min(1, "Informe ao menos um aluno")
+    .max(500, "Envie no máximo 500 convites por vez"),
+});
+
 export const aceitarConviteSchema = z.object({
   cpf: z
     .string()
@@ -60,4 +81,5 @@ export const aceitarConviteSchema = z.object({
 });
 
 export type CriarConvitesDto = z.infer<typeof criarConvitesSchema>;
+export type ConvidarAlunosDto = z.infer<typeof convidarAlunosSchema>;
 export type AceitarConviteDto = z.infer<typeof aceitarConviteSchema>;

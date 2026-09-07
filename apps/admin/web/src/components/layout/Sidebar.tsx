@@ -8,6 +8,7 @@ import {
   LayoutDashboard, ClipboardList, FileText, Upload, Trophy, Users,
   BarChart3, BookOpen, CheckSquare, Download, ShieldCheck,
   Eye, Building2, GraduationCap, Calendar, Settings, Sliders, Activity,
+  UserPlus,
 } from "lucide-react";
 
 interface NavLink { href: string; label: string; icon: React.ReactNode; }
@@ -90,6 +91,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
         return [
           { href: "/coordenador", label: "Visão Geral", icon: <LayoutDashboard size={18} /> },
           { href: "/coordenador/alunos", label: "Alunos", icon: <Users size={18} /> },
+          { href: "/coordenador/convidar", label: "Convidar Alunos", icon: <UserPlus size={18} /> },
           { href: "/coordenador/inscricoes", label: "Inscrições", icon: <ClipboardList size={18} /> },
           { href: "/coordenador/metricas", label: "Métricas", icon: <BarChart3 size={18} /> },
         ];
