@@ -65,11 +65,16 @@ services:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      # Envio de e-mail. O padrão é a API HTTPS do Brevo: a rede da UFPI
+      # intercepta saída SMTP em todas as portas testadas.
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-brevo}
+      BREVO_API_KEY: ${BREVO_API_KEY}
+      SMTP_FROM: ${SMTP_FROM}
+      # Usados apenas quando EMAIL_PROVIDER=smtp.
       SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
       SMTP_PORT: ${SMTP_PORT:-465}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
-      SMTP_FROM: ${SMTP_FROM}
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3333/api/health || exit 1"]
       interval: 30s
