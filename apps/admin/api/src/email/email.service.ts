@@ -2,32 +2,105 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import * as nodemailer from "nodemailer";
 
+const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
+
+/** Separa "OLICMAT <olicmat@ufpi.edu.br>" em nome e endereço. */
+function separarRemetente(from: string): { name: string; email: string } {
+  const comNome = from.match(/^\s*(.*?)\s*<([^>]+)>\s*$/);
+  if (comNome) {
+    // O trim é necessário: [^>]+ é guloso e captura o espaço antes do ">".
+    // Um endereço com espaço sobrando é recusado pela API.
+    return { name: comNome[1].trim() || "OLICMAT", email: comNome[2].trim() };
+  }
+  return { name: "OLICMAT", email: from.trim() };
+}
+
 @Injectable()
 export class EmailService {
-  private transporter: nodemailer.Transporter;
+  private transporter?: nodemailer.Transporter;
   private readonly logger = new Logger(EmailService.name);
+  private readonly provider: string;
 
   constructor(private configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
-      host: this.configService.get("SMTP_HOST"),
-      port: this.configService.get("SMTP_PORT"),
-      secure: true,
-      auth: {
-        user: this.configService.get("SMTP_USER"),
-        pass: this.configService.get("SMTP_PASS"),
-      },
-    });
+    // A rede da UFPI intercepta saída SMTP em todas as portas testadas (25,
+    // 465 e 587, para Gmail, Outlook e Office 365), mas permite HTTPS. Por
+    // isso o provedor padrão é a API do Brevo, que envia pela porta 443.
+    // O SMTP continua disponível para desenvolvimento e para o caso de a
+    // política de rede mudar.
+    this.provider = (
+      this.configService.get("EMAIL_PROVIDER") || "brevo"
+    ).toLowerCase();
+
+    if (this.provider === "smtp") {
+      this.transporter = nodemailer.createTransport({
+        host: this.configService.get("SMTP_HOST"),
+        port: Number(this.configService.get("SMTP_PORT")),
+        // 465 usa TLS implícito; 587 negocia com STARTTLS.
+        secure: Number(this.configService.get("SMTP_PORT")) === 465,
+        auth: {
+          user: this.configService.get("SMTP_USER"),
+          pass: this.configService.get("SMTP_PASS"),
+        },
+      });
+    }
   }
 
   async sendMail(to: string, subject: string, html: string) {
-    const from = this.configService.get("SMTP_FROM") || "OLICMAT <olicmat@ufpi.edu.br>";
+    const from =
+      this.configService.get("SMTP_FROM") || "OLICMAT <olicmat@ufpi.edu.br>";
 
     try {
-      await this.transporter.sendMail({ from, to, subject, html });
+      if (this.provider === "smtp") {
+        if (!this.transporter) {
+          throw new Error("Transporte SMTP não inicializado");
+        }
+        await this.transporter.sendMail({ from, to, subject, html });
+      } else {
+        await this.enviarViaBrevo(from, to, subject, html);
+      }
       this.logger.log(`Email enviado para ${to}: ${subject}`);
     } catch (error) {
       this.logger.error(`Erro ao enviar email para ${to}: ${error.message}`);
       throw error;
+    }
+  }
+
+  private async enviarViaBrevo(
+    from: string,
+    to: string,
+    subject: string,
+    html: string,
+  ) {
+    const apiKey = this.configService.get("BREVO_API_KEY");
+    if (!apiKey) {
+      throw new Error(
+        "BREVO_API_KEY não configurada. Defina-a ou use EMAIL_PROVIDER=smtp.",
+      );
+    }
+
+    const resposta = await fetch(BREVO_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "api-key": apiKey,
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        sender: separarRemetente(from),
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+      }),
+      signal: AbortSignal.timeout(20_000),
+    });
+
+    if (!resposta.ok) {
+      // O corpo do erro do Brevo diz o motivo real (remetente não verificado,
+      // cota estourada, chave inválida). Sem ele, o diagnóstico vira adivinhação.
+      const detalhe = await resposta.text().catch(() => "");
+      throw new Error(
+        `Brevo respondeu ${resposta.status}: ${detalhe.slice(0, 300)}`,
+      );
     }
   }
 
