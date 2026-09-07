@@ -52,8 +52,24 @@ export default function LoginPage() {
       const user = await login(data.email, data.senha);
       const home = roleHome[user.role as Role] || "/competidor";
       router.push(home);
-    } catch {
-      setError("Email ou senha inválidos.");
+    } catch (e: unknown) {
+      // Só o 401 significa credencial errada. Mostrar essa mensagem para
+      // qualquer falha — banco fora, rede caída — manda todo mundo procurar
+      // no lugar errado: numa indisponibilidade do banco, os usuários
+      // acharam que tinham perdido a conta e ficaram tentando outras senhas.
+      const status = (e as { response?: { status?: number } })?.response
+        ?.status;
+
+      if (status === 401) {
+        setError("Email ou senha inválidos.");
+      } else if (status === 429) {
+        setError("Muitas tentativas seguidas. Aguarde um instante.");
+      } else {
+        setError(
+          "Não foi possível entrar agora — o sistema está indisponível. " +
+            "Suas credenciais continuam válidas; tente de novo em alguns minutos.",
+        );
+      }
     } finally {
       setLoading(false);
     }

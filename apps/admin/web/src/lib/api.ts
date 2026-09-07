@@ -18,7 +18,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // O 401 da própria tentativa de login não é sessão expirada: é senha
+    // errada. Redirecionar aqui recarrega a página e apaga a mensagem de erro
+    // antes de a pessoa conseguir lê-la — ela só vê a tela piscar.
+    const ehTentativaDeLogin = (error.config?.url ?? "").includes("/auth/login");
+
+    if (error.response?.status === 401 && !ehTentativaDeLogin) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
         // Clear the token cookie too, so the server middleware (which gates on
