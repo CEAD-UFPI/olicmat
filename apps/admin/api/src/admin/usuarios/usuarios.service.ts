@@ -195,6 +195,36 @@ export class AdminUsuariosService {
     return user;
   }
 
+  /**
+   * Mantém a tabela CoordenadorCurso em dia com o papel e o curso do usuário.
+   *
+   * O painel gravava apenas User.cursoId, e o módulo de coordenação lê o
+   * vínculo desta tabela. O resultado era um coordenador que aparecia com
+   * curso na listagem administrativa e via "nenhum curso vinculado" no
+   * próprio painel — sem forma de se corrigir sozinho.
+   */
+  private async sincronizarVinculoCoordenador(
+    userId: string,
+    role: string | undefined,
+    cursoId: string | null | undefined,
+  ) {
+    if (role === undefined) return;
+
+    if (role !== "COORDENADOR_CURSO") {
+      // Quem deixou de coordenar não deve continuar enxergando os alunos.
+      await this.prisma.coordenadorCurso.deleteMany({ where: { userId } });
+      return;
+    }
+
+    if (!cursoId) return;
+
+    await this.prisma.coordenadorCurso.upsert({
+      where: { userId },
+      update: { cursoId },
+      create: { userId, cursoId },
+    });
+  }
+
   async create(data: CriarUsuarioDto, actor: { id: string; role: string }) {
     let instituicaoId: string | null = data.instituicaoId ?? null;
     let cursoId: string | null = data.cursoId ?? null;
@@ -297,6 +327,8 @@ export class AdminUsuariosService {
       console.error(`Erro ao enviar email de definicao de senha para ${user.email}:`, emailErr);
     }
 
+    await this.sincronizarVinculoCoordenador(user.id, data.role, cursoId);
+
     await this.auditoria.log(actor.id, "CRIAR_USUARIO", "User", user.id, {
       email: data.email,
       role: data.role,
@@ -362,6 +394,14 @@ export class AdminUsuariosService {
         updatedAt: true,
       },
     });
+
+    // O papel e o curso podem não vir na requisição; nesse caso valem os que
+    // ficaram gravados, para não desfazer um vínculo por omissão.
+    await this.sincronizarVinculoCoordenador(
+      id,
+      (updateData.role as string | undefined) ?? targetUser.role,
+      (updateData.cursoId as string | null | undefined) ?? targetUser.cursoId,
+    );
 
     await this.auditoria.log(actor.id, "ATUALIZAR_USUARIO", "User", id, updateData);
 
