@@ -22,15 +22,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Key Files
 - `src/types/index.ts` — Shared TypeScript interfaces (must match Prisma schema)
 - `src/stores/authStore.ts` — Auth state, login/register/logout/loadUser
-- `src/stores/provaStore.ts` — Exam state machine (carregar, responder, finalizar)
 - `src/middleware.ts` — Cookie-based auth check (token existence only; role check is client-side)
 - `src/lib/api.ts` — Axios instance, 401 auto-redirect
-- `src/components/exam/ExamGuard.tsx` — Exam anti-cheating wrapper (fullscreen, visibility, warnings, auto-submit)
 - `src/components/layout/Sidebar.tsx` — 3-module navigation sections (Config/Prova/Correção)
+
+> The exam UI does **not** live here. `provaStore`, `ExamGuard`, `Timer` and
+> `QuestaoCard` used to exist in this app as an unreachable copy behind an
+> unconditional `return`, so fixes made to them never reached students. They
+> were removed. The real exam interface is `apps/exam/web`; this app only has
+> `/competidor/prova`, which mints a transition token and redirects there.
 
 ## 3-Module Frontend Routes
 - **Module 1 (Config):** `/admin/*`, `/avaliador/*`, `/competidor/{inscricao,envio,resultado}`, `/coordenador/*`, `/comissao/*` (minus avaliação pages)
-- **Module 2 (Exam):** `/competidor/prova` (wrapped in ExamGuard)
+- **Module 2 (Exam):** `/competidor/prova` (portal only — redirects to `apps/exam/web`)
 - **Module 3 (Correction):** `/admin/avaliacao`, `/avaliador/fase2`, `/comissao/avaliacao`
 - API calls for Module 3 go to `/api/correcao/*` instead of old `/api/admin/avaliacao/*`
 
