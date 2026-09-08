@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { CRONOGRAMA } from "@/lib/cronograma";
 
 export default function RegulamentoPage() {
   return (
@@ -399,62 +400,6 @@ const EIXOS = [
     descricao:
       "Uso pedagógico, ético e crítico de softwares, aplicativos e TDICs.",
   },
-];
-
-const CRONOGRAMA = [
-  { atividade: "Lançamento oficial", data: "19/08/2026", destaque: false },
-  {
-    atividade: "Período de inscrições",
-    data: "01/09/2026 a 25/09/2026",
-    destaque: true,
-  },
-  {
-    atividade: "Divulgação das inscrições validadas",
-    data: "05/10/2026",
-    destaque: false,
-  },
-  {
-    atividade: "Aplicação da Fase 1 (on-line)",
-    data: "24/10/2026",
-    destaque: true,
-  },
-  {
-    atividade: "Resultado da Fase 1 e convocação para a Fase 2",
-    data: "30/10/2026",
-    destaque: false,
-  },
-  {
-    atividade: "Divulgação das orientações da Fase 2",
-    data: "05/11/2026 a 10/11/2026",
-    destaque: false,
-  },
-  {
-    atividade: "Envio dos vídeos e portfólios (Fase 2)",
-    data: "18/11/2026 a 20/11/2026",
-    destaque: true,
-  },
-  {
-    atividade: "Avaliação pela banca examinadora",
-    data: "21/11/2026 a 29/11/2026",
-    destaque: false,
-  },
-  {
-    atividade: "Resultado preliminar e medalhistas",
-    data: "30/11/2026",
-    destaque: true,
-  },
-  {
-    atividade: "Cerimônia de premiação e encerramento",
-    data: "04/12/2026",
-    destaque: true,
-  },
-  {
-    atividade: "Implementação das bolsas FAPEPI",
-    data: "Dez/2026 a Jan/2027",
-    destaque: false,
-  },
-  { atividade: "Realização do FORPEMAT", data: "Janeiro/2027", destaque: false },
-  { atividade: "Realização do CONGEMAT", data: "Fevereiro/2027", destaque: false },
 ];
 
 const ALGARISMOS_ROMANOS = [

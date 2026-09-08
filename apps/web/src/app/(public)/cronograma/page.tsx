@@ -1,28 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { CRONOGRAMA } from "@/lib/cronograma";
 
-interface Etapa {
-  data: string;
-  descricao: string;
-  destaque?: boolean;
-}
-
-const cronograma: Etapa[] = [
-  { data: "19/08/2026", descricao: "Lançamento da 1ª OLICMAT incluindo: Olimpíada, Formação e Congresso", destaque: true },
-  { data: "30/08 a 25/09/2026", descricao: "Inscrições" },
-  { data: "05/10/2026", descricao: "Divulgação das inscrições validadas" },
-  { data: "21/10/2026", descricao: "Realização do teste I", destaque: true },
-  { data: "30/10/2026", descricao: "Divulgação do resultado do teste I e dos(as) aprovados(as) para a Fase II" },
-  { data: "05/11 a 10/11/2026", descricao: "Divulgação de informações sobre a Fase II" },
-  { data: "11/11 a 13/11/2026", descricao: "Realização do teste II e envio dos vídeos (envio no mesmo dia do desafio)", destaque: true },
-  { data: "16/11 a 24/11/2026", descricao: "Análise da Fase II" },
-  { data: "25/11/2026", descricao: "Divulgação do resultado e dos(as) medalhistas da 1ª OLICMAT", destaque: true },
-  { data: "30/11/2026", descricao: "Cerimônia de premiação e encerramento da 1ª OLICMAT - Com a divulgação das/os medalhistas de ouro, prata e bronze" },
-  { data: "Novembro e Dezembro/2026", descricao: "Desenvolvimento e Realização da Formação no Programa Olicmat - Forpemat" },
-  { data: "Dezembro/2026 e Janeiro/2027", descricao: "Desenvolvimento e realização do Congresso no Programa Olicmat – Congemat" },
-  { data: "Até Março de 2027", descricao: "Demais etapas formativas e Conclusão das ações do programa Olicmat" },
-];
+const cronograma = CRONOGRAMA;
 
 export default function CronogramaPage() {
   return (
@@ -81,7 +62,7 @@ export default function CronogramaPage() {
                   {etapa.data}
                 </span>
                 <p className="text-sm text-[#f0ece4] mt-1.5 leading-relaxed">
-                  {etapa.descricao}
+                  {etapa.atividade}
                 </p>
               </div>
             </motion.div>

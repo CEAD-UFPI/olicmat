@@ -5,13 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { DESTAQUES_HOME } from "@/lib/cronograma";
 
-const cronogramaDestaques = [
-  { data: "30/08/2026", evento: "Início das Inscrições" },
-  { data: "21/10/2026", evento: "Fase I — Primeiro Teste" },
-  { data: "11/11 a 13/11/2026", evento: "Fase II — Teste II e Vídeos" },
-  { data: "25/11/2026", evento: "Resultado e Medalhistas" },
-];
+const cronogramaDestaques = DESTAQUES_HOME;
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
