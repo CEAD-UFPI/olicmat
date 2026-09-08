@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="OLICMAT 2026 — Guia da Coordenação">
+  <style>
+    /* Reset minimo: no artefato publicado isto vem do proprio hospedeiro. */
+    html { color-scheme: dark; }
+    img { max-width: 100%; }
+    [hidden] { display: none !important; }
+  </style>
+<title>Guia da Coordenação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    --ground: #171722;
+    --surface: #20202e;
+    --surface-2: #262636;
+    --border: #45455c;
+    --ouro: #F4C840;
+    --verde: #5FC964;
+    --azul: #4FC0F0;
+    --rosa: #E88AA8;
+    --txt: #ffffff;
+    --txt-2: #d6d2e4;
+    --txt-3: #b6b2c4;
+    --display: "Fraunces", Georgia, serif;
+    --body: "Outfit", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--txt-2);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--azul); }
+
+  /* ── Cabeçalho ───────────────────────────────────────── */
+  header.capa {
+    padding: clamp(48px, 9vh, 96px) clamp(20px, 5vw, 56px) clamp(32px, 6vh, 56px);
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(1000px 380px at 8% -10%, rgba(95,201,100,0.11), transparent 65%),
+      var(--ground);
+  }
+  .capa-inner { max-width: 1180px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--verde);
+    margin: 0 0 16px;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(34px, 5.6vw, 62px);
+    line-height: 1.03;
+    letter-spacing: -0.02em;
+    color: var(--txt);
+    margin: 0 0 16px;
+    max-width: 17ch;
+    text-wrap: balance;
+  }
+  .lede {
+    font-size: clamp(16px, 1.9vw, 21px);
+    font-weight: 300;
+    color: var(--txt-2);
+    max-width: 60ch;
+    margin: 0;
+  }
+
+  /* ── Corpo em duas colunas ───────────────────────────── */
+  .corpo {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(28px, 5vh, 52px) clamp(20px, 5vw, 56px) 120px;
+    display: grid;
+    grid-template-columns: 232px minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 64px);
+    align-items: start;
+  }
+  @media (max-width: 900px) { .corpo { grid-template-columns: 1fr; } }
+
+  /* ── Índice lateral ──────────────────────────────────── */
+  nav.indice {
+    position: sticky;
+    top: 24px;
+    font-size: 14px;
+  }
+  @media (max-width: 900px) {
+    nav.indice { position: static; border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; background: var(--surface); }
+  }
+  nav.indice p.titulo {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--txt-3);
+    margin: 0 0 14px;
+  }
+  nav.indice ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: idx; }
+  nav.indice a {
+    display: flex;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: var(--txt-3);
+    text-decoration: none;
+    line-height: 1.35;
+    transition: background 0.15s, color 0.15s;
+  }
+  nav.indice a::before {
+    counter-increment: idx;
+    content: counter(idx, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--border);
+    padding-top: 3px;
+    flex: none;
+  }
+  nav.indice a:hover { background: var(--surface); color: var(--txt); }
+  nav.indice a.ativo { background: rgba(95,201,100,0.12); color: var(--verde); }
+  nav.indice a.ativo::before { color: var(--verde); }
+  nav.indice a:focus-visible { outline: 2px solid var(--verde); outline-offset: 2px; }
+
+  /* ── Seções ──────────────────────────────────────────── */
+  section.passo { padding-bottom: clamp(36px, 6vh, 64px); scroll-margin-top: 24px; }
+  section.passo + section.passo { border-top: 1px solid var(--border); padding-top: clamp(36px, 6vh, 60px); }
+
+  .ord {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--verde);
+    display: block;
+    margin-bottom: 10px;
+  }
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(24px, 3.1vw, 36px);
+    line-height: 1.14;
+    letter-spacing: -0.012em;
+    color: var(--txt);
+    margin: 0 0 14px;
+    max-width: 24ch;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--txt);
+    margin: 30px 0 10px;
+  }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--txt); font-weight: 600; }
+
+  /* ── Sequência de ações ──────────────────────────────── */
+  ol.acoes { counter-reset: ac; list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 14px; max-width: 68ch; }
+  ol.acoes li { position: relative; padding-left: 40px; }
+  ol.acoes li::before {
+    counter-increment: ac;
+    content: counter(ac);
+    position: absolute;
+    left: 0; top: 1px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--verde);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  ul.pontos { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 9px; max-width: 68ch; }
+  ul.pontos li { padding-left: 20px; position: relative; }
+  ul.pontos li::before {
+    content: ""; position: absolute; left: 3px; top: 0.66em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--verde);
+  }
+  ul.pontos li.nao::before { background: var(--rosa); }
+
+  /* Rótulo literal de tela — o que a pessoa lê na interface */
+  .ui {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    color: var(--txt);
+    white-space: nowrap;
+  }
+  .campo { color: var(--azul); }
+  .botao { color: var(--ouro); }
+  .menu { color: var(--verde); }
+
+  .nota {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--ouro);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 0 0 18px;
+    max-width: 68ch;
+  }
+  .nota p:last-child { margin-bottom: 0; }
+  .nota .rot {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ouro);
+    display: block;
+    margin-bottom: 7px;
+  }
+  .nota.alerta { border-left-color: var(--rosa); }
+  .nota.alerta .rot { color: var(--rosa); }
+  .nota.ok { border-left-color: var(--verde); }
+  .nota.ok .rot { color: var(--verde); }
+
+  pre.exemplo {
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.7;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin: 0 0 18px;
+    max-width: 68ch;
+    overflow-x: auto;
+    color: var(--txt-2);
+  }
+
+  .tabela-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; margin: 0 0 18px; max-width: 68ch; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--txt-3); text-align: left; padding: 10px 14px; background: var(--surface-2); white-space: nowrap;
+  }
+  td { padding: 11px 14px; border-top: 1px solid var(--border); vertical-align: top; }
+  td:first-child { color: var(--txt); }
+  tbody tr:nth-child(odd) td { background: rgba(255,255,255,0.017); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px clamp(20px, 5vw, 56px) 56px;
+    font-size: 13px;
+    color: var(--txt-3);
+  }
+  footer .inner { max-width: 1180px; margin: 0 auto; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="capa">
+  <div class="capa-inner">
+    <p class="eyebrow">OLICMAT 2026 · Coordenação de Curso</p>
+    <h1>Guia da coordenação de curso</h1>
+    <p class="lede">Tudo o que você precisa fazer na plataforma: convidar seus alunos, acompanhar quem se inscreveu e validar as inscrições do seu curso.</p>
+  </div>
+</header>
+
+<div class="corpo">
+
+  <nav class="indice" aria-label="Índice do guia">
+    <p class="titulo">Neste guia</p>
+    <ol>
+      <li><a href="#aceite">Criar sua conta pelo convite</a></li>
+      <li><a href="#entrar">Entrar no sistema</a></li>
+      <li><a href="#convidar">Convidar seus alunos</a></li>
+      <li><a href="#acompanhar">Acompanhar os cadastros</a></li>
+      <li><a href="#validar">Validar as inscrições</a></li>
+      <li><a href="#manual">Cadastrar um aluno à mão</a></li>
+      <li><a href="#metricas">Ver as métricas do curso</a></li>
+      <li><a href="#duvidas">Se algo der errado</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- 1 ─────────────────────────────────────────────── -->
+    <section class="passo" id="aceite">
+      <span class="ord">Passo 1</span>
+      <h2>Criar sua conta pelo convite</h2>
+      <p>Você recebe um e-mail da organização da OLICMAT com um link. Esse link é <strong>pessoal e de uso único</strong> — é por ele que sua conta é criada. Não existe botão de "criar conta" no site.</p>
+
+      <ol class="acoes">
+        <li>Abra o e-mail e clique no link do convite.</li>
+        <li>A tela <span class="ui">Concluir cadastro</span> abre com seu nome e e-mail já preenchidos.</li>
+        <li>Informe o <span class="ui campo">CPF *</span> — somente números.</li>
+        <li>Informe a <span class="ui campo">Data de nascimento *</span>.</li>
+        <li>Selecione a <span class="ui campo">Instituição *</span> e, em seguida, o <span class="ui campo">Curso *</span> que você coordena.</li>
+        <li>Preencha, se quiser, <span class="ui campo">Matrícula</span>, <span class="ui campo">Telefone</span> e <span class="ui campo">Nome da mãe</span> — os três são opcionais.</li>
+        <li>Defina a <span class="ui campo">Senha *</span> com <strong>no mínimo 8 caracteres</strong> e repita em <span class="ui campo">Confirmar senha *</span>.</li>
+        <li>Clique em <span class="ui botao">Concluir cadastro</span>.</li>
+      </ol>
+
+      <div class="nota">
+        <span class="rot">O curso importa mais do que parece</span>
+        <p>O curso que você escolher aqui define <strong>tudo o que seu painel vai mostrar</strong>: os alunos, as inscrições e as métricas são filtrados por ele. Se escolher errado, seu painel virá vazio. Nesse caso não tente refazer o cadastro — fale com a organização, que corrige o vínculo.</p>
+      </div>
+
+      <p>Ao concluir, aparece <span class="ui">Cadastro concluído</span>. Clique em <span class="ui botao">Fazer login</span> e entre com seu e-mail e a senha que acabou de definir.</p>
+
+      <h3>Se o link não funcionar</h3>
+      <ul class="pontos">
+        <li><strong>"Este convite já foi utilizado"</strong> — sua conta já existe. Vá direto para a tela de login.</li>
+        <li><strong>"Este convite expirou. Solicite um novo à organização"</strong> — peça um novo convite.</li>
+        <li><strong>"Já existe um cadastro com este e-mail"</strong> ou <strong>"...com este CPF"</strong> — você já está cadastrado. Use <span class="ui">Esqueci minha senha</span> na tela de login.</li>
+      </ul>
+    </section>
+
+    <!-- 2 ─────────────────────────────────────────────── -->
+    <section class="passo" id="entrar">
+      <span class="ord">Passo 2</span>
+      <h2>Entrar no sistema</h2>
+      <p>Na tela <span class="ui">Bem-vindo de volta</span>, informe <span class="ui campo">Email</span> e <span class="ui campo">Senha</span> e clique em <span class="ui botao">Entrar</span>. Você cai direto no painel da coordenação.</p>
+
+      <h3>O menu do seu painel</h3>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Item</th><th>Para que serve</th></tr></thead>
+          <tbody>
+            <tr><td><span class="ui menu">Visão Geral</span></td><td>Os números do seu curso em quatro cartões</td></tr>
+            <tr><td><span class="ui menu">Alunos</span></td><td>Lista de quem já tem cadastro no seu curso</td></tr>
+            <tr><td><span class="ui menu">Convidar Alunos</span></td><td>Enviar convites em lote por e-mail</td></tr>
+            <tr><td><span class="ui menu">Inscrições</span></td><td>Confirmar ou rejeitar as inscrições na edição</td></tr>
+            <tr><td><span class="ui menu">Métricas</span></td><td>Situação das inscrições, com quebra por curso</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Esqueceu a senha</h3>
+      <p>Clique em <span class="ui">Esqueci minha senha</span> na tela de login, informe seu e-mail e confirme. Você recebe um link de redefinição que <strong>vale por 2 horas</strong>. A nova senha precisa ter no mínimo 8 caracteres, como no cadastro.</p>
+
+      <div class="nota alerta">
+        <span class="rot">Se a mensagem for de sistema indisponível</span>
+        <p>Se aparecer <em>"Não foi possível entrar agora — o sistema está indisponível"</em>, o problema <strong>não é sua senha</strong>. Aguarde alguns minutos e tente de novo. Só a mensagem <em>"Email ou senha inválidos"</em> indica credencial errada.</p>
+      </div>
+    </section>
+
+    <!-- 3 ─────────────────────────────────────────────── -->
+    <section class="passo" id="convidar">
+      <span class="ord">Passo 3 · a tarefa principal</span>
+      <h2>Convidar seus alunos</h2>
+      <p>É por aqui que os estudantes do seu curso entram na olimpíada. Você só precisa do <strong>nome e do e-mail</strong> de cada um — o resto eles preenchem sozinhos.</p>
+
+      <ol class="acoes">
+        <li>No menu, abra <span class="ui menu">Convidar Alunos</span>.</li>
+        <li>Em <span class="ui campo">Curso *</span>, confira o curso. Se você coordena apenas um, ele já vem selecionado.</li>
+        <li>No campo <span class="ui campo">Lista de alunos — um por linha</span>, cole a lista.</li>
+        <li>Confira o contador abaixo do campo: ele mostra em tempo real quantos estão prontos e quantos têm problema.</li>
+        <li>Clique em <span class="ui botao">Enviar N convite(s)</span> — o número muda conforme a lista.</li>
+      </ol>
+
+      <h3>Como escrever a lista</h3>
+      <p>Um aluno por linha. Qualquer um destes quatro formatos funciona, e você pode misturá-los:</p>
+      <pre class="exemplo">Maria de Souza Lima; maria.lima@ufpi.edu.br
+João Pedro Alves, joao.alves@ufpi.edu.br
+Ana Clara Ribeiro    ana.ribeiro@ufpi.edu.br
+Carlos Eduardo Nunes &lt;carlos.nunes@ufpi.edu.br&gt;</pre>
+
+      <ul class="pontos">
+        <li>O nome precisa ter <strong>ao menos 3 caracteres</strong>.</li>
+        <li>O e-mail precisa ser válido — é para lá que o convite vai.</li>
+        <li>Linhas incompletas ficam marcadas com <em>"informe nome e e-mail"</em> e o sistema mostra as 5 primeiras com problema.</li>
+      </ul>
+
+      <div class="nota alerta">
+        <span class="rot">Corrija antes de enviar</span>
+        <p>Se houver linhas com erro, o envio é bloqueado com <em>"Corrija as N linha(s) com problema antes de enviar."</em> Isso é proposital: é melhor corrigir agora do que descobrir depois que um aluno nunca recebeu o convite.</p>
+      </div>
+
+      <h3>O que acontece depois de enviar</h3>
+      <p>O resultado vem separado em três grupos. Leia os três:</p>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Grupo</th><th>O que significa e o que fazer</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Enviados</strong></td><td>Convite criado e e-mail entregue. Nada a fazer.</td></tr>
+            <tr><td><strong>Convite criado, mas o e-mail não saiu</strong></td><td>O cadastro do convite existe e o link é válido — só a entrega falhou. Envie de novo mais tarde para essas pessoas.</td></tr>
+            <tr><td><strong>Ignorados</strong></td><td>Nada foi criado. Quase sempre é e-mail já cadastrado — a pessoa já tem conta.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="nota">
+        <span class="rot">Envie em blocos</span>
+        <p>O serviço de e-mail entrega <strong>até 300 mensagens por dia</strong>. Se seu curso tem mais alunos que isso, divida em blocos e envie ao longo de dias diferentes — e não deixe para a véspera do encerramento das inscrições, em <strong>25/09/2026</strong>.</p>
+      </div>
+
+      <div class="nota ok">
+        <span class="rot">Por que o convite prende o aluno ao seu curso</span>
+        <p>O aluno que aceita o seu convite <strong>não escolhe</strong> instituição nem curso: os dois já vêm definidos por você e aparecem como texto fixo na tela dele. Depois de cadastrado, ele também não consegue mudá-los. É o que garante a contagem correta de participantes por curso e por instituição — e, com isso, a classificação e a distribuição de bolsas.</p>
+      </div>
+    </section>
+
+    <!-- 4 ─────────────────────────────────────────────── -->
+    <section class="passo" id="acompanhar">
+      <span class="ord">Passo 4</span>
+      <h2>Acompanhar quem já se cadastrou</h2>
+      <p>Depois de enviar os convites, acompanhe em dois lugares.</p>
+
+      <h3>Na própria tela de convites</h3>
+      <p>A tabela <span class="ui">Convites enviados</span>, embaixo do formulário, mostra a situação de cada um:</p>
+      <ul class="pontos">
+        <li><strong>cadastrado</strong> — a pessoa aceitou e já tem conta.</li>
+        <li><strong>aguardando</strong> — o convite foi enviado e ainda não foi usado.</li>
+        <li><strong>expirado</strong> — passou do prazo. Envie um novo convite para essa pessoa.</li>
+      </ul>
+
+      <h3>Em <span class="ui menu">Alunos</span></h3>
+      <p>Lista todos que já têm cadastro no seu curso, com nome, e-mail, matrícula, curso e instituição. Há busca por nome, e-mail ou matrícula. Cada linha traz três ações: <strong>ver detalhes</strong>, <strong>editar</strong> e <strong>excluir</strong>.</p>
+
+      <div class="nota alerta">
+        <span class="rot">Cadastrado não é o mesmo que inscrito</span>
+        <p>Aceitar o convite apenas cria a conta. <strong>A inscrição na edição é um segundo passo</strong>, que o próprio aluno precisa fazer. Um aluno pode aparecer em <span class="ui menu">Alunos</span> e continuar fora da olimpíada. Use a tela <span class="ui menu">Inscrições</span>, que separa os inscritos dos que ainda não se inscreveram, e cobre quem estiver faltando.</p>
+      </div>
+    </section>
+
+    <!-- 5 ─────────────────────────────────────────────── -->
+    <section class="passo" id="validar">
+      <span class="ord">Passo 5</span>
+      <h2>Validar as inscrições</h2>
+      <p>Quando um aluno seu se inscreve, a inscrição nasce <strong>pendente</strong> e precisa da sua análise. Enquanto não for confirmada, ele <strong>não consegue fazer a prova</strong> no dia 24/10.</p>
+
+      <ol class="acoes">
+        <li>Abra <span class="ui menu">Inscrições</span>.</li>
+        <li>No topo, três cartões resumem: participantes, inscritos e não inscritos.</li>
+        <li>Use o filtro de situação para ver só as <strong>pendentes</strong>.</li>
+        <li>Em cada linha pendente, clique no <strong>✓ verde</strong> para confirmar ou no <strong>✗ vermelho</strong> para rejeitar.</li>
+      </ol>
+
+      <p>Abaixo da lista de inscritos há uma segunda tabela, <span class="ui">Ainda não inscritos</span> — apenas para leitura. É a sua lista de cobrança.</p>
+
+      <div class="nota alerta">
+        <span class="rot">Prazo</span>
+        <p>As inscrições encerram em <strong>25/09/2026</strong> e a divulgação das inscrições validadas é em <strong>05/10/2026</strong>. Não deixe pendências para o último dia: uma inscrição não confirmada é um aluno fora da prova.</p>
+      </div>
+
+      <p>Você só consegue confirmar ou rejeitar inscrições <strong>de alunos do seu curso</strong>. Se o botão parecer não responder, atualize a página e tente de novo; persistindo, fale com a organização.</p>
+    </section>
+
+    <!-- 6 ─────────────────────────────────────────────── -->
+    <section class="passo" id="manual">
+      <span class="ord">Passo 6 · quando necessário</span>
+      <h2>Cadastrar um aluno à mão</h2>
+      <p>O caminho normal é o convite. Mas se um aluno não recebe o e-mail de jeito nenhum, você pode criá-lo direto.</p>
+
+      <ol class="acoes">
+        <li>Em <span class="ui menu">Alunos</span>, clique em <span class="ui botao">Novo Aluno</span>.</li>
+        <li>Preencha os obrigatórios: <span class="ui campo">Nome *</span>, <span class="ui campo">Email *</span>, <span class="ui campo">Nome da Mãe *</span>, <span class="ui campo">CPF *</span>, <span class="ui campo">Data Nasc. *</span> e <span class="ui campo">Curso *</span>.</li>
+        <li>Complete o que souber em <strong>Dados Pessoais</strong> — nome social, telefone, celular, gênero, raça/cor, deficiência, cotista, bolsista.</li>
+        <li>Clique em <span class="ui botao">Criar Aluno</span>.</li>
+      </ol>
+
+      <ul class="pontos">
+        <li><strong>Você não define senha.</strong> O sistema envia ao aluno um e-mail para ele mesmo criar a dele.</li>
+        <li>O <span class="ui campo">Curso *</span> só oferece os cursos que você coordena.</li>
+        <li>Ao <strong>editar</strong> um aluno, CPF e data de nascimento não aparecem — não são alteráveis.</li>
+      </ul>
+
+      <div class="nota alerta">
+        <span class="rot">Excluir aluno com inscrição não é possível</span>
+        <p>Se aparecer <em>"Não é possível excluir usuário com inscrições ativas. Remova as inscrições primeiro."</em>, você não tem como resolver sozinho — remover inscrição é ação exclusiva da administração. Peça à organização.</p>
+      </div>
+    </section>
+
+    <!-- 7 ─────────────────────────────────────────────── -->
+    <section class="passo" id="metricas">
+      <span class="ord">Passo 7</span>
+      <h2>Ver as métricas do curso</h2>
+      <p>A tela <span class="ui menu">Métricas</span> responde à pergunta que mais importa nesta fase: <em>quantos do meu curso já estão efetivamente dentro?</em></p>
+      <ul class="pontos">
+        <li><strong>Total</strong> — alunos do seu curso com cadastro, inscritos ou não.</li>
+        <li><strong>Inscritos</strong> — quantos se inscreveram nesta edição.</li>
+        <li><strong>Confirmadas</strong> — quantas inscrições você já validou.</li>
+        <li><strong>Taxa</strong> — proporção de confirmadas sobre inscritas.</li>
+      </ul>
+      <p>Mais abaixo, a tabela <strong>Por Curso</strong> reparte esses números entre os cursos que você coordena, e a barra de resumo mostra confirmadas, pendentes e rejeitadas lado a lado.</p>
+      <p>A <span class="ui menu">Visão Geral</span> traz os mesmos quatro números em cartões, para consulta rápida ao entrar.</p>
+    </section>
+
+    <!-- 8 ─────────────────────────────────────────────── -->
+    <section class="passo" id="duvidas">
+      <span class="ord">Referência</span>
+      <h2>Se algo der errado</h2>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Mensagem na tela</th><th>O que fazer</th></tr></thead>
+          <tbody>
+            <tr><td>Email ou senha inválidos.</td><td>Credencial errada. Use <span class="ui">Esqueci minha senha</span>.</td></tr>
+            <tr><td>Muitas tentativas seguidas. Aguarde um instante.</td><td>Proteção contra tentativas repetidas. Espere um minuto.</td></tr>
+            <tr><td>Não foi possível entrar agora — o sistema está indisponível.</td><td>Não é sua senha. Tente novamente em alguns minutos.</td></tr>
+            <tr><td>Nenhum curso vinculado ao seu perfil.</td><td>Seu vínculo com o curso não foi criado. Peça à organização para vinculá-lo — sem isso o painel fica vazio.</td></tr>
+            <tr><td>Você não coordena este curso.</td><td>O curso selecionado não é seu. Escolha um dos seus.</td></tr>
+            <tr><td>Nenhum aluno válido na lista.</td><td>Nenhuma linha tem nome e e-mail legíveis. Confira o formato.</td></tr>
+            <tr><td>Corrija as N linha(s) com problema antes de enviar.</td><td>Ajuste as linhas apontadas e reenvie.</td></tr>
+            <tr><td>Você só pode gerenciar inscrições de participantes do seu curso.</td><td>A inscrição é de outro curso. Encaminhe à coordenação responsável.</td></tr>
+            <tr><td>Não foi possível validar este convite.</td><td>Convite expirado ou já usado. Peça um novo.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="nota">
+        <span class="rot">O que você não consegue fazer — e a quem pedir</span>
+        <p>Trocar o curso de um aluno já cadastrado, remover uma inscrição, alterar o próprio vínculo de curso e mexer em alunos de outros cursos são ações da administração. Todas as demais tarefas da coordenação estão no seu painel.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="inner">
+    <p style="margin:0;">OLICMAT 2026 · Guia da Coordenação de Curso — Olimpíada para Licenciandos em Matemática. Datas conforme o Regulamento oficial: inscrições até <strong>25/09/2026</strong>, Fase 1 em <strong>24/10/2026</strong>.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.indice a'));
+  var secoes = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+
+  function marcar() {
+    var melhor = 0;
+    for (var i = 0; i < secoes.length; i++) {
+      if (secoes[i] && secoes[i].getBoundingClientRect().top <= 120) melhor = i;
+    }
+    links.forEach(function (a, i) { a.classList.toggle('ativo', i === melhor); });
+  }
+
+  var agendado = false;
+  window.addEventListener('scroll', function () {
+    if (agendado) return;
+    agendado = true;
+    requestAnimationFrame(function () { marcar(); agendado = false; });
+  }, { passive: true });
+
+  marcar();
+})();
+</script>
+</body>
+</html>

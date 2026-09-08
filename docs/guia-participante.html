@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="OLICMAT 2026 — Guia do Participante">
+  <style>
+    /* Reset minimo: no artefato publicado isto vem do proprio hospedeiro. */
+    html { color-scheme: dark; }
+    img { max-width: 100%; }
+    [hidden] { display: none !important; }
+  </style>
+<title>Guia do Participante</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    --ground: #171722;
+    --surface: #20202e;
+    --surface-2: #262636;
+    --border: #45455c;
+    --ouro: #F4C840;
+    --verde: #5FC964;
+    --azul: #4FC0F0;
+    --rosa: #E88AA8;
+    --txt: #ffffff;
+    --txt-2: #d6d2e4;
+    --txt-3: #b6b2c4;
+    --display: "Fraunces", Georgia, serif;
+    --body: "Outfit", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--txt-2);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--azul); }
+
+  header.capa {
+    padding: clamp(48px, 9vh, 96px) clamp(20px, 5vw, 56px) clamp(32px, 6vh, 56px);
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(1000px 380px at 8% -10%, rgba(79,192,240,0.13), transparent 65%),
+      var(--ground);
+  }
+  .capa-inner { max-width: 1180px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--azul); margin: 0 0 16px;
+  }
+  h1 {
+    font-family: var(--display); font-weight: 600;
+    font-size: clamp(34px, 5.6vw, 62px); line-height: 1.03; letter-spacing: -0.02em;
+    color: var(--txt); margin: 0 0 16px; max-width: 17ch; text-wrap: balance;
+  }
+  .lede { font-size: clamp(16px, 1.9vw, 21px); font-weight: 300; color: var(--txt-2); max-width: 60ch; margin: 0; }
+
+  /* Linha do tempo da jornada, no cabeçalho */
+  .jornada { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(26px, 4vh, 40px); }
+  .jornada span {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+    color: var(--txt-3); background: var(--surface);
+  }
+  .jornada span b { color: var(--azul); font-weight: 500; }
+
+  .corpo {
+    max-width: 1180px; margin: 0 auto;
+    padding: clamp(28px, 5vh, 52px) clamp(20px, 5vw, 56px) 120px;
+    display: grid; grid-template-columns: 232px minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 64px); align-items: start;
+  }
+  @media (max-width: 900px) { .corpo { grid-template-columns: 1fr; } }
+
+  nav.indice { position: sticky; top: 24px; font-size: 14px; }
+  @media (max-width: 900px) {
+    nav.indice { position: static; border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; background: var(--surface); }
+  }
+  nav.indice p.titulo {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--txt-3); margin: 0 0 14px;
+  }
+  nav.indice ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: idx; }
+  nav.indice a {
+    display: flex; gap: 10px; padding: 7px 10px; border-radius: 8px;
+    color: var(--txt-3); text-decoration: none; line-height: 1.35;
+    transition: background 0.15s, color 0.15s;
+  }
+  nav.indice a::before {
+    counter-increment: idx; content: counter(idx, decimal-leading-zero);
+    font-family: var(--mono); font-size: 10px; color: var(--border); padding-top: 3px; flex: none;
+  }
+  nav.indice a:hover { background: var(--surface); color: var(--txt); }
+  nav.indice a.ativo { background: rgba(79,192,240,0.13); color: var(--azul); }
+  nav.indice a.ativo::before { color: var(--azul); }
+  nav.indice a:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+
+  section.passo { padding-bottom: clamp(36px, 6vh, 64px); scroll-margin-top: 24px; }
+  section.passo + section.passo { border-top: 1px solid var(--border); padding-top: clamp(36px, 6vh, 60px); }
+
+  .ord {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--azul); display: block; margin-bottom: 10px;
+  }
+  .ord .fase { font-family: var(--display); font-size: 1.5em; vertical-align: -0.1em; margin-right: 7px; }
+  h2 {
+    font-family: var(--display); font-weight: 600; font-size: clamp(24px, 3.1vw, 36px);
+    line-height: 1.14; letter-spacing: -0.012em; color: var(--txt);
+    margin: 0 0 14px; max-width: 24ch; text-wrap: balance;
+  }
+  h3 { font-family: var(--body); font-weight: 600; font-size: 17px; color: var(--txt); margin: 30px 0 10px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--txt); font-weight: 600; }
+
+  ol.acoes { counter-reset: ac; list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 14px; max-width: 68ch; }
+  ol.acoes li { position: relative; padding-left: 40px; }
+  ol.acoes li::before {
+    counter-increment: ac; content: counter(ac);
+    position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--azul);
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  ul.pontos { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 9px; max-width: 68ch; }
+  ul.pontos li { padding-left: 20px; position: relative; }
+  ul.pontos li::before {
+    content: ""; position: absolute; left: 3px; top: 0.66em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--azul);
+  }
+  ul.pontos li.nao::before { background: var(--rosa); }
+
+  .ui {
+    font-family: var(--mono); font-size: 0.86em; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px;
+    color: var(--txt); white-space: nowrap;
+  }
+  .campo { color: var(--azul); }
+  .botao { color: var(--ouro); }
+  .menu { color: var(--verde); }
+
+  .nota {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--azul);
+    border-radius: 12px; padding: 16px 20px; margin: 0 0 18px; max-width: 68ch;
+  }
+  .nota p:last-child { margin-bottom: 0; }
+  .nota .rot {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--azul); display: block; margin-bottom: 7px;
+  }
+  .nota.alerta { border-left-color: var(--rosa); }
+  .nota.alerta .rot { color: var(--rosa); }
+  .nota.ok { border-left-color: var(--verde); }
+  .nota.ok .rot { color: var(--verde); }
+  .nota.aviso { border-left-color: var(--ouro); }
+  .nota.aviso .rot { color: var(--ouro); }
+
+  .tabela-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; margin: 0 0 18px; max-width: 68ch; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--txt-3); text-align: left; padding: 10px 14px; background: var(--surface-2); white-space: nowrap;
+  }
+  td { padding: 11px 14px; border-top: 1px solid var(--border); vertical-align: top; }
+  td:first-child { color: var(--txt); }
+  tbody tr:nth-child(odd) td { background: rgba(255,255,255,0.017); }
+
+  .fatos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 22px; max-width: 68ch; }
+  @media (max-width: 620px) { .fatos { grid-template-columns: repeat(2, 1fr); } }
+  .fato { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .fato b {
+    font-family: var(--display); font-size: 26px; font-weight: 700; color: var(--azul);
+    display: block; line-height: 1; margin-bottom: 5px; font-variant-numeric: tabular-nums;
+  }
+  .fato span {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--txt-3);
+  }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 32px clamp(20px, 5vw, 56px) 56px;
+    font-size: 13px; color: var(--txt-3);
+  }
+  footer .inner { max-width: 1180px; margin: 0 auto; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="capa">
+  <div class="capa-inner">
+    <p class="eyebrow">OLICMAT 2026 · Participante</p>
+    <h1>Guia do participante</h1>
+    <p class="lede">Do convite que chegou no seu e-mail até o resultado final — o que fazer em cada etapa, e o que não dá para desfazer depois.</p>
+    <div class="jornada">
+      <span><b>01</b> Convite</span>
+      <span><b>02</b> Inscrição</span>
+      <span><b>03</b> Confirmação</span>
+      <span><b>04</b> Fase 1 · 24/10</span>
+      <span><b>05</b> Fase 2 · 18 a 20/11</span>
+      <span><b>06</b> Resultado · 30/11</span>
+    </div>
+  </div>
+</header>
+
+<div class="corpo">
+
+  <nav class="indice" aria-label="Índice do guia">
+    <p class="titulo">Neste guia</p>
+    <ol>
+      <li><a href="#conta">Criar sua conta</a></li>
+      <li><a href="#inscricao">Fazer a inscrição</a></li>
+      <li><a href="#confirmacao">Esperar a confirmação</a></li>
+      <li><a href="#prova">O dia da prova</a></li>
+      <li><a href="#regras">Regras da prova</a></li>
+      <li><a href="#fase2">Fase 2: vídeo e portfólio</a></li>
+      <li><a href="#resultado">Ver seu resultado</a></li>
+      <li><a href="#duvidas">Se algo der errado</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- 1 -->
+    <section class="passo" id="conta">
+      <span class="ord">Etapa 1</span>
+      <h2>Criar sua conta pelo convite</h2>
+      <p>Sua participação começa com um e-mail enviado pela coordenação do seu curso. <strong>Não existe cadastro aberto no site</strong> — é o link do convite que cria sua conta.</p>
+
+      <ol class="acoes">
+        <li>Abra o e-mail e clique no link do convite.</li>
+        <li>Na tela <span class="ui">Concluir cadastro</span>, informe o <span class="ui campo">CPF *</span> — somente números.</li>
+        <li>Informe a <span class="ui campo">Data de nascimento *</span>.</li>
+        <li>Confira o bloco <strong>Curso</strong>: sua instituição e seu curso já aparecem ali, definidos pela coordenação.</li>
+        <li>Se quiser, preencha <span class="ui campo">Matrícula</span>, <span class="ui campo">Telefone</span> e <span class="ui campo">Nome da mãe</span> — os três são opcionais.</li>
+        <li>Crie a <span class="ui campo">Senha *</span> com <strong>no mínimo 8 caracteres</strong> e repita em <span class="ui campo">Confirmar senha *</span>.</li>
+        <li>Clique em <span class="ui botao">Concluir cadastro</span> e depois em <span class="ui botao">Fazer login</span>.</li>
+      </ol>
+
+      <div class="nota">
+        <span class="rot">Instituição e curso não são escolha sua</span>
+        <p>Eles aparecem como texto fixo porque foram definidos por quem te convidou, e <strong>não mudam depois</strong>. É assim porque a classificação da Fase 1 e a distribuição das bolsas são feitas por instituição — se cada um declarasse onde estuda, daria para escolher contra quem competir. Se o curso mostrado estiver errado, <strong>não conclua o cadastro</strong>: avise a coordenação primeiro.</p>
+      </div>
+
+      <p>O CPF também não pode ser alterado depois. Confira antes de enviar.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="passo" id="inscricao">
+      <span class="ord">Etapa 2</span>
+      <h2>Fazer a inscrição na edição</h2>
+      <div class="nota alerta">
+        <span class="rot">Isto é um segundo passo</span>
+        <p>Ter conta <strong>não é</strong> estar inscrito. Depois de criar a conta você precisa se inscrever na edição, e o prazo encerra em <strong>25/09/2026</strong>. Quem não se inscrever até lá fica de fora.</p>
+      </div>
+
+      <ol class="acoes">
+        <li>Entre no sistema. Se aparecer <span class="ui">Você ainda não está inscrito</span>, clique em <span class="ui botao">Fazer inscrição</span>.</li>
+        <li>Selecione o <span class="ui campo">Estado (UF)</span>.</li>
+        <li>Informe o <span class="ui campo">Município</span>.</li>
+        <li>Preencha <span class="ui campo">Instituição de Ensino</span> e <span class="ui campo">Curso</span> com os seus.</li>
+        <li>Informe o <span class="ui campo">Período/Semestre</span> em que está — um número de 1 a 12.</li>
+        <li>Anexe o <span class="ui campo">Comprovante de Matrícula</span>.</li>
+        <li>Clique em <span class="ui botao">Confirmar inscrição</span>.</li>
+      </ol>
+
+      <div class="nota aviso">
+        <span class="rot">Sobre o comprovante</span>
+        <p>São aceitos <strong>PNG, JPG e PDF</strong>, com até <strong>10 MB</strong>. Se o arquivo for maior ou estiver em outro formato, a tela avisa na hora — não fica travada. Confira que o documento está legível antes de anexar.</p>
+      </div>
+
+      <p>Ao dar certo, aparece <span class="ui">Inscrição realizada</span> e você volta ao painel em alguns segundos.</p>
+    </section>
+
+    <!-- 3 -->
+    <section class="passo" id="confirmacao">
+      <span class="ord">Etapa 3</span>
+      <h2>Esperar a confirmação</h2>
+      <p>Sua inscrição nasce <strong>pendente</strong>. A coordenação do seu curso analisa e confirma. No painel, o cartão <strong>Status</strong> mostra em que pé está:</p>
+
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>O que significa</th></tr></thead>
+          <tbody>
+            <tr><td><strong style="color:var(--ouro)">Pendente</strong></td><td>Aguardando validação. Nada a fazer além de esperar.</td></tr>
+            <tr><td><strong style="color:var(--verde)">Confirmada</strong></td><td>Você está dentro. É este status que libera a prova.</td></tr>
+            <tr><td><strong style="color:var(--rosa)">Rejeitada</strong></td><td>Procure a coordenação do seu curso para entender o motivo.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="nota alerta">
+        <span class="rot">Sem confirmação, não há prova</span>
+        <p>No dia 24/10 o sistema só deixa entrar na prova quem está com a inscrição <strong>confirmada</strong>. Se em <strong>05/10/2026</strong> — data da divulgação das inscrições validadas — a sua ainda estiver pendente, procure a coordenação. Não deixe para o dia da prova.</p>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="passo" id="prova">
+      <span class="ord"><span class="fase">π</span>Etapa 4 · Fase 1 · 24/10/2026</span>
+      <h2>O dia da prova</h2>
+
+      <div class="fatos">
+        <div class="fato"><b>30</b><span>Questões</span></div>
+        <div class="fato"><b>3h</b><span>De duração</span></div>
+        <div class="fato"><b>5</b><span>Alternativas</span></div>
+        <div class="fato"><b>60</b><span>Nota p/ Fase 2</span></div>
+      </div>
+
+      <ol class="acoes">
+        <li>Entre no sistema. Com a inscrição confirmada, aparece o cartão <span class="ui">Prova disponível</span>.</li>
+        <li>Clique em <span class="ui botao">Ir para a prova</span>. Você é levado à aplicação de prova, já autenticado — não precisa entrar de novo.</li>
+        <li>Na tela <span class="ui">Modo Prova Seguro</span>, clique em <span class="ui botao">Ativar Tela Cheia e Iniciar</span>. <strong>O cronômetro começa aqui.</strong></li>
+        <li>Responda cada questão marcando a alternativa e clicando em <span class="ui botao">Salvar Resposta</span>. O botão passa a mostrar <span class="ui">✓ Resposta Salva</span>.</li>
+        <li>Navegue com <span class="ui botao">← Anterior</span> e <span class="ui botao">Próxima →</span>, ou clique nas bolinhas numeradas. As verdes já foram respondidas.</li>
+        <li>Ao terminar, clique em <span class="ui botao">Finalizar Prova</span> e confirme em <span class="ui botao">Finalizar Agora</span>.</li>
+      </ol>
+
+      <div class="nota ok">
+        <span class="rot">Você não perde o que já respondeu</span>
+        <p>Cada resposta é gravada no servidor no momento em que você clica em <span class="ui">Salvar Resposta</span>. Se a internet cair, a bateria acabar ou o navegador fechar, volte e entre de novo: suas respostas estarão lá. <strong>Mas o relógio não para</strong> — o tempo é contado a partir do momento em que você iniciou, então volte o quanto antes.</p>
+      </div>
+
+      <h3>O cronômetro avisa</h3>
+      <p>Aparecem alertas quando faltam <strong>30 minutos</strong>, <strong>10 minutos</strong> e <strong>1 minuto</strong>. Nos últimos 10 minutos o relógio fica vermelho. Ao chegar a zero, a prova é finalizada automaticamente com o que estiver salvo.</p>
+      <p>Se tentar finalizar com questões em branco, o sistema avisa em <span class="ui">Questões Não Respondidas</span> e oferece <span class="ui botao">Revisar Pendentes</span>. Aproveite — não há desconto por erro.</p>
+      <p>Ao final, sua nota da Fase 1 aparece na hora. A correção é automática.</p>
+    </section>
+
+    <!-- 5 -->
+    <section class="passo" id="regras">
+      <span class="ord"><span class="fase">π</span>Etapa 4 · atenção</span>
+      <h2>Regras da prova — leia antes do dia</h2>
+      <p>A prova roda em <strong>tela cheia obrigatória</strong> e o sistema monitora se você sai dela. Cada saída gera uma advertência, mostrada como <span class="ui">Advertência N de 3</span>. <strong>Na terceira, a prova é encerrada automaticamente</strong> com o que estiver salvo.</p>
+
+      <p>Geram advertência:</p>
+      <ul class="pontos">
+        <li class="nao">Sair da tela cheia</li>
+        <li class="nao">Trocar de aba ou de janela</li>
+        <li class="nao">Clicar fora da janela da prova</li>
+        <li class="nao">Tentar abrir as ferramentas do navegador (F12, Ctrl+Shift+I, Ctrl+U)</li>
+      </ul>
+
+      <div class="nota alerta">
+        <span class="rot">Prepare o ambiente antes de iniciar</span>
+        <p>Feche tudo o que puder tocar sua tela: e-mail, mensageiros, atualizações automáticas. Silencie o celular e avise quem estiver por perto. Uma notificação que rouba o foco da janela conta como advertência.</p>
+      </div>
+
+      <p>As questões e as alternativas aparecem <strong>em ordem sorteada para cada participante</strong>. A sua ordem é sempre a mesma enquanto durar a prova, mas não é a mesma do colega ao lado.</p>
+
+      <h3>Checklist da véspera</h3>
+      <ul class="pontos">
+        <li>Confirme que sua inscrição está <strong>Confirmada</strong> no painel</li>
+        <li>Teste seu acesso ao sistema — senha em mãos, sem depender de recuperação no dia</li>
+        <li>Garanta internet estável e energia (carregador conectado)</li>
+        <li>Use computador, não celular: a prova exige tela cheia e navegação entre questões</li>
+        <li>Reserve as 3 horas inteiras, sem interrupção</li>
+      </ul>
+    </section>
+
+    <!-- 6 -->
+    <section class="passo" id="fase2">
+      <span class="ord"><span class="fase">∫</span>Etapa 5 · Fase 2 · 18 a 20/11/2026</span>
+      <h2>Videoaula e portfólio</h2>
+      <p>Quem alcança <strong>60 pontos ou mais</strong> na Fase 1 é convocado para a Fase 2, divulgada em <strong>30/10/2026</strong>. As orientações completas saem entre <strong>05/11 e 10/11</strong>.</p>
+
+      <ol class="acoes">
+        <li>Abra <span class="ui menu">Envio - Fase 2</span> no menu.</li>
+        <li>Clique em <span class="ui botao">Sortear tema</span>. Você recebe um dos temas geradores.</li>
+        <li>Produza sua videoaula sobre o tema sorteado.</li>
+        <li>Publique o vídeo no YouTube, Vimeo, Google Drive ou plataforma equivalente.</li>
+        <li>Cole o endereço em <span class="ui campo">Link do vídeo</span> e clique em <span class="ui botao">Enviar link</span>.</li>
+        <li>Envie o portfólio em PDF na área <span class="ui">Portfólio Digital (PDF)</span>.</li>
+      </ol>
+
+      <div class="nota alerta">
+        <span class="rot">Os três atos são definitivos</span>
+        <p>O <strong>sorteio do tema</strong> acontece uma única vez — não há novo sorteio. O <strong>link do vídeo</strong> e o <strong>portfólio</strong>, uma vez enviados, não podem ser trocados por você. Confira tudo antes de clicar em enviar: se o link estiver errado ou o vídeo privado, só a organização pode resolver.</p>
+      </div>
+
+      <div class="nota aviso">
+        <span class="rot">Antes de enviar o link, teste</span>
+        <p>Abra o endereço do vídeo em uma janela anônima do navegador. Se ele pedir login ou disser que é privado, a banca não vai conseguir assistir. No YouTube, use <strong>"não listado"</strong>; no Google Drive, libere para <strong>qualquer pessoa com o link</strong>.</p>
+      </div>
+
+      <p>A nota da Fase 2 é dada pela banca examinadora entre <strong>21/11 e 29/11</strong>. Quando lançada, aparece no seu painel.</p>
+    </section>
+
+    <!-- 7 -->
+    <section class="passo" id="resultado">
+      <span class="ord"><span class="fase">Σ</span>Etapa 6 · 30/11/2026</span>
+      <h2>Ver seu resultado</h2>
+      <p>Em <span class="ui menu">Resultado</span> você vê três números: a nota da <strong>Fase 1</strong>, a da <strong>Fase 2</strong> e a <strong>Nota Final</strong>. Se você for medalhista, o painel mostra a medalha conquistada.</p>
+
+      <h3>Como a nota final é calculada</h3>
+      <p>A nota final combina as duas fases segundo os pesos definidos pela comissão para esta edição. Havendo empate, o desempate segue esta ordem:</p>
+      <ol class="acoes">
+        <li>Maior nota na <strong>Fase 2</strong></li>
+        <li>Maior nota na <strong>Fase 1</strong></li>
+        <li><strong>Idade</strong> — o participante mais velho fica à frente</li>
+      </ol>
+      <p>O ranking é apurado por estado e por instituição. A cerimônia de premiação e encerramento é em <strong>04/12/2026</strong>.</p>
+    </section>
+
+    <!-- 8 -->
+    <section class="passo" id="duvidas">
+      <span class="ord">Referência</span>
+      <h2>Se algo der errado</h2>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Mensagem na tela</th><th>O que fazer</th></tr></thead>
+          <tbody>
+            <tr><td>Email ou senha inválidos.</td><td>Use <span class="ui">Esqueci minha senha</span> na tela de login. O link recebido vale por 2 horas.</td></tr>
+            <tr><td>Não foi possível entrar agora — o sistema está indisponível.</td><td>Não é sua senha. Espere alguns minutos e tente de novo.</td></tr>
+            <tr><td>Não foi possível validar este convite.</td><td>O convite expirou ou já foi usado. Se você já se cadastrou, vá direto ao login. Senão, peça um novo à coordenação.</td></tr>
+            <tr><td>Já existe um cadastro com este e-mail / CPF.</td><td>Você já tem conta. Recupere a senha em vez de criar outra.</td></tr>
+            <tr><td>Nenhuma edição aberta para inscrição.</td><td>Fora do período. As inscrições vão de 01/09 a 25/09/2026.</td></tr>
+            <tr><td>Você já possui uma inscrição nesta edição.</td><td>Está tudo certo — você já se inscreveu. Confira o status no painel.</td></tr>
+            <tr><td>Inscrição não confirmada para a prova.</td><td>Sua inscrição ainda está pendente. Procure a coordenação do seu curso.</td></tr>
+            <tr><td>A prova ainda não está disponível para realização.</td><td>Fora da janela da prova. Confira o horário divulgado para 24/10.</td></tr>
+            <tr><td>Tempo de prova esgotado ou já finalizada.</td><td>Suas 3 horas terminaram. O que estava salvo foi contabilizado.</td></tr>
+            <tr><td>Nota mínima da Fase 1 não atingida.</td><td>A Fase 2 exige 60 pontos ou mais na Fase 1.</td></tr>
+            <tr><td>Vídeo/Portfólio já foi enviado e não pode ser alterado.</td><td>O envio é definitivo. Se houve erro, fale com a organização.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="nota">
+        <span class="rot">Com quem falar</span>
+        <p>Dúvidas sobre <strong>cadastro, curso, instituição e confirmação de inscrição</strong>: a coordenação do seu curso. Dúvidas sobre <strong>prova, Fase 2, prazos e resultado</strong>: a organização da OLICMAT.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="inner">
+    <p style="margin:0;">OLICMAT 2026 · Guia do Participante — Olimpíada para Licenciandos em Matemática. Inscrições até <strong>25/09/2026</strong> · Fase 1 em <strong>24/10/2026</strong> · Fase 2 de <strong>18 a 20/11/2026</strong> · Resultado em <strong>30/11/2026</strong>. Datas conforme o Regulamento oficial.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.indice a'));
+  var secoes = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+
+  function marcar() {
+    var melhor = 0;
+    for (var i = 0; i < secoes.length; i++) {
+      if (secoes[i] && secoes[i].getBoundingClientRect().top <= 120) melhor = i;
+    }
+    links.forEach(function (a, i) { a.classList.toggle('ativo', i === melhor); });
+  }
+
+  var agendado = false;
+  window.addEventListener('scroll', function () {
+    if (agendado) return;
+    agendado = true;
+    requestAnimationFrame(function () { marcar(); agendado = false; });
+  }, { passive: true });
+
+  marcar();
+})();
+</script>
+</body>
+</html>

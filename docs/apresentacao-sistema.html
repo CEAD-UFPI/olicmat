@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="OLICMAT 2026 — OLICMAT por Dentro">
+  <style>
+    /* Reset minimo: no artefato publicado isto vem do proprio hospedeiro. */
+    html { color-scheme: dark; }
+    img { max-width: 100%; }
+    [hidden] { display: none !important; }
+  </style>
+<title>OLICMAT por Dentro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    --ground: #171722;
+    --surface: #20202e;
+    --surface-2: #262636;
+    --border: #45455c;
+    --ouro: #F4C840;
+    --verde: #5FC964;
+    --azul: #4FC0F0;
+    --rosa: #E88AA8;
+    --txt: #ffffff;
+    --txt-2: #d6d2e4;
+    --txt-3: #b6b2c4;
+    --display: "Fraunces", Georgia, serif;
+    --body: "Outfit", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--txt);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.55;
+    overflow: hidden;
+  }
+
+  /* ── Palco ───────────────────────────────────────────── */
+  #palco {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(28px, 5vh, 64px) clamp(24px, 6vw, 96px) clamp(64px, 9vh, 96px);
+    overflow-y: auto;
+  }
+  .slide.ativo { display: flex; }
+
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: clamp(10px, 1.1vw, 12px);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ouro);
+    margin: 0 0 14px;
+  }
+  .eyebrow .sym { font-family: var(--display); font-size: 1.35em; vertical-align: -0.08em; margin-right: 6px; }
+
+  h1 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(30px, 4.4vw, 62px);
+    line-height: 1.06;
+    letter-spacing: -0.015em;
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+  h2 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(24px, 3.1vw, 44px);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--body);
+    font-weight: 600;
+    font-size: clamp(15px, 1.5vw, 19px);
+    margin: 0 0 6px;
+    color: var(--txt);
+  }
+  .sub {
+    font-size: clamp(15px, 1.5vw, 20px);
+    color: var(--txt-2);
+    max-width: 68ch;
+    margin: 0 0 clamp(20px, 3.4vh, 40px);
+    font-weight: 300;
+  }
+  p { margin: 0 0 12px; color: var(--txt-2); }
+  strong { color: var(--txt); font-weight: 600; }
+
+  /* ── Grades ──────────────────────────────────────────── */
+  .grid { display: grid; gap: clamp(12px, 1.6vw, 20px); }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g4 { grid-template-columns: repeat(4, 1fr); }
+  .g5 { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 900px) {
+    .g3, .g4, .g5 { grid-template-columns: repeat(2, 1fr); }
+    .g2 { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: clamp(14px, 1.7vw, 22px);
+  }
+  .card p { font-size: clamp(13px, 1.15vw, 15px); margin: 0; color: var(--txt-3); }
+  .card .rotulo {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--txt-3);
+    margin: 0 0 8px;
+  }
+
+  /* Cartão com faixa de cor — só onde a cor codifica algo (fase, papel) */
+  .card[data-cor] { border-left: 3px solid var(--border); }
+  .card[data-cor="ouro"] { border-left-color: var(--ouro); }
+  .card[data-cor="verde"] { border-left-color: var(--verde); }
+  .card[data-cor="azul"] { border-left-color: var(--azul); }
+  .card[data-cor="rosa"] { border-left-color: var(--rosa); }
+
+  .num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 3.6vw, 50px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .num.ouro { color: var(--ouro); }
+  .num.verde { color: var(--verde); }
+  .num.azul { color: var(--azul); }
+
+  /* ── Trilha de etapas ────────────────────────────────── */
+  .trilha { display: flex; flex-wrap: wrap; gap: 10px; }
+  .etapa {
+    flex: 1 1 150px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 15px;
+    position: relative;
+  }
+  .etapa .ord {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--ouro);
+    display: block;
+    margin-bottom: 7px;
+  }
+  .etapa strong { display: block; font-size: clamp(13px, 1.2vw, 15px); margin-bottom: 4px; }
+  .etapa span.quem {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--txt-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Tabelas ─────────────────────────────────────────── */
+  .tabela-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: clamp(12px, 1.15vw, 15px); }
+  th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--txt-3);
+    text-align: left;
+    padding: 11px 14px;
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  td { padding: 11px 14px; border-top: 1px solid var(--border); color: var(--txt-2); vertical-align: top; }
+  td:first-child { color: var(--txt); font-weight: 500; }
+  tbody tr:nth-child(odd) td { background: rgba(255,255,255,0.017); }
+  td.data { font-family: var(--mono); white-space: nowrap; color: var(--txt-3); font-size: 0.94em; }
+  tr.marco td { background: rgba(244,200,64,0.07); }
+  tr.marco td:first-child { color: var(--ouro); }
+  tr.agora td { background: rgba(95,201,100,0.10); }
+
+  /* ── Listas ──────────────────────────────────────────── */
+  ul.lista { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+  ul.lista li {
+    padding-left: 22px;
+    position: relative;
+    color: var(--txt-2);
+    font-size: clamp(13px, 1.2vw, 16px);
+  }
+  ul.lista li::before {
+    content: "";
+    position: absolute;
+    left: 4px; top: 0.62em;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ouro);
+  }
+  ul.lista li.nao::before { background: var(--rosa); }
+  ul.lista li.sim::before { background: var(--verde); }
+
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--txt-3);
+    white-space: nowrap;
+  }
+  .pill.ok { color: var(--verde); border-color: rgba(95,201,100,0.45); background: rgba(95,201,100,0.09); }
+  .pill.risco { color: var(--rosa); border-color: rgba(232,138,168,0.45); background: rgba(232,138,168,0.09); }
+  .pill.parcial { color: var(--ouro); border-color: rgba(244,200,64,0.45); background: rgba(244,200,64,0.09); }
+
+  .destaque {
+    background: linear-gradient(135deg, rgba(244,200,64,0.10), rgba(244,200,64,0.02));
+    border: 1px solid rgba(244,200,64,0.32);
+    border-radius: 14px;
+    padding: clamp(16px, 2vw, 24px);
+  }
+  .destaque h3 { color: var(--ouro); }
+
+  .formula {
+    font-family: var(--mono);
+    font-size: clamp(14px, 1.5vw, 19px);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: var(--txt);
+    display: inline-block;
+  }
+  .formula .op { color: var(--ouro); }
+
+  /* ── Capa ────────────────────────────────────────────── */
+  .capa { align-items: flex-start; justify-content: center; }
+  .marca {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(52px, 10vw, 132px);
+    line-height: 0.94;
+    letter-spacing: -0.03em;
+    margin: 0 0 6px;
+  }
+  .marca .o { color: var(--ouro); }
+  .marca .l { color: var(--verde); }
+  .marca .i { color: var(--azul); }
+  .simbolos {
+    font-family: var(--display);
+    font-size: clamp(22px, 3.4vw, 44px);
+    letter-spacing: 0.5em;
+    color: var(--border);
+    margin: clamp(20px, 4vh, 44px) 0 0;
+  }
+  .simbolos .a { color: var(--azul); }
+  .simbolos .v { color: var(--verde); }
+  .simbolos .g { color: var(--ouro); }
+
+  /* ── Rodapé do palco ─────────────────────────────────── */
+  #rodape {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 clamp(24px, 6vw, 96px);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--txt-3);
+    background: linear-gradient(to top, var(--ground) 55%, transparent);
+    pointer-events: none;
+    z-index: 20;
+  }
+  #barra { flex: 1; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  #barra i { display: block; height: 100%; background: var(--ouro); width: 0; transition: width 0.28s ease; }
+  #contador { font-variant-numeric: tabular-nums; letter-spacing: 0.1em; }
+  #rotulo { color: var(--txt-3); letter-spacing: 0.12em; text-transform: uppercase; }
+
+  #ajuda {
+    position: fixed;
+    right: clamp(24px, 6vw, 96px);
+    top: 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--border);
+    z-index: 20;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="palco">
+
+  <!-- 1 ─ Capa -->
+  <section class="slide ativo capa" data-rotulo="Abertura">
+    <p class="eyebrow">Comissão Organizadora · Edição 2026</p>
+    <p class="marca"><span class="o">O</span><span class="l">L</span><span class="i">I</span>CMAT</p>
+    <h2 style="font-weight:400; color:var(--txt-2); max-width:22ch;">A plataforma por dentro</h2>
+    <p class="sub" style="margin-top:14px;">Olimpíada para Licenciandos em Matemática — como o sistema funciona, quem faz o quê, e em que pé estamos.</p>
+    <p class="simbolos"><span class="a">π</span><span class="v">∫</span><span class="g">Σ</span></p>
+  </section>
+
+  <!-- 2 ─ O que é -->
+  <section class="slide" data-rotulo="O sistema">
+    <p class="eyebrow"><span class="sym">Σ</span>O que construímos</p>
+    <h1>Uma plataforma que conduz a olimpíada inteira,<br>do convite à medalha.</h1>
+    <p class="sub">Não é um formulário de inscrição com uma planilha atrás. É o ciclo completo — cadastro, validação, prova cronometrada, correção, avaliação de banca, classificação e publicação — com cada ação registrada e cada perfil vendo só o que lhe cabe.</p>
+    <div class="grid g4">
+      <div class="card"><span class="num ouro">2</span><p class="rotulo">Fases</p><p>Prova objetiva on-line e produção pedagógica avaliada por banca</p></div>
+      <div class="card"><span class="num azul">5</span><p class="rotulo">Perfis de acesso</p><p>Aluno, Coordenação, Avaliação, Comissão, Administração</p></div>
+      <div class="card"><span class="num verde">6</span><p class="rotulo">Instituições ativas</p><p>IFPI, UECE, UESPI, UFDPAR, UFMA e UFPI, com o curso cadastrado</p></div>
+      <div class="card"><span class="num ouro">2</span><p class="rotulo">Aplicações</p><p>O painel de gestão e a aplicação de prova, isoladas uma da outra</p></div>
+    </div>
+  </section>
+
+  <!-- 3 ─ O ciclo -->
+  <section class="slide" data-rotulo="O ciclo">
+    <p class="eyebrow"><span class="sym">Σ</span>Ciclo de vida da competição</p>
+    <h2>Dez etapas, cada uma com um responsável definido</h2>
+    <p class="sub">Ninguém executa a etapa de outro. O sistema recusa a ação de quem não tem o papel.</p>
+    <div class="trilha">
+      <div class="etapa"><span class="ord">01</span><strong>Abrir a edição</strong><span class="quem">Administração</span></div>
+      <div class="etapa"><span class="ord">02</span><strong>Cadastrar instituições e cursos</strong><span class="quem">Administração</span></div>
+      <div class="etapa"><span class="ord">03</span><strong>Convidar coordenações</strong><span class="quem">Administração</span></div>
+      <div class="etapa"><span class="ord">04</span><strong>Convidar os alunos do curso</strong><span class="quem">Coordenação</span></div>
+      <div class="etapa"><span class="ord">05</span><strong>Inscrever-se na edição</strong><span class="quem">Aluno</span></div>
+    </div>
+    <div class="trilha" style="margin-top:10px;">
+      <div class="etapa"><span class="ord">06</span><strong>Validar a inscrição</strong><span class="quem">Coordenação</span></div>
+      <div class="etapa"><span class="ord">07</span><strong>Publicar e aplicar a Fase 1</strong><span class="quem">Avaliação · Administração</span></div>
+      <div class="etapa"><span class="ord">08</span><strong>Enviar videoaula e portfólio</strong><span class="quem">Aluno</span></div>
+      <div class="etapa"><span class="ord">09</span><strong>Avaliar a Fase 2</strong><span class="quem">Banca avaliadora</span></div>
+      <div class="etapa"><span class="ord">10</span><strong>Publicar ranking e medalhas</strong><span class="quem">Comissão · Administração</span></div>
+    </div>
+  </section>
+
+  <!-- 4 ─ Perfis -->
+  <section class="slide" data-rotulo="Perfis de acesso">
+    <p class="eyebrow"><span class="sym">Σ</span>Quem vê o quê</p>
+    <h2>Cinco perfis, cinco painéis diferentes</h2>
+    <p class="sub">O painel é montado a partir do papel de quem entrou. Não há tela escondida por link: o que não aparece no menu também é recusado pelo servidor.</p>
+    <div class="grid g5">
+      <div class="card" data-cor="azul">
+        <p class="rotulo">Aluno</p><h3>Competidor</h3>
+        <p>Inscreve-se, faz a prova, envia a Fase 2 e consulta o próprio resultado.</p>
+      </div>
+      <div class="card" data-cor="verde">
+        <p class="rotulo">Coordenação de curso</p><h3>Coordenador</h3>
+        <p>Convida e acompanha os alunos <strong>do seu curso</strong>, valida inscrições e vê as métricas do curso.</p>
+      </div>
+      <div class="card" data-cor="rosa">
+        <p class="rotulo">Avaliação</p><h3>Avaliador</h3>
+        <p>Monta questões e provas em rascunho e avalia as produções da Fase 2.</p>
+      </div>
+      <div class="card" data-cor="ouro">
+        <p class="rotulo">Comissão</p><h3>Comissão</h3>
+        <p>Enxerga a olimpíada inteira — inscrições, provas, monitoramento, exportações e auditoria.</p>
+      </div>
+      <div class="card" data-cor="ouro">
+        <p class="rotulo">Administração</p><h3>Admin</h3>
+        <p>Tudo o que a comissão faz, mais a configuração do sistema: edições, usuários e publicação.</p>
+      </div>
+    </div>
+    <p style="margin-top:22px; font-size:clamp(13px,1.2vw,16px);">O recorte da coordenação não é de tela: cada consulta é filtrada pelo curso que a pessoa coordena. Um coordenador que tentar validar a inscrição de um aluno de outro curso recebe recusa do servidor, não uma tela em branco.</p>
+  </section>
+
+  <!-- 5 ─ Como se entra -->
+  <section class="slide" data-rotulo="Entrada no sistema">
+    <p class="eyebrow"><span class="sym">Σ</span>Cadastro</p>
+    <h2>Ninguém se cadastra sozinho</h2>
+    <p class="sub">Não existe botão de "criar conta" na plataforma. Toda conta nasce de um convite nominal enviado por quem tem autoridade para isso.</p>
+    <div class="grid g3">
+      <div class="card" data-cor="ouro">
+        <p class="rotulo">Passo 1</p><h3>A organização convida a coordenação</h3>
+        <p>A administração envia o convite por e-mail. No aceite, a pessoa escolhe a instituição e o curso que coordena.</p>
+      </div>
+      <div class="card" data-cor="verde">
+        <p class="rotulo">Passo 2</p><h3>A coordenação convida os alunos</h3>
+        <p>Cola a lista de nomes e e-mails, escolhe o curso, e o sistema dispara um convite individual para cada um.</p>
+      </div>
+      <div class="card" data-cor="azul">
+        <p class="rotulo">Passo 3</p><h3>O aluno conclui o cadastro</h3>
+        <p>Clica no link do e-mail, informa CPF, data de nascimento e define a própria senha. Curso e instituição já vêm preenchidos.</p>
+      </div>
+    </div>
+    <div class="destaque" style="margin-top:22px;">
+      <h3>Por que assim, e não com cadastro aberto</h3>
+      <p style="margin:0;">Um cadastro aberto deixaria qualquer pessoa declarar onde estuda. Como a Fase 1 classifica por instituição e as bolsas são distribuídas por instituição, isso permitiria escolher contra quem competir. O convite nominal resolve na origem: quem entra, entra pelo curso de quem o convidou.</p>
+    </div>
+  </section>
+
+  <!-- 6 ─ A trava -->
+  <section class="slide" data-rotulo="Vínculo travado">
+    <p class="eyebrow"><span class="sym">Σ</span>Regra de quantificação</p>
+    <h2>O vínculo com o curso é definido pela coordenação — e não muda depois</h2>
+    <p class="sub">Esta é a garantia que sustenta a contagem por instituição e a seleção por curso.</p>
+    <div class="grid g2">
+      <div class="card">
+        <p class="rotulo">O que o aluno vê</p>
+        <ul class="lista" style="margin-top:10px;">
+          <li>No convite, instituição e curso aparecem como <strong>texto fixo</strong>, sem seletor</li>
+          <li>No perfil, o bloco "Vínculo" é somente leitura</li>
+          <li>O CPF também é imutável depois do cadastro</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p class="rotulo">O que o servidor garante</p>
+        <ul class="lista" style="margin-top:10px;">
+          <li class="sim">A inscrição herda o curso do vínculo, ignorando o que vier na requisição</li>
+          <li class="sim">A instituição é lida <strong>do curso</strong>, nunca de um campo preenchido pelo usuário</li>
+          <li class="nao">Não há caminho, nem por tela nem por requisição direta, para o aluno trocar de curso</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:clamp(13px,1.2vw,16px);">A coordenação pode corrigir um vínculo errado; o aluno, não. É uma decisão de integridade da competição, não uma limitação técnica.</p>
+  </section>
+
+  <!-- 7 ─ Fase 1 -->
+  <section class="slide" data-rotulo="Fase 1 — Prova">
+    <p class="eyebrow"><span class="sym">π</span>Fase 1</p>
+    <h2>Prova objetiva, cronometrada, em aplicação isolada</h2>
+    <div class="grid g4" style="margin-bottom:22px;">
+      <div class="card"><span class="num azul">30</span><p class="rotulo">Questões</p></div>
+      <div class="card"><span class="num azul">3h</span><p class="rotulo">De duração</p></div>
+      <div class="card"><span class="num azul">5</span><p class="rotulo">Alternativas por questão</p></div>
+      <div class="card"><span class="num ouro">3</span><p class="rotulo">Advertências antes do encerramento</p></div>
+    </div>
+    <div class="grid g3">
+      <div class="card" data-cor="azul">
+        <h3>Cada resposta é salva no servidor</h3>
+        <p>Não há rascunho local. Fechar o navegador ou cair a conexão não perde nada: ao voltar, o aluno retoma exatamente onde parou, com o cronômetro contado pelo servidor.</p>
+      </div>
+      <div class="card" data-cor="azul">
+        <h3>Questões e alternativas embaralhadas</h3>
+        <p>A ordem é sorteada por aluno e permanece a mesma para ele. Duas pessoas lado a lado não veem a mesma questão na mesma posição.</p>
+      </div>
+      <div class="card" data-cor="azul">
+        <h3>Ambiente de prova vigiado</h3>
+        <p>Exige tela cheia. Sair dela, trocar de aba ou tentar abrir as ferramentas do navegador gera advertência; na terceira, a prova é encerrada.</p>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:clamp(13px,1.2vw,16px);">A correção é automática e imediata: ao finalizar, o aluno já vê a nota da Fase 1.</p>
+  </section>
+
+  <!-- 8 ─ Arquitetura -->
+  <section class="slide" data-rotulo="Por que duas aplicações">
+    <p class="eyebrow"><span class="sym">π</span>Arquitetura, em uma página</p>
+    <h2>A prova roda em uma aplicação separada do painel</h2>
+    <p class="sub">São dois sistemas independentes, em máquinas diferentes, compartilhando apenas o banco de dados.</p>
+    <div class="grid g2">
+      <div class="card" data-cor="ouro">
+        <p class="rotulo">Painel de gestão</p>
+        <h3>Cadastros, inscrições, avaliação, ranking</h3>
+        <p>Usado o ano inteiro por coordenações, banca, comissão e administração.</p>
+      </div>
+      <div class="card" data-cor="azul">
+        <p class="rotulo">Aplicação de prova</p>
+        <h3>Só a Fase 1, só no dia da Fase 1</h3>
+        <p>Recebe o aluno já autenticado, por um código de passagem de curta duração emitido pelo painel.</p>
+      </div>
+    </div>
+    <div class="destaque" style="margin-top:22px;">
+      <h3>O que isso garante no dia 24 de outubro</h3>
+      <p style="margin:0;">Se o painel administrativo ficar lento ou sair do ar durante a prova, <strong>a prova continua</strong>. O contrário também vale. Nenhum problema de um lado interrompe o outro — e é justamente no dia da prova que o painel recebe mais acessos simultâneos de quem quer acompanhar.</p>
+    </div>
+  </section>
+
+  <!-- 9 ─ Fase 2 -->
+  <section class="slide" data-rotulo="Fase 2 — Produção">
+    <p class="eyebrow"><span class="sym">∫</span>Fase 2</p>
+    <h2>Tema sorteado, videoaula e portfólio, avaliação por banca</h2>
+    <div class="grid g4">
+      <div class="card" data-cor="verde">
+        <p class="rotulo">Habilitação</p><h3>Nota mínima 60</h3>
+        <p>Só quem alcança 60 pontos na Fase 1 acessa a Fase 2. A verificação é feita no servidor em cada ação.</p>
+      </div>
+      <div class="card" data-cor="verde">
+        <p class="rotulo">Tema</p><h3>Sorteado uma única vez</h3>
+        <p>O aluno clica em "Sortear tema" e recebe um dos temas geradores. Não há novo sorteio.</p>
+      </div>
+      <div class="card" data-cor="verde">
+        <p class="rotulo">Entrega</p><h3>Link do vídeo + portfólio</h3>
+        <p>A videoaula é publicada em plataforma externa e o link é registrado; o portfólio é enviado em PDF.</p>
+      </div>
+      <div class="card" data-cor="rosa">
+        <p class="rotulo">Atenção</p><h3>Envio é definitivo</h3>
+        <p>Enviado o link ou o portfólio, não há reenvio pelo aluno. Correção depende da organização.</p>
+      </div>
+    </div>
+    <p style="margin-top:22px; font-size:clamp(13px,1.2vw,16px);">A nota da Fase 2 é a <strong>média das avaliações lançadas pela banca</strong> — o sistema comporta mais de um avaliador por produção.</p>
+  </section>
+
+  <!-- 10 ─ Nota final -->
+  <section class="slide" data-rotulo="Classificação">
+    <p class="eyebrow"><span class="sym">Σ</span>Nota final e classificação</p>
+    <h2>Como a posição de cada participante é calculada</h2>
+    <p class="formula" style="margin-bottom:26px;">nota final <span class="op">=</span> nota Fase 1 <span class="op">×</span> peso₁ <span class="op">+</span> nota Fase 2 <span class="op">×</span> peso₂</p>
+    <div class="grid g2">
+      <div class="card">
+        <p class="rotulo">Pesos</p>
+        <h3>Configuráveis por edição</h3>
+        <p style="margin-top:8px;">Na ausência de configuração, o sistema usa <strong>0,5 e 0,5</strong> — as duas fases com o mesmo peso. A comissão define isso ao abrir a edição, antes da prova.</p>
+      </div>
+      <div class="card" data-cor="ouro">
+        <p class="rotulo">Desempate</p>
+        <h3>Três critérios, nesta ordem</h3>
+        <ul class="lista" style="margin-top:10px;">
+          <li>Maior nota na <strong>Fase 2</strong></li>
+          <li>Maior nota na <strong>Fase 1</strong></li>
+          <li><strong>Idade</strong> — o participante mais velho fica à frente</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:20px; font-size:clamp(13px,1.2vw,16px);">O ranking é apurado <strong>por estado e por instituição</strong>, e as medalhas de ouro, prata e bronze saem dessa apuração. A publicação é um ato deliberado da comissão: o resultado só se torna público quando o ranking é publicado.</p>
+  </section>
+
+  <!-- 11 ─ Registro -->
+  <section class="slide" data-rotulo="Rastreabilidade">
+    <p class="eyebrow"><span class="sym">Σ</span>Rastreabilidade</p>
+    <h2>Toda ação crítica fica registrada</h2>
+    <p class="sub">Confirmar ou rejeitar uma inscrição, excluir um cadastro, publicar um resultado — cada uma dessas ações grava quem fez, o que fez e quando.</p>
+    <div class="grid g3">
+      <div class="card" data-cor="ouro"><h3>Auditoria</h3><p>Tela dedicada onde comissão e administração consultam o histórico de ações do sistema.</p></div>
+      <div class="card" data-cor="ouro"><h3>Monitoramento</h3><p>Acompanhamento das inscrições e da execução da prova enquanto ela acontece.</p></div>
+      <div class="card" data-cor="ouro"><h3>Exportação</h3><p>Os dados da edição saem da plataforma em arquivo, para relatório, prestação de contas e conferência.</p></div>
+    </div>
+    <p style="margin-top:22px; font-size:clamp(13px,1.2vw,16px);">É o que permite responder, meses depois, quem validou uma inscrição contestada — sem depender da memória de ninguém.</p>
+  </section>
+
+  <!-- 12 ─ Cronograma -->
+  <section class="slide" data-rotulo="Cronograma">
+    <p class="eyebrow"><span class="sym">Σ</span>Cronograma oficial · Edição 2026</p>
+    <h2 style="margin-bottom:18px;">Onde estamos</h2>
+    <div class="tabela-wrap">
+      <table>
+        <thead><tr><th>Etapa</th><th style="width:1%">Data</th></tr></thead>
+        <tbody>
+          <tr><td>Lançamento oficial</td><td class="data">19/08/2026</td></tr>
+          <tr class="agora"><td>Período de inscrições <span class="pill ok">em curso</span></td><td class="data">01/09 a 25/09/2026</td></tr>
+          <tr><td>Divulgação das inscrições validadas</td><td class="data">05/10/2026</td></tr>
+          <tr class="marco"><td>Aplicação da Fase 1 (on-line)</td><td class="data">24/10/2026</td></tr>
+          <tr><td>Resultado da Fase 1 e convocação para a Fase 2</td><td class="data">30/10/2026</td></tr>
+          <tr><td>Divulgação das orientações da Fase 2</td><td class="data">05/11 a 10/11/2026</td></tr>
+          <tr class="marco"><td>Envio dos vídeos e portfólios</td><td class="data">18/11 a 20/11/2026</td></tr>
+          <tr><td>Avaliação pela banca examinadora</td><td class="data">21/11 a 29/11/2026</td></tr>
+          <tr class="marco"><td>Resultado preliminar e medalhistas</td><td class="data">30/11/2026</td></tr>
+          <tr class="marco"><td>Cerimônia de premiação e encerramento</td><td class="data">04/12/2026</td></tr>
+          <tr><td>Implementação das bolsas FAPEPI</td><td class="data">Dez/2026 a Jan/2027</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:16px; font-size:clamp(12px,1.1vw,14px); color:var(--txt-3);">Datas conforme o Regulamento publicado no site da olimpíada.</p>
+  </section>
+
+  <!-- 13 ─ Estado atual -->
+  <section class="slide" data-rotulo="Estado atual">
+    <p class="eyebrow"><span class="sym">Σ</span>Situação em 08/09/2026</p>
+    <h2 style="margin-bottom:18px;">O que está no ar, e o que ainda não</h2>
+    <div class="tabela-wrap">
+      <table>
+        <thead><tr><th>Frente</th><th style="width:1%">Situação</th><th>Observação</th></tr></thead>
+        <tbody>
+          <tr><td>Site público e regulamento</td><td><span class="pill ok">no ar</span></td><td>Landing, regulamento completo e ranking público</td></tr>
+          <tr><td>Cadastro por convite</td><td><span class="pill ok">no ar</span></td><td>Convite nominal por e-mail, com curso travado no aceite</td></tr>
+          <tr><td>Painel da coordenação</td><td><span class="pill ok">no ar</span></td><td>Alunos, convites, inscrições e métricas</td></tr>
+          <tr><td>Inscrição do participante</td><td><span class="pill ok">no ar</span></td><td>Aberta desde 01/09</td></tr>
+          <tr><td>Validação de inscrições</td><td><span class="pill ok">no ar</span></td><td>Coordenação, comissão e administração</td></tr>
+          <tr><td>Aplicação de prova (Fase 1)</td><td><span class="pill parcial">a publicar</span></td><td>Aplicação pronta; falta subir na máquina de provas antes de 24/10</td></tr>
+          <tr><td>Fase 2 — envio e avaliação</td><td><span class="pill parcial">a exercitar</span></td><td>Implementado; sem ensaio com dados reais até aqui</td></tr>
+          <tr><td>Ranking, desempate e medalhas</td><td><span class="pill ok">implementado</span></td><td>Com testes automatizados de apuração e desempate</td></tr>
+          <tr><td>Cronograma divulgado</td><td><span class="pill ok">unificado</span></td><td>Site, regulamento e apresentação passam a ler a mesma fonte de datas</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 14 ─ Riscos -->
+  <section class="slide" data-rotulo="Riscos">
+    <p class="eyebrow"><span class="sym">Σ</span>Atenção da comissão</p>
+    <h2>Três pontos que dependem de decisão, não de código</h2>
+    <div class="grid g3" style="margin-top:8px;">
+      <div class="card" data-cor="rosa">
+        <p class="rotulo">Prazo · até 24/10</p>
+        <h3>Publicar a aplicação de prova</h3>
+        <p>A máquina de provas ainda não recebeu a aplicação. É o item de maior prazo crítico do calendário — precisa de ensaio antes do dia, não no dia.</p>
+      </div>
+      <div class="card" data-cor="rosa">
+        <p class="rotulo">Coordenações · até 05/10</p>
+        <h3>Zerar as inscrições pendentes</h3>
+        <p>Inscrição não confirmada é participante fora da prova. A validação é das coordenações de curso, e a divulgação das inscrições validadas é em 05/10 — depois disso não há remédio silencioso.</p>
+      </div>
+      <div class="card" data-cor="rosa">
+        <p class="rotulo">Capacidade · até 25/09</p>
+        <h3>Limite de envio de convites</h3>
+        <p>O serviço de e-mail em uso entrega até 300 mensagens por dia. Convites em massa perto do fim das inscrições precisam ser escalonados.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 ─ Encerramento -->
+  <section class="slide capa" data-rotulo="Encerramento">
+    <p class="eyebrow"><span class="sym">Σ</span>Em uma frase</p>
+    <h1 style="max-width:20ch;">A olimpíada inteira cabe na plataforma.</h1>
+    <p class="sub" style="max-width:56ch;">Do convite nominal à medalha publicada, com cada perfil no seu escopo, cada ação registrada e a prova protegida de tudo o mais.</p>
+    <div class="grid g3" style="margin-top:8px; max-width:900px;">
+      <div class="card"><p class="rotulo">Inscrições encerram</p><span class="num ouro" style="font-size:clamp(20px,2.2vw,30px);">25/09</span></div>
+      <div class="card"><p class="rotulo">Fase 1</p><span class="num azul" style="font-size:clamp(20px,2.2vw,30px);">24/10</span></div>
+      <div class="card"><p class="rotulo">Medalhistas</p><span class="num verde" style="font-size:clamp(20px,2.2vw,30px);">30/11</span></div>
+    </div>
+    <p class="simbolos"><span class="a">π</span><span class="v">∫</span><span class="g">Σ</span></p>
+  </section>
+
+</div>
+
+<div id="ajuda">← → NAVEGAR · F TELA CHEIA</div>
+
+<div id="rodape">
+  <span id="rotulo">Abertura</span>
+  <span id="barra"><i></i></span>
+  <span id="contador">1 / 15</span>
+</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var atual = 0;
+  var barra = document.querySelector('#barra i');
+  var contador = document.getElementById('contador');
+  var rotulo = document.getElementById('rotulo');
+
+  function mostrar(i) {
+    atual = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, n) { s.classList.toggle('ativo', n === atual); });
+    slides[atual].scrollTop = 0;
+    barra.style.width = ((atual + 1) / slides.length * 100) + '%';
+    contador.textContent = (atual + 1) + ' / ' + slides.length;
+    rotulo.textContent = slides[atual].dataset.rotulo || '';
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); mostrar(atual + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); mostrar(atual - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); mostrar(0); }
+    else if (e.key === 'End') { e.preventDefault(); mostrar(slides.length - 1); }
+    else if (e.key === 'f' || e.key === 'F') {
+      if (document.fullscreenElement) { document.exitFullscreen(); }
+      else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
+    }
+  });
+
+  // Clique na metade direita avança, na esquerda volta — mas nunca sobre um
+  // link ou dentro de uma tabela rolável, onde o clique tem outro sentido.
+  document.getElementById('palco').addEventListener('click', function (e) {
+    if (e.target.closest('a, .tabela-wrap')) return;
+    mostrar(e.clientX > window.innerWidth / 2 ? atual + 1 : atual - 1);
+  });
+
+  var x0 = null;
+  document.addEventListener('touchstart', function (e) { x0 = e.changedTouches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 55) mostrar(dx < 0 ? atual + 1 : atual - 1);
+    x0 = null;
+  }, { passive: true });
+
+  mostrar(0);
+})();
+</script>
+</body>
+</html>
