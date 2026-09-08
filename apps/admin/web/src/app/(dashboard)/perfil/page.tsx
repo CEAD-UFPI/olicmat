@@ -361,11 +361,14 @@ export default function PerfilPage() {
               <p className="text-[#f0ece4] mt-1">{perfil?.curso?.nome ?? "-"}</p>
             </div>
           </div>
-          {isAluno && (
-            <p className="text-xs text-[#9895a4]">
-              Instituição e Curso foram herdados do seu Coordenador e não podem ser alterados.
-            </p>
-          )}
+          {/* Sem esta explicação, quem não é aluno via os dois campos travados
+              e nenhum motivo — a dúvida chegava ao suporte como "não consigo
+              editar meu curso". */}
+          <p className="text-xs text-[#9895a4]">
+            {isAluno
+              ? "Instituição e Curso foram herdados do seu Coordenador e não podem ser alterados."
+              : "Instituição e Curso são definidos pela organização da OLICMAT. Para alterá-los, entre em contato com ela."}
+          </p>
         </section>
 
         {sucesso && (

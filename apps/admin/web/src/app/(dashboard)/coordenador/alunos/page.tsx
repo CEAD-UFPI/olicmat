@@ -201,7 +201,7 @@ export default function CoordenadorAlunosPage() {
     }
     if (!editandoId) {
       if (!form.cpf || !form.dataNascimento) {
-        setErroForm("CPF e data de nascimento são obrigatórios for novo aluno.");
+        setErroForm("CPF e data de nascimento são obrigatórios para novo aluno.");
         return;
       }
       if (!validarCPF(form.cpf)) {

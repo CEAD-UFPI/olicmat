@@ -50,7 +50,7 @@ export default function CompetidorResultadoPage() {
       {!inscricao ? (
         <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
           <p className="text-[#b0adc0]">
-            Voce ainda nao possui inscricao. Inscreva-se para participar da OLICMAT.
+            Você ainda não possui inscrição. Inscreva-se para participar da OLICMAT.
           </p>
         </div>
       ) : (
@@ -72,7 +72,7 @@ export default function CompetidorResultadoPage() {
               >
                 Medalha de {medalhaInfo[inscricao.medalha]?.label}
               </h2>
-              <p className="text-base text-[#b0adc0] mt-1">Parabens pelo seu desempenho</p>
+              <p className="text-base text-[#b0adc0] mt-1">Parabéns pelo seu desempenho</p>
             </div>
           )}
 
