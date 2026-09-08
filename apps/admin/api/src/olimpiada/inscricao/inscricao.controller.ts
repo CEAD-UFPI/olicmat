@@ -154,7 +154,16 @@ export class InscricaoController {
     @Request() req: ExpressReq & { user: AuthUser },
     @UploadedFile() file: any,
   ) {
-    const url = await this.uploadService.uploadArquivo(file, "comprovantes", "image");
+    // A tela de inscrição oferece PDF, e comprovante de matrícula costuma vir
+    // nesse formato. O Cloudinary trata PDF como imagem, mas ele precisa
+    // constar da lista explicitamente — sem isto, todo comprovante em PDF era
+    // recusado depois que a pessoa já tinha preenchido o formulário inteiro.
+    const url = await this.uploadService.uploadArquivo(
+      file,
+      "comprovantes",
+      "image",
+      ["jpg", "jpeg", "png", "webp", "pdf"],
+    );
     const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);
     await this.inscricaoService.editar(inscricao.id, { comprovanteUrl: url });
     return { url };

@@ -80,13 +80,8 @@ export class EnvioService {
       throw new BadRequestException("Nota mínima da Fase 1 não atingida");
     }
 
-    const arquivoUrl = await this.upload.uploadBuffer(
-      file.buffer,
-      `fase2/${userId}`,
-      file.originalname,
-      "raw",
-    );
-
+    // A recusa por reenvio vem antes do upload: subir o arquivo para só depois
+    // negar deixava um PDF órfão no Cloudinary a cada tentativa repetida.
     const existing = await this.prisma.envioFase2.findFirst({
       where: { inscricaoId: inscricao.id, tipo: "portfolio" },
     });
@@ -94,6 +89,14 @@ export class EnvioService {
     if (existing && existing.status !== "PENDENTE") {
       throw new BadRequestException("Portfólio já foi enviado e não pode ser alterado");
     }
+
+    const arquivoUrl = await this.upload.uploadBuffer(
+      file.buffer,
+      `fase2/${userId}`,
+      file.originalname,
+      "raw",
+      ["pdf"],
+    );
 
     if (existing) {
       return this.prisma.envioFase2.update({
