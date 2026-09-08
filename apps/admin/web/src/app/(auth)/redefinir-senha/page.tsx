@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { PasswordField } from "@/components/ui/password-field";
 
 const schema = z.object({
-  senha: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+  senha: z.string().min(8, "Senha deve ter no mínimo 8 caracteres"),
   confirmarSenha: z.string(),
 }).refine((d) => d.senha === d.confirmarSenha, {
   message: "Senhas não conferem",

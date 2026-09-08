@@ -49,8 +49,12 @@ export class AuthController {
     if (!body.token || !body.novaSenha) {
       throw new BadRequestException("Token e nova senha são obrigatórios");
     }
-    if (body.novaSenha.length < 6) {
-      throw new BadRequestException("Senha deve ter no mínimo 6 caracteres");
+    // 8 caracteres, como no aceite de convite. Eram 6 aqui: quem criava a
+    // conta com 8 podia rebaixar a própria senha para 6 na primeira
+    // redefinição, e o mesmo caminho é usado por quem define a senha pela
+    // primeira vez após ser cadastrado pela coordenação.
+    if (body.novaSenha.length < 8) {
+      throw new BadRequestException("Senha deve ter no mínimo 8 caracteres");
     }
     return this.authService.redefinirSenha(body.token, body.novaSenha);
   }
