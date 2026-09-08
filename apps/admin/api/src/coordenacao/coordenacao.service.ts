@@ -195,21 +195,49 @@ export class CoordenacaoService {
       throw new ForbiddenException("Você não coordena nenhum curso");
     }
 
-    const [porStatus, porCurso, total] = await Promise.all([
+    // A quebra por curso precisa do status junto: a tela de Métricas mostra
+    // confirmadas/pendentes/rejeitadas de cada curso, e agrupar só por cursoId
+    // devolveria um total sem como reparti-lo.
+    const [porStatus, porCursoStatus, total, totalAlunos] = await Promise.all([
       this.prisma.inscricao.groupBy({
         by: ["status"],
         where: { cursoId: { in: cursosIds } },
         _count: { id: true },
       }),
       this.prisma.inscricao.groupBy({
-        by: ["cursoId"],
+        by: ["cursoId", "status"],
         where: { cursoId: { in: cursosIds } },
         _count: { id: true },
       }),
       this.prisma.inscricao.count({
         where: { cursoId: { in: cursosIds } },
       }),
+      // Alunos do curso, inscritos ou não: é esse número que o coordenador
+      // compara com o de inscritos para saber quem ainda falta.
+      this.prisma.user.count({
+        where: { role: "ALUNO", cursoId: { in: cursosIds } },
+      }),
     ]);
+
+    const porStatusCurso = new Map<
+      string,
+      { status: string; _count: { id: number } }[]
+    >();
+    for (const linha of porCursoStatus) {
+      const atual = porStatusCurso.get(linha.cursoId) ?? [];
+      atual.push({ status: linha.status, _count: { id: linha._count.id } });
+      porStatusCurso.set(linha.cursoId, atual);
+    }
+
+    const porCurso = cursosIds.map((cursoId) => ({
+      cursoId,
+      _count: {
+        id: (porStatusCurso.get(cursoId) ?? []).reduce(
+          (soma, l) => soma + l._count.id,
+          0,
+        ),
+      },
+    }));
 
     // Resolve course names
     const cursos = await this.prisma.curso.findMany({
@@ -219,16 +247,24 @@ export class CoordenacaoService {
 
     const cursoMap = new Map(cursos.map((c) => [c.id, c]));
 
+    const contar = (
+      linhas: { status: string; _count: { id: number } }[],
+      status: string,
+    ) => linhas.find((l) => l.status === status)?._count.id ?? 0;
+
     return {
-      total,
-      porStatus: porStatus.map((s) => ({
-        status: s.status,
-        count: s._count.id,
-      })),
+      totalAlunos,
+      totalInscricoes: total,
+      confirmadas: contar(porStatus, "CONFIRMADA"),
+      pendentes: contar(porStatus, "PENDENTE"),
+      rejeitadas: contar(porStatus, "REJEITADA"),
       porCurso: porCurso.map((c) => ({
         cursoId: c.cursoId,
-        nome: cursoMap.get(c.cursoId)?.nome ?? "Desconhecido",
-        count: c._count.id,
+        curso: cursoMap.get(c.cursoId)?.nome ?? "Desconhecido",
+        total: c._count.id,
+        confirmadas: contar(porStatusCurso.get(c.cursoId) ?? [], "CONFIRMADA"),
+        pendentes: contar(porStatusCurso.get(c.cursoId) ?? [], "PENDENTE"),
+        rejeitadas: contar(porStatusCurso.get(c.cursoId) ?? [], "REJEITADA"),
       })),
     };
   }

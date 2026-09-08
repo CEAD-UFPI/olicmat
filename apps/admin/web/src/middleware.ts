@@ -6,6 +6,10 @@ const publicPaths = [
   '/registro',
   '/confirmar-email',
   '/esqueci-senha',
+  // O link "Esqueci minha senha" da tela de login aponta para cá. Quem clica
+  // nele está, por definição, sem sessão: exigir token aqui devolvia a pessoa
+  // para o mesmo login de onde ela veio, sem explicação e sem saída.
+  '/recuperar-senha',
   '/redefinir-senha',
   // Quem chega por convite ainda não tem conta: exigir sessão aqui mandaria
   // a pessoa para um login que ela não tem como fazer.
