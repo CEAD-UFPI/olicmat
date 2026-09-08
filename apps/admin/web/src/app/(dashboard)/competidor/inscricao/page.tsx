@@ -12,15 +12,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+// Instituição e curso são opcionais no schema porque quem foi convidado pela
+// coordenação não os digita: eles já vêm do vínculo. Para quem não tem
+// vínculo, a obrigatoriedade é aplicada no envio.
 const inscricaoSchema = z.object({
   estado: z.string().length(2, "UF deve ter 2 caracteres (ex: SP)"),
   municipio: z.string().optional(),
-  instituicao: z.string().min(2, "Instituição é obrigatória"),
-  curso: z.string().min(2, "Curso é obrigatório"),
+  instituicao: z.string().optional(),
+  curso: z.string().optional(),
   periodo: z.string().optional(),
 });
 
 type InscricaoForm = z.infer<typeof inscricaoSchema>;
+
+interface Vinculo {
+  instituicao: { nome: string; sigla: string } | null;
+  curso: { nome: string } | null;
+}
 
 const ESTADOS = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
@@ -41,6 +49,7 @@ export default function InscricaoPage() {
   >([]);
   const [edicaoId, setEdicaoId] = useState("");
   const [carregandoEdicoes, setCarregandoEdicoes] = useState(true);
+  const [vinculo, setVinculo] = useState<Vinculo | null>(null);
 
   const {
     register,
@@ -63,7 +72,30 @@ export default function InscricaoPage() {
     })();
   }, []);
 
+  useEffect(() => {
+    api
+      .get<Vinculo>("/users/me")
+      .then(({ data }) => setVinculo(data))
+      .catch(() => setVinculo(null));
+  }, []);
+
+  // O servidor sempre usa o curso do vínculo e descarta o que vier no
+  // formulário — deixar campos editáveis aqui faria a pessoa preencher um
+  // dado que seria silenciosamente ignorado.
+  const cursoDoVinculo = vinculo?.curso ?? null;
+
   const onSubmit = async (data: InscricaoForm) => {
+    if (!cursoDoVinculo) {
+      if (!data.instituicao || data.instituicao.trim().length < 2) {
+        setError("Informe sua instituição de ensino.");
+        return;
+      }
+      if (!data.curso || data.curso.trim().length < 2) {
+        setError("Informe seu curso.");
+        return;
+      }
+    }
+
     setLoading(true);
     setError("");
     try {
@@ -172,19 +204,39 @@ export default function InscricaoPage() {
             className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50" />
         </div>
 
-        <div>
-          <Label htmlFor="instituicao" className="text-[#f0ece4]">Instituição de Ensino</Label>
-          <Input id="instituicao" placeholder="Ex: UFRJ, UFMG, IFSP" {...register("instituicao")}
-            className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50" />
-          {errors.instituicao && <p className="text-xs text-red-400 mt-1">{errors.instituicao.message}</p>}
-        </div>
+        {cursoDoVinculo ? (
+          <div>
+            <Label className="text-[#f0ece4]">Instituição e curso</Label>
+            <div className="mt-1.5 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] p-4">
+              <p className="text-sm text-[#f0ece4]">{cursoDoVinculo.nome}</p>
+              {vinculo?.instituicao && (
+                <p className="text-xs text-[#9895a4] mt-1">
+                  {vinculo.instituicao.sigla} — {vinculo.instituicao.nome}
+                </p>
+              )}
+            </div>
+            <p className="text-xs text-[#9895a4] mt-2">
+              Definidos pela coordenação do seu curso e não podem ser alterados.
+              Se estiverem errados, fale com ela antes de se inscrever.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div>
+              <Label htmlFor="instituicao" className="text-[#f0ece4]">Instituição de Ensino</Label>
+              <Input id="instituicao" placeholder="Ex: UFRJ, UFMG, IFSP" {...register("instituicao")}
+                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50" />
+              {errors.instituicao && <p className="text-xs text-red-400 mt-1">{errors.instituicao.message}</p>}
+            </div>
 
-        <div>
-          <Label htmlFor="curso" className="text-[#f0ece4]">Curso</Label>
-          <Input id="curso" placeholder="Licenciatura em Matemática" {...register("curso")}
-            className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50" />
-          {errors.curso && <p className="text-xs text-red-400 mt-1">{errors.curso.message}</p>}
-        </div>
+            <div>
+              <Label htmlFor="curso" className="text-[#f0ece4]">Curso</Label>
+              <Input id="curso" placeholder="Licenciatura em Matemática" {...register("curso")}
+                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50" />
+              {errors.curso && <p className="text-xs text-red-400 mt-1">{errors.curso.message}</p>}
+            </div>
+          </>
+        )}
 
         <div>
           <Label htmlFor="periodo" className="text-[#f0ece4]">Período/Semestre</Label>
