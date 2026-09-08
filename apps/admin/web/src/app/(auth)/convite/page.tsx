@@ -43,6 +43,12 @@ interface Convite {
     nome: string;
     instituicao: { nome: string; sigla: string };
   } | null;
+  /**
+   * Presente quando a organização definiu a instituição mas não o curso —
+   * caso da coordenação convidada pelo painel administrativo. A pessoa
+   * escolhe apenas o curso, entre os dessa instituição.
+   */
+  instituicao: { id: string; nome: string; sigla: string } | null;
 }
 
 interface Curso {
@@ -80,9 +86,13 @@ function ConviteContent() {
   // Quando o convite já traz o curso, não há o que escolher: a coordenação
   // definiu, e oferecer um seletor aqui só criaria chance de erro.
   const cursoPredefinido = convite?.curso ?? null;
+  // Um degrau acima: a organização fixou só a instituição, e a pessoa escolhe
+  // o curso que coordena dentro dela.
+  const instituicaoPredefinida = convite?.instituicao ?? null;
   const exigeCurso = convite?.role === "COORDENADOR_CURSO" && !cursoPredefinido;
+  const instituicaoEfetiva = instituicaoPredefinida?.id ?? instituicaoId;
   const cursosDaInstituicao =
-    instituicoes.find((i) => i.id === instituicaoId)?.cursos ?? [];
+    instituicoes.find((i) => i.id === instituicaoEfetiva)?.cursos ?? [];
 
   useEffect(() => {
     if (!token) {
@@ -133,7 +143,11 @@ function ConviteContent() {
     }
 
     if (exigeCurso && !cursoId) {
-      setErro("Selecione a instituição e o curso que você coordena.");
+      setErro(
+        instituicaoPredefinida
+          ? "Selecione o curso que você coordena."
+          : "Selecione a instituição e o curso que você coordena.",
+      );
       return;
     }
 
@@ -254,6 +268,39 @@ function ConviteContent() {
               {cursoPredefinido.instituicao.nome}
             </p>
           </div>
+        ) : instituicaoPredefinida ? (
+          <>
+            <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 space-y-1">
+              <p className="text-xs uppercase tracking-[0.08em] text-[#6f6c7a]">
+                Instituição
+              </p>
+              <p className="text-sm text-[#f0ece4]">
+                {instituicaoPredefinida.sigla} — {instituicaoPredefinida.nome}
+              </p>
+            </div>
+            <Selecao
+              label={exigeCurso ? "Curso *" : "Curso"}
+              id="curso"
+              value={cursoId}
+              onChange={setCursoId}
+              vazio={
+                cursosDaInstituicao.length
+                  ? "Selecione o curso"
+                  : "Nenhum curso cadastrado nesta instituição"
+              }
+              desabilitado={!cursosDaInstituicao.length}
+              opcoes={cursosDaInstituicao.map((c) => ({
+                valor: c.id,
+                rotulo: c.nome,
+              }))}
+            />
+            <p className="text-xs text-[#6f6c7a] -mt-2">
+              A instituição foi definida pela organização da OLICMAT.
+              {exigeCurso
+                ? " Escolha o curso que você coordena — é por ele que seu painel mostrará os alunos."
+                : ""}
+            </p>
+          </>
         ) : (
           <>
         <Selecao

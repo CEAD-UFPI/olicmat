@@ -25,6 +25,8 @@ export interface ConviteEntrada {
   nome: string;
   email: string;
   role: string;
+  /** Instituição fixada para esta linha; o convidado não poderá trocá-la. */
+  instituicaoId?: string | null;
 }
 
 export interface ResultadoLote {
@@ -90,6 +92,7 @@ export class ConvitesService {
             usadoEm: null,
             criadoPor,
             cursoId: cursoId ?? null,
+            instituicaoId: entrada.instituicaoId ?? null,
           },
           create: {
             nome: entrada.nome,
@@ -99,6 +102,7 @@ export class ConvitesService {
             expiraEm,
             criadoPor,
             cursoId: cursoId ?? null,
+            instituicaoId: entrada.instituicaoId ?? null,
           },
         });
 
@@ -188,6 +192,7 @@ export class ConvitesService {
             instituicao: { select: { id: true, nome: true, sigla: true } },
           },
         },
+        instituicao: { select: { id: true, nome: true, sigla: true } },
       },
     });
 
@@ -216,6 +221,9 @@ export class ConvitesService {
             instituicao: convite.curso.instituicao,
           }
         : null,
+      // Convite de coordenação emitido pela organização: a instituição está
+      // decidida, e a tela oferece apenas os cursos dela.
+      instituicao: convite.instituicao ?? null,
     };
   }
 
@@ -266,9 +274,15 @@ export class ConvitesService {
     // Aceitar o do corpo aqui permitiria ao convidado entrar em outro curso.
     const cursoEscolhido = convite.cursoId ?? dados.cursoId ?? null;
 
+    // Quando a organização fixou a instituição no convite, ela prevalece sobre
+    // qualquer valor do formulário — mesma razão do curso logo acima.
+    const instituicaoFixada = convite.instituicaoId ?? null;
+
     if (ehCoordenador && !cursoEscolhido) {
       throw new BadRequestException(
-        "Selecione a instituição e o curso que você coordena",
+        instituicaoFixada
+          ? "Selecione o curso que você coordena"
+          : "Selecione a instituição e o curso que você coordena",
       );
     }
 
@@ -283,10 +297,20 @@ export class ConvitesService {
       if (!curso) {
         throw new BadRequestException("Curso não encontrado");
       }
+      // A tela só oferece os cursos da instituição do convite, mas a tela não
+      // é a fronteira: sem esta conferência, bastaria enviar o id de um curso
+      // de outra instituição para escapar do recorte definido pela organização.
+      if (instituicaoFixada && curso.instituicaoId !== instituicaoFixada) {
+        throw new BadRequestException(
+          "O curso escolhido não pertence à instituição do seu convite",
+        );
+      }
       // A instituição vem do curso, não do formulário: assim não há como
       // gravar um par instituição/curso incoerente.
       cursoId = curso.id;
       instituicaoId = curso.instituicaoId;
+    } else if (instituicaoFixada) {
+      instituicaoId = instituicaoFixada;
     } else if (dados.instituicaoId) {
       const instituicao = await this.prisma.instituicao.findUnique({
         where: { id: dados.instituicaoId },
@@ -352,6 +376,8 @@ export class ConvitesService {
         usadoEm: true,
         criadoPor: true,
         createdAt: true,
+        instituicao: { select: { id: true, nome: true, sigla: true } },
+        curso: { select: { id: true, nome: true } },
       },
       orderBy: { createdAt: "desc" },
     });

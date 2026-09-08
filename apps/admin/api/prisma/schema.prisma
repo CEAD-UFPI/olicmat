@@ -153,6 +153,7 @@ model Instituicao {
   cursos              Curso[]
   usuarios            User[]
   inscricoes          Inscricao[]
+  convites            Convite[]
 }
 
 model Curso {
@@ -476,7 +477,18 @@ model Convite {
   cursoId   String?
   curso     Curso?    @relation(fields: [cursoId], references: [id], onDelete: SetNull)
 
+  /// Instituição fixada por quem convidou, quando o curso ainda não se aplica.
+  ///
+  /// Usada quando a organização convida uma coordenação: a instituição é
+  /// decisão de quem convida, e o convidado escolhe apenas o curso que
+  /// coordena dentro dela. Sem isso, ele poderia se vincular a qualquer
+  /// instituição da lista — e a contagem de participantes por instituição,
+  /// que orienta a classificação e as bolsas, deixaria de valer.
+  instituicaoId String?
+  instituicao   Instituicao? @relation(fields: [instituicaoId], references: [id], onDelete: SetNull)
+
   @@index([token])
   @@index([email])
   @@index([cursoId])
+  @@index([instituicaoId])
 }

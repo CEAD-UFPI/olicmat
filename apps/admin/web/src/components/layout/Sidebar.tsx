@@ -20,6 +20,7 @@ const configLinks: NavLink[] = [
   { href: "/admin/cursos", label: "Cursos", icon: <GraduationCap size={18} /> },
   { href: "/admin/edicoes", label: "Edições", icon: <Calendar size={18} /> },
   { href: "/admin/usuarios", label: "Usuários", icon: <Users size={18} /> },
+  { href: "/admin/convidar", label: "Convidar Equipe", icon: <UserPlus size={18} /> },
   { href: "/admin/inscricoes", label: "Inscrições", icon: <ClipboardList size={18} /> },
   { href: "/admin/provas", label: "Provas", icon: <BookOpen size={18} /> },
   { href: "/admin/monitoramento", label: "Monitoramento", icon: <Activity size={18} /> },

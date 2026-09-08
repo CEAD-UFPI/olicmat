@@ -22,6 +22,14 @@ export const criarConvitesSchema = z.object({
           .email("Email inválido")
           .transform((v) => v.toLowerCase().trim()),
         role: rolesConvidaveis,
+        // Por linha, e não por lote: um mesmo envio costuma misturar
+        // coordenações de instituições diferentes com membros da comissão,
+        // que não têm instituição nenhuma.
+        instituicaoId: z
+          .string()
+          .uuid("Instituição inválida")
+          .nullable()
+          .optional(),
       }),
     )
     .min(1, "Envie ao menos um convite")
