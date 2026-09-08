@@ -52,6 +52,10 @@ export default function CoordenadorInscricoesPage() {
   const [dados, setDados] = useState<MonitoramentoData | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  // Separado de `erro`: aquele substitui a página inteira, e uma falha ao
+  // confirmar uma inscrição não pode apagar a lista que a coordenação está
+  // usando.
+  const [erroAcao, setErroAcao] = useState("");
   const [filtro, setFiltro] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("");
   const [processando, setProcessando] = useState<Record<string, boolean>>({});
@@ -77,11 +81,21 @@ export default function CoordenadorInscricoesPage() {
 
   const atualizarStatus = async (id: string, status: string) => {
     setProcessando((prev) => ({ ...prev, [id]: true }));
+    setErroAcao("");
     try {
       await api.patch(`/inscricoes/${id}/status`, { status });
       await carregar();
-    } catch {
-      // silently fail
+    } catch (e: unknown) {
+      // Falhar em silêncio aqui fazia o botão parar de girar sem que nada
+      // mudasse na tela: a coordenação concluía que tinha confirmado a
+      // inscrição, e o participante ficava de fora da prova sem ninguém saber.
+      const msg = (e as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message;
+      setErroAcao(
+        typeof msg === "string"
+          ? msg
+          : "Não foi possível atualizar a inscrição. Tente novamente.",
+      );
     } finally {
       setProcessando((prev) => ({ ...prev, [id]: false }));
     }
@@ -148,6 +162,23 @@ export default function CoordenadorInscricoesPage() {
           Acompanhe quem já se inscreveu e aprove as inscrições dos seus participantes
         </p>
       </div>
+
+      {erroAcao && (
+        <div
+          role="alert"
+          className="flex items-start justify-between gap-4 text-sm text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg p-3"
+        >
+          <span>{erroAcao}</span>
+          <button
+            type="button"
+            onClick={() => setErroAcao("")}
+            className="text-red-400/70 hover:text-red-300 cursor-pointer shrink-0"
+            aria-label="Fechar aviso"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-3 gap-4">
         <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] p-5">
