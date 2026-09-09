@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
+import api from "@/lib/api";
 import type { Role } from "@/types";
 import {
   LayoutDashboard, ClipboardList, FileText, Upload, Trophy, Users,
   BarChart3, BookOpen, CheckSquare, Download, ShieldCheck,
   Eye, Building2, GraduationCap, Calendar, Settings, Sliders, Activity,
-  UserPlus,
+  UserPlus, Bell,
 } from "lucide-react";
 
 interface NavLink { href: string; label: string; icon: React.ReactNode; }
@@ -42,10 +44,49 @@ interface SidebarProps { role: Role; userName?: string; }
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3005";
 
+interface NotificacaoItem {
+  id: string;
+  titulo: string;
+  mensagem: string;
+  link: string | null;
+  lida: boolean;
+  createdAt: string;
+}
+
 export function Sidebar({ role, userName }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
   const displayName = userName || user?.nome || "Usuário";
+
+  const [notificacoes, setNotificacoes] = useState<NotificacaoItem[]>([]);
+  const [naoLidas, setNaoLidas] = useState(0);
+  const [painelAberto, setPainelAberto] = useState(false);
+
+  useEffect(() => {
+    let ativo = true;
+    const carregar = () => {
+      api
+        .get<{ notificacoes: NotificacaoItem[]; naoLidas: number }>("/notificacoes")
+        .then(({ data }) => {
+          if (!ativo) return;
+          setNotificacoes(data.notificacoes);
+          setNaoLidas(data.naoLidas);
+        })
+        .catch(() => undefined);
+    };
+    carregar();
+    const intervalo = setInterval(carregar, 60_000);
+    return () => {
+      ativo = false;
+      clearInterval(intervalo);
+    };
+  }, []);
+
+  const marcarComoLida = async (id: string) => {
+    await api.patch(`/notificacoes/${id}/lida`).catch(() => undefined);
+    setNotificacoes((prev) => prev.map((n) => (n.id === id ? { ...n, lida: true } : n)));
+    setNaoLidas((prev) => Math.max(0, prev - 1));
+  };
 
   const isActive = (href: string) => pathname.startsWith(href);
 
@@ -156,6 +197,44 @@ export function Sidebar({ role, userName }: SidebarProps) {
             Editar perfil
           </p>
         </Link>
+        <div className="relative mt-3">
+          <button
+            type="button"
+            onClick={() => setPainelAberto((v) => !v)}
+            className="flex items-center gap-2 text-xs text-[#9895a4] hover:text-[#f0ece4] transition-colors cursor-pointer"
+          >
+            <Bell size={14} />
+            Notificações
+            {naoLidas > 0 && (
+              <span className="bg-[#E8B829] text-[#0a0a0f] rounded-full text-[10px] font-bold px-1.5 py-0.5">
+                {naoLidas}
+              </span>
+            )}
+          </button>
+          {painelAberto && (
+            <div className="absolute left-0 top-full mt-2 w-72 max-h-80 overflow-y-auto bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl shadow-xl z-50 p-2">
+              {notificacoes.length === 0 ? (
+                <p className="text-xs text-[#9895a4] p-3">Nenhuma notificação.</p>
+              ) : (
+                notificacoes.map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => !n.lida && marcarComoLida(n.id)}
+                    className={`p-3 rounded-lg text-xs cursor-pointer mb-1 ${
+                      n.lida ? "text-[#9895a4]" : "text-[#f0ece4] bg-[#12121a]"
+                    }`}
+                  >
+                    <p className="font-medium">{n.titulo}</p>
+                    <p className="mt-0.5">{n.mensagem}</p>
+                    <p className="text-[10px] text-[#9895a4]/70 mt-1">
+                      {new Date(n.createdAt).toLocaleString("pt-BR")}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
