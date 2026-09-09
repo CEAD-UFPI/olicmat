@@ -59,6 +59,8 @@ export default function CoordenadorInscricoesPage() {
   const [filtro, setFiltro] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("");
   const [processando, setProcessando] = useState<Record<string, boolean>>({});
+  const [modalRejeicao, setModalRejeicao] = useState<{ id: string } | null>(null);
+  const [justificativa, setJustificativa] = useState("");
   const [paginaInscritos, setPaginaInscritos] = useState(1);
   const [paginaNaoInscritos, setPaginaNaoInscritos] = useState(1);
 
@@ -79,12 +81,14 @@ export default function CoordenadorInscricoesPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const atualizarStatus = async (id: string, status: string) => {
+  const atualizarStatus = async (id: string, status: string, justificativaTexto?: string) => {
     setProcessando((prev) => ({ ...prev, [id]: true }));
     setErroAcao("");
     try {
-      await api.patch(`/inscricoes/${id}/status`, { status });
+      await api.patch(`/inscricoes/${id}/status`, { status, justificativa: justificativaTexto });
       await carregar();
+      setModalRejeicao(null);
+      setJustificativa("");
     } catch (e: unknown) {
       // Falhar em silêncio aqui fazia o botão parar de girar sem que nada
       // mudasse na tela: a coordenação concluía que tinha confirmado a
@@ -279,7 +283,7 @@ export default function CoordenadorInscricoesPage() {
                                 </button>
                                 <button
                                   disabled={processando[aluno.inscricao.id]}
-                                  onClick={() => atualizarStatus(aluno.inscricao.id, "REJEITADA")}
+                                  onClick={() => setModalRejeicao({ id: aluno.inscricao.id })}
                                   className="text-red-400 hover:bg-red-400/10 transition-colors p-1 rounded cursor-pointer disabled:opacity-50"
                                   title="Rejeitar"
                                 >
@@ -344,6 +348,46 @@ export default function CoordenadorInscricoesPage() {
           </>
         )}
       </section>
+
+      {modalRejeicao && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#12121a] border border-[#2a2a3a] rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
+              Justificar rejeição
+            </h3>
+            <p className="text-sm text-[#9895a4] mb-4">
+              A justificativa será enviada por e-mail e notificação ao participante.
+            </p>
+            <textarea
+              value={justificativa}
+              onChange={(e) => setJustificativa(e.target.value)}
+              placeholder="Explique o motivo da rejeição (mínimo 10 caracteres)"
+              rows={4}
+              className="w-full rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] p-3 text-sm focus:outline-none focus:border-[#E8B829]"
+            />
+            <div className="flex gap-3 mt-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setModalRejeicao(null);
+                  setJustificativa("");
+                }}
+                className="flex-1 border border-[#2a2a3a] text-[#f0ece4] rounded-lg py-2 text-sm cursor-pointer hover:bg-[#0a0a0f] transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={justificativa.trim().length < 10 || processando[modalRejeicao.id]}
+                onClick={() => atualizarStatus(modalRejeicao.id, "REJEITADA", justificativa.trim())}
+                className="flex-1 bg-red-500 text-white rounded-lg py-2 text-sm cursor-pointer disabled:opacity-50 hover:bg-red-600 transition-colors"
+              >
+                Confirmar rejeição
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
