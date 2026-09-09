@@ -25,6 +25,7 @@ const criarEdicaoSchema = z
     titulo: z.string().min(2, "Título deve ter no mínimo 2 caracteres"),
     dataInicio: z.string().datetime().optional(),
     dataFim: z.string().datetime().optional(),
+    prazoInscricao: z.string().datetime().optional(),
   })
   .refine(
     (d) =>
@@ -40,6 +41,7 @@ const atualizarEdicaoSchema = z
     status: z.enum(["PLANEJAMENTO", "ATIVA", "ENCERRADA"]).optional(),
     dataInicio: z.string().datetime().nullable().optional(),
     dataFim: z.string().datetime().nullable().optional(),
+    prazoInscricao: z.string().datetime().nullable().optional(),
     pesoFase1: z.number().min(0).max(1).optional(),
     pesoFase2: z.number().min(0).max(1).optional(),
   })

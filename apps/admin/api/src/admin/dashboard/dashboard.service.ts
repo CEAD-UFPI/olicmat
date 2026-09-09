@@ -240,6 +240,7 @@ export class DashboardService {
         status: true,
         dataInicio: true,
         dataFim: true,
+        prazoInscricao: true,
         pesoFase1: true,
         pesoFase2: true,
         createdAt: true,
@@ -254,6 +255,7 @@ export class DashboardService {
     titulo: string;
     dataInicio?: string;
     dataFim?: string;
+    prazoInscricao?: string;
   }) {
     const existente = await this.prisma.edicao.findUnique({
       where: { ano_semestre: { ano: data.ano, semestre: data.semestre } },
@@ -273,6 +275,7 @@ export class DashboardService {
         status: "PLANEJAMENTO",
         dataInicio: data.dataInicio ? new Date(data.dataInicio) : undefined,
         dataFim: data.dataFim ? new Date(data.dataFim) : undefined,
+        prazoInscricao: data.prazoInscricao ? new Date(data.prazoInscricao) : undefined,
       },
     });
   }
@@ -284,6 +287,7 @@ export class DashboardService {
       status?: string;
       dataInicio?: string | null;
       dataFim?: string | null;
+      prazoInscricao?: string | null;
       pesoFase1?: number;
       pesoFase2?: number;
     },
@@ -298,6 +302,7 @@ export class DashboardService {
         status: data.status,
         dataInicio: parseData(data.dataInicio),
         dataFim: parseData(data.dataFim),
+        prazoInscricao: parseData(data.prazoInscricao),
         pesoFase1: data.pesoFase1,
         pesoFase2: data.pesoFase2,
       },

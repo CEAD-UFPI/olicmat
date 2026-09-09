@@ -20,6 +20,7 @@ interface EdicaoItem {
   status: string;
   dataInicio?: string | null;
   dataFim?: string | null;
+  prazoInscricao?: string | null;
   pesoFase1?: number;
   pesoFase2?: number;
   createdAt?: string;
@@ -32,6 +33,7 @@ interface EdicaoForm {
   status: string;
   dataInicio: string;
   dataFim: string;
+  prazoInscricao: string;
   pesoFase1: string;
   pesoFase2: string;
 }
@@ -43,6 +45,7 @@ const FORM_VAZIO: EdicaoForm = {
   status: "PLANEJAMENTO",
   dataInicio: "",
   dataFim: "",
+  prazoInscricao: "",
   pesoFase1: "",
   pesoFase2: "",
 };
@@ -119,6 +122,7 @@ export default function AdminEdicoesPage() {
       status: item.status,
       dataInicio: toLocalInput(item.dataInicio),
       dataFim: toLocalInput(item.dataFim),
+      prazoInscricao: toLocalInput(item.prazoInscricao),
       pesoFase1: item.pesoFase1 != null ? String(item.pesoFase1 * 100) : "",
       pesoFase2: item.pesoFase2 != null ? String(item.pesoFase2 * 100) : "",
     });
@@ -145,6 +149,7 @@ export default function AdminEdicoesPage() {
             status: form.status,
             dataInicio: form.dataInicio ? fromLocalInput(form.dataInicio) : null,
             dataFim: form.dataFim ? fromLocalInput(form.dataFim) : null,
+            prazoInscricao: form.prazoInscricao ? fromLocalInput(form.prazoInscricao) : null,
             pesoFase1: peso1,
             pesoFase2: peso2,
           }
@@ -154,6 +159,7 @@ export default function AdminEdicoesPage() {
             titulo: form.titulo,
             dataInicio: fromLocalInput(form.dataInicio),
             dataFim: fromLocalInput(form.dataFim),
+            prazoInscricao: fromLocalInput(form.prazoInscricao),
           };
 
       if (editando) {
@@ -336,6 +342,18 @@ export default function AdminEdicoesPage() {
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label className="text-[#b0adc0] text-sm">Prazo de reenvio de inscrição</Label>
+                <Input
+                  type="datetime-local"
+                  value={form.prazoInscricao}
+                  onChange={(e) => setForm({ ...form, prazoInscricao: e.target.value })}
+                  className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                />
+                <p className="text-xs text-[#9895a4]">
+                  Após esse prazo, alunos rejeitados não poderão mais reenviar a inscrição.
+                </p>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-[#b0adc0] text-sm">Peso Fase 1 (%)</Label>
@@ -420,6 +438,18 @@ export default function AdminEdicoesPage() {
                     className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
                   />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[#b0adc0] text-sm">Prazo de reenvio de inscrição</Label>
+                <Input
+                  type="datetime-local"
+                  value={form.prazoInscricao}
+                  onChange={(e) => setForm({ ...form, prazoInscricao: e.target.value })}
+                  className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                />
+                <p className="text-xs text-[#9895a4]">
+                  Após esse prazo, alunos rejeitados não poderão mais reenviar a inscrição.
+                </p>
               </div>
             </>
           )}
