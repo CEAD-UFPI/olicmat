@@ -7,6 +7,8 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
 import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
+import { EmailService } from "../../email/email.service.js";
+import { NotificacoesService } from "../../notificacoes/notificacoes.service.js";
 import type { CriarInscricaoDto, EditarInscricaoDto } from "./dto/inscricao.dto.js";
 import type { PaginationParams } from "../../common/pagination.js";
 import { getSkipTake, paginate } from "../../common/pagination.js";
@@ -29,6 +31,8 @@ export class InscricaoService {
   constructor(
     private prisma: PrismaService,
     private auditoria: AuditoriaService,
+    private email: EmailService,
+    private notificacoes: NotificacoesService,
   ) {}
 
   private async getCoordenadorCursos(coordenadorId: string) {
@@ -63,6 +67,70 @@ export class InscricaoService {
     }
 
     throw new ForbiddenException("Acesso negado");
+  }
+
+  /**
+   * Aplica a mudança de status com histórico, e-mail e notificação. Não é
+   * chamado diretamente por rotas — `confirmar` e `atualizarStatus` delegam
+   * para cá depois de resolver a inscrição e checar o escopo do ator.
+   */
+  private async aplicarMudancaStatus(
+    inscricao: {
+      id: string;
+      status: string;
+      user: { id: string; email: string; nome: string };
+    },
+    statusNovo: "PENDENTE" | "CONFIRMADA" | "REJEITADA",
+    actor: { id: string; role: string },
+    justificativa?: string,
+  ) {
+    // CONFIRMADA é definitivo: existe apenas 1 aceite válido por inscrição, e
+    // nenhum ator (nem ADMIN) pode reabri-la pelos endpoints normais.
+    if (inscricao.status === "CONFIRMADA") {
+      throw new ConflictException(
+        "Esta inscrição já foi confirmada e não pode mais ser alterada",
+      );
+    }
+
+    if (statusNovo === "REJEITADA" && !justificativa) {
+      throw new BadRequestException(
+        "É obrigatório informar a justificativa ao rejeitar uma inscrição",
+      );
+    }
+
+    const statusAnterior = inscricao.status as "PENDENTE" | "CONFIRMADA" | "REJEITADA";
+
+    const result = await this.prisma.inscricao.update({
+      where: { id: inscricao.id },
+      data: { status: statusNovo },
+    });
+
+    await this.prisma.inscricaoHistorico.create({
+      data: {
+        inscricaoId: inscricao.id,
+        statusAnterior,
+        statusNovo,
+        justificativa: statusNovo === "REJEITADA" ? justificativa : undefined,
+        actorId: actor.id,
+      },
+    });
+
+    if (statusNovo === "CONFIRMADA" || statusNovo === "REJEITADA") {
+      await Promise.resolve(
+        this.email.enviarStatusInscricao(inscricao.user.email, inscricao.user.nome, statusNovo, justificativa),
+      ).catch(() => undefined); // e-mail é best-effort: falha de envio não pode reverter a decisão já gravada
+
+      await this.notificacoes.criar(
+        inscricao.user.id,
+        statusNovo === "CONFIRMADA" ? "Inscrição confirmada" : "Inscrição rejeitada",
+        statusNovo === "CONFIRMADA"
+          ? "Sua inscrição na OLICMAT foi confirmada pela coordenação do seu curso."
+          : `Sua inscrição foi rejeitada. Motivo: ${justificativa}`,
+        "/competidor/inscricao",
+      );
+    }
+
+    return result;
   }
 
   async listarEdicoesAbertas() {
@@ -210,6 +278,7 @@ export class InscricaoService {
   async confirmar(inscricaoId: string, actor: { id: string; role: string }) {
     const inscricao = await this.prisma.inscricao.findUnique({
       where: { id: inscricaoId },
+      include: { user: { select: { id: true, email: true, nome: true } } },
     });
     if (!inscricao) {
       throw new NotFoundException("Inscrição não encontrada");
@@ -217,10 +286,7 @@ export class InscricaoService {
 
     await this.enforceInscricaoScope(actor, inscricao);
 
-    const result = await this.prisma.inscricao.update({
-      where: { id: inscricaoId },
-      data: { status: "CONFIRMADA" },
-    });
+    const result = await this.aplicarMudancaStatus(inscricao, "CONFIRMADA", actor);
 
     await this.auditoria.log(actor.id, "CONFIRMAR_INSCRICAO", "Inscricao", inscricaoId);
 
@@ -329,9 +395,15 @@ export class InscricaoService {
     return paginate(data, total, params);
   }
 
-  async atualizarStatus(inscricaoId: string, status: string, actor: { id: string; role: string }) {
+  async atualizarStatus(
+    inscricaoId: string,
+    status: string,
+    actor: { id: string; role: string },
+    justificativa?: string,
+  ) {
     const inscricao = await this.prisma.inscricao.findUnique({
       where: { id: inscricaoId },
+      include: { user: { select: { id: true, email: true, nome: true } } },
     });
     if (!inscricao) {
       throw new NotFoundException("Inscrição não encontrada");
@@ -339,12 +411,17 @@ export class InscricaoService {
 
     await this.enforceInscricaoScope(actor, inscricao);
 
-    const result = await this.prisma.inscricao.update({
-      where: { id: inscricaoId },
-      data: { status: status as "PENDENTE" | "CONFIRMADA" | "REJEITADA" },
-    });
+    const result = await this.aplicarMudancaStatus(
+      inscricao,
+      status as "PENDENTE" | "CONFIRMADA" | "REJEITADA",
+      actor,
+      justificativa,
+    );
 
-    await this.auditoria.log(actor.id, "ATUALIZAR_STATUS_INSCRICAO", "Inscricao", inscricaoId, { status });
+    await this.auditoria.log(actor.id, "ATUALIZAR_STATUS_INSCRICAO", "Inscricao", inscricaoId, {
+      status,
+      justificativa,
+    });
 
     return result;
   }
@@ -377,5 +454,53 @@ export class InscricaoService {
     await this.auditoria.log(actorId, "DELETAR_INSCRICAO", "Inscricao", inscricaoId);
 
     return this.prisma.inscricao.delete({ where: { id: inscricaoId } });
+  }
+
+  async listarHistorico(inscricaoId: string) {
+    return this.prisma.inscricaoHistorico.findMany({
+      where: { inscricaoId },
+      orderBy: { createdAt: "asc" },
+      include: { actor: { select: { nome: true, role: true } } },
+    });
+  }
+
+  /**
+   * Reenvio pelo próprio aluno após rejeição. Só é permitido dentro do prazo
+   * de inscrição da edição (ou se a edição não tiver prazo definido) — depois
+   * disso o direito de reenviar se encerra junto com a inscrição.
+   */
+  async reenviar(inscricaoId: string, dados: EditarInscricaoDto, actor: { id: string; role: string }) {
+    const inscricao = await this.prisma.inscricao.findUnique({
+      where: { id: inscricaoId },
+      include: { edicao: { select: { prazoInscricao: true } } },
+    });
+    if (!inscricao) {
+      throw new NotFoundException("Inscrição não encontrada");
+    }
+    if (inscricao.userId !== actor.id) {
+      throw new ForbiddenException("Você só pode reenviar sua própria inscrição");
+    }
+    if (inscricao.status !== "REJEITADA") {
+      throw new BadRequestException("Só é possível reenviar uma inscrição rejeitada");
+    }
+    if (inscricao.edicao.prazoInscricao && new Date() > inscricao.edicao.prazoInscricao) {
+      throw new BadRequestException("O prazo de inscrição desta edição já encerrou");
+    }
+
+    const result = await this.prisma.inscricao.update({
+      where: { id: inscricaoId },
+      data: { ...dados, status: "PENDENTE" },
+    });
+
+    await this.prisma.inscricaoHistorico.create({
+      data: {
+        inscricaoId,
+        statusAnterior: "REJEITADA",
+        statusNovo: "PENDENTE",
+        actorId: actor.id,
+      },
+    });
+
+    return result;
   }
 }

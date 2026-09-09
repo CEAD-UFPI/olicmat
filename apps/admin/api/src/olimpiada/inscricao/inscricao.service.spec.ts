@@ -1,11 +1,18 @@
 import { jest } from "@jest/globals";
+import { Test } from "@nestjs/testing";
 import { BadRequestException, ConflictException } from "@nestjs/common";
 import { InscricaoService } from "./inscricao.service.js";
+import { PrismaService } from "../../prisma.service.js";
+import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
+import { EmailService } from "../../email/email.service.js";
+import { NotificacoesService } from "../../notificacoes/notificacoes.service.js";
 
 describe("InscricaoService", () => {
   let service: InscricaoService;
   let prisma: any;
   let auditoria: any;
+  let email: any;
+  let notificacoes: any;
 
   beforeEach(() => {
     prisma = {
@@ -15,7 +22,9 @@ describe("InscricaoService", () => {
       curso: { upsert: jest.fn() },
     };
     auditoria = { log: jest.fn() };
-    service = new InscricaoService(prisma as any, auditoria as any);
+    email = { enviarStatusInscricao: jest.fn() };
+    notificacoes = { criar: jest.fn() };
+    service = new InscricaoService(prisma as any, auditoria as any, email as any, notificacoes as any);
   });
 
   describe("criar", () => {
@@ -130,5 +139,102 @@ describe("InscricaoService", () => {
         { id: "ed1", ano: 2026, semestre: 1, titulo: "OLICMAT 2026.1" },
       ]);
     });
+  });
+});
+
+describe("InscricaoService — histórico e regra terminal", () => {
+  let service: InscricaoService;
+  let prisma: {
+    inscricao: { findUnique: jest.Mock; update: jest.Mock };
+    inscricaoHistorico: { create: jest.Mock };
+    edicao: { findUnique: jest.Mock };
+  };
+  let auditoria: { log: jest.Mock };
+  let email: { enviarStatusInscricao: jest.Mock };
+  let notificacoes: { criar: jest.Mock };
+
+  beforeEach(async () => {
+    prisma = {
+      inscricao: { findUnique: jest.fn(), update: jest.fn() },
+      inscricaoHistorico: { create: jest.fn() },
+      edicao: { findUnique: jest.fn() },
+    };
+    auditoria = { log: jest.fn() };
+    email = { enviarStatusInscricao: jest.fn() };
+    notificacoes = { criar: jest.fn() };
+
+    const moduleRef = await Test.createTestingModule({
+      providers: [
+        InscricaoService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: AuditoriaService, useValue: auditoria },
+        { provide: EmailService, useValue: email },
+        { provide: NotificacoesService, useValue: notificacoes },
+      ],
+    }).compile();
+
+    service = moduleRef.get(InscricaoService);
+  });
+
+  it("rejeita alteração de status quando a inscrição já está CONFIRMADA", async () => {
+    prisma.inscricao.findUnique.mockResolvedValue({
+      id: "insc-1",
+      cursoId: "curso-1",
+      status: "CONFIRMADA",
+      user: { id: "user-1", email: "a@a.com", nome: "Ana" },
+    });
+
+    await expect(
+      service.atualizarStatus("insc-1", "REJEITADA", { id: "actor-1", role: "ADMIN" }, "motivo qualquer"),
+    ).rejects.toBeInstanceOf(ConflictException);
+
+    expect(prisma.inscricao.update).not.toHaveBeenCalled();
+  });
+
+  it("exige justificativa ao rejeitar", async () => {
+    prisma.inscricao.findUnique.mockResolvedValue({
+      id: "insc-1",
+      cursoId: "curso-1",
+      status: "PENDENTE",
+      user: { id: "user-1", email: "a@a.com", nome: "Ana" },
+    });
+
+    await expect(
+      service.atualizarStatus("insc-1", "REJEITADA", { id: "actor-1", role: "ADMIN" }, undefined),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it("grava histórico e envia email/notificação ao rejeitar com justificativa", async () => {
+    prisma.inscricao.findUnique.mockResolvedValue({
+      id: "insc-1",
+      cursoId: "curso-1",
+      status: "PENDENTE",
+      user: { id: "user-1", email: "a@a.com", nome: "Ana" },
+    });
+    prisma.inscricao.update.mockResolvedValue({ id: "insc-1", status: "REJEITADA" });
+
+    await service.atualizarStatus("insc-1", "REJEITADA", { id: "actor-1", role: "ADMIN" }, "Comprovante ilegível");
+
+    expect(prisma.inscricaoHistorico.create).toHaveBeenCalledWith({
+      data: {
+        inscricaoId: "insc-1",
+        statusAnterior: "PENDENTE",
+        statusNovo: "REJEITADA",
+        justificativa: "Comprovante ilegível",
+        actorId: "actor-1",
+      },
+    });
+    expect(email.enviarStatusInscricao).toHaveBeenCalledWith(
+      "a@a.com",
+      "Ana",
+      "REJEITADA",
+      "Comprovante ilegível",
+    );
+    expect(notificacoes.criar).toHaveBeenCalledWith(
+      "user-1",
+      expect.any(String),
+      expect.any(String),
+      "/competidor/inscricao",
+    );
   });
 });

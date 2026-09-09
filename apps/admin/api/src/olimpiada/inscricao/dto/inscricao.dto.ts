@@ -35,3 +35,15 @@ export const atualizarInscricaoSchema = z.object({
 });
 
 export type AtualizarInscricaoDto = z.infer<typeof atualizarInscricaoSchema>;
+
+export const atualizarStatusInscricaoSchema = z
+  .object({
+    status: z.enum(["PENDENTE", "CONFIRMADA", "REJEITADA"]),
+    justificativa: z.string().min(10, "Justificativa deve ter ao menos 10 caracteres").optional(),
+  })
+  .refine((d) => d.status !== "REJEITADA" || !!d.justificativa, {
+    message: "Justificativa é obrigatória ao rejeitar uma inscrição",
+    path: ["justificativa"],
+  });
+
+export type AtualizarStatusInscricaoDto = z.infer<typeof atualizarStatusInscricaoSchema>;

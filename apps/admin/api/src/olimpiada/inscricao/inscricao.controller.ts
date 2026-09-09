@@ -14,7 +14,6 @@ import {
   UploadedFile,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { z } from "zod";
 import { InscricaoService } from "./inscricao.service.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
@@ -23,6 +22,7 @@ import { Role } from "../../../generated/prisma/client.js";
 import {
   criarInscricaoSchema,
   editarInscricaoSchema,
+  atualizarStatusInscricaoSchema,
 } from "./dto/inscricao.dto.js";
 import type { CriarInscricaoDto } from "./dto/inscricao.dto.js";
 import type { Request as ExpressReq } from "express";
@@ -65,6 +65,13 @@ export class InscricaoController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get("minha/historico")
+  async minhaHistorico(@Request() req: ExpressReq & { user: AuthUser }) {
+    const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);
+    return this.inscricaoService.listarHistorico(inscricao.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post("minha/iniciar-prova")
   async iniciarProva(@Request() req: ExpressReq & { user: AuthUser }) {
     const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);
@@ -76,6 +83,20 @@ export class InscricaoController {
   async sortearTema(@Request() req: ExpressReq & { user: AuthUser }) {
     const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);
     return this.inscricaoService.sortearTema(inscricao.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch("minha/reenviar")
+  async reenviar(
+    @Request() req: ExpressReq & { user: AuthUser },
+    @Body() body: unknown,
+  ) {
+    const parsed = editarInscricaoSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten().fieldErrors);
+    }
+    const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);
+    return this.inscricaoService.reenviar(inscricao.id, parsed.data, req.user);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -100,6 +121,13 @@ export class InscricaoController {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN, Role.COMISSAO, Role.AVALIADOR, Role.COORDENADOR_CURSO)
+  @Get(":id/historico")
+  async historico(@Param("id") id: string) {
+    return this.inscricaoService.listarHistorico(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.COMISSAO, Role.COORDENADOR_CURSO)
   @Patch(":id/confirmar")
   async confirmar(
@@ -114,16 +142,19 @@ export class InscricaoController {
   @Patch(":id/status")
   async atualizarStatus(
     @Param("id") id: string,
-    @Body() body: { status: string },
+    @Body() body: unknown,
     @Request() req: ExpressReq & { user: AuthUser },
   ) {
-    const parsed = z.object({
-      status: z.enum(["PENDENTE", "CONFIRMADA", "REJEITADA"]),
-    }).safeParse(body);
+    const parsed = atualizarStatusInscricaoSchema.safeParse(body);
     if (!parsed.success) {
       throw new BadRequestException(parsed.error.flatten().fieldErrors);
     }
-    return this.inscricaoService.atualizarStatus(id, parsed.data.status, req.user);
+    return this.inscricaoService.atualizarStatus(
+      id,
+      parsed.data.status,
+      req.user,
+      parsed.data.justificativa,
+    );
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
