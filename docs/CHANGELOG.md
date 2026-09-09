@@ -6,6 +6,36 @@ Dates use `YYYY-MM-DD` (America/Sao_Paulo timezone).
 
 ## [Unreleased]
 
+### 2026-09-09 — Mandatory Enrollment After Invite & Justified/Historied Ratification
+
+Made enrolling in the current OLICMAT edition a mandatory next step right after account creation, and gave the coordinator's ratification flow a justification requirement, an immutable terminal state, a full history, and student-facing notifications.
+
+#### Added
+- **Mandatory Enrollment Guard**
+  - `apps/admin/web/src/app/(dashboard)/layout.tsx` now checks `GET /inscricoes/minha` for every logged-in ALUNO and redirects to `/competidor/inscricao` on any dashboard route that isn't `/competidor/inscricao` or `/perfil` when no `Inscricao` exists yet.
+  - `EmailService.enviarConvite` updated to tell invited students that enrolling right after account creation is mandatory, and to have their comprovante de matrícula ready.
+- **Enrollment Status History**
+  - New Prisma model `InscricaoHistorico` (`inscricaoId`, `statusAnterior`, `statusNovo`, `justificativa?`, `actorId`, `createdAt`) records every status transition (confirm, reject, resend).
+  - New endpoints: `GET /inscricoes/:id/historico` (staff) and `GET /inscricoes/minha/historico` (student, own enrollment).
+- **In-App Notifications**
+  - New Prisma model `Notificacao` (`userId`, `titulo`, `mensagem`, `link`, `lida`, `createdAt`).
+  - New endpoints: `GET /notificacoes` (list + unread count) and `PATCH /notificacoes/:id/lida` (mark as read).
+  - Notification bell added to `Sidebar.tsx` for every role, polling `GET /notificacoes` every 60 seconds.
+  - Confirming or rejecting an inscrição now sends an email (`EmailService.enviarStatusInscricao`) and creates a `Notificacao` for the student.
+- **Resend After Rejection**
+  - `PATCH /inscricoes/minha/reenviar` lets the owning student resend a `REJEITADA` inscrição (new comprovante etc.), reverting status to `PENDENTE`, but only while `now() < Edicao.prazoInscricao`.
+  - `Edicao.prazoInscricao` is a new nullable `DateTime?` field (`null` = no deadline), configurable by ADMIN on `/admin/edicoes`.
+  - `/competidor/inscricao` now shows the full status history with each rejection's justificativa and a "Reenviar inscrição" button.
+
+#### Changed
+- **Justified Rejection**
+  - `PATCH /inscricoes/:id/status` now requires a `justificativa` (min 10 characters) in the body when `status === "REJEITADA"`, validated server-side with Zod.
+  - The coordinator's `/coordenador/inscricoes` page enforces the same rule client-side via a modal before submitting a rejection.
+- **CONFIRMADA Is Terminal**
+  - Once an `Inscricao.status` is `CONFIRMADA`, no actor — including ADMIN — can change it again through `/inscricoes/:id/status` or `/inscricoes/:id/confirmar`; the service now throws a 409 Conflict.
+
+---
+
 ### 2026-08-10 — Restricting Administrative User Management, RBAC Scoping, CEP Lookup, Mother's Name, Registration Password Link & Robust Input Validation
 
 Centralized the user registration system, fully disabling self-registration, implemented hierarchical, scoped user CRUD interfaces for Admin, Comissão, and Coordenador de Curso, integrated "Nome da Mãe" and automated "CEP Lookup" fields, automated sending password creation links via email upon registration, and hardened all input fields with CPF mathematical validation, CEP/phone formatting masks, and selective address manual overrides.

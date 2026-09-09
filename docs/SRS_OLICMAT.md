@@ -45,6 +45,12 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular princip
 | RF-02.4 | Validação administrativa | Apenas ADMIN pode confirmar ou rejeitar |
 | RF-02.5 | Inscrição única por edição | Usuário não pode ter múltiplas inscrições ativas na mesma edição |
 | RF-02.6 | Visualização de pendências | Usuário acompanha status e exigências de regularização |
+| RF-02.7 | Inscrição obrigatória após convite | Todo ALUNO logado sem `Inscricao` na edição vigente é redirecionado para `/competidor/inscricao` em qualquer rota do dashboard, exceto `/competidor/inscricao` e `/perfil` |
+| RF-02.8 | Status CONFIRMADA é terminal | Uma vez `CONFIRMADA`, nenhum ator — incluindo ADMIN — pode alterar o status novamente via `/inscricoes/:id/status` ou `/inscricoes/:id/confirmar`; o backend responde 409 Conflict |
+| RF-02.9 | Justificativa obrigatória ao rejeitar | `PATCH /inscricoes/:id/status` exige `justificativa` (mínimo 10 caracteres) no corpo quando `status === "REJEITADA"`, validada por Zod no servidor e reforçada por modal na tela do coordenador |
+| RF-02.10 | Histórico de ratificação | Toda mudança de status (confirmação, rejeição, reenvio) grava um registro em `InscricaoHistorico` (status anterior, novo status, justificativa, ator, data), consultável pelo aluno (`GET /inscricoes/minha/historico`) e pela equipe (`GET /inscricoes/:id/historico`) |
+| RF-02.11 | Notificação de decisão | Confirmar ou rejeitar uma inscrição dispara e-mail (`EmailService.enviarStatusInscricao`) e cria uma `Notificacao` in-app para o aluno |
+| RF-02.12 | Reenvio após rejeição | O aluno dono de uma inscrição `REJEITADA` pode reenviá-la (`PATCH /inscricoes/minha/reenviar`), retornando o status a `PENDENTE`, somente enquanto `now() < Edicao.prazoInscricao` (campo opcional; ausência de prazo significa sem limite) |
 
 ### RF-03 — Cadastro de Provas
 | ID | Requisito | Critério de Aceitação |
@@ -265,6 +271,8 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular princip
 | AvaliacaoFase2 | Nota e parecer da etapa complementar |
 | RankingSnapshot | Publicação ou consolidação de ranking |
 | AuditLog | Registro de ações críticas do sistema |
+| InscricaoHistorico | Registro de cada mudança de status de uma inscrição (confirmação, rejeição, reenvio), com justificativa e ator |
+| Notificacao | Notificação in-app para um usuário (título, mensagem, link, lida/não lida) |
 
 ### 6.2 Campos essenciais por entidade
 

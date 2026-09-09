@@ -71,6 +71,27 @@
 | PATCH `/admin/inscricoes/:id/validar` | — | — | — | ✅ |
 | PATCH `/admin/inscricoes/:id/rejeitar` | — | — | — | ✅ |
 
+### 2.5b Inscrição — Current Endpoints (`/api/inscricoes`)
+
+*Actual live routes as implemented by `InscricaoController`; supersedes the illustrative 2.4/2.5 tables above for these paths. COMISSAO included alongside ADMIN where applicable.*
+
+| Endpoint | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN | COMISSAO |
+|----------|-------|-------------------|-----------|-------|----------|
+| GET `/inscricoes/minha/historico` | ✅ (own) | — | — | — | — |
+| PATCH `/inscricoes/minha/reenviar` | ✅ (own, if REJEITADA and before `prazoInscricao`) | — | — | — | — |
+| GET `/inscricoes/:id/historico` | — | ✅ | ✅ | ✅ | ✅ |
+| PATCH `/inscricoes/:id/confirmar` | — | ✅ | — | ✅ | ✅ |
+| PATCH `/inscricoes/:id/status` | — | ✅ | — | ✅ | ✅ *(`justificativa` required when rejecting; 409 once CONFIRMADA)* |
+
+### 2.5c Notifications (`/api/notificacoes`)
+
+| Endpoint | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN |
+|----------|-------|-------------------|-----------|-------|
+| GET `/notificacoes` | ✅ (own) | ✅ (own) | ✅ (own) | ✅ (own) |
+| PATCH `/notificacoes/:id/lida` | ✅ (own) | ✅ (own) | ✅ (own) | ✅ (own) |
+
+*Not role-gated beyond JWT auth — every endpoint scopes results to the authenticated caller's own data.*
+
 ### 2.6 Provas — Admin/Avaliador Management (`/api/admin/provas`)
 
 | Endpoint | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN |

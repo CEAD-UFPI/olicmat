@@ -110,8 +110,10 @@
 |--------|------|------|-------------|
 | POST | `/inscricoes` | JWT (A) | Create enrollment |
 | GET | `/inscricoes/minha` | JWT (A) | Get own enrollment |
+| GET | `/inscricoes/minha/historico` | JWT (A) | Get own enrollment's status history |
 | POST | `/inscricoes/minha/iniciar-prova` | JWT (A) | Start Phase 1 exam |
 | POST | `/inscricoes/minha/sortear-tema` | JWT (A) | Draw Phase 2 theme |
+| PATCH | `/inscricoes/minha/reenviar` | JWT (A) | Resend a `REJEITADA` enrollment, reverting it to `PENDENTE` |
 
 ### POST `/inscricoes`
 ```json
@@ -123,6 +125,9 @@
   "periodo": "number (1-12, optional)"
 }
 ```
+
+### PATCH `/inscricoes/minha/reenviar`
+Same body shape as `POST /inscricoes` (comprovante, dados de matrícula etc.). Only allowed while the caller's own enrollment is `REJEITADA` **and** `now() < Edicao.prazoInscricao` (a nullable `DateTime` on `Edicao` — `null` means no deadline, configurable by ADMIN on `/admin/edicoes`). Reverts status to `PENDENTE` and records the transition in `InscricaoHistorico`.
 
 ---
 
@@ -168,8 +173,21 @@
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/inscricoes` | JWT (Ad, Av) | List all enrollments (query: `status`) |
-| PATCH | `/inscricoes/:id/confirmar` | JWT (Ad, Av) | Confirm enrollment |
+| GET | `/inscricoes` | JWT (Ad, Comissao, Av) | List all enrollments (query: `status`, `page`, `limit`) |
+| GET | `/inscricoes/:id/historico` | JWT (Ad, Comissao, Av, Co) | Get an enrollment's status history |
+| PATCH | `/inscricoes/:id/confirmar` | JWT (Ad, Comissao, Co) | Confirm enrollment |
+| PATCH | `/inscricoes/:id/status` | JWT (Ad, Comissao, Co) | Confirm or reject enrollment (see body below) |
+
+### PATCH `/inscricoes/:id/status`
+```json
+{
+  "status": "CONFIRMADA | REJEITADA",
+  "justificativa": "string (min 10 chars — required when status is REJEITADA)"
+}
+```
+- Zod-validated server-side; a missing/too-short `justificativa` on a `REJEITADA` request is rejected with 400.
+- **CONFIRMADA is terminal**: once an enrollment's status is `CONFIRMADA`, no actor — including ADMIN — can change it again through this endpoint or `/inscricoes/:id/confirmar`; the service throws **409 Conflict**.
+- On success, records a row in `InscricaoHistorico`, sends an email (`EmailService.enviarStatusInscricao`) and creates a `Notificacao` for the student.
 
 ---
 
@@ -283,6 +301,17 @@
 
 ---
 
+## 15. Notifications — `/api/notificacoes`
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/notificacoes` | JWT (any) | List the caller's notifications, including unread count |
+| PATCH | `/notificacoes/:id/lida` | JWT (any) | Mark one notification as read (own notifications only) |
+
+Notifications are created automatically by the backend (e.g. enrollment confirmed/rejected) and are not user-creatable via the API. The Sidebar's notification bell (all roles) polls `GET /notificacoes` every 60s.
+
+---
+
 ## Route Group Summary
 
 | Prefix | Module | Purpose |
@@ -294,6 +323,7 @@
 | `/api/prova` | Olimpiada | Competidor exam execution |
 | `/api/envio` | Olimpiada | Competidor Phase 2 submission |
 | `/api/ranking` | Olimpiada | Public ranking |
+| `/api/notificacoes` | Notificacoes | In-app notifications for the logged-in user |
 | `/api/admin/provas` | Admin | Exam CRUD, publish, duplicate |
 | `/api/admin/questoes` | Admin | Question CRUD |
 | `/api/admin/avaliacao` | Admin (deprecated) | Phase 2 evaluation — replaced by `/api/correcao` |
