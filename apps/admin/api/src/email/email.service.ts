@@ -161,6 +161,8 @@ export class EmailService {
           Concluir Meu Cadastro
         </a>
         <p style="color: #666; font-size: 12px;">Este link expira em 7 dias e só pode ser usado uma vez. Se você não esperava este convite, ignore este e-mail.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p><strong>Importante:</strong> logo após criar sua conta, é obrigatório concluir a inscrição na edição vigente da OLICMAT. Tenha em mãos o seu <strong>comprovante de matrícula</strong> antes de iniciar o cadastro, pois ele será solicitado durante a inscrição.</p>
       </div>
     `;
     await this.sendMail(email, "Convite de Cadastro — OLICMAT", html);
@@ -195,5 +197,37 @@ export class EmailService {
       </div>
     `;
     await this.sendMail(email, "Resultado da Fase 1 — OLICMAT", html);
+  }
+
+  async enviarStatusInscricao(
+    email: string,
+    nome: string,
+    status: "CONFIRMADA" | "REJEITADA",
+    justificativa?: string,
+  ) {
+    const confirmada = status === "CONFIRMADA";
+    const html = confirmada
+      ? `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #E8B829;">OLICMAT — Inscrição Confirmada</h2>
+        <p>Olá, <strong>${nome}</strong>!</p>
+        <p>Sua inscrição na OLICMAT foi <strong>confirmada</strong> pela coordenação do seu curso.</p>
+        <p>Acesse o painel para acompanhar os próximos passos.</p>
+      </div>
+    `
+      : `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #E8B829;">OLICMAT — Inscrição Rejeitada</h2>
+        <p>Olá, <strong>${nome}</strong>!</p>
+        <p>Sua inscrição na OLICMAT foi <strong>rejeitada</strong> pela coordenação do seu curso.</p>
+        <p><strong>Motivo:</strong> ${justificativa}</p>
+        <p>Você pode corrigir os dados e reenviar sua inscrição pelo painel, enquanto o prazo de inscrição da edição estiver aberto.</p>
+      </div>
+    `;
+    await this.sendMail(
+      email,
+      confirmada ? "Inscrição Confirmada — OLICMAT" : "Inscrição Rejeitada — OLICMAT",
+      html,
+    );
   }
 }

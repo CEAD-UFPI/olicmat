@@ -13,6 +13,7 @@ import { CoordenacaoModule } from "./coordenacao/coordenacao.module.js";
 import { CorrecaoModule } from "./correcao/correcao.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { ConvitesModule } from "./convites/convites.module.js";
+import { NotificacoesModule } from "./notificacoes/notificacoes.module.js";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ConvitesModule } from "./convites/convites.module.js";
     // ── Module 1: Config / Registrations / Results / Reports ──
     AuthModule,
     EmailModule,
+    NotificacoesModule,
     UsersModule,
     OlimpiadaModule,
     InstituicoesModule,

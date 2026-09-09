@@ -8,9 +8,11 @@ import { EnvioController } from "./envio/envio.controller.js";
 import { RankingService } from "./ranking/ranking.service.js";
 import { RankingController } from "./ranking/ranking.controller.js";
 import { UploadModule } from "../upload/upload.module.js";
+import { EmailModule } from "../email/email.module.js";
+import { NotificacoesModule } from "../notificacoes/notificacoes.module.js";
 
 @Module({
-  imports: [UploadModule],
+  imports: [UploadModule, EmailModule, NotificacoesModule],
   controllers: [
     InscricaoController,
     ProvaController,
