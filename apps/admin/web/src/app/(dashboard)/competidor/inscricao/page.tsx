@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StatusBadge, INSCRICAO_STATUS } from "@/components/ui/detail-panel";
 import api from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -28,6 +29,21 @@ type InscricaoForm = z.infer<typeof inscricaoSchema>;
 interface Vinculo {
   instituicao: { nome: string; sigla: string } | null;
   curso: { nome: string } | null;
+}
+
+interface HistoricoItem {
+  id: string;
+  statusAnterior: string;
+  statusNovo: string;
+  justificativa: string | null;
+  createdAt: string;
+  actor?: { nome: string; role: string };
+}
+
+interface MinhaInscricao {
+  id: string;
+  status: string;
+  comprovanteUrl: string | null;
 }
 
 const ESTADOS = [
@@ -74,6 +90,10 @@ export default function InscricaoPage() {
   const [edicaoId, setEdicaoId] = useState("");
   const [carregandoEdicoes, setCarregandoEdicoes] = useState(true);
   const [vinculo, setVinculo] = useState<Vinculo | null>(null);
+  const [minhaInscricao, setMinhaInscricao] = useState<MinhaInscricao | null>(null);
+  const [historico, setHistorico] = useState<HistoricoItem[]>([]);
+  const [reenviando, setReenviando] = useState(false);
+  const [erroReenvio, setErroReenvio] = useState("");
 
   const {
     register,
@@ -101,6 +121,17 @@ export default function InscricaoPage() {
       .get<Vinculo>("/users/me")
       .then(({ data }) => setVinculo(data))
       .catch(() => setVinculo(null));
+  }, []);
+
+  useEffect(() => {
+    api
+      .get<MinhaInscricao>("/inscricoes/minha")
+      .then(({ data }) => setMinhaInscricao(data))
+      .catch(() => setMinhaInscricao(null));
+    api
+      .get<HistoricoItem[]>("/inscricoes/minha/historico")
+      .then(({ data }) => setHistorico(Array.isArray(data) ? data : []))
+      .catch(() => setHistorico([]));
   }, []);
 
   // O servidor sempre usa o curso do vínculo e descarta o que vier no
@@ -157,6 +188,32 @@ export default function InscricaoPage() {
     }
   };
 
+  const onReenviar = async () => {
+    setReenviando(true);
+    setErroReenvio("");
+    try {
+      let comprovanteUrl: string | undefined;
+      if (comprovante) {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("comprovante", comprovante);
+        const { data: uploadData } = await api.post("/inscricoes/comprovante", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        comprovanteUrl = uploadData.url;
+        setUploading(false);
+      }
+      await api.patch("/inscricoes/minha/reenviar", comprovanteUrl ? { comprovanteUrl } : {});
+      router.push("/competidor");
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })
+        ?.response?.data?.message;
+      setErroReenvio(typeof msg === "string" ? msg : "Erro ao reenviar inscrição.");
+    } finally {
+      setReenviando(false);
+    }
+  };
+
   if (sucesso) {
     return (
       <div className="max-w-lg mx-auto text-center py-16">
@@ -188,6 +245,59 @@ export default function InscricaoPage() {
         </p>
       </div>
 
+      {minhaInscricao && historico.length > 0 && (
+        <div className="mb-6 border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a]">
+          <h2 className="text-sm font-semibold text-[#f0ece4] mb-3">Histórico da inscrição</h2>
+          <div className="space-y-3">
+            {historico.map((h) => (
+              <div key={h.id} className="flex items-start gap-3 text-sm">
+                <StatusBadge
+                  label={INSCRICAO_STATUS[h.statusNovo]?.label ?? h.statusNovo}
+                  tone={INSCRICAO_STATUS[h.statusNovo]?.tone ?? "neutral"}
+                />
+                <div className="flex-1">
+                  <p className="text-[#b0adc0]">
+                    {new Date(h.createdAt).toLocaleString("pt-BR")}
+                    {h.actor?.nome ? ` — por ${h.actor.nome}` : ""}
+                  </p>
+                  {h.justificativa && (
+                    <p className="text-[#f0ece4] mt-1">Motivo: {h.justificativa}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {minhaInscricao.status === "REJEITADA" && (
+            <div className="mt-5 pt-5 border-t border-[#2a2a3a]">
+              <p className="text-sm text-[#9895a4] mb-3">
+                Sua inscrição foi rejeitada. Envie um novo comprovante de matrícula e reenvie.
+              </p>
+              <div
+                onClick={() => fileRef.current?.click()}
+                className="flex items-center gap-3 p-4 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] cursor-pointer hover:border-[#E8B829]/50 transition-colors">
+                <Upload className="w-5 h-5 text-[#9895a4]" />
+                <span className="text-sm text-[#9895a4]">
+                  {comprovante ? comprovante.name : "Clique para enviar novo comprovante"}
+                </span>
+              </div>
+              {erroReenvio && (
+                <p className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3 mt-3">{erroReenvio}</p>
+              )}
+              <Button
+                type="button"
+                disabled={reenviando || uploading}
+                onClick={onReenviar}
+                className="mt-3 w-full"
+                style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}>
+                {reenviando ? "Reenviando..." : "Reenviar inscrição"}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {(!minhaInscricao || minhaInscricao.status !== "REJEITADA") && (
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-5">
@@ -374,6 +484,7 @@ export default function InscricaoPage() {
           </Button>
         </div>
       </form>
+      )}
     </motion.div>
   );
 }
