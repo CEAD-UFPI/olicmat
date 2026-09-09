@@ -226,6 +226,8 @@ model User {
   coordenadorias        CoordenadorCurso[]
   avaliacoes            AvaliacaoFase2[]
   auditLogs             AuditLog[]
+  inscricaoHistoricos   InscricaoHistorico[]
+  notificacoes          Notificacao[]
 }
 
 model CoordenadorCurso {
@@ -249,6 +251,7 @@ model Edicao {
   status          String    @default("PLANEJAMENTO")
   dataInicio      DateTime?
   dataFim         DateTime?
+  prazoInscricao  DateTime?
   pesoFase1       Float     @default(0.5)
   pesoFase2       Float     @default(0.5)
   desempate       String[]  @default(["NOTA_FASE2", "NOTA_FASE1", "IDADE"])
@@ -294,8 +297,36 @@ model Inscricao {
   respostas       Resposta[]
   enviosFase2     EnvioFase2[]
   avaliacoes      AvaliacaoFase2[]
+  historico       InscricaoHistorico[]
 
   @@unique([userId, edicaoId])
+}
+
+model InscricaoHistorico {
+  id             String     @id @default(uuid())
+  inscricaoId    String
+  inscricao      Inscricao  @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+  statusAnterior StatusInsc
+  statusNovo     StatusInsc
+  justificativa  String?
+  actorId        String
+  actor          User       @relation(fields: [actorId], references: [id])
+  createdAt      DateTime   @default(now())
+
+  @@index([inscricaoId])
+}
+
+model Notificacao {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  titulo    String
+  mensagem  String
+  link      String?
+  lida      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, lida])
 }
 
 // ============================================
