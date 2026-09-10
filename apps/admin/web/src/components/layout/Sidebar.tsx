@@ -10,7 +10,7 @@ import {
   LayoutDashboard, ClipboardList, FileText, Upload, Trophy, Users,
   BarChart3, BookOpen, CheckSquare, Download, ShieldCheck,
   Eye, Building2, GraduationCap, Calendar, Settings, Sliders, Activity,
-  UserPlus, Bell,
+  UserPlus, Bell, HelpCircle,
 } from "lucide-react";
 
 interface NavLink { href: string; label: string; icon: React.ReactNode; }
@@ -136,6 +136,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
           { href: "/coordenador/convidar", label: "Convidar Alunos", icon: <UserPlus size={18} /> },
           { href: "/coordenador/inscricoes", label: "Inscrições", icon: <ClipboardList size={18} /> },
           { href: "/coordenador/metricas", label: "Métricas", icon: <BarChart3 size={18} /> },
+          { href: "/coordenador/guia", label: "Guia", icon: <HelpCircle size={18} /> },
         ];
       case "COMISSAO":
         return [
@@ -156,6 +157,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
           { href: "/competidor/inscricao", label: "Inscrição", icon: <ClipboardList size={18} /> },
           { href: "/competidor/envio", label: "Envio - Fase 2", icon: <Upload size={18} /> },
           { href: "/competidor/resultado", label: "Resultado", icon: <Trophy size={18} /> },
+          { href: "/competidor/guia", label: "Guia", icon: <HelpCircle size={18} /> },
         ];
       default:
         return [];

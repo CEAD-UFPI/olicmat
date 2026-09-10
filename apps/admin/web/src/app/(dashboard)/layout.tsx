@@ -68,7 +68,11 @@ export default function DashboardLayout({
       setVerificandoInscricao(false);
       return;
     }
-    if (pathname.startsWith(ROTA_INSCRICAO_OBRIGATORIA) || pathname.startsWith("/perfil")) {
+    if (
+      pathname.startsWith(ROTA_INSCRICAO_OBRIGATORIA) ||
+      pathname.startsWith("/perfil") ||
+      pathname.startsWith("/competidor/guia")
+    ) {
       setVerificandoInscricao(false);
       return;
     }
