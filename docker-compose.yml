@@ -51,14 +51,15 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev_secret_change_in_production}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3006}
       EXAM_APP_URL: ${EXAM_APP_URL:-http://localhost:3007}
-      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
-      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
-      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      UPLOAD_DIR: /app/uploads
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:3333}
       SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
       SMTP_PORT: ${SMTP_PORT:-465}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_FROM: ${SMTP_FROM:-}
+    volumes:
+      - uploads:/app/uploads
     ports:
       - "3333:3333"
 
@@ -131,3 +132,4 @@ services:
 
 volumes:
   pgdata:
+  uploads:

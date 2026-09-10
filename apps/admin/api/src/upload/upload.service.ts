@@ -1,5 +1,7 @@
 import { Injectable, BadRequestException } from "@nestjs/common";
-import { v2 as cloudinary } from "cloudinary";
+import { randomUUID } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 
 interface MulterBufferFile {
   buffer: Buffer;
@@ -11,41 +13,40 @@ interface MulterBufferFile {
 /** Teto de tamanho, em MB, para qualquer arquivo enviado à plataforma. */
 const TAMANHO_MAXIMO_MB = 10;
 
-/**
- * Teto de espera pela resposta do Cloudinary, em milissegundos. O SDK dele
- * não impõe timeout de conexão confiável atrás do proxy da UFPI: sem este
- * limite, um upload cuja rede trava ficava pendurado até o nginx devolver
- * 504 — e a pessoa via "CORS Missing Allow Origin" no console, que é só o
- * sintoma do proxy devolvendo a resposta de timeout sem os cabeçalhos CORS.
- */
-const UPLOAD_TIMEOUT_MS = 30_000;
-
 const FORMATOS_PADRAO: Record<"video" | "image" | "raw", string[]> = {
   video: ["mp4", "mov", "avi", "webm"],
   image: ["jpg", "jpeg", "png", "webp"],
   raw: ["pdf", "doc", "docx", "jpg", "png"],
 };
 
+/**
+ * Armazenamento de arquivos é local (disco + volume Docker), e não no
+ * Cloudinary. Motivo: a rede da UFPI deixa a conexão TCP até api.cloudinary.com
+ * abrir, mas o handshake TLS do Node não flui — o upload ficava pendurado até o
+ * nginx devolver 504. Disco local não depende de nenhuma rede externa.
+ */
 @Injectable()
 export class UploadService {
+  private readonly dirBase: string;
+  private readonly urlBase: string;
+
   constructor() {
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
+    this.dirBase = process.env.UPLOAD_DIR || "/app/uploads";
+    // Host público da API (sem a barra final). Os arquivos são servidos em
+    // `/api/uploads/...` pela rota do UploadsController, então a URL pública
+    // só precisa do domínio que o proxy expõe para a API.
+    this.urlBase = (process.env.PUBLIC_API_URL || "https://olicmat.cead.ufpi.br").replace(/\/+$/, "");
   }
 
   /**
-   * Recusa o arquivo antes de gastar a viagem até o Cloudinary. Sem isto, um
-   * formato não aceito só falhava lá, e o erro que chegava à pessoa era o da
-   * biblioteca — indecifrável para quem só quer anexar um comprovante.
+   * Recusa o arquivo antes de escrevê-lo em disco. Devolve a extensão já
+   * normalizada (minúscula) para ser reutilizada no nome do arquivo salvo.
    */
   private validar(
     nome: string,
     tamanho: number,
     formatosPermitidos: string[],
-  ): void {
+  ): string {
     const extensao = nome.split(".").pop()?.toLowerCase() ?? "";
 
     if (!formatosPermitidos.includes(extensao)) {
@@ -61,34 +62,25 @@ export class UploadService {
         `Arquivo muito grande. O limite é de ${TAMANHO_MAXIMO_MB} MB.`,
       );
     }
+
+    return extensao;
   }
 
   /**
-   * Envolve uma Promise de upload com um limite de tempo. Sem isto, quando a
-   * rede até o Cloudinary trava, a requisição ficava pendurada para sempre e
-   * só morria no timeout do proxy (504). Com o limite, a pessoa recebe um erro
-   * claro em ~30s em vez de um 504 opaco.
+   * Grava o buffer em `<UPLOAD_DIR>/<folder>/<uuid>.<ext>` e devolve a URL
+   * pública para acessá-lo. O nome gerado (UUID) elimina colisão e path
+   * traversal por construção.
    */
-  private comLimiteDeTempo(promessa: Promise<string>): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const timer = setTimeout(() => {
-        reject(
-          new BadRequestException(
-            "Não foi possível enviar o arquivo: tempo esgotado. Tente novamente.",
-          ),
-        );
-      }, UPLOAD_TIMEOUT_MS);
-
-      promessa
-        .then((url) => {
-          clearTimeout(timer);
-          resolve(url);
-        })
-        .catch((erro) => {
-          clearTimeout(timer);
-          reject(erro);
-        });
-    });
+  private async salvarNoDisco(
+    buffer: Buffer,
+    folder: string,
+    extensao: string,
+  ): Promise<string> {
+    const nome = `${randomUUID()}.${extensao}`;
+    const pasta = join(this.dirBase, folder);
+    await mkdir(pasta, { recursive: true });
+    await writeFile(join(pasta, nome), buffer);
+    return `${this.urlBase}/api/uploads/${folder}/${nome}`;
   }
 
   async uploadArquivo(
@@ -102,25 +94,8 @@ export class UploadService {
     }
 
     const formatos = formatosPermitidos ?? FORMATOS_PADRAO[resourceType];
-    this.validar(file.originalname, file.size, formatos);
-
-    const envio = new Promise<string>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: `olicmat/${folder}`,
-          resource_type: resourceType,
-          allowed_formats: formatos,
-        },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result!.secure_url);
-        }
-      );
-
-      uploadStream.end(file.buffer);
-    });
-
-    return this.comLimiteDeTempo(envio);
+    const extensao = this.validar(file.originalname, file.size, formatos);
+    return this.salvarNoDisco(file.buffer, folder, extensao);
   }
 
   async uploadBuffer(
@@ -131,25 +106,7 @@ export class UploadService {
     formatosPermitidos?: string[],
   ): Promise<string> {
     const formatos = formatosPermitidos ?? FORMATOS_PADRAO[resourceType];
-    this.validar(filename, buffer.byteLength, formatos);
-
-    const envio = new Promise<string>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: `olicmat/${folder}`,
-          resource_type: resourceType,
-          public_id: filename.replace(/\.[^/.]+$/, ""),
-          allowed_formats: formatos,
-        },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result!.secure_url);
-        }
-      );
-
-      uploadStream.end(buffer);
-    });
-
-    return this.comLimiteDeTempo(envio);
+    const extensao = this.validar(filename, buffer.byteLength, formatos);
+    return this.salvarNoDisco(buffer, folder, extensao);
   }
 }

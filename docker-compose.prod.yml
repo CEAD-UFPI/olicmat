@@ -62,9 +62,9 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       FRONTEND_URL: ${FRONTEND_URL:-https://olicmat.cead.ufpi.br}
       EXAM_APP_URL: ${EXAM_APP_URL:-https://prova.olicmat.cead.ufpi.br}
-      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
-      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
-      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      # Armazenamento local (substitui o Cloudinary — bloqueado na rede UFPI).
+      UPLOAD_DIR: /app/uploads
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-https://olicmat.cead.ufpi.br}
       # Envio de e-mail. O padrão é a API HTTPS do Brevo: a rede da UFPI
       # intercepta saída SMTP em todas as portas testadas.
       EMAIL_PROVIDER: ${EMAIL_PROVIDER:-brevo}
@@ -75,6 +75,8 @@ services:
       SMTP_PORT: ${SMTP_PORT:-465}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
+    volumes:
+      - uploads:/app/uploads
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3333/api/health || exit 1"]
       interval: 30s
@@ -147,3 +149,4 @@ services:
 
 volumes:
   pgdata:
+  uploads:

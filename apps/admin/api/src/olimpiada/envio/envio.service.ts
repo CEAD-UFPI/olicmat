@@ -92,7 +92,7 @@ export class EnvioService {
 
     const arquivoUrl = await this.upload.uploadBuffer(
       file.buffer,
-      `fase2/${userId}`,
+      "fase2",
       file.originalname,
       "raw",
       ["pdf"],
