@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { StatusBadge, INSCRICAO_STATUS } from "@/components/ui/detail-panel";
 import api from "@/lib/api";
+import { MUNICIPIOS_PI } from "@/lib/municipios-pi";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Upload } from "lucide-react";
@@ -17,8 +18,7 @@ import { z } from "zod";
 // coordenação não os digita: eles já vêm do vínculo. Para quem não tem
 // vínculo, a obrigatoriedade é aplicada no envio.
 const inscricaoSchema = z.object({
-  estado: z.string().length(2, "UF deve ter 2 caracteres (ex: SP)"),
-  municipio: z.string().optional(),
+  municipio: z.string().min(1, "Selecione sua cidade"),
   instituicao: z.string().optional(),
   curso: z.string().optional(),
   periodo: z.string().optional(),
@@ -45,36 +45,6 @@ interface MinhaInscricao {
   status: string;
   comprovanteUrl: string | null;
 }
-
-const ESTADOS = [
-  "AC",
-  "AL",
-  "AP",
-  "AM",
-  "BA",
-  "CE",
-  "DF",
-  "ES",
-  "GO",
-  "MA",
-  "MT",
-  "MS",
-  "MG",
-  "PA",
-  "PB",
-  "PR",
-  "PE",
-  "PI",
-  "RJ",
-  "RN",
-  "RS",
-  "RO",
-  "RR",
-  "SC",
-  "SP",
-  "SE",
-  "TO",
-];
 
 export default function InscricaoPage() {
   const router = useRouter();
@@ -173,6 +143,7 @@ export default function InscricaoPage() {
 
       await api.post("/inscricoes", {
         ...data,
+        estado: "PI",
         periodo: data.periodo ? parseInt(data.periodo) : undefined,
         edicaoId: edicaoId || undefined,
         comprovanteUrl,
@@ -327,35 +298,23 @@ export default function InscricaoPage() {
         ) : null}
 
         <div>
-          <Label htmlFor="estado" className="text-[#f0ece4]">
-            Estado (UF)
+          <Label htmlFor="municipio" className="text-[#f0ece4]">
+            Cidade (Piauí)
           </Label>
           <select
-            id="estado"
-            {...register("estado")}
+            id="municipio"
+            {...register("municipio")}
             className="mt-1.5 w-full h-10 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]">
-            <option value="">Selecione...</option>
-            {ESTADOS.map((uf) => (
-              <option key={uf} value={uf}>
-                {uf}
+            <option value="">Selecione sua cidade...</option>
+            {MUNICIPIOS_PI.map((cidade) => (
+              <option key={cidade} value={cidade}>
+                {cidade}
               </option>
             ))}
           </select>
-          {errors.estado && (
-            <p className="text-xs text-red-400 mt-1">{errors.estado.message}</p>
+          {errors.municipio && (
+            <p className="text-xs text-red-400 mt-1">{errors.municipio.message}</p>
           )}
-        </div>
-
-        <div>
-          <Label htmlFor="municipio" className="text-[#f0ece4]">
-            Município
-          </Label>
-          <Input
-            id="municipio"
-            placeholder="Ex: São Paulo"
-            {...register("municipio")}
-            className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
-          />
         </div>
 
         {cursoDoVinculo ? (

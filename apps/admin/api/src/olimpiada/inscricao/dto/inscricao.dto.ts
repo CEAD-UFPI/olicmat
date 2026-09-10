@@ -1,8 +1,16 @@
 import { z } from "zod";
+import { MUNICIPIOS_PI } from "../municipios-pi.js";
+
+const MUNICIPIOS_PI_SET = new Set<string>(MUNICIPIOS_PI);
 
 export const criarInscricaoSchema = z.object({
-  estado: z.string().length(2, "UF deve ter 2 caracteres"),
-  municipio: z.string().optional(),
+  estado: z.literal("PI"),
+  municipio: z
+    .string()
+    .min(1, "Cidade é obrigatória")
+    .refine((m) => MUNICIPIOS_PI_SET.has(m), {
+      message: "Cidade inválida para o estado do Piauí",
+    }),
   edicaoId: z.string().uuid("ID da edição inválido").optional(),
   instituicaoId: z.string().uuid("ID da instituição inválido").optional(),
   cursoId: z.string().uuid("ID do curso inválido").optional(),
