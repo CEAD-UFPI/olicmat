@@ -240,6 +240,15 @@ export class InscricaoService {
       cursoId = curso.id;
     }
 
+    // A obrigatoriedade mora aqui (e não no schema): quem tem vínculo recebe
+    // curso/instituição do vínculo; quem não tem precisa enviá-los no payload.
+    if (!instituicaoId) {
+      throw new BadRequestException("Instituição é obrigatória");
+    }
+    if (!cursoId) {
+      throw new BadRequestException("Curso é obrigatório");
+    }
+
     return this.prisma.inscricao.create({
       data: {
         userId,

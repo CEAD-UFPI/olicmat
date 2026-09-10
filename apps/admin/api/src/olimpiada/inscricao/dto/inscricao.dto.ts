@@ -18,13 +18,13 @@ export const criarInscricaoSchema = z.object({
   instituicao: z.string().min(2, "Instituição é obrigatória").optional(),
   curso: z.string().min(2, "Curso é obrigatório").optional(),
   periodo: z.number().int().min(1).max(12).optional(),
-}).refine(
-  (data) => data.instituicaoId || data.instituicao,
-  { message: "Instituição é obrigatória", path: ["instituicao"] }
-).refine(
-  (data) => data.cursoId || data.curso,
-  { message: "Curso é obrigatório", path: ["curso"] }
-);
+});
+
+// Instituição/curso NÃO são exigidos aqui no schema: quem foi convidado pela
+// coordenação já os tem no vínculo (User.cursoId/instituicaoId) e não os envia
+// no corpo — o frontend mostra o vínculo como bloco travado. A obrigatoriedade
+// é validada em InscricaoService.criar(), que enxerga o vínculo e, para quem
+// não tem, exige instituicao/curso no payload.
 
 export type CriarInscricaoDto = z.infer<typeof criarInscricaoSchema>;
 

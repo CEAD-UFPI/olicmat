@@ -20,6 +20,7 @@ describe("InscricaoService", () => {
       inscricao: { findUnique: jest.fn(), create: jest.fn() },
       instituicao: { upsert: jest.fn() },
       curso: { upsert: jest.fn() },
+      user: { findUnique: jest.fn() },
     };
     auditoria = { log: jest.fn() };
     email = { enviarStatusInscricao: jest.fn() };
@@ -124,6 +125,51 @@ describe("InscricaoService", () => {
           curso: "Matemática",
         } as any),
       ).rejects.toThrow(ConflictException);
+    });
+
+    it("usa o vínculo do convidado sem exigir instituição/curso no payload", async () => {
+      prisma.edicao.findMany.mockResolvedValue([
+        { id: "ed1", ano: 2026, semestre: 1 },
+      ]);
+      prisma.inscricao.findUnique.mockResolvedValue(null);
+      prisma.user.findUnique.mockResolvedValue({
+        instituicaoId: "inst-vinculo",
+        cursoId: "curso-vinculo",
+        curso: { instituicaoId: "inst-vinculo" },
+      });
+      prisma.inscricao.create.mockResolvedValue({ id: "insc1" });
+
+      await service.criar("user1", {
+        estado: "PI",
+        municipio: "Teresina",
+      } as any);
+
+      expect(prisma.instituicao.upsert).not.toHaveBeenCalled();
+      expect(prisma.curso.upsert).not.toHaveBeenCalled();
+      expect(prisma.inscricao.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            instituicaoId: "inst-vinculo",
+            cursoId: "curso-vinculo",
+          }),
+        }),
+      );
+    });
+
+    it("exige instituição/curso quando não há vínculo nem dados no payload", async () => {
+      prisma.edicao.findMany.mockResolvedValue([
+        { id: "ed1", ano: 2026, semestre: 1 },
+      ]);
+      prisma.inscricao.findUnique.mockResolvedValue(null);
+      prisma.user.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.criar("user1", {
+          estado: "PI",
+          municipio: "Teresina",
+        } as any),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.inscricao.create).not.toHaveBeenCalled();
     });
   });
 
