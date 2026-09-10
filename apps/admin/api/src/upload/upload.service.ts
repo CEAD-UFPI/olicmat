@@ -11,6 +11,15 @@ interface MulterBufferFile {
 /** Teto de tamanho, em MB, para qualquer arquivo enviado à plataforma. */
 const TAMANHO_MAXIMO_MB = 10;
 
+/**
+ * Teto de espera pela resposta do Cloudinary, em milissegundos. O SDK dele
+ * não impõe timeout de conexão confiável atrás do proxy da UFPI: sem este
+ * limite, um upload cuja rede trava ficava pendurado até o nginx devolver
+ * 504 — e a pessoa via "CORS Missing Allow Origin" no console, que é só o
+ * sintoma do proxy devolvendo a resposta de timeout sem os cabeçalhos CORS.
+ */
+const UPLOAD_TIMEOUT_MS = 30_000;
+
 const FORMATOS_PADRAO: Record<"video" | "image" | "raw", string[]> = {
   video: ["mp4", "mov", "avi", "webm"],
   image: ["jpg", "jpeg", "png", "webp"],
@@ -54,6 +63,34 @@ export class UploadService {
     }
   }
 
+  /**
+   * Envolve uma Promise de upload com um limite de tempo. Sem isto, quando a
+   * rede até o Cloudinary trava, a requisição ficava pendurada para sempre e
+   * só morria no timeout do proxy (504). Com o limite, a pessoa recebe um erro
+   * claro em ~30s em vez de um 504 opaco.
+   */
+  private comLimiteDeTempo(promessa: Promise<string>): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(
+          new BadRequestException(
+            "Não foi possível enviar o arquivo: tempo esgotado. Tente novamente.",
+          ),
+        );
+      }, UPLOAD_TIMEOUT_MS);
+
+      promessa
+        .then((url) => {
+          clearTimeout(timer);
+          resolve(url);
+        })
+        .catch((erro) => {
+          clearTimeout(timer);
+          reject(erro);
+        });
+    });
+  }
+
   async uploadArquivo(
     file: MulterBufferFile,
     folder: string,
@@ -67,7 +104,7 @@ export class UploadService {
     const formatos = formatosPermitidos ?? FORMATOS_PADRAO[resourceType];
     this.validar(file.originalname, file.size, formatos);
 
-    return new Promise((resolve, reject) => {
+    const envio = new Promise<string>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: `olicmat/${folder}`,
@@ -82,6 +119,8 @@ export class UploadService {
 
       uploadStream.end(file.buffer);
     });
+
+    return this.comLimiteDeTempo(envio);
   }
 
   async uploadBuffer(
@@ -94,7 +133,7 @@ export class UploadService {
     const formatos = formatosPermitidos ?? FORMATOS_PADRAO[resourceType];
     this.validar(filename, buffer.byteLength, formatos);
 
-    return new Promise((resolve, reject) => {
+    const envio = new Promise<string>((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder: `olicmat/${folder}`,
@@ -110,5 +149,7 @@ export class UploadService {
 
       uploadStream.end(buffer);
     });
+
+    return this.comLimiteDeTempo(envio);
   }
 }
