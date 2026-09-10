@@ -7,7 +7,7 @@ import { randomBytes } from "crypto";
 import bcrypt from "bcrypt";
 import { PrismaService } from "../prisma.service.js";
 import { EmailService } from "../email/email.service.js";
-import { Role } from "../../generated/prisma/client.js";
+import { Role } from "../../generated/prisma/enums.js";
 import type { AceitarConviteDto } from "./dto/convites.dto.js";
 
 /** Uma semana: prazo folgado para quem só abre o e-mail institucional às vezes. */
