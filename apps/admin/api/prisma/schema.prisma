@@ -190,6 +190,8 @@ model User {
   instituicao           Instituicao?        @relation(fields: [instituicaoId], references: [id])
   cursoId               String?
   curso                 Curso?              @relation(fields: [cursoId], references: [id])
+  coordenadorId         String?
+  coordenador           User?               @relation("AlunosDoCoordenador", fields: [coordenadorId], references: [id], onDelete: SetNull)
   matricula             String
   comprovanteUrl        String?
   dataNascimento        DateTime
@@ -228,6 +230,8 @@ model User {
   auditLogs             AuditLog[]
   inscricaoHistoricos   InscricaoHistorico[]
   notificacoes          Notificacao[]
+  alunos                User[]              @relation("AlunosDoCoordenador")
+  convitesCriados       Convite[]           @relation("ConvitesCriados")
 }
 
 model CoordenadorCurso {
@@ -497,6 +501,7 @@ model Convite {
   expiraEm  DateTime
   usadoEm   DateTime?
   criadoPor String
+  criadoPorId           String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -517,6 +522,7 @@ model Convite {
   /// que orienta a classificação e as bolsas, deixaria de valer.
   instituicaoId String?
   instituicao   Instituicao? @relation(fields: [instituicaoId], references: [id], onDelete: SetNull)
+  criadoPorUser         User?               @relation("ConvitesCriados", fields: [criadoPorId], references: [id], onDelete: SetNull)
 
   @@index([token])
   @@index([email])
