@@ -181,22 +181,21 @@ export class InscricaoController {
   @UseGuards(JwtAuthGuard)
   @Post("comprovante")
   @UseInterceptors(FileInterceptor("comprovante"))
-  async uploadComprovante(
-    @Request() req: ExpressReq & { user: AuthUser },
-    @UploadedFile() file: any,
-  ) {
+  async uploadComprovante(@UploadedFile() file: any) {
     // A tela de inscrição oferece PDF, e comprovante de matrícula costuma vir
     // nesse formato. O Cloudinary trata PDF como imagem, mas ele precisa
     // constar da lista explicitamente — sem isto, todo comprovante em PDF era
     // recusado depois que a pessoa já tinha preenchido o formulário inteiro.
+    //
+    // O comprovante é enviado ANTES da inscrição existir (o formulário faz o
+    // upload e só então chama POST /inscricoes), então este endpoint não pode
+    // depender de uma inscrição já criada — ele apenas devolve a URL.
     const url = await this.uploadService.uploadArquivo(
       file,
       "comprovantes",
       "image",
       ["jpg", "jpeg", "png", "webp", "pdf"],
     );
-    const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);
-    await this.inscricaoService.editar(inscricao.id, { comprovanteUrl: url });
     return { url };
   }
 }

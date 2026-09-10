@@ -246,6 +246,7 @@ export class InscricaoService {
         edicaoId,
         estado: data.estado.toUpperCase(),
         municipio: data.municipio,
+        comprovanteUrl: data.comprovanteUrl ?? null,
         instituicaoId: instituicaoId!,
         cursoId: cursoId!,
         periodo: data.periodo,

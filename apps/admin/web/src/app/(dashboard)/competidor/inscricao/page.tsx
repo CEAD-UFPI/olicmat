@@ -156,6 +156,7 @@ export default function InscricaoPage() {
       setError(typeof msg === "string" ? msg : "Erro ao realizar inscrição.");
     } finally {
       setLoading(false);
+      setUploading(false);
     }
   };
 
@@ -182,6 +183,7 @@ export default function InscricaoPage() {
       setErroReenvio(typeof msg === "string" ? msg : "Erro ao reenviar inscrição.");
     } finally {
       setReenviando(false);
+      setUploading(false);
     }
   };
 

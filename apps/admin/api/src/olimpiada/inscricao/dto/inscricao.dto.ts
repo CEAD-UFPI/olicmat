@@ -11,6 +11,7 @@ export const criarInscricaoSchema = z.object({
     .refine((m) => MUNICIPIOS_PI_SET.has(m), {
       message: "Cidade inválida para o estado do Piauí",
     }),
+  comprovanteUrl: z.string().url("URL do comprovante inválida").nullable().optional(),
   edicaoId: z.string().uuid("ID da edição inválido").optional(),
   instituicaoId: z.string().uuid("ID da instituição inválido").optional(),
   cursoId: z.string().uuid("ID do curso inválido").optional(),
