@@ -70,4 +70,64 @@ describe("ConvitesService", () => {
       expect(prisma.convite.upsert).not.toHaveBeenCalled();
     });
   });
+
+  describe("aceitar", () => {
+    const baseConvite = {
+      id: "c1",
+      nome: "Ana",
+      email: "ana@ufpi.edu.br",
+      role: "ALUNO",
+      token: "tok123",
+      expiraEm: new Date(Date.now() + 100000),
+      usadoEm: null,
+      criadoPor: "coord@ufpi.edu.br",
+      criadoPorId: "coord1",
+      cursoId: "curso1",
+      instituicaoId: "inst1",
+    };
+
+    it("propaga criadoPorId para coordenadorId quando o convite é de ALUNO", async () => {
+      prisma.convite.findUnique.mockResolvedValue(baseConvite);
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.curso.findUnique.mockResolvedValue({ id: "curso1", instituicaoId: "inst1" });
+      tx.user.create.mockResolvedValue({ id: "u1", nome: "Ana", email: "ana@ufpi.edu.br", role: "ALUNO" });
+
+      await service.aceitar("tok123", {
+        cpf: "12345678909",
+        senha: "senha-forte",
+        dataNascimento: "2000-01-01",
+        matricula: "2024001",
+      } as any);
+
+      expect(tx.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ coordenadorId: "coord1" }),
+        }),
+      );
+    });
+
+    it("deixa coordenadorId nulo para convites de papel não-ALUNO", async () => {
+      prisma.convite.findUnique.mockResolvedValue({
+        ...baseConvite,
+        role: "AVALIADOR",
+        criadoPorId: "admin1",
+        cursoId: null,
+        instituicaoId: null,
+      });
+      prisma.user.findUnique.mockResolvedValue(null);
+      tx.user.create.mockResolvedValue({ id: "u1", nome: "Ana", email: "ana@ufpi.edu.br", role: "AVALIADOR" });
+
+      await service.aceitar("tok123", {
+        cpf: "12345678909",
+        senha: "senha-forte",
+        dataNascimento: "2000-01-01",
+      } as any);
+
+      expect(tx.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ coordenadorId: null }),
+        }),
+      );
+    });
+  });
 });

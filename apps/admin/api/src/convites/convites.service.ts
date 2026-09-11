@@ -344,6 +344,7 @@ export class ConvitesService {
           telefone: dados.telefone ?? null,
           instituicaoId,
           cursoId,
+          coordenadorId: convite.role === Role.ALUNO ? (convite.criadoPorId ?? null) : null,
           // O convite chegou pelo e-mail; clicar no link já comprova o acesso.
           emailConfirmado: true,
         },
