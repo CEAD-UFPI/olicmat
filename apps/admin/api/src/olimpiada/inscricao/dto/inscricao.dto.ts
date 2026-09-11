@@ -3,6 +3,13 @@ import { MUNICIPIOS_PI } from "../municipios-pi.js";
 
 const MUNICIPIOS_PI_SET = new Set<string>(MUNICIPIOS_PI);
 
+// Frontends antigos ainda podem enviar instituição/curso como string vazia
+// quando o campo não é preenchido. Tratamos "" (e só-espacos) como "não
+// enviado" para que a obrigatoriedade real seja decidida em
+// InscricaoService.criar(), que enxerga o vínculo do usuário.
+const stringVaziaComoIndefinida = (v: unknown) =>
+  typeof v === "string" && v.trim() === "" ? undefined : v;
+
 export const criarInscricaoSchema = z.object({
   estado: z.literal("PI"),
   municipio: z
@@ -15,8 +22,14 @@ export const criarInscricaoSchema = z.object({
   edicaoId: z.string().uuid("ID da edição inválido").optional(),
   instituicaoId: z.string().uuid("ID da instituição inválido").optional(),
   cursoId: z.string().uuid("ID do curso inválido").optional(),
-  instituicao: z.string().min(2, "Instituição é obrigatória").optional(),
-  curso: z.string().min(2, "Curso é obrigatório").optional(),
+  instituicao: z.preprocess(
+    stringVaziaComoIndefinida,
+    z.string().min(2, "Instituição é obrigatória").optional(),
+  ),
+  curso: z.preprocess(
+    stringVaziaComoIndefinida,
+    z.string().min(2, "Curso é obrigatório").optional(),
+  ),
   periodo: z.number().int().min(1).max(12).optional(),
 });
 
