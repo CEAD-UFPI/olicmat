@@ -145,6 +145,7 @@ async function main() {
   const edicao2026 = await prisma.edicao.upsert({
     where: { ano_semestre: { ano: 2026, semestre: 1 } },
     update: {
+      status: "ATIVA",
       dataInicio: new Date("2026-08-10"),
       dataFim: new Date("2027-03-31"),
     },
