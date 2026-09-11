@@ -40,7 +40,12 @@ export class AdminConvitesController {
     }
 
     const actor = req.user as ReqUser;
-    return this.convitesService.criarEmLote(parsed.data.convites, actor.email);
+    return this.convitesService.criarEmLote(
+      parsed.data.convites,
+      actor.email,
+      undefined,
+      actor.id,
+    );
   }
 
   @Get()
