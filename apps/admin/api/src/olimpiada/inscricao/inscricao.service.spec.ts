@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import { Test } from "@nestjs/testing";
-import { BadRequestException, ConflictException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException } from "@nestjs/common";
 import { InscricaoService } from "./inscricao.service.js";
 import { PrismaService } from "../../prisma.service.js";
 import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
@@ -282,5 +282,62 @@ describe("InscricaoService — histórico e regra terminal", () => {
       expect.any(String),
       "/competidor/inscricao",
     );
+  });
+
+  it("coordenador confirma inscrição de aluno que ele próprio convidou", async () => {
+    prisma.inscricao.findUnique.mockResolvedValue({
+      id: "insc-1",
+      cursoId: "curso-1",
+      status: "PENDENTE",
+      user: { id: "user-1", email: "a@a.com", nome: "Ana", coordenadorId: "coord-1" },
+    });
+    prisma.inscricao.update.mockResolvedValue({ id: "insc-1", status: "CONFIRMADA" });
+
+    await service.confirmar("insc-1", { id: "coord-1", role: "COORDENADOR_CURSO" });
+
+    expect(prisma.inscricao.update).toHaveBeenCalledWith({
+      where: { id: "insc-1" },
+      data: { status: "CONFIRMADA" },
+    });
+  });
+
+  it("coordenador não gerencia inscrição de aluno convidado por outro coordenador", async () => {
+    prisma.inscricao.findUnique.mockResolvedValue({
+      id: "insc-1",
+      cursoId: "curso-1",
+      status: "PENDENTE",
+      user: { id: "user-1", email: "a@a.com", nome: "Ana", coordenadorId: "coord-outro" },
+    });
+
+    await expect(
+      service.atualizarStatus(
+        "insc-1",
+        "REJEITADA",
+        { id: "coord-1", role: "COORDENADOR_CURSO" },
+        "Motivo da rejeição",
+      ),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+
+    expect(prisma.inscricao.update).not.toHaveBeenCalled();
+  });
+
+  it("coordenador não gerencia inscrição de aluno auto-cadastrado (coordenadorId null)", async () => {
+    prisma.inscricao.findUnique.mockResolvedValue({
+      id: "insc-1",
+      cursoId: "curso-1",
+      status: "PENDENTE",
+      user: { id: "user-1", email: "a@a.com", nome: "Ana", coordenadorId: null },
+    });
+
+    await expect(
+      service.atualizarStatus(
+        "insc-1",
+        "REJEITADA",
+        { id: "coord-1", role: "COORDENADOR_CURSO" },
+        "Motivo da rejeição",
+      ),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+
+    expect(prisma.inscricao.update).not.toHaveBeenCalled();
   });
 });

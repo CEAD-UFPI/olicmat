@@ -104,6 +104,7 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular princip
 | RF-07.4 | Visualização de desempenho agregado | Exibe métricas autorizadas, restritas aos alunos que o coordenador convidou |
 | RF-07.5 | Vínculo aluno↔coordenador | `User.coordenadorId` (auto-relação, FK para o `User` coordenador que convidou o aluno) registra o coordenador de origem |
 | RF-07.6 | Propagação do vínculo no aceite | Ao aceitar um convite, `convite.criadoPorId` é copiado para `user.coordenadorId` somente quando `convite.role === ALUNO`; papéis não-ALUNO recebem `coordenadorId = null` |
+| RF-07.7 | Gestão de inscrições no escopo do vínculo | Coordenador só confirma/rejeita inscrições de alunos que ele próprio convidou (`inscricao.user.coordenadorId = me`); aluno auto-cadastrado (`coordenadorId = null`) é gerenciável apenas por ADMIN/COMISSÃO |
 
 ### RF-08 — Administração e Relatórios
 | ID | Requisito | Critério de Aceitação |

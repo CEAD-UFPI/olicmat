@@ -35,32 +35,25 @@ export class InscricaoService {
     private notificacoes: NotificacoesService,
   ) {}
 
-  private async getCoordenadorCursos(coordenadorId: string) {
-    const cursos = await this.prisma.coordenadorCurso.findMany({
-      where: { userId: coordenadorId },
-      select: { cursoId: true },
-    });
-    return cursos.map((c) => c.cursoId);
-  }
-
   /**
    * Boundary enforcement for inscription status changes.
    * ADMIN and COMISSAO manage any inscription; COORDENADOR_CURSO
-   * may only manage inscriptions of students in their own course.
+   * may only manage inscriptions of students they personally invited
+   * (vínculo aluno↔coordenador). Self-registered students
+   * (coordenadorId = null) are managed only by ADMIN/COMISSÃO.
    */
   private async enforceInscricaoScope(
     actor: { id: string; role: string },
-    inscricao: { cursoId: string }
+    inscricao: { user: { coordenadorId: string | null } }
   ) {
     if (actor.role === "ADMIN" || actor.role === "COMISSAO") {
       return;
     }
 
     if (actor.role === "COORDENADOR_CURSO") {
-      const cursos = await this.getCoordenadorCursos(actor.id);
-      if (!cursos.includes(inscricao.cursoId)) {
+      if (inscricao.user.coordenadorId !== actor.id) {
         throw new ForbiddenException(
-          "Você só pode gerenciar inscrições de participantes do seu curso"
+          "Você só pode gerenciar inscrições de alunos que você convidou"
         );
       }
       return;
@@ -288,7 +281,7 @@ export class InscricaoService {
   async confirmar(inscricaoId: string, actor: { id: string; role: string }) {
     const inscricao = await this.prisma.inscricao.findUnique({
       where: { id: inscricaoId },
-      include: { user: { select: { id: true, email: true, nome: true } } },
+      include: { user: { select: { id: true, email: true, nome: true, coordenadorId: true } } },
     });
     if (!inscricao) {
       throw new NotFoundException("Inscrição não encontrada");
@@ -413,7 +406,7 @@ export class InscricaoService {
   ) {
     const inscricao = await this.prisma.inscricao.findUnique({
       where: { id: inscricaoId },
-      include: { user: { select: { id: true, email: true, nome: true } } },
+      include: { user: { select: { id: true, email: true, nome: true, coordenadorId: true } } },
     });
     if (!inscricao) {
       throw new NotFoundException("Inscrição não encontrada");
