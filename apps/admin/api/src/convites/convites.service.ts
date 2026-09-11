@@ -59,6 +59,7 @@ export class ConvitesService {
     entradas: ConviteEntrada[],
     criadoPor: string,
     cursoId?: string,
+    criadoPorId?: string,
   ): Promise<ResultadoLote> {
     const enviados: ResultadoLote["enviados"] = [];
     const ignorados: ResultadoLote["ignorados"] = [];
@@ -91,6 +92,7 @@ export class ConvitesService {
             expiraEm,
             usadoEm: null,
             criadoPor,
+            criadoPorId: criadoPorId ?? null,
             cursoId: cursoId ?? null,
             instituicaoId: entrada.instituicaoId ?? null,
           },
@@ -101,6 +103,7 @@ export class ConvitesService {
             token,
             expiraEm,
             criadoPor,
+            criadoPorId: criadoPorId ?? null,
             cursoId: cursoId ?? null,
             instituicaoId: entrada.instituicaoId ?? null,
           },
@@ -158,6 +161,7 @@ export class ConvitesService {
       entradas.map((e) => ({ ...e, role: Role.ALUNO })),
       criadoPor,
       cursoId,
+      coordenadorId,
     );
   }
 
