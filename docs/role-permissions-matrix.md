@@ -150,10 +150,12 @@
 
 | Endpoint | ALUNO | COORDENADOR_CURSO | AVALIADOR | ADMIN |
 |----------|-------|-------------------|-----------|-------|
-| GET `/coordenacao/alunos` | — | ✅ (own cursos) | — | — |
+| GET `/coordenacao/alunos` | — | ✅ *(alunos que convidou)* | — | — |
 | GET `/coordenacao/cursos` | — | ✅ (own cursos) | — | — |
-| GET `/coordenacao/inscricoes` | — | ✅ (own cursos) | — | ✅ |
-| GET `/coordenacao/metricas` | — | ✅ (own cursos) | — | ✅ |
+| GET `/coordenacao/inscricoes` | — | ✅ *(alunos que convidou)* | — | ✅ |
+| GET `/coordenacao/metricas` | — | ✅ *(alunos que convidou)* | — | ✅ |
+
+*`/coordenacao/alunos`, `/coordenacao/inscricoes` e `/coordenacao/metricas` agora filtram por `user.coordenadorId` — somente os alunos que o coordenador convidou pessoalmente — e não mais por `cursoId IN`. `GET /coordenacao/cursos` permanece por curso (necessário para convidar e para a interface de convite).*
 
 ### 2.13 Admin Dashboard & Export (`/api/admin/dashboard`, `/api/admin/export`)
 

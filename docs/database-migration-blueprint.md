@@ -18,6 +18,8 @@ additive migrations followed after the refactor.
 | `20260609131525_refactor_olicmat_v2` | Destructive rebuild | 2026-06-09 | Original v2.0 schema (see §2.1–§2.8) |
 | `20260706230000_expand_user_instituicao` | Additive | 2026-07-06 | Added 9 new enums and ~22 User / ~15 Instituicao fields (CEP-backed localisation) |
 | `20260707000000_add_curso_nota_enade` | Additive | 2026-07-07 | Added `notaEnade DECIMAL(5,2)` to `Curso` — see §2.9 |
+| `20260910222952_vincular_aluno_coordenador` | Additive | 2026-09-10 | Added `User.coordenadorId` + `Convite.criadoPorId` (FKs to `User`) — see §2.9 |
+| `20260911035410_index_user_coordenador` | Additive | 2026-09-11 | Added `@@index([coordenadorId])` on `User` — see §2.9 |
 
 ### Database
 PostgreSQL 16, schema `public`, database `olicmat`
@@ -106,6 +108,8 @@ PostgreSQL 16, schema `public`, database `olicmat`
 | AvaliacaoFase2.inscricaoId | Inscricao.id | CASCADE | Required |
 | AvaliacaoFase2.avaliadorId | User.id | CASCADE | Required |
 | AuditLog.actorId | User.id | RESTRICT | Required |
+| User.coordenadorId | User.id | SET NULL | Optional (self-relation `"AlunosDoCoordenador"`) |
+| Convite.criadoPorId | User.id | SET NULL | Optional (`"ConvitesCriados"`) |
 
 ### 2.8 New Unique Constraints
 
@@ -120,7 +124,7 @@ PostgreSQL 16, schema `public`, database `olicmat`
 
 ### 2.9 Subsequent Additive Migrations
 
-Two small additive migrations have been applied after the v2.0 rebuild
+Several additive migrations have been applied after the v2.0 rebuild
 to extend the data model without breaking existing records.
 
 #### `20260706230000_expand_user_instituicao` (2026-07-06)
@@ -160,6 +164,35 @@ Frontend exposure:
 | `/admin/cursos` (list table) | Renders ENADE column (formatted to 2 dp, or `—` when null) |
 | `/admin/cursos` (create/edit modal) | Optional input — decimal 0–100 |
 | `/admin/cursos` (DetailPanel hero metric) | Color-coded: ≥60 green (`#4CAF50`) / ≥40 amber (`#f59e0b`) / else red (`#e53e3e`) / null neutral |
+
+#### `20260910222952_vincular_aluno_coordenador` + `20260911035410_index_user_coordenador` (2026-09-10 / 2026-09-11)
+
+Links each student to the specific coordinator who invited them (a new
+self-relation on `User`) and records the creator of each invite.
+
+| Table | Change | Type |
+|-------|--------|------|
+| `User` | Added `coordenadorId` (self-relation FK to the coordinator who invited the student) | `TEXT` NULL |
+| `Convite` | Added `criadoPorId` (FK to the `User` who created the invite) | `TEXT` NULL |
+
+SQL applied (`vincular_aluno_coordenador` — fields + FKs):
+
+```sql
+ALTER TABLE "Convite" ADD COLUMN "criadoPorId" TEXT;
+ALTER TABLE "User" ADD COLUMN "coordenadorId" TEXT;
+ALTER TABLE "User" ADD CONSTRAINT "User_coordenadorId_fkey" FOREIGN KEY ("coordenadorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Convite" ADD CONSTRAINT "Convite_criadoPorId_fkey" FOREIGN KEY ("criadoPorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+```
+
+SQL applied (`index_user_coordenador` — index):
+
+```sql
+CREATE INDEX "User_coordenadorId_idx" ON "User"("coordenadorId");
+```
+
+Backfill:
+
+- `apps/admin/api/prisma/backfill-vinculo-aluno-coordenador.ts` — idempotent script that backfills `User.coordenadorId` and `Convite.criadoPorId` from already-accepted invites (resolving the coordinator by `criadoPor` e-mail and the aluno by `convite.email`). Dry-run by default; pass `--aplicar` to write.
 
 ---
 

@@ -6,6 +6,28 @@ Dates use `YYYY-MM-DD` (America/Sao_Paulo timezone).
 
 ## [Unreleased]
 
+### 2026-09-11 — Aluno↔Coordenador Link & "Only Invited Students" Visibility
+
+Linked each student (`User`, role ALUNO) to the specific course coordinator who invited them, and changed the coordinator's four read paths to show only the students they personally invited — replacing the previous "students in courses I coordinate" scoping. This matters because multiple Licenciatura em Matemática courses can exist in the same institution.
+
+#### Added
+- **Aluno ↔ Coordenador link**
+  - New `User.coordenadorId String?` — self-relation FK to the coordinator who invited the student (relation `"AlunosDoCoordenador"`, `onDelete: SetNull`), with `@@index([coordenadorId])`.
+  - New `Convite.criadoPorId String?` — FK to the `User` who created the invite (relation `"ConvitesCriados"`, `onDelete: SetNull`). `criadoPor` (e-mail string) is kept for compatibility, but `criadoPorId` is now the source of truth for the link.
+- **Link lifecycle**
+  - `criadoPorId` is recorded on invite creation by both paths: coordinator (`ConvitesService.convidarAlunos`) and ADMIN (`AdminConvitesController.criar`).
+  - On acceptance (`ConvitesService.aceitar`), `convite.criadoPorId` is copied to `user.coordenadorId` only when `convite.role === ALUNO`; non-ALUNO roles (coordinators/evaluators invited by ADMIN) get `coordenadorId = null`.
+- **Backfill script**
+  - `apps/admin/api/prisma/backfill-vinculo-aluno-coordenador.ts` backfills `User.coordenadorId` and `Convite.criadoPorId` from accepted invites (resolving coordinator by `criadoPor` e-mail and aluno by `convite.email`). Idempotent; dry-run by default, pass `--aplicar` to write.
+
+#### Changed
+- **Coordinator visibility ("só os que eu convidei")**
+  - `CoordenacaoService` read paths `listAlunos`, `listInscricoes`, `listMonitoramentoInscricoes`, `getMetricas` now filter by `coordenadorId` / `user.coordenadorId` instead of `cursoId IN`.
+  - `getCoordenadorCursos` / `listCursos` unchanged — still required to invite and for the invite UI.
+  - Consequence: self-registered students (no invite) have `coordenadorId = null` and disappear from all coordinators' views — still visible to ADMIN/COMISSÃO.
+
+---
+
 ### 2026-09-09 — Mandatory Enrollment After Invite & Justified/Historied Ratification
 
 Made enrolling in the current OLICMAT edition a mandatory next step right after account creation, and gave the coordinator's ratification flow a justification requirement, an immutable terminal state, a full history, and student-facing notifications.

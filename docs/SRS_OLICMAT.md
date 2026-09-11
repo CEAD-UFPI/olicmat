@@ -98,10 +98,12 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular princip
 ### RF-07 — Painel do Coordenador
 | ID | Requisito | Critério de Aceitação |
 |---|---|---|
-| RF-07.1 | Visualização de alunos vinculados | Coordenador vê alunos do(s) curso(s) sob sua responsabilidade |
-| RF-07.2 | Acompanhamento de inscrições | Coordenador monitora situação cadastral e documental |
-| RF-07.3 | Filtros por curso e status | Painel permite segmentação operacional |
-| RF-07.4 | Visualização de desempenho agregado | Exibe métricas autorizadas por curso |
+| RF-07.1 | Visualização de alunos vinculados | Coordenador vê somente os alunos que ele próprio convidou (`user.coordenadorId = me`); alunos sem convite ficam com `coordenadorId = null` e não aparecem em nenhum painel de coordenador |
+| RF-07.2 | Acompanhamento de inscrições | Coordenador monitora situação cadastral e documental dos alunos que convidou |
+| RF-07.3 | Filtros por curso e status | Painel permite segmentação operacional (dentro do escopo de alunos convidados) |
+| RF-07.4 | Visualização de desempenho agregado | Exibe métricas autorizadas, restritas aos alunos que o coordenador convidou |
+| RF-07.5 | Vínculo aluno↔coordenador | `User.coordenadorId` (auto-relação, FK para o `User` coordenador que convidou o aluno) registra o coordenador de origem |
+| RF-07.6 | Propagação do vínculo no aceite | Ao aceitar um convite, `convite.criadoPorId` é copiado para `user.coordenadorId` somente quando `convite.role === ALUNO`; papéis não-ALUNO recebem `coordenadorId = null` |
 
 ### RF-08 — Administração e Relatórios
 | ID | Requisito | Critério de Aceitação |
@@ -285,6 +287,7 @@ Aplicação web com frontend responsivo e suporte a PWA, backend modular princip
 - role
 - instituicaoId
 - cursoId
+- coordenadorId *(FK para o coordenador que convidou o aluno — auto-relação `"AlunosDoCoordenador"`, `onDelete: SetNull`; adicionado em 2026-09-10)*
 - matricula
 - dataNascimento
 - createdAt

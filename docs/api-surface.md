@@ -295,9 +295,12 @@ Same body shape as `POST /inscricoes` (comprovante, dados de matrícula etc.). O
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| GET | `/coordenacao/alunos` | JWT (C) | List students in coordinator's courses |
-| GET | `/coordenacao/inscricoes` | JWT (C) | List enrollments (query: `cursoId`, `status`) |
-| GET | `/coordenacao/metricas` | JWT (C) | Aggregate metrics by course |
+| GET | `/coordenacao/alunos` | JWT (C) | List the students the coordinator personally invited (`user.coordenadorId = me`) |
+| GET | `/coordenacao/inscricoes` | JWT (C) | List enrollments of invited students (query: `cursoId`, `status`) |
+| GET | `/coordenacao/monitoramento-inscricoes` | JWT (C) | Split invited students into enrolled vs not-yet-enrolled |
+| GET | `/coordenacao/metricas` | JWT (C) | Aggregate metrics scoped to invited students, broken down by course |
+
+**Scope note (2026-09-11):** these read paths are now filtered by `user.coordenadorId` — the students the coordinator personally invited — replacing the previous `cursoId IN` (courses they coordinate). `GET /coordenacao/cursos` remains course-based and is still used for inviting and the invite UI. No new endpoints were added by this change; only the filtering of the existing read paths changed.
 
 ---
 
