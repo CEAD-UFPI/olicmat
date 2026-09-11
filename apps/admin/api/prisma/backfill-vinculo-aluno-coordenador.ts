@@ -1,11 +1,17 @@
 /**
- * Preenche User.coordenadorId e Convite.criadoPorId a partir dos convites já
- * aceitos, ligando cada aluno ao coordenador que o convidou.
+ * Preenche Convite.criadoPorId (aceitos e pendentes) e User.coordenadorId (só
+ * aceitos) a partir de Convite.criadoPor, ligando cada aluno — ou cada convite
+ * ainda não aceito — ao coordenador que o convidou.
  *
  * Antes desta mudança o vínculo só existia via Convite.criadoPor (e-mail de quem
  * convidou) e o User não guardava quem o convidou. Sem o backfill, alunos
  * convidados antes da mudança sumiriam da visão de seus coordenadores, porque os
  * novos filtros da coordenação usam User.coordenadorId.
+ *
+ * Cobre também convites AINDA NÃO aceitos: sem isso, InscricaoService.aceitar()
+ * leria Convite.criadoPorId = null no momento da aceitação e o aluno nasceria
+ * órfão mesmo com o backfill já rodado — o defeito só apareceria depois, na
+ * hora de confirmar a inscrição.
  *
  * Idempotente: só grava quando o valor difere do esperado. Modo seguro (padrão):
  * apenas relata o que mudaria.
@@ -22,11 +28,12 @@ const prisma = new PrismaClient({ adapter });
 
 async function backfill(aplicar: boolean) {
   const convites = await prisma.convite.findMany({
-    where: { usadoEm: { not: null }, criadoPor: { not: "" } },
+    where: { criadoPor: { not: "" } },
     select: {
       id: true,
       email: true,
       role: true,
+      usadoEm: true,
       criadoPor: true,
       criadoPorId: true,
     },
@@ -63,6 +70,12 @@ async function backfill(aplicar: boolean) {
       continue;
     }
 
+    // Convite ainda não aceito: não há User para vincular ainda — o
+    // criadoPorId gravado acima já basta, aceitar() vai lê-lo na hora certa.
+    if (!convite.usadoEm) {
+      continue;
+    }
+
     const aluno = await prisma.user.findUnique({
       where: { email: convite.email.toLowerCase() },
       select: { id: true, role: true, coordenadorId: true },
@@ -85,7 +98,7 @@ async function backfill(aplicar: boolean) {
   }
 
   console.log();
-  console.log(`Convites aceitos processados: ${convites.length}`);
+  console.log(`Convites processados (aceitos + pendentes): ${convites.length}`);
   console.log(`  criadoPorId a preencher:      ${criadoPorId}`);
   console.log(`  alunos a vincular:            ${vinculados}`);
   console.log(`  sem criador resolvido:        ${semCriador}`);
