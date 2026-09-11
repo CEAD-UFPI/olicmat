@@ -162,7 +162,7 @@ export class EmailService {
         </a>
         <p style="color: #666; font-size: 12px;">Este link expira em 7 dias e só pode ser usado uma vez. Se você não esperava este convite, ignore este e-mail.</p>
         <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
-        <p><strong>Importante:</strong> logo após criar sua conta, é obrigatório concluir a inscrição na edição vigente da OLICMAT. Tenha em mãos o seu <strong>comprovante de matrícula</strong> antes de iniciar o cadastro, pois ele será solicitado durante a inscrição.</p>
+        <p><strong>Importante:</strong> logo após criar sua conta, é obrigatório concluir a inscrição na edição vigente da OLICMAT. O comprovante de matrícula é opcional na inscrição — não é necessário tê-lo em mãos antes de iniciar o cadastro.</p>
       </div>
     `;
     await this.sendMail(email, "Convite de Cadastro — OLICMAT", html);

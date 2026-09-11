@@ -74,7 +74,7 @@ export default function CompetidorPage() {
             valor={inscricao.status === "CONFIRMADA" ? "Confirmada" : inscricao.status === "PENDENTE" ? "Pendente" : "Rejeitada"}
             cor={inscricao.status === "CONFIRMADA" ? "var(--integral-verde)" : inscricao.status === "PENDENTE" ? "var(--pi-laranja)" : "#e53e3e"}
             simbolo="∑"
-            descricao={inscricao.status === "CONFIRMADA" ? "Sua inscrição foi aprovada" : "Aguardando validação do comprovante"}
+            descricao={inscricao.status === "CONFIRMADA" ? "Sua inscrição foi aprovada" : "Aguardando validação da coordenação"}
           />
           <StatusCard
             titulo="Fase 1"

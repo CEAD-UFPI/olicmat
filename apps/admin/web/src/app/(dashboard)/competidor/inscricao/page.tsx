@@ -244,7 +244,7 @@ export default function InscricaoPage() {
           {minhaInscricao.status === "REJEITADA" && (
             <div className="mt-5 pt-5 border-t border-[#2a2a3a]">
               <p className="text-sm text-[#9895a4] mb-3">
-                Sua inscrição foi rejeitada. Envie um novo comprovante de matrícula e reenvie.
+                Sua inscrição foi rejeitada. Se quiser, envie um novo comprovante de matrícula e reenvie.
               </p>
               <div
                 onClick={() => fileRef.current?.click()}
@@ -390,7 +390,7 @@ export default function InscricaoPage() {
 
         <div>
           <Label htmlFor="comprovante" className="text-[#f0ece4]">
-            Comprovante de Matrícula
+            Comprovante de Matrícula (opcional)
           </Label>
           <div
             onClick={() => fileRef.current?.click()}
@@ -399,7 +399,7 @@ export default function InscricaoPage() {
             <span className="text-sm text-[#9895a4]">
               {comprovante
                 ? comprovante.name
-                : "Clique para enviar comprovante (PNG, JPG, PDF)"}
+                : "Clique para enviar comprovante (opcional — PNG, JPG, PDF)"}
             </span>
           </div>
           <input
