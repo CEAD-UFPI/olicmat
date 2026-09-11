@@ -43,15 +43,9 @@ export class CoordenacaoService {
   }
 
   async listAlunos(coordenadorId: string, params?: PaginationParams) {
-    const cursosIds = await this.getCoordenadorCursos(coordenadorId);
-
-    if (cursosIds.length === 0) {
-      throw new ForbiddenException("Você não coordena nenhum curso");
-    }
-
     const where = {
       role: "ALUNO" as const,
-      cursoId: { in: cursosIds },
+      coordenadorId,
     };
     const select = {
       id: true,
@@ -85,22 +79,15 @@ export class CoordenacaoService {
     },
     params?: PaginationParams
   ) {
-    const cursosIds = await this.getCoordenadorCursos(coordenadorId);
+    const where: Record<string, unknown> = { user: { coordenadorId } };
 
-    if (cursosIds.length === 0) {
-      throw new ForbiddenException("Você não coordena nenhum curso");
+    if (filters?.cursoId) {
+      const cursosIds = await this.getCoordenadorCursos(coordenadorId);
+      if (!cursosIds.includes(filters.cursoId)) {
+        throw new ForbiddenException("Você não coordena este curso");
+      }
+      where.cursoId = filters.cursoId;
     }
-
-    // If filtering by a specific course, verify the coordinator has access
-    if (filters?.cursoId && !cursosIds.includes(filters.cursoId)) {
-      throw new ForbiddenException("Você não coordena este curso");
-    }
-
-    const where: Record<string, unknown> = {
-      cursoId: filters?.cursoId
-        ? filters.cursoId
-        : { in: cursosIds },
-    };
 
     if (filters?.status) {
       where.status = filters.status;
@@ -135,17 +122,11 @@ export class CoordenacaoService {
   }
 
   async listMonitoramentoInscricoes(coordenadorId: string) {
-    const cursosIds = await this.getCoordenadorCursos(coordenadorId);
-
-    if (cursosIds.length === 0) {
-      throw new ForbiddenException("Você não coordena nenhum curso");
-    }
-
     const [alunos, inscricoes] = await Promise.all([
       this.prisma.user.findMany({
         where: {
           role: "ALUNO",
-          cursoId: { in: cursosIds },
+          coordenadorId,
         },
         select: {
           id: true,
@@ -158,7 +139,7 @@ export class CoordenacaoService {
         orderBy: { nome: "asc" },
       }),
       this.prisma.inscricao.findMany({
-        where: { cursoId: { in: cursosIds } },
+        where: { user: { coordenadorId } },
         include: {
           edicao: { select: { id: true, ano: true, titulo: true } },
         },
@@ -189,33 +170,27 @@ export class CoordenacaoService {
   }
 
   async getMetricas(coordenadorId: string) {
-    const cursosIds = await this.getCoordenadorCursos(coordenadorId);
-
-    if (cursosIds.length === 0) {
-      throw new ForbiddenException("Você não coordena nenhum curso");
-    }
-
     // A quebra por curso precisa do status junto: a tela de Métricas mostra
     // confirmadas/pendentes/rejeitadas de cada curso, e agrupar só por cursoId
     // devolveria um total sem como reparti-lo.
     const [porStatus, porCursoStatus, total, totalAlunos] = await Promise.all([
       this.prisma.inscricao.groupBy({
         by: ["status"],
-        where: { cursoId: { in: cursosIds } },
+        where: { user: { coordenadorId } },
         _count: { id: true },
       }),
       this.prisma.inscricao.groupBy({
         by: ["cursoId", "status"],
-        where: { cursoId: { in: cursosIds } },
+        where: { user: { coordenadorId } },
         _count: { id: true },
       }),
       this.prisma.inscricao.count({
-        where: { cursoId: { in: cursosIds } },
+        where: { user: { coordenadorId } },
       }),
-      // Alunos do curso, inscritos ou não: é esse número que o coordenador
-      // compara com o de inscritos para saber quem ainda falta.
+      // Alunos do coordenador, inscritos ou não: é esse número que o
+      // coordenador compara com o de inscritos para saber quem ainda falta.
       this.prisma.user.count({
-        where: { role: "ALUNO", cursoId: { in: cursosIds } },
+        where: { role: "ALUNO", coordenadorId },
       }),
     ]);
 
@@ -228,6 +203,8 @@ export class CoordenacaoService {
       atual.push({ status: linha.status, _count: { id: linha._count.id } });
       porStatusCurso.set(linha.cursoId, atual);
     }
+
+    const cursosIds = [...new Set(porCursoStatus.map((r) => r.cursoId))];
 
     const porCurso = cursosIds.map((cursoId) => ({
       cursoId,
