@@ -25,6 +25,7 @@ interface UsuarioItem {
   telefone?: string | null;
   genero?: Genero | null;
   racaCor?: RacaCor | null;
+  inscrito?: boolean;
   createdAt: string;
 }
 
@@ -552,6 +553,7 @@ export default function AdminUsuariosPage() {
                     <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Email</th>
                     <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Instituição</th>
                     <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Inscrição</th>
                     <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Função</th>
                     <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
                   </tr>
@@ -566,6 +568,22 @@ export default function AdminUsuariosPage() {
                       <td className="py-4 px-5 text-[#9895a4]">{u.email}</td>
                       <td className="py-4 px-5 text-[#9895a4]">{u.instituicao || "-"}</td>
                       <td className="py-4 px-5 text-[#9895a4]">{u.curso || "-"}</td>
+                      <td className="py-4 px-5 text-center">
+                        {u.role === "ALUNO" ? (
+                          <span
+                            className="text-sm font-medium px-3 py-1 rounded-full"
+                            style={
+                              u.inscrito
+                                ? { backgroundColor: "#4CAF5020", color: "#4CAF50" }
+                                : { backgroundColor: "#f59e0b20", color: "#f59e0b" }
+                            }
+                          >
+                            {u.inscrito ? "Inscrito" : "Não inscrito"}
+                          </span>
+                        ) : (
+                          <span className="text-[#9895a4]">-</span>
+                        )}
+                      </td>
                       <td className="py-4 px-5 text-center">
                         <span
                           className="text-sm font-medium px-3 py-1 rounded-full"

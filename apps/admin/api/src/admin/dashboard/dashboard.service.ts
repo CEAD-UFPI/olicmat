@@ -71,12 +71,17 @@ export class DashboardService {
   }
 
   async getResumo() {
-    const [totalUsuarios, totalInscricoes, pendentes] = await Promise.all([
-      this.prisma.user.count(),
-      this.prisma.inscricao.count(),
-      this.prisma.inscricao.count({ where: { status: "PENDENTE" } }),
-    ]);
-    return { totalUsuarios, totalInscricoes, pendentes };
+    const [totalUsuarios, totalInscricoes, pendentes, cadastradosSemInscricao] =
+      await Promise.all([
+        this.prisma.user.count(),
+        this.prisma.inscricao.count(),
+        this.prisma.inscricao.count({ where: { status: "PENDENTE" } }),
+        // Alunos que se cadastraram mas ainda não possuem nenhuma inscrição.
+        this.prisma.user.count({
+          where: { role: "ALUNO", inscricoes: { none: {} } },
+        }),
+      ]);
+    return { totalUsuarios, totalInscricoes, pendentes, cadastradosSemInscricao };
   }
 
   async exportInscricoes(filters?: {
