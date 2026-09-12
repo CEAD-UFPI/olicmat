@@ -110,6 +110,7 @@ export class AdminUsuariosService {
       createdAt: true,
       instituicao: { select: { nome: true, sigla: true } },
       curso: { select: { nome: true } },
+      _count: { select: { inscricoes: true } },
     };
     const orderBy = { createdAt: "desc" as const };
 
@@ -123,6 +124,7 @@ export class AdminUsuariosService {
       createdAt: u.createdAt,
       instituicao: u.instituicao?.sigla ?? u.instituicao?.nome ?? undefined,
       curso: u.curso?.nome ?? undefined,
+      inscrito: (u._count?.inscricoes ?? 0) > 0,
     });
 
     if (params?.page === undefined && params?.limit === undefined) {

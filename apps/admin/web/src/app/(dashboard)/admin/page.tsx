@@ -6,12 +6,13 @@ import Link from "next/link";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, ClipboardList, Clock, BookOpen, Building2, GraduationCap, Calendar, Trophy } from "lucide-react";
+import { Users, ClipboardList, Clock, BookOpen, Building2, GraduationCap, Calendar, Trophy, UserX } from "lucide-react";
 
 interface AdminResumo {
   totalUsuarios?: number;
   totalInscricoes?: number;
   pendentes?: number;
+  cadastradosSemInscricao?: number;
 }
 
 export default function AdminPage() {
@@ -63,7 +64,7 @@ export default function AdminPage() {
         <p className="text-[#9895a4] mt-1">Bem-vindo, {user?.nome?.split(" ")[0]}</p>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="border-[#2a2a3a] bg-[#12121a]">
           <CardHeader>
             <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
@@ -102,6 +103,20 @@ export default function AdminPage() {
           <CardContent>
             <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#f59e0b" }}>
               {resumo.pendentes ?? "-"}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-[#2a2a3a] bg-[#12121a]">
+          <CardHeader>
+            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
+              <UserX size={18} className="text-[#E8B829]" />
+              Sem inscrição
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+              {resumo.cadastradosSemInscricao ?? "-"}
             </p>
           </CardContent>
         </Card>
