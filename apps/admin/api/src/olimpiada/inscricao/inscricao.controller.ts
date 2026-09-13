@@ -23,6 +23,7 @@ import {
   criarInscricaoSchema,
   editarInscricaoSchema,
   atualizarStatusInscricaoSchema,
+  inscreverEmLoteSchema,
 } from "./dto/inscricao.dto.js";
 import type { CriarInscricaoDto } from "./dto/inscricao.dto.js";
 import type { Request as ExpressReq } from "express";
@@ -50,6 +51,20 @@ export class InscricaoController {
       throw new BadRequestException(parsed.error.flatten().fieldErrors);
     }
     return this.inscricaoService.criar(req.user.id, parsed.data);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @Post("inscrever-em-lote")
+  async inscreverEmLote(
+    @Request() req: ExpressReq & { user: AuthUser },
+    @Body() body: unknown,
+  ) {
+    const parsed = inscreverEmLoteSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(parsed.error.flatten().fieldErrors);
+    }
+    return this.inscricaoService.inscreverEmLote(parsed.data, req.user);
   }
 
   @UseGuards(JwtAuthGuard)

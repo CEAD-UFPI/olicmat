@@ -10,7 +10,8 @@ import { Modal } from "@/components/ui/modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Pagination } from "@/components/ui/pagination";
 import { DetailPanel, INSCRICAO_STATUS, EmptyState, StatusBadge } from "@/components/ui/detail-panel";
-import { Check, X, Pencil, Trash2, Eye, FileText } from "lucide-react";
+import { Check, X, Pencil, Trash2, Eye, FileText, UserPlus } from "lucide-react";
+import { MUNICIPIOS_PI } from "@/lib/municipios-pi";
 
 interface InscricaoItem {
   id: string;
@@ -40,6 +41,19 @@ interface InscricaoForm {
   comprovanteUrl: string;
 }
 
+interface LotePulado {
+  id: string;
+  nome: string;
+  email: string;
+  motivo: string;
+}
+
+interface LoteResultado {
+  totalCandidatos: number;
+  inscritos: number;
+  pulados: LotePulado[];
+}
+
 export default function AdminInscricoesPage() {
   const [inscricoes, setInscricoes] = useState<InscricaoItem[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -59,6 +73,14 @@ export default function AdminInscricoesPage() {
 
   // Detail modal
   const [detailTarget, setDetailTarget] = useState<InscricaoItem | null>(null);
+
+  // Bulk enrollment state
+  const [loteAberto, setLoteAberto] = useState(false);
+  const [loteMunicipio, setLoteMunicipio] = useState("");
+  const [lotePeriodo, setLotePeriodo] = useState("");
+  const [loteProcessando, setLoteProcessando] = useState(false);
+  const [loteResultado, setLoteResultado] = useState<LoteResultado | null>(null);
+  const [loteErro, setLoteErro] = useState("");
 
   // Pagination
   const [pagina, setPagina] = useState(1);
@@ -166,6 +188,35 @@ export default function AdminInscricoesPage() {
     }
   };
 
+  const abrirLote = () => {
+    setLoteMunicipio("");
+    setLotePeriodo("");
+    setLoteResultado(null);
+    setLoteErro("");
+    setLoteAberto(true);
+  };
+
+  const executarLote = async () => {
+    setLoteProcessando(true);
+    setLoteErro("");
+    setLoteResultado(null);
+    try {
+      const { data } = await api.post("/inscricoes/inscrever-em-lote", {
+        municipio: loteMunicipio,
+        periodo: lotePeriodo ? parseInt(lotePeriodo, 10) : undefined,
+      });
+      setLoteResultado(data as LoteResultado);
+      carregar();
+    } catch (err: unknown) {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        "Erro ao inscrever alunos em lote.";
+      setLoteErro(typeof msg === "string" ? msg : JSON.stringify(msg));
+    } finally {
+      setLoteProcessando(false);
+    }
+  };
+
   const filtered = inscricoes.filter((i) => {
     const matchTexto =
       !filtro ||
@@ -220,6 +271,14 @@ export default function AdminInscricoesPage() {
           <option value="CONFIRMADA">Confirmada</option>
           <option value="REJEITADA">Rejeitada</option>
         </select>
+        <Button
+          onClick={abrirLote}
+          variant="outline"
+          className="cursor-pointer border-[#2a2a3a] bg-[#12121a] text-[#f0ece4] hover:bg-[#0a0a0f]"
+        >
+          <UserPlus size={16} />
+          Inscrever em lote
+        </Button>
       </div>
 
       {carregando ? (
@@ -521,6 +580,105 @@ export default function AdminInscricoesPage() {
               {salvandoEdicao ? "Salvando..." : "Salvar"}
             </Button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Modal Inscrever em Lote */}
+      <Modal
+        aberto={loteAberto}
+        onClose={() => setLoteAberto(false)}
+        titulo="Inscrever Alunos em Lote"
+        tamanho="lg"
+      >
+        <div className="space-y-4">
+          {loteResultado ? (
+            <div className="space-y-3">
+              <p className="text-sm text-[#b0adc0]">
+                <span className="text-[#f0ece4] font-semibold">{loteResultado.inscritos}</span>{" "}
+                de {loteResultado.totalCandidatos} alunos sem inscrição foram inscritos na edição
+                ativa.
+              </p>
+              {loteResultado.pulados.length > 0 && (
+                <div className="border border-[#2a2a3a] rounded-lg p-3 bg-[#0a0a0f] max-h-56 overflow-y-auto">
+                  <p className="text-sm font-semibold text-[#f59e0b] mb-2">
+                    {loteResultado.pulados.length} pulados
+                  </p>
+                  <ul className="space-y-1.5">
+                    {loteResultado.pulados.map((p) => (
+                      <li key={p.id} className="text-sm text-[#9895a4]">
+                        <span className="text-[#f0ece4]">{p.nome}</span> ({p.email}) — {p.motivo}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div className="flex justify-end pt-1">
+                <Button
+                  onClick={() => setLoteAberto(false)}
+                  className="cursor-pointer"
+                  style={{ backgroundColor: "#4CAF50", color: "#fff" }}
+                >
+                  Concluir
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm text-[#9895a4]">
+                Todos os alunos cadastrados que ainda não possuem nenhuma inscrição serão
+                inscritos na edição ativa (status{" "}
+                <span className="text-[#f59e0b]">Pendente</span>) com o mesmo município e período
+                abaixo.
+              </p>
+              <div>
+                <Label className="text-[#f0ece4]">Município</Label>
+                <select
+                  value={loteMunicipio}
+                  onChange={(e) => setLoteMunicipio(e.target.value)}
+                  className="mt-1.5 h-10 w-full px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
+                >
+                  <option value="">Selecione a cidade...</option>
+                  {MUNICIPIOS_PI.map((cidade) => (
+                    <option key={cidade} value={cidade}>
+                      {cidade}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label className="text-[#f0ece4]">Período</Label>
+                <Input
+                  value={lotePeriodo}
+                  onChange={(e) => setLotePeriodo(e.target.value.replace(/\D/g, ""))}
+                  className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                  placeholder="1 a 12"
+                />
+              </div>
+
+              {loteErro && (
+                <p className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3">{loteErro}</p>
+              )}
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setLoteAberto(false)}
+                  disabled={loteProcessando}
+                  className="text-[#9895a4] hover:text-[#f0ece4] cursor-pointer"
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={executarLote}
+                  disabled={loteProcessando || !loteMunicipio}
+                  style={{ backgroundColor: "#E8B829", color: "#0a0a0f" }}
+                  className="cursor-pointer"
+                >
+                  {loteProcessando ? "Inscrevendo..." : "Inscrever todos"}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </Modal>
 

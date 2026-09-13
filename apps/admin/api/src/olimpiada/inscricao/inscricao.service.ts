@@ -9,7 +9,11 @@ import { PrismaService } from "../../prisma.service.js";
 import { AuditoriaService } from "../../admin/auditoria/auditoria.service.js";
 import { EmailService } from "../../email/email.service.js";
 import { NotificacoesService } from "../../notificacoes/notificacoes.service.js";
-import type { CriarInscricaoDto, EditarInscricaoDto } from "./dto/inscricao.dto.js";
+import type {
+  CriarInscricaoDto,
+  EditarInscricaoDto,
+  InscreverEmLoteDto,
+} from "./dto/inscricao.dto.js";
 import type { PaginationParams } from "../../common/pagination.js";
 import { getSkipTake, paginate } from "../../common/pagination.js";
 
@@ -254,6 +258,108 @@ export class InscricaoService {
         periodo: data.periodo,
       },
     });
+  }
+
+  /**
+   * Inscreve em lote todos os ALUNOS cadastrados que ainda não possuem nenhuma
+   * inscrição, na edição ativa, usando o mesmo município (e, opcionalmente, o
+   * mesmo período) informados pelo ADMIN. Quem não tem instituição/curso
+   * vinculados é pulado e reportado — a instituição é sempre herdada do curso.
+   */
+  async inscreverEmLote(data: InscreverEmLoteDto, actor: { id: string; role: string }) {
+    let edicaoId: string;
+
+    if (data.edicaoId) {
+      const edicao = await this.prisma.edicao.findUnique({
+        where: { id: data.edicaoId },
+        select: { id: true, status: true },
+      });
+      if (!edicao || edicao.status !== "ATIVA") {
+        throw new BadRequestException("A edição informada não está ativa");
+      }
+      edicaoId = edicao.id;
+    } else {
+      const ativas = await this.prisma.edicao.findMany({
+        where: { status: "ATIVA" },
+        select: { id: true },
+        orderBy: [{ ano: "desc" }, { semestre: "desc" }],
+      });
+      if (ativas.length === 0) {
+        throw new BadRequestException("Nenhuma edição ativa encontrada");
+      }
+      if (ativas.length > 1) {
+        throw new BadRequestException("Há mais de uma edição ativa; informe edicaoId");
+      }
+      edicaoId = ativas[0].id;
+    }
+
+    const candidatos = await this.prisma.user.findMany({
+      where: { role: "ALUNO", inscricoes: { none: {} } },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        instituicaoId: true,
+        cursoId: true,
+        curso: { select: { instituicaoId: true } },
+      },
+      orderBy: { nome: "asc" },
+    });
+
+    const pulados: { id: string; nome: string; email: string; motivo: string }[] = [];
+    const aInserir: {
+      userId: string;
+      edicaoId: string;
+      estado: string;
+      municipio: string;
+      instituicaoId: string;
+      cursoId: string;
+      periodo?: number;
+    }[] = [];
+
+    for (const aluno of candidatos) {
+      const cursoId = aluno.cursoId;
+      const instituicaoId = cursoId
+        ? (aluno.curso?.instituicaoId ?? aluno.instituicaoId)
+        : aluno.instituicaoId;
+
+      if (!instituicaoId || !cursoId) {
+        pulados.push({
+          id: aluno.id,
+          nome: aluno.nome,
+          email: aluno.email,
+          motivo: "Sem instituição ou curso vinculado",
+        });
+        continue;
+      }
+
+      aInserir.push({
+        userId: aluno.id,
+        edicaoId,
+        estado: "PI",
+        municipio: data.municipio,
+        instituicaoId,
+        cursoId,
+        periodo: data.periodo,
+      });
+    }
+
+    if (aInserir.length > 0) {
+      await this.prisma.inscricao.createMany({ data: aInserir });
+    }
+
+    await this.auditoria.log(actor.id, "INSCREVER_ALUNOS_EM_LOTE", "Inscricao", edicaoId, {
+      municipio: data.municipio,
+      periodo: data.periodo,
+      inscritos: aInserir.length,
+      pulados: pulados.length,
+    });
+
+    return {
+      totalCandidatos: candidatos.length,
+      inscritos: aInserir.length,
+      pulados,
+    };
   }
 
   async buscarPorUsuario(userId: string) {

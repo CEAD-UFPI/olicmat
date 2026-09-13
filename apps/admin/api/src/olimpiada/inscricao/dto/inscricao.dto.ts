@@ -69,3 +69,19 @@ export const atualizarStatusInscricaoSchema = z
   });
 
 export type AtualizarStatusInscricaoDto = z.infer<typeof atualizarStatusInscricaoSchema>;
+
+// Inscrição em lote: o ADMIN escolhe um único município (e opcionalmente um
+// período) e o sistema inscreve todos os alunos cadastrados que ainda não
+// possuem nenhuma inscrição na edição ativa, com status PENDENTE.
+export const inscreverEmLoteSchema = z.object({
+  municipio: z
+    .string()
+    .min(1, "Cidade é obrigatória")
+    .refine((m) => MUNICIPIOS_PI_SET.has(m), {
+      message: "Cidade inválida para o estado do Piauí",
+    }),
+  periodo: z.number().int().min(1).max(12).optional(),
+  edicaoId: z.string().uuid("ID da edição inválido").optional(),
+});
+
+export type InscreverEmLoteDto = z.infer<typeof inscreverEmLoteSchema>;
