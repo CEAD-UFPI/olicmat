@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardList, BookOpen, Clock, Download, Eye } from "lucide-react";
+import { ClipboardList, BookOpen, Clock, Download, Eye, BarChart3 } from "lucide-react";
 
 interface Resumo {
   totalInscricoes?: number;
@@ -32,6 +32,7 @@ export default function ComissaoPage() {
   }
 
   const links = [
+    { href: "/comissao/acompanhamento", label: "Acompanhamento", descricao: "Funil de convites, cadastros e inscrições", icon: BarChart3, cor: "#4CAF50" },
     { href: "/comissao/inscricoes", label: "Inscrições", descricao: "Visualizar inscrições dos competidores", icon: ClipboardList, cor: "#E8B829" },
     { href: "/comissao/provas", label: "Provas", descricao: "Consultar provas cadastradas", icon: BookOpen, cor: "#3AAFE0" },
     { href: "/comissao/avaliacao", label: "Avaliação", descricao: "Acompanhar avaliações da Fase 2", icon: Eye, cor: "#4CAF50" },

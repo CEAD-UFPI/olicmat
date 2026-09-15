@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, ClipboardList, Clock, BookOpen, Building2, GraduationCap, Calendar, Trophy, UserX } from "lucide-react";
+import { Users, ClipboardList, Clock, BookOpen, Building2, GraduationCap, Calendar, Trophy, UserX, BarChart3 } from "lucide-react";
 
 interface AdminResumo {
   totalUsuarios?: number;
@@ -38,6 +38,7 @@ export default function AdminPage() {
   }
 
   const links = [
+    { href: "/admin/acompanhamento", label: "Acompanhamento", descricao: "Funil de convites, cadastros e inscrições", icon: BarChart3, cor: "#4CAF50" },
     { href: "/admin/instituicoes", label: "Instituicoes", descricao: "Gerenciar instituicoes", icon: Building2, cor: "#E8B829" },
     { href: "/admin/cursos", label: "Cursos", descricao: "Gerenciar cursos", icon: GraduationCap, cor: "#4CAF50" },
     { href: "/admin/edicoes", label: "Edicoes", descricao: "Gerenciar edicoes", icon: Calendar, cor: "#3AAFE0" },
