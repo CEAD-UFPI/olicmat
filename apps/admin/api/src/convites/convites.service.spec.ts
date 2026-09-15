@@ -130,4 +130,25 @@ describe("ConvitesService", () => {
       );
     });
   });
+
+  describe("listar", () => {
+    it("sem filtro, busca todos os convites (sem cláusula where)", async () => {
+      prisma.convite.findMany.mockResolvedValue([]);
+
+      await service.listar();
+
+      const chamada = prisma.convite.findMany.mock.calls[0][0];
+      expect(chamada.where).toBeUndefined();
+    });
+
+    it("com status=expirado, filtra por usadoEm nulo e expiraEm no passado", async () => {
+      prisma.convite.findMany.mockResolvedValue([]);
+
+      await service.listar({ status: "expirado" });
+
+      const chamada = prisma.convite.findMany.mock.calls[0][0];
+      expect(chamada.where.usadoEm).toBeNull();
+      expect(chamada.where.expiraEm.lt).toBeInstanceOf(Date);
+    });
+  });
 });

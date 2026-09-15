@@ -370,8 +370,14 @@ export class ConvitesService {
     return user;
   }
 
-  async listar() {
+  async listar(filtro?: { status?: "expirado" }) {
+    const where =
+      filtro?.status === "expirado"
+        ? { usadoEm: null, expiraEm: { lt: new Date() } }
+        : undefined;
+
     return this.prisma.convite.findMany({
+      where,
       select: {
         id: true,
         nome: true,
