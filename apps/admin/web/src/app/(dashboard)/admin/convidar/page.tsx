@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,21 @@ interface Resultado {
 }
 
 export default function ConvidarEquipePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-64">
+          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <ConvidarEquipeContent />
+    </Suspense>
+  );
+}
+
+function ConvidarEquipeContent() {
+  const searchParams = useSearchParams();
   const [instituicoes, setInstituicoes] = useState<InstituicaoBasica[]>([]);
   const [texto, setTexto] = useState("");
   const [convites, setConvites] = useState<Convite[]>([]);
@@ -35,14 +51,19 @@ export default function ConvidarEquipePage() {
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [busca, setBusca] = useState("");
+  const [filtroSituacao, setFiltroSituacao] = useState<"" | "expirado">(
+    searchParams.get("status") === "expirado" ? "expirado" : "",
+  );
 
   const linhas = interpretarLote(texto, instituicoes);
   const invalidas = linhas.filter((l) => l.erro);
   const validas = linhas.filter((l) => !l.erro);
 
-  const carregarConvites = () =>
+  const carregarConvites = (situacao: "" | "expirado") =>
     api
-      .get("/admin/convites")
+      .get("/admin/convites", {
+        params: situacao ? { status: situacao } : undefined,
+      })
       .then((r) => setConvites(r.data ?? []))
       .catch(() => setConvites([]));
 
@@ -51,8 +72,12 @@ export default function ConvidarEquipePage() {
       .get("/instituicoes?limit=200")
       .then((r) => setInstituicoes(r.data?.data ?? []))
       .catch(() => setInstituicoes([]));
-    carregarConvites();
   }, []);
+
+  useEffect(() => {
+    carregarConvites(filtroSituacao);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filtroSituacao]);
 
   const enviar = async () => {
     setErro("");
@@ -77,7 +102,7 @@ export default function ConvidarEquipePage() {
       });
       setResultado(r.data);
       setTexto("");
-      await carregarConvites();
+      await carregarConvites(filtroSituacao);
     } catch (e: any) {
       setErro(e.response?.data?.message ?? "Não foi possível enviar.");
     } finally {
@@ -250,19 +275,35 @@ export default function ConvidarEquipePage() {
           <h2 className="text-xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
             Convites enviados
           </h2>
-          {convites.length > 0 && (
-            <input
-              type="text"
-              value={busca}
-              onChange={(e) => setBusca(e.target.value)}
-              placeholder="Buscar por nome ou e-mail..."
-              className="h-10 w-full sm:w-72 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#f0ece4] placeholder:text-[#57545f] focus:outline-none focus:border-[#3AAFE0]"
-            />
-          )}
+          <div className="flex flex-wrap gap-3">
+            <select
+              value={filtroSituacao}
+              onChange={(e) =>
+                setFiltroSituacao(e.target.value as "" | "expirado")
+              }
+              className="h-10 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#f0ece4]"
+            >
+              <option value="">Todas as situações</option>
+              <option value="expirado">Só expirados</option>
+            </select>
+            {convites.length > 0 && (
+              <input
+                type="text"
+                value={busca}
+                onChange={(e) => setBusca(e.target.value)}
+                placeholder="Buscar por nome ou e-mail..."
+                className="h-10 w-full sm:w-72 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#f0ece4] placeholder:text-[#57545f] focus:outline-none focus:border-[#3AAFE0]"
+              />
+            )}
+          </div>
         </div>
 
         {!convites.length ? (
-          <p className="text-sm text-[#9895a4]">Nenhum convite enviado ainda.</p>
+          <p className="text-sm text-[#9895a4]">
+            {filtroSituacao === "expirado"
+              ? "Nenhum convite expirado."
+              : "Nenhum convite enviado ainda."}
+          </p>
         ) : !convitesFiltrados.length ? (
           <p className="text-sm text-[#9895a4]">
             Nenhum convite encontrado para &quot;{busca}&quot;.
