@@ -112,6 +112,9 @@ const porId = (id: string): EtapaCronograma => {
   return etapa;
 };
 
+/** Data de uma etapa pelo id — use em vez de escrever a data por extenso. */
+export const dataDe = (id: string): string => porId(id).data;
+
 /**
  * Os quatro marcos exibidos no topo da home. Os rótulos são mais curtos que os
  * do cronograma completo, mas as datas vêm da mesma lista — foi justamente

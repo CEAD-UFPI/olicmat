@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CRONOGRAMA } from "@/lib/cronograma";
+import { CRONOGRAMA, dataDe } from "@/lib/cronograma";
 
 export default function RegulamentoPage() {
   return (
@@ -76,8 +76,8 @@ export default function RegulamentoPage() {
         <SubTitle>3.2. Prazos</SubTitle>
         <Bullets
           items={[
-            "Período de inscrições: 01/09/2026 a 25/09/2026.",
-            "Divulgação das inscrições validadas: 05/10/2026.",
+            `Período de inscrições: ${dataDe("inscricoes")}.`,
+            `Divulgação das inscrições validadas: ${dataDe("inscricoes-validadas")}.`,
           ]}
         />
       </Section>
@@ -106,7 +106,7 @@ export default function RegulamentoPage() {
         <Bullets
           items={[
             "Formato: prova on-line composta por 20 (vinte) questões objetivas, valendo 100 pontos no total.",
-            "Data: 24/10/2026.",
+            `Data: ${dataDe("fase1")}.`,
             "Conteúdo avaliado: conhecimentos matemáticos e saberes didático-pedagógicos para a Educação Básica, baseados na BNCC e na Matriz do Inep (Portaria nº 330/2025).",
             "Classificação para a Fase 2: serão classificados até 50% dos participantes de cada instituição que realizarem a prova, em ordem decrescente de nota.",
           ]}
@@ -132,7 +132,7 @@ export default function RegulamentoPage() {
         <SubTitle>Fase 2 — Desafio Didático-Tecnológico</SubTitle>
         <Bullets
           items={[
-            "Período de realização: 18/11/2026 a 20/11/2026.",
+            `Período de realização: ${dataDe("envio-fase2")}.`,
             "Formato: elaboração de uma proposta prática de ensino a partir de um tema sorteado pela Comissão.",
             "Duração: após o sorteio do tema, o estudante terá até 6 (seis) horas para enviar os materiais na plataforma.",
           ]}
