@@ -42,3 +42,4 @@ fix-migration.sh
 
 # NOTE: the root package.json / package-lock.json are TRACKED — they define
 # the npm workspaces monorepo (apps/*, packages/*) and must be committed.
+.superpowers/
