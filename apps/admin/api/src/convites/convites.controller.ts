@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from "@nestjs/common";
@@ -49,8 +50,10 @@ export class AdminConvitesController {
   }
 
   @Get()
-  async listar() {
-    return this.convitesService.listar();
+  async listar(@Query("status") status?: string) {
+    return this.convitesService.listar(
+      status === "expirado" ? { status: "expirado" } : undefined,
+    );
   }
 }
 
