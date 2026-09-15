@@ -22,17 +22,9 @@ export class AdminUsuariosService {
     private emailService: EmailService,
   ) {}
 
-  private async getCoordenadorCursos(coordenadorId: string) {
-    const cursos = await this.prisma.coordenadorCurso.findMany({
-      where: { userId: coordenadorId },
-      select: { cursoId: true },
-    });
-    return cursos.map((c) => c.cursoId);
-  }
-
   private async enforceScope(
     actor: { id: string; role: string },
-    targetUser: { role: string; instituicaoId: string | null; cursoId: string | null }
+    targetUser: { role: string; coordenadorId?: string | null }
   ) {
     if (actor.role === "ADMIN") {
       return;
@@ -53,22 +45,14 @@ export class AdminUsuariosService {
         throw new ForbiddenException("Coordenadores de Curso só podem gerenciar Alunos");
       }
 
-      const coordUser = await this.prisma.user.findUnique({
-        where: { id: actor.id },
-        select: { instituicaoId: true },
-      });
-
-      if (!coordUser || !coordUser.instituicaoId) {
-        throw new ForbiddenException("Coordenador não possui instituição vinculada");
-      }
-
-      if (targetUser.instituicaoId !== coordUser.instituicaoId) {
-        throw new ForbiddenException("O Aluno deve pertencer à mesma instituição do Coordenador");
-      }
-
-      const coordinatedCourses = await this.getCoordenadorCursos(actor.id);
-      if (!targetUser.cursoId || !coordinatedCourses.includes(targetUser.cursoId)) {
-        throw new ForbiddenException("O Aluno deve pertencer a um curso sob coordenação");
+      // "Aluno do coordenador" é definido por quem o convidou/cadastrou
+      // (User.coordenadorId), o mesmo critério usado pelo módulo de
+      // coordenação (coordenacao.service.ts). Usar curso/instituição atuais
+      // aqui divergia desse critério: um aluno editado por um ADMIN para
+      // outro curso sumia do escopo do coordenador que o convidou, mas
+      // continuava aparecendo para ele nas telas de coordenação.
+      if (targetUser.coordenadorId !== actor.id) {
+        throw new ForbiddenException("O Aluno deve estar vinculado a este Coordenador");
       }
       return;
     }
@@ -82,20 +66,12 @@ export class AdminUsuariosService {
     if (actor.role === "COMISSAO") {
       where.role = { in: ["COORDENADOR_CURSO", "AVALIADOR", "ALUNO"] };
     } else if (actor.role === "COORDENADOR_CURSO") {
-      const coordUser = await this.prisma.user.findUnique({
-        where: { id: actor.id },
-        select: { instituicaoId: true }
-      });
-      if (!coordUser || !coordUser.instituicaoId) {
-        return [];
-      }
-      const coordinatedCourses = await this.getCoordenadorCursos(actor.id);
-      if (coordinatedCourses.length === 0) {
-        return [];
-      }
+      // Mesmo critério de coordenacao.service.ts: "aluno deste coordenador" é
+      // quem tem User.coordenadorId apontando para ele, não o curso/instituição
+      // atuais — evita esta tela e as telas de coordenação discordarem sobre
+      // quem é aluno de quem.
       where.role = "ALUNO";
-      where.instituicaoId = coordUser.instituicaoId;
-      where.cursoId = { in: coordinatedCourses };
+      where.coordenadorId = actor.id;
     } else if (actor.role !== "ADMIN") {
       throw new ForbiddenException("Acesso negado");
     }
@@ -180,6 +156,7 @@ export class AdminUsuariosService {
         updatedAt: true,
         instituicaoId: true,
         cursoId: true,
+        coordenadorId: true,
         instituicao: { select: { id: true, nome: true, sigla: true } },
         curso: { select: { id: true, nome: true } },
         inscricoes: {
@@ -230,6 +207,12 @@ export class AdminUsuariosService {
   async create(data: CriarUsuarioDto, actor: { id: string; role: string }) {
     let instituicaoId: string | null = data.instituicaoId ?? null;
     let cursoId: string | null = data.cursoId ?? null;
+    // Só ALUNO carrega coordenadorId — é o vínculo que as telas de
+    // coordenação (coordenacao.service.ts) usam para decidir "é meu aluno?".
+    // Sem gravá-lo aqui, um Aluno cadastrado manualmente pelo Coordenador
+    // (em vez de convidado) apareceria em /admin/usuarios mas sumiria das
+    // telas "Alunos" e "Inscrição" do próprio Coordenador que o cadastrou.
+    let coordenadorId: string | null = null;
 
     // Coordenadores cadastram Alunos do próprio curso: o Aluno herda
     // Instituição e Curso do coordenador, sem poder alterá-los depois.
@@ -245,12 +228,12 @@ export class AdminUsuariosService {
 
       instituicaoId = vinculo.curso.instituicaoId;
       cursoId = vinculo.curso.id;
+      coordenadorId = actor.id;
     }
 
     await this.enforceScope(actor, {
       role: data.role,
-      instituicaoId,
-      cursoId,
+      coordenadorId,
     });
 
     const existing = await this.prisma.user.findFirst({
@@ -280,6 +263,7 @@ export class AdminUsuariosService {
         senhaHash,
         instituicaoId,
         cursoId,
+        coordenadorId,
         telefone: rest.telefone ?? null,
         celular: rest.celular ?? null,
         genero: rest.genero as never ?? null,
@@ -347,10 +331,11 @@ export class AdminUsuariosService {
 
     await this.enforceScope(actor, targetUser);
 
+    // coordenadorId não é editável por este DTO; se `role` mudar, o mesmo
+    // vínculo de coordenador segue valendo para a checagem de escopo.
     const updatedState = {
       role: data.role ?? targetUser.role,
-      instituicaoId: data.instituicaoId !== undefined ? data.instituicaoId : targetUser.instituicaoId,
-      cursoId: data.cursoId !== undefined ? data.cursoId : targetUser.cursoId,
+      coordenadorId: targetUser.coordenadorId,
     };
     await this.enforceScope(actor, updatedState);
 
