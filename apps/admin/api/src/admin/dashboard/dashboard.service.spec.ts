@@ -73,3 +73,64 @@ describe("DashboardService — edicoes", () => {
     expect(chamada.data.pesoFase2).toBeUndefined();
   });
 });
+
+describe("DashboardService — getAcompanhamento", () => {
+  let service: DashboardService;
+  let prisma: any;
+
+  beforeEach(() => {
+    prisma = {
+      convite: { count: jest.fn() },
+      inscricao: { count: jest.fn() },
+      edicao: { findFirst: jest.fn() },
+      user: { count: jest.fn(), findMany: jest.fn() },
+      instituicao: { findMany: jest.fn() },
+    };
+    service = new DashboardService(prisma as any);
+  });
+
+  it("monta o funil e as ações a partir das contagens", async () => {
+    prisma.convite.count
+      .mockResolvedValueOnce(10) // total (convidados)
+      .mockResolvedValueOnce(7) // usados (cadastrados)
+      .mockResolvedValueOnce(2); // expirados sem uso
+    prisma.edicao.findFirst.mockResolvedValue({ id: "ed1" });
+    prisma.inscricao.count
+      .mockResolvedValueOnce(5) // inscritos na edição ativa
+      .mockResolvedValueOnce(3) // confirmados
+      .mockResolvedValueOnce(1); // pendentes
+    prisma.user.count.mockResolvedValueOnce(4); // cadastradosSemInscricao
+    prisma.instituicao.findMany.mockResolvedValue([]);
+
+    const resultado = await service.getAcompanhamento();
+
+    expect(resultado.funil).toEqual({
+      convidados: 10,
+      cadastrados: 7,
+      inscritos: 5,
+      confirmados: 3,
+    });
+    expect(resultado.acoes).toEqual({
+      convitesExpirados: 2,
+      cadastradosSemInscricao: 4,
+      inscricoesPendentes: 1,
+    });
+    expect(prisma.convite.count).toHaveBeenNthCalledWith(3, {
+      where: { usadoEm: null, expiraEm: { lt: expect.any(Date) } },
+    });
+  });
+
+  it("sem edição ativa, inscritos e confirmados ficam zerados", async () => {
+    prisma.convite.count.mockResolvedValue(0);
+    prisma.edicao.findFirst.mockResolvedValue(null);
+    prisma.inscricao.count.mockResolvedValue(0);
+    prisma.user.count.mockResolvedValue(0);
+    prisma.instituicao.findMany.mockResolvedValue([]);
+
+    const resultado = await service.getAcompanhamento();
+
+    expect(resultado.funil.inscritos).toBe(0);
+    expect(resultado.funil.confirmados).toBe(0);
+    expect(prisma.inscricao.count).toHaveBeenCalledTimes(1); // só a chamada de "pendentes"
+  });
+});

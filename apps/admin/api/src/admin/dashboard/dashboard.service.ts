@@ -9,6 +9,14 @@ function escapeCsv(val: unknown): string {
   return str;
 }
 
+function ordenarPorAtraso(
+  linhas: { id: string; nome: string; alunos: number; inscritos: number }[],
+) {
+  return linhas
+    .filter((l) => l.alunos > 0)
+    .sort((a, b) => a.inscritos / a.alunos - b.inscritos / b.alunos);
+}
+
 @Injectable()
 export class DashboardService {
   constructor(private prisma: PrismaService) {}
@@ -82,6 +90,139 @@ export class DashboardService {
         }),
       ]);
     return { totalUsuarios, totalInscricoes, pendentes, cadastradosSemInscricao };
+  }
+
+  async getAcompanhamento(filtro?: {
+    instituicaoId?: string;
+    coordenadorId?: string;
+  }) {
+    const [convidados, cadastrados, edicaoAtiva] = await Promise.all([
+      this.prisma.convite.count(),
+      this.prisma.convite.count({ where: { usadoEm: { not: null } } }),
+      this.prisma.edicao.findFirst({
+        where: { status: "ATIVA" },
+        select: { id: true },
+      }),
+    ]);
+
+    const [inscritos, confirmados] = edicaoAtiva
+      ? await Promise.all([
+          this.prisma.inscricao.count({
+            where: { edicaoId: edicaoAtiva.id },
+          }),
+          this.prisma.inscricao.count({
+            where: { edicaoId: edicaoAtiva.id, status: "CONFIRMADA" },
+          }),
+        ])
+      : [0, 0];
+
+    const [convitesExpirados, cadastradosSemInscricao, inscricoesPendentes] =
+      await Promise.all([
+        this.prisma.convite.count({
+          where: { usadoEm: null, expiraEm: { lt: new Date() } },
+        }),
+        this.prisma.user.count({
+          where: { role: "ALUNO", inscricoes: { none: {} } },
+        }),
+        this.prisma.inscricao.count({ where: { status: "PENDENTE" } }),
+      ]);
+
+    const instituicoes = await this.prisma.instituicao.findMany({
+      select: { id: true, nome: true, sigla: true },
+      orderBy: { sigla: "asc" },
+    });
+
+    const { nivel, ranking, coordenadores } = await this.getRankingAcompanhamento(
+      filtro,
+      instituicoes,
+    );
+
+    return {
+      funil: { convidados, cadastrados, inscritos, confirmados },
+      instituicoes,
+      ranking,
+      nivel,
+      coordenadores,
+      acoes: {
+        convitesExpirados,
+        cadastradosSemInscricao,
+        inscricoesPendentes,
+      },
+    };
+  }
+
+  private async getRankingAcompanhamento(
+    filtro: { instituicaoId?: string; coordenadorId?: string } | undefined,
+    instituicoes: { id: string; nome: string; sigla: string }[],
+  ) {
+    if (!filtro?.instituicaoId) {
+      const ranking = await Promise.all(
+        instituicoes.map(async (inst) => {
+          const [alunos, inscritosCount] = await Promise.all([
+            this.prisma.user.count({
+              where: { role: "ALUNO", instituicaoId: inst.id },
+            }),
+            this.prisma.user.count({
+              where: {
+                role: "ALUNO",
+                instituicaoId: inst.id,
+                inscricoes: { some: {} },
+              },
+            }),
+          ]);
+          return {
+            id: inst.id,
+            nome: inst.sigla || inst.nome,
+            alunos,
+            inscritos: inscritosCount,
+          };
+        }),
+      );
+      return {
+        nivel: "instituicao" as const,
+        ranking: ordenarPorAtraso(ranking),
+        coordenadores: null,
+      };
+    }
+
+    const coordenadores = await this.prisma.user.findMany({
+      where: { role: "COORDENADOR_CURSO", instituicaoId: filtro.instituicaoId },
+      select: { id: true, nome: true },
+      orderBy: { nome: "asc" },
+    });
+
+    const candidatos = filtro.coordenadorId
+      ? coordenadores.filter((c: { id: string }) => c.id === filtro.coordenadorId)
+      : coordenadores;
+
+    const ranking = await Promise.all(
+      candidatos.map(async (coord: { id: string; nome: string }) => {
+        const [alunos, inscritosCount] = await Promise.all([
+          this.prisma.user.count({
+            where: { role: "ALUNO", coordenadorId: coord.id },
+          }),
+          this.prisma.user.count({
+            where: {
+              role: "ALUNO",
+              coordenadorId: coord.id,
+              inscricoes: { some: {} },
+            },
+          }),
+        ]);
+        return {
+          id: coord.id,
+          nome: coord.nome,
+          alunos,
+          inscritos: inscritosCount,
+        };
+      }),
+    );
+
+    return {
+      nivel: "coordenador" as const,
+      ranking: ordenarPorAtraso(ranking),
+      coordenadores,
+    };
   }
 
   async exportInscricoes(filters?: {
