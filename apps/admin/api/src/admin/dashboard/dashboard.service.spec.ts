@@ -133,4 +133,87 @@ describe("DashboardService — getAcompanhamento", () => {
     expect(resultado.funil.confirmados).toBe(0);
     expect(prisma.inscricao.count).toHaveBeenCalledTimes(1); // só a chamada de "pendentes"
   });
+
+  it("ranking por instituição: ordena do pior para o melhor % e ignora instituição sem alunos", async () => {
+    prisma.convite.count.mockResolvedValue(0);
+    prisma.edicao.findFirst.mockResolvedValue(null);
+    prisma.inscricao.count.mockResolvedValue(0);
+    prisma.instituicao.findMany.mockResolvedValue([
+      { id: "i1", nome: "Universidade Federal do Piauí", sigla: "UFPI" },
+      { id: "i2", nome: "Universidade Estadual do Piauí", sigla: "UESPI" },
+      { id: "i3", nome: "Vazia", sigla: "VAZ" },
+    ]);
+    prisma.user.count.mockImplementation(({ where }: any) => {
+      if (where.instituicaoId === "i1" && where.inscricoes) return Promise.resolve(9);
+      if (where.instituicaoId === "i1") return Promise.resolve(10);
+      if (where.instituicaoId === "i2" && where.inscricoes) return Promise.resolve(2);
+      if (where.instituicaoId === "i2") return Promise.resolve(10);
+      if (where.instituicaoId === "i3") return Promise.resolve(0);
+      return Promise.resolve(0);
+    });
+
+    const resultado = await service.getAcompanhamento();
+
+    expect(resultado.nivel).toBe("instituicao");
+    expect(resultado.coordenadores).toBeNull();
+    expect(resultado.ranking).toEqual([
+      { id: "i2", nome: "UESPI", alunos: 10, inscritos: 2 },
+      { id: "i1", nome: "UFPI", alunos: 10, inscritos: 9 },
+    ]);
+  });
+
+  it("filtro por instituicaoId muda o ranking para nível coordenador", async () => {
+    prisma.convite.count.mockResolvedValue(0);
+    prisma.edicao.findFirst.mockResolvedValue(null);
+    prisma.inscricao.count.mockResolvedValue(0);
+    prisma.instituicao.findMany.mockResolvedValue([]);
+    prisma.user.findMany.mockResolvedValue([
+      { id: "c1", nome: "Coordenador A" },
+      { id: "c2", nome: "Coordenador B" },
+    ]);
+    prisma.user.count.mockImplementation(({ where }: any) => {
+      if (where.coordenadorId === "c1" && where.inscricoes) return Promise.resolve(1);
+      if (where.coordenadorId === "c1") return Promise.resolve(5);
+      if (where.coordenadorId === "c2" && where.inscricoes) return Promise.resolve(4);
+      if (where.coordenadorId === "c2") return Promise.resolve(5);
+      return Promise.resolve(0);
+    });
+
+    const resultado = await service.getAcompanhamento({ instituicaoId: "i1" });
+
+    expect(prisma.user.findMany).toHaveBeenCalledWith({
+      where: { role: "COORDENADOR_CURSO", instituicaoId: "i1" },
+      select: { id: true, nome: true },
+      orderBy: { nome: "asc" },
+    });
+    expect(resultado.nivel).toBe("coordenador");
+    expect(resultado.coordenadores).toEqual([
+      { id: "c1", nome: "Coordenador A" },
+      { id: "c2", nome: "Coordenador B" },
+    ]);
+    expect(resultado.ranking).toEqual([
+      { id: "c1", nome: "Coordenador A", alunos: 5, inscritos: 1 },
+      { id: "c2", nome: "Coordenador B", alunos: 5, inscritos: 4 },
+    ]);
+  });
+
+  it("filtro por coordenadorId restringe o ranking a uma única linha", async () => {
+    prisma.convite.count.mockResolvedValue(0);
+    prisma.edicao.findFirst.mockResolvedValue(null);
+    prisma.inscricao.count.mockResolvedValue(0);
+    prisma.instituicao.findMany.mockResolvedValue([]);
+    prisma.user.findMany.mockResolvedValue([
+      { id: "c1", nome: "Coordenador A" },
+      { id: "c2", nome: "Coordenador B" },
+    ]);
+    prisma.user.count.mockResolvedValue(3);
+
+    const resultado = await service.getAcompanhamento({
+      instituicaoId: "i1",
+      coordenadorId: "c2",
+    });
+
+    expect(resultado.ranking).toHaveLength(1);
+    expect(resultado.ranking[0].id).toBe("c2");
+  });
 });
