@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,7 @@ export default function ConvidarEquipePage() {
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [busca, setBusca] = useState("");
 
   const linhas = interpretarLote(texto, instituicoes);
   const invalidas = linhas.filter((l) => l.erro);
@@ -83,6 +84,16 @@ export default function ConvidarEquipePage() {
       setEnviando(false);
     }
   };
+
+  const termo = busca.trim().toLowerCase();
+  const convitesFiltrados = useMemo(() => {
+    if (!termo) return convites;
+    return convites.filter(
+      (c) =>
+        c.nome.toLowerCase().includes(termo) ||
+        c.email.toLowerCase().includes(termo),
+    );
+  }, [convites, termo]);
 
   return (
     <motion.div
@@ -235,14 +246,32 @@ export default function ConvidarEquipePage() {
       </div>
 
       <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]">
-        <h2 className="text-xl font-bold text-[#f0ece4] mb-4 font-[family-name:var(--font-fraunces)]">
-          Convites enviados
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <h2 className="text-xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            Convites enviados
+          </h2>
+          {convites.length > 0 && (
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar por nome ou e-mail..."
+              className="h-10 w-full sm:w-72 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#f0ece4] placeholder:text-[#57545f] focus:outline-none focus:border-[#3AAFE0]"
+            />
+          )}
+        </div>
 
         {!convites.length ? (
           <p className="text-sm text-[#9895a4]">Nenhum convite enviado ainda.</p>
+        ) : !convitesFiltrados.length ? (
+          <p className="text-sm text-[#9895a4]">
+            Nenhum convite encontrado para &quot;{busca}&quot;.
+          </p>
         ) : (
           <div className="overflow-x-auto">
+            <p className="text-xs text-[#6f6c7a] mb-2">
+              {convitesFiltrados.length} de {convites.length} convite(s)
+            </p>
             <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="text-left text-xs uppercase tracking-[0.08em] text-[#6f6c7a]">
@@ -254,7 +283,7 @@ export default function ConvidarEquipePage() {
                 </tr>
               </thead>
               <tbody>
-                {convites.map((c) => (
+                {convitesFiltrados.map((c) => (
                   <tr key={c.id} className="border-t border-[#2a2a3a]">
                     <td className="py-2 pr-4 text-[#f0ece4]">{c.nome}</td>
                     <td className="py-2 pr-4 text-[#9895a4]">{c.email}</td>
