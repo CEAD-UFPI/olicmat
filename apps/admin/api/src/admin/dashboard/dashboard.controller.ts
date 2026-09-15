@@ -70,6 +70,18 @@ export class DashboardController {
     return this.dashboardService.getResumo();
   }
 
+  @Roles(Role.ADMIN, Role.COMISSAO)
+  @Get("acompanhamento")
+  async getAcompanhamento(
+    @Query("instituicaoId") instituicaoId?: string,
+    @Query("coordenadorId") coordenadorId?: string,
+  ) {
+    return this.dashboardService.getAcompanhamento({
+      instituicaoId,
+      coordenadorId,
+    });
+  }
+
   @Roles(Role.ADMIN)
   @Get("export/inscricoes")
   @Header("Content-Type", "text/csv")
