@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Pagination } from "@/components/ui/pagination";
-import { Plus, Pencil, Trash2, Eye } from "lucide-react";
+import { Plus, Pencil, Trash2, Eye, Send } from "lucide-react";
 import { DetailPanel, ROLE_INFO } from "@/components/ui/detail-panel";
 import type { Role, Genero, RacaCor, TipoBolsa, Titulacao } from "@/types";
 
@@ -205,6 +205,23 @@ export default function AdminUsuariosPage() {
   };
 
   const [deleteTarget, setDeleteTarget] = useState<UsuarioItem | null>(null);
+
+  const [reenviando, setReenviando] = useState<string | null>(null);
+  const [feedbackReenvio, setFeedbackReenvio] = useState<{ id: string; erro: boolean } | null>(null);
+
+  const reenviarLink = async (usuario: UsuarioItem) => {
+    setReenviando(usuario.id);
+    setFeedbackReenvio(null);
+    try {
+      await api.post(`/admin/usuarios/${usuario.id}/reenviar-link`);
+      setFeedbackReenvio({ id: usuario.id, erro: false });
+    } catch {
+      setFeedbackReenvio({ id: usuario.id, erro: true });
+    } finally {
+      setReenviando(null);
+      setTimeout(() => setFeedbackReenvio(null), 4000);
+    }
+  };
   const [deletando, setDeletando] = useState(false);
 
   const [pagina, setPagina] = useState(1);
@@ -610,6 +627,14 @@ export default function AdminUsuariosPage() {
                             <Pencil size={18} />
                           </button>
                           <button
+                            onClick={() => reenviarLink(u)}
+                            className="text-[#9895a4] hover:text-[#E8B829] transition-colors p-1 cursor-pointer disabled:opacity-50"
+                            title="Reenviar link de criação de senha"
+                            disabled={reenviando === u.id}
+                          >
+                            <Send size={18} />
+                          </button>
+                          <button
                             onClick={() => setDeleteTarget(u)}
                             className="text-[#9895a4] hover:text-red-400 transition-colors p-1 cursor-pointer"
                             title="Excluir"
@@ -617,6 +642,11 @@ export default function AdminUsuariosPage() {
                             <Trash2 size={18} />
                           </button>
                         </div>
+                        {feedbackReenvio?.id === u.id && (
+                          <p className={`text-xs mt-1 ${feedbackReenvio.erro ? "text-red-400" : "text-[#4CAF50]"}`}>
+                            {feedbackReenvio.erro ? "Falha ao reenviar" : "Link reenviado"}
+                          </p>
+                        )}
                       </td>
                     </tr>
                   ))}

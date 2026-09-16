@@ -78,4 +78,9 @@ export class AdminUsuariosController {
   async delete(@Param("id") id: string, @Req() req: Request & { user: ReqUser }) {
     return this.usuariosService.delete(id, req.user);
   }
+
+  @Post(":id/reenviar-link")
+  async reenviarLink(@Param("id") id: string, @Req() req: Request & { user: ReqUser }) {
+    return this.usuariosService.reenviarLinkDefinicaoSenha(id, req.user);
+  }
 }

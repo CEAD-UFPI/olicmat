@@ -179,7 +179,7 @@ export class EmailService {
         <a href="${link}" style="display: inline-block; background-color: #E8B829; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 16px 0;">
           Criar Minha Senha
         </a>
-        <p style="color: #666; font-size: 12px;">Este link expira em 24 horas. Se você não esperava este cadastro, ignore este e-mail.</p>
+        <p style="color: #666; font-size: 12px;">Este link expira em 7 dias. Se você não esperava este cadastro, ignore este e-mail.</p>
       </div>
     `;
     await this.sendMail(email, "Criação de Senha — OLICMAT", html);

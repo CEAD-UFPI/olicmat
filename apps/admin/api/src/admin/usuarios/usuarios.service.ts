@@ -301,7 +301,7 @@ export class AdminUsuariosService {
         userId: user.id,
         tipo: "PASSWORD_RESET",
         token: tokenValue,
-        expiraEm: new Date(Date.now() + 24 * 60 * 60 * 1000), // expira em 24h
+        expiraEm: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // expira em 7 dias
       },
     });
 
@@ -418,5 +418,38 @@ export class AdminUsuariosService {
     await this.auditoria.log(actor.id, "DELETAR_USUARIO", "User", id);
 
     return { message: "Usuário excluído com sucesso" };
+  }
+
+  async reenviarLinkDefinicaoSenha(id: string, actor: { id: string; role: string }) {
+    const targetUser = await this.prisma.user.findUnique({ where: { id } });
+    if (!targetUser) {
+      throw new NotFoundException("Usuário não encontrado");
+    }
+
+    await this.enforceScope(actor, targetUser);
+
+    // Invalida qualquer link de criação de senha ainda não usado antes de
+    // emitir um novo, para que só o link mais recente funcione.
+    await this.prisma.token.deleteMany({
+      where: { userId: id, tipo: "PASSWORD_RESET", usadoEm: null },
+    });
+
+    const tokenValue = randomBytes(32).toString("hex");
+    await this.prisma.token.create({
+      data: {
+        userId: id,
+        tipo: "PASSWORD_RESET",
+        token: tokenValue,
+        expiraEm: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    await this.emailService.enviarDefinicaoSenha(targetUser.email, targetUser.nome, tokenValue);
+
+    await this.auditoria.log(actor.id, "REENVIAR_LINK_SENHA", "User", id, {
+      email: targetUser.email,
+    });
+
+    return { message: "Link reenviado" };
   }
 }
