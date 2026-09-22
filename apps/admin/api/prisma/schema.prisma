@@ -154,6 +154,7 @@ model Instituicao {
   usuarios            User[]
   inscricoes          Inscricao[]
   convites            Convite[]
+  linksConvite         LinkConvite[]
 }
 
 model Curso {
@@ -169,6 +170,7 @@ model Curso {
   usuarios       User[]
   inscricoes     Inscricao[]
   convites       Convite[]
+  linksConvite   LinkConvite[]
 
   @@unique([nome, instituicaoId])
 }
@@ -192,6 +194,8 @@ model User {
   curso                 Curso?              @relation(fields: [cursoId], references: [id])
   coordenadorId         String?
   coordenador           User?               @relation("AlunosDoCoordenador", fields: [coordenadorId], references: [id], onDelete: SetNull)
+  origemLinkId          String?
+  origemLink            LinkConvite?        @relation("CadastradosPorLink", fields: [origemLinkId], references: [id], onDelete: SetNull)
   matricula             String
   comprovanteUrl        String?
   dataNascimento        DateTime
@@ -232,6 +236,7 @@ model User {
   notificacoes          Notificacao[]
   alunos                User[]              @relation("AlunosDoCoordenador")
   convitesCriados       Convite[]           @relation("ConvitesCriados")
+  linksConviteCriados   LinkConvite[]       @relation("LinksConviteCriados")
 
   @@index([coordenadorId])
 }
@@ -530,4 +535,27 @@ model Convite {
   @@index([email])
   @@index([cursoId])
   @@index([instituicaoId])
+}
+
+/// Link de convite reutilizável: sem expiração, sem limite de usos. Quem
+/// tiver o link se cadastra sozinho — o token é a única credencial. Ao
+/// contrário de Convite (uso único, amarrado a um e-mail conhecido de
+/// antemão), aqui nome e e-mail só existem quando a pessoa se cadastra.
+model LinkConvite {
+  id            String    @id @default(uuid())
+  token         String    @unique
+  role          Role
+  instituicaoId String?
+  cursoId       String?
+  criadoPorId   String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  criadoPor     User         @relation("LinksConviteCriados", fields: [criadoPorId], references: [id], onDelete: Cascade)
+  instituicao   Instituicao? @relation(fields: [instituicaoId], references: [id], onDelete: SetNull)
+  curso         Curso?       @relation(fields: [cursoId], references: [id], onDelete: SetNull)
+  cadastrados   User[]       @relation("CadastradosPorLink")
+
+  @@index([criadoPorId])
+  @@index([token])
 }
