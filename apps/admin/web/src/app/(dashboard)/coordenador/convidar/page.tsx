@@ -67,6 +67,11 @@ export default function ConvidarAlunosPage() {
   const [erro, setErro] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [busca, setBusca] = useState("");
+  const [linkToken, setLinkToken] = useState<string | null>(null);
+  const [linkTotalCadastros, setLinkTotalCadastros] = useState(0);
+  const [linkCarregando, setLinkCarregando] = useState(true);
+  const [linkGerando, setLinkGerando] = useState(false);
+  const [linkCopiado, setLinkCopiado] = useState(false);
 
   const linhas = interpretar(texto);
   const invalidas = linhas.filter((l) => l.erro);
@@ -88,6 +93,17 @@ export default function ConvidarAlunosPage() {
       })
       .catch(() => setCursos([]));
     carregarConvites();
+  }, []);
+
+  useEffect(() => {
+    api
+      .get("/coordenacao/link-convite")
+      .then((r) => {
+        setLinkToken(r.data?.token ?? null);
+        setLinkTotalCadastros(r.data?.totalCadastros ?? 0);
+      })
+      .catch(() => setLinkToken(null))
+      .finally(() => setLinkCarregando(false));
   }, []);
 
   const enviar = async () => {
@@ -118,6 +134,26 @@ export default function ConvidarAlunosPage() {
     }
   };
 
+  const gerarLink = async () => {
+    setLinkGerando(true);
+    try {
+      const r = await api.post("/coordenacao/link-convite");
+      setLinkToken(r.data.token);
+    } catch {
+      // silencioso: o bloco continua mostrando o botão de gerar
+    } finally {
+      setLinkGerando(false);
+    }
+  };
+
+  const copiarLink = () => {
+    if (!linkToken) return;
+    const url = `${window.location.origin}/cadastro/${linkToken}`;
+    navigator.clipboard.writeText(url);
+    setLinkCopiado(true);
+    setTimeout(() => setLinkCopiado(false), 2000);
+  };
+
   const termo = busca.trim().toLowerCase();
   const convitesFiltrados = useMemo(() => {
     if (!termo) return convites;
@@ -143,6 +179,61 @@ export default function ConvidarAlunosPage() {
           Informe nome e e-mail. Cada aluno recebe um link e preenche o próprio
           cadastro — você não precisa dos dados pessoais deles.
         </p>
+      </div>
+
+      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-4">
+        <div>
+          <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            Link de convite
+          </h2>
+          <p className="text-sm text-[#9895a4] mt-1">
+            Um link que não expira e pode ser usado por quantos alunos
+            precisar — compartilhe por WhatsApp, Discord ou onde for mais
+            fácil chegar até eles.
+          </p>
+        </div>
+
+        {linkCarregando ? (
+          <p className="text-sm text-[#9895a4]">Carregando...</p>
+        ) : linkToken ? (
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                readOnly
+                value={`${typeof window !== "undefined" ? window.location.origin : ""}/cadastro/${linkToken}`}
+                className="flex-1 h-11 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#9895a4]"
+              />
+              <Button
+                onClick={copiarLink}
+                className="h-11 px-4 text-sm font-semibold shrink-0"
+                style={{ backgroundColor: "var(--sigma-azul)", color: "#fff" }}
+              >
+                {linkCopiado ? "Copiado!" : "Copiar"}
+              </Button>
+            </div>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <p className="text-xs text-[#6f6c7a]">
+                {linkTotalCadastros} aluno(s) cadastrado(s) por este link
+              </p>
+              <button
+                onClick={gerarLink}
+                disabled={linkGerando}
+                className="text-xs text-[#9895a4] hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {linkGerando ? "Gerando..." : "Gerar novo link (invalida o atual)"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <Button
+            onClick={gerarLink}
+            disabled={linkGerando}
+            className="h-11 px-6 text-sm font-semibold"
+            style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+          >
+            {linkGerando ? "Gerando..." : "Gerar Convite"}
+          </Button>
+        )}
       </div>
 
       <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-5">
