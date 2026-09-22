@@ -6,6 +6,11 @@ import {
 } from "@nestjs/common";
 import { LinksConviteService } from "./links-convite.service.js";
 
+jest.mock("bcrypt", () => ({
+  __esModule: true,
+  default: { hash: jest.fn(async () => "hashed") },
+}));
+
 describe("LinksConviteService — coordenador", () => {
   let service: LinksConviteService;
   let prisma: any;
@@ -197,6 +202,165 @@ describe("LinksConviteService — admin", () => {
         { id: "l2", role: "COMISSAO", totalCadastros: 0 },
       ]);
       expect(resultado.total).toBe(2);
+    });
+  });
+});
+
+describe("LinksConviteService — público", () => {
+  let service: LinksConviteService;
+  let prisma: any;
+
+  const dadosBase = {
+    nome: "Fulano de Tal",
+    email: "fulano@example.com",
+    cpf: "11144477735",
+    senha: "senha1234",
+    dataNascimento: "2000-01-01",
+    telefone: undefined,
+    nomeMae: undefined,
+    matricula: undefined,
+  };
+
+  beforeEach(() => {
+    prisma = {
+      linkConvite: { findUnique: jest.fn() },
+      user: { findUnique: jest.fn(), create: jest.fn() },
+      coordenadorCurso: { create: jest.fn() },
+      $transaction: jest.fn(async (fn: any) => fn(prisma)),
+    };
+    service = new LinksConviteService(prisma as any);
+  });
+
+  describe("buscarPorToken", () => {
+    it("lança NotFoundException quando o token não existe", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue(null);
+
+      await expect(service.buscarPorToken("tok")).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it("retorna papel, curso e instituição do link", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue({
+        role: "ALUNO",
+        curso: {
+          id: "c1",
+          nome: "Matemática",
+          instituicao: { id: "i1", nome: "UFPI", sigla: "UFPI" },
+        },
+        instituicao: null,
+      });
+
+      const resultado = await service.buscarPorToken("tok");
+
+      expect(resultado).toEqual({
+        role: "ALUNO",
+        curso: {
+          id: "c1",
+          nome: "Matemática",
+          instituicao: { id: "i1", nome: "UFPI", sigla: "UFPI" },
+        },
+        instituicao: null,
+      });
+    });
+  });
+
+  describe("cadastrar", () => {
+    it("lança NotFoundException quando o token não existe", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue(null);
+
+      await expect(service.cadastrar("tok", dadosBase as any)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it("lança BadRequestException quando o e-mail já está em uso", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue({
+        id: "l1",
+        role: "ALUNO",
+        cursoId: "c1",
+        instituicaoId: "i1",
+        criadoPorId: "coord1",
+      });
+      prisma.user.findUnique.mockResolvedValueOnce({ id: "u-existente" });
+
+      await expect(service.cadastrar("tok", dadosBase as any)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("lança BadRequestException quando o CPF já está em uso", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue({
+        id: "l1",
+        role: "ALUNO",
+        cursoId: "c1",
+        instituicaoId: "i1",
+        criadoPorId: "coord1",
+      });
+      prisma.user.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce({ id: "u-existente" });
+
+      await expect(service.cadastrar("tok", dadosBase as any)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it("cria o usuário herdando papel/curso/instituição do link e o vínculo de coordenador quando ALUNO", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue({
+        id: "l1",
+        role: "ALUNO",
+        cursoId: "c1",
+        instituicaoId: "i1",
+        criadoPorId: "coord1",
+      });
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockResolvedValue({
+        id: "novo",
+        nome: dadosBase.nome,
+        email: dadosBase.email,
+        role: "ALUNO",
+      });
+
+      const resultado = await service.cadastrar("tok", dadosBase as any);
+
+      expect(prisma.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            role: "ALUNO",
+            instituicaoId: "i1",
+            cursoId: "c1",
+            coordenadorId: "coord1",
+            origemLinkId: "l1",
+          }),
+        }),
+      );
+      expect(prisma.coordenadorCurso.create).not.toHaveBeenCalled();
+      expect(resultado.id).toBe("novo");
+    });
+
+    it("cria o vínculo CoordenadorCurso quando o link é de papel COORDENADOR_CURSO", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue({
+        id: "l1",
+        role: "COORDENADOR_CURSO",
+        cursoId: "c1",
+        instituicaoId: "i1",
+        criadoPorId: "admin1",
+      });
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockResolvedValue({
+        id: "novoCoord",
+        nome: dadosBase.nome,
+        email: dadosBase.email,
+        role: "COORDENADOR_CURSO",
+      });
+
+      const resultado = await service.cadastrar("tok", dadosBase as any);
+
+      expect(prisma.coordenadorCurso.create).toHaveBeenCalledWith({
+        data: { userId: "novoCoord", cursoId: "c1" },
+      });
+      expect(resultado.id).toBe("novoCoord");
     });
   });
 });

@@ -134,4 +134,93 @@ export class LinksConviteService {
       data: { token },
     });
   }
+
+  // ── Público ──────────────────────────────────────────────────
+
+  async buscarPorToken(token: string) {
+    const link = await this.prisma.linkConvite.findUnique({
+      where: { token },
+      include: {
+        curso: {
+          select: {
+            id: true,
+            nome: true,
+            instituicao: { select: { id: true, nome: true, sigla: true } },
+          },
+        },
+        instituicao: { select: { id: true, nome: true, sigla: true } },
+      },
+    });
+
+    if (!link) {
+      throw new NotFoundException("Link não encontrado");
+    }
+
+    return {
+      role: link.role,
+      curso: link.curso
+        ? {
+            id: link.curso.id,
+            nome: link.curso.nome,
+            instituicao: link.curso.instituicao,
+          }
+        : null,
+      instituicao: link.instituicao ?? null,
+    };
+  }
+
+  async cadastrar(token: string, dados: CadastrarPorLinkDto) {
+    const link = await this.prisma.linkConvite.findUnique({ where: { token } });
+    if (!link) {
+      throw new NotFoundException("Link não encontrado");
+    }
+
+    const emailEmUso = await this.prisma.user.findUnique({
+      where: { email: dados.email },
+      select: { id: true },
+    });
+    if (emailEmUso) {
+      throw new BadRequestException("Já existe um cadastro com este e-mail");
+    }
+
+    const cpfEmUso = await this.prisma.user.findUnique({
+      where: { cpf: dados.cpf },
+      select: { id: true },
+    });
+    if (cpfEmUso) {
+      throw new BadRequestException("Já existe um cadastro com este CPF");
+    }
+
+    const senhaHash = await bcrypt.hash(dados.senha, 10);
+
+    return this.prisma.$transaction(async (tx: any) => {
+      const criado = await tx.user.create({
+        data: {
+          nome: dados.nome,
+          email: dados.email,
+          cpf: dados.cpf,
+          senhaHash,
+          role: link.role,
+          matricula: dados.matricula ?? "",
+          dataNascimento: new Date(dados.dataNascimento),
+          nomeMae: dados.nomeMae ?? null,
+          telefone: dados.telefone ?? null,
+          instituicaoId: link.instituicaoId,
+          cursoId: link.cursoId,
+          coordenadorId: link.role === Role.ALUNO ? link.criadoPorId : null,
+          origemLinkId: link.id,
+          emailConfirmado: true,
+        },
+        select: { id: true, nome: true, email: true, role: true },
+      });
+
+      if (link.role === Role.COORDENADOR_CURSO && link.cursoId) {
+        await tx.coordenadorCurso.create({
+          data: { userId: criado.id, cursoId: link.cursoId },
+        });
+      }
+
+      return criado;
+    });
+  }
 }
