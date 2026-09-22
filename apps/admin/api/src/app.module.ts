@@ -13,6 +13,7 @@ import { CoordenacaoModule } from "./coordenacao/coordenacao.module.js";
 import { CorrecaoModule } from "./correcao/correcao.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { ConvitesModule } from "./convites/convites.module.js";
+import { LinksConviteModule } from "./links-convite/links-convite.module.js";
 import { NotificacoesModule } from "./notificacoes/notificacoes.module.js";
 
 @Module({
@@ -49,6 +50,7 @@ import { NotificacoesModule } from "./notificacoes/notificacoes.module.js";
     // ── Module 3: Correction / Evaluation ──
     CorrecaoModule,
     ConvitesModule,
+    LinksConviteModule,
   ],
   providers: [
     // Apply throttler globally to all controllers.
