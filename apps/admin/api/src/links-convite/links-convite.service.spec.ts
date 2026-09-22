@@ -1,5 +1,9 @@
 import { jest } from "@jest/globals";
-import { ForbiddenException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from "@nestjs/common";
 import { LinksConviteService } from "./links-convite.service.js";
 
 describe("LinksConviteService — coordenador", () => {
@@ -81,6 +85,118 @@ describe("LinksConviteService — coordenador", () => {
         data: { token: expect.any(String) },
       });
       expect(resultado.token).toBe("novo");
+    });
+  });
+});
+
+describe("LinksConviteService — admin", () => {
+  let service: LinksConviteService;
+  let prisma: any;
+
+  beforeEach(() => {
+    prisma = {
+      linkConvite: {
+        create: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+        update: jest.fn(),
+        count: jest.fn(),
+      },
+      curso: { findUnique: jest.fn() },
+      user: { count: jest.fn() },
+    };
+    service = new LinksConviteService(prisma as any);
+  });
+
+  describe("criarLinkAdmin", () => {
+    it("cria um link para COORDENADOR_CURSO derivando instituicaoId do curso", async () => {
+      prisma.curso.findUnique.mockResolvedValue({ instituicaoId: "inst1" });
+      prisma.linkConvite.create.mockResolvedValue({ id: "l1", token: "tok" });
+
+      await service.criarLinkAdmin(
+        { role: "COORDENADOR_CURSO", cursoId: "curso1" },
+        { id: "admin1" },
+      );
+
+      expect(prisma.linkConvite.create).toHaveBeenCalledWith({
+        data: {
+          token: expect.any(String),
+          role: "COORDENADOR_CURSO",
+          cursoId: "curso1",
+          instituicaoId: "inst1",
+          criadoPorId: "admin1",
+        },
+      });
+    });
+
+    it("cria um link para AVALIADOR sem curso nem instituição", async () => {
+      prisma.linkConvite.create.mockResolvedValue({ id: "l1", token: "tok" });
+
+      await service.criarLinkAdmin({ role: "AVALIADOR" }, { id: "admin1" });
+
+      expect(prisma.curso.findUnique).not.toHaveBeenCalled();
+      expect(prisma.linkConvite.create).toHaveBeenCalledWith({
+        data: {
+          token: expect.any(String),
+          role: "AVALIADOR",
+          cursoId: null,
+          instituicaoId: null,
+          criadoPorId: "admin1",
+        },
+      });
+    });
+
+    it("lança BadRequestException quando o curso não existe", async () => {
+      prisma.curso.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.criarLinkAdmin(
+          { role: "COORDENADOR_CURSO", cursoId: "curso-inexistente" },
+          { id: "admin1" },
+        ),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe("regenerarLinkAdmin", () => {
+    it("lança NotFoundException quando o link não existe", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue(null);
+
+      await expect(service.regenerarLinkAdmin("l1")).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it("regenera o token do link", async () => {
+      prisma.linkConvite.findUnique.mockResolvedValue({ id: "l1", token: "velho" });
+      prisma.linkConvite.update.mockResolvedValue({ id: "l1", token: "novo" });
+
+      const resultado = await service.regenerarLinkAdmin("l1");
+
+      expect(prisma.linkConvite.update).toHaveBeenCalledWith({
+        where: { id: "l1" },
+        data: { token: expect.any(String) },
+      });
+      expect(resultado.token).toBe("novo");
+    });
+  });
+
+  describe("listarLinksAdmin", () => {
+    it("pagina os links e acrescenta o contador de cadastros por link", async () => {
+      prisma.linkConvite.findMany.mockResolvedValue([
+        { id: "l1", role: "AVALIADOR" },
+        { id: "l2", role: "COMISSAO" },
+      ]);
+      prisma.linkConvite.count.mockResolvedValue(2);
+      prisma.user.count.mockResolvedValueOnce(3).mockResolvedValueOnce(0);
+
+      const resultado = await service.listarLinksAdmin({});
+
+      expect(resultado.data).toEqual([
+        { id: "l1", role: "AVALIADOR", totalCadastros: 3 },
+        { id: "l2", role: "COMISSAO", totalCadastros: 0 },
+      ]);
+      expect(resultado.total).toBe(2);
     });
   });
 });

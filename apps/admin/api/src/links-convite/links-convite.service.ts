@@ -65,4 +65,73 @@ export class LinksConviteService {
       },
     });
   }
+
+  // ── Admin/Comissão ───────────────────────────────────────────
+
+  async listarLinksAdmin(params: PaginationParams) {
+    const { skip, take } = getSkipTake(params);
+    const [links, total] = await Promise.all([
+      this.prisma.linkConvite.findMany({
+        skip,
+        take,
+        orderBy: { createdAt: "desc" },
+        include: {
+          curso: { select: { id: true, nome: true } },
+          instituicao: { select: { id: true, nome: true, sigla: true } },
+          criadoPor: { select: { id: true, nome: true } },
+        },
+      }),
+      this.prisma.linkConvite.count(),
+    ]);
+
+    const comContadores = await Promise.all(
+      links.map(async (link: { id: string }) => ({
+        ...link,
+        totalCadastros: await this.prisma.user.count({
+          where: { origemLinkId: link.id },
+        }),
+      })),
+    );
+
+    return paginate(comContadores, total, params);
+  }
+
+  async criarLinkAdmin(dados: CriarLinkConviteDto, actor: { id: string }) {
+    let instituicaoId: string | null = null;
+
+    if (dados.cursoId) {
+      const curso = await this.prisma.curso.findUnique({
+        where: { id: dados.cursoId },
+        select: { instituicaoId: true },
+      });
+      if (!curso) {
+        throw new BadRequestException("Curso não encontrado");
+      }
+      instituicaoId = curso.instituicaoId;
+    }
+
+    const token = randomBytes(32).toString("hex");
+    return this.prisma.linkConvite.create({
+      data: {
+        token,
+        role: dados.role as Role,
+        cursoId: dados.cursoId ?? null,
+        instituicaoId,
+        criadoPorId: actor.id,
+      },
+    });
+  }
+
+  async regenerarLinkAdmin(id: string) {
+    const link = await this.prisma.linkConvite.findUnique({ where: { id } });
+    if (!link) {
+      throw new NotFoundException("Link não encontrado");
+    }
+
+    const token = randomBytes(32).toString("hex");
+    return this.prisma.linkConvite.update({
+      where: { id },
+      data: { token },
+    });
+  }
 }
