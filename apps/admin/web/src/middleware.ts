@@ -14,6 +14,9 @@ const publicPaths = [
   // Quem chega por convite ainda não tem conta: exigir sessão aqui mandaria
   // a pessoa para um login que ela não tem como fazer.
   '/convite',
+  // Mesma razão do /convite acima — só que aqui o link não é pessoal nem
+  // expira, então mais gente vai chegar por ele ao longo do tempo.
+  '/cadastro',
 ]
 
 export function middleware(request: NextRequest) {
