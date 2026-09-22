@@ -99,6 +99,6 @@ Nova rota **`/cadastro/:token`** (distinta de `/convite`, que é o fluxo de toke
 - E-mail já cadastrado → mesma mensagem já usada em `ConvitesService.aceitar` ("Já existe um cadastro com este e-mail").
 - CPF já cadastrado → idem.
 - Coordenador sem `CoordenadorCurso` vinculado tentando gerar link → mesmo erro que `convidarAlunos` já lança hoje ("Você não coordena este curso...", adaptado).
-- Comissão tentando criar link com `role: ADMIN` → `ForbiddenException`, mesma regra de `enforceScope`.
+- `ADMIN` não é uma opção de papel no formulário/schema de criação de link (nem para Admin, nem para Comissão) — mesma regra de escopo do fluxo de `Convite` (`rolesConvidaveis`), só que aplicada na própria validação Zod em vez de checagem em runtime: não existe combinação de entrada que gere um link de papel `ADMIN`, então não há exceção a lançar nem caminho a testar para esse caso.
 - Testes unitários (Jest, seguindo o padrão TDD já usado no resto do backend): serviço de geração/regeneração de link, serviço de cadastro público (usuário criado com os vínculos certos, duplicidade de e-mail/CPF rejeitada, papel/curso sempre vindo do link e nunca do corpo).
 - Verificação manual do fluxo completo (gerar link → copiar → abrir em aba anônima → cadastrar → conferir que aparece em Meus Alunos) — mesma convenção de testagem manual de UI já usada no restante do frontend.
