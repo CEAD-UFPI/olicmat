@@ -235,11 +235,22 @@
     <section class="passo" id="conta">
       <span class="ord">Etapa 1</span>
       <h2>Criar sua conta pelo convite</h2>
-      <p>Sua participação começa com um e-mail enviado pela coordenação do seu curso. <strong>Não existe cadastro aberto no site</strong> — é o link do convite que cria sua conta.</p>
+      <p>Sua participação começa com um convite da coordenação do seu curso — de duas formas possíveis. <strong>Não existe cadastro aberto no site</strong>: sem um dos dois convites, não há como criar conta.</p>
+
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>Como você recebeu</th><th>O que muda</th></tr></thead>
+          <tbody>
+            <tr><td><strong>E-mail com link pessoal</strong></td><td>O link é <strong>seu, de uso único</strong>. Seu nome e e-mail já vêm preenchidos na tela de cadastro.</td></tr>
+            <tr><td><strong>Link compartilhado</strong> (WhatsApp, grupo da turma, Discord etc.)</td><td>O mesmo link serve para vários colegas. Você mesmo informa <strong>nome e e-mail</strong> na tela de cadastro — mais nenhuma diferença no restante do processo.</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <ol class="acoes">
-        <li>Abra o e-mail e clique no link do convite.</li>
-        <li>Na tela <span class="ui">Concluir cadastro</span>, informe o <span class="ui campo">CPF *</span> — somente números.</li>
+        <li>Abra o link — pelo e-mail ou pelo que a coordenação compartilhou.</li>
+        <li>Na tela <span class="ui">Concluir cadastro</span>, se o link for compartilhado, informe também <span class="ui campo">Nome completo *</span> e <span class="ui campo">E-mail *</span> — pelo link pessoal, esses dois já vêm prontos.</li>
+        <li>Informe o <span class="ui campo">CPF *</span> — somente números.</li>
         <li>Informe a <span class="ui campo">Data de nascimento *</span>.</li>
         <li>Confira o bloco <strong>Curso</strong>: sua instituição e seu curso já aparecem ali, definidos pela coordenação.</li>
         <li>Se quiser, preencha <span class="ui campo">Matrícula</span>, <span class="ui campo">Telefone</span> e <span class="ui campo">Nome da mãe</span> — os três são opcionais.</li>
@@ -249,10 +260,15 @@
 
       <div class="nota">
         <span class="rot">Instituição e curso não são escolha sua</span>
-        <p>Eles aparecem como texto fixo porque foram definidos por quem te convidou, e <strong>não mudam depois</strong>. É assim porque a classificação da Fase 1 e a distribuição das bolsas são feitas por instituição — se cada um declarasse onde estuda, daria para escolher contra quem competir. Se o curso mostrado estiver errado, <strong>não conclua o cadastro</strong>: avise a coordenação primeiro.</p>
+        <p>Eles aparecem como texto fixo porque foram definidos por quem te convidou, e <strong>não mudam depois</strong> — nos dois tipos de link. É assim porque a classificação da Fase 1 e a distribuição das bolsas são feitas por instituição — se cada um declarasse onde estuda, daria para escolher contra quem competir. Se o curso mostrado estiver errado, <strong>não conclua o cadastro</strong>: avise a coordenação primeiro.</p>
       </div>
 
       <p>O CPF também não pode ser alterado depois. Confira antes de enviar.</p>
+
+      <div class="nota aviso">
+        <span class="rot">Link compartilhado não expira — mas pode ser trocado</span>
+        <p>Diferente do link pessoal, o link compartilhado <strong>não tem prazo de validade</strong>. Se ele parar de funcionar e aparecer <em>"Link indisponível"</em>, a coordenação trocou o link por um novo — peça o link atualizado a ela.</p>
+      </div>
 
       <div class="nota alerta">
         <span class="rot">A inscrição é o passo seguinte, e é obrigatória</span>
@@ -435,6 +451,7 @@
             <tr><td>Email ou senha inválidos.</td><td>Use <span class="ui">Esqueci minha senha</span> na tela de login. O link recebido vale por 2 horas.</td></tr>
             <tr><td>Não foi possível entrar agora — o sistema está indisponível.</td><td>Não é sua senha. Espere alguns minutos e tente de novo.</td></tr>
             <tr><td>Não foi possível validar este convite.</td><td>O convite expirou ou já foi usado. Se você já se cadastrou, vá direto ao login. Senão, peça um novo à coordenação.</td></tr>
+            <tr><td>Link indisponível.</td><td>O link compartilhado foi trocado por um novo. Peça o link atualizado à coordenação.</td></tr>
             <tr><td>Já existe um cadastro com este e-mail / CPF.</td><td>Você já tem conta. Recupere a senha em vez de criar outra.</td></tr>
             <tr><td>Nenhuma edição aberta para inscrição.</td><td>Fora do período. As inscrições vão de 01/09 a 25/09/2026.</td></tr>
             <tr><td>Você já possui uma inscrição nesta edição.</td><td>Está tudo certo — você já se inscreveu. Confira o status no painel.</td></tr>

@@ -12,8 +12,8 @@ start docs/guia-coordenador.html           # Windows
 | Arquivo | Público | Conteúdo |
 |---------|---------|----------|
 | `apresentacao-sistema.html` | Comissão organizadora | Visão operacional da plataforma em 15 slides: perfis de acesso, ciclo da competição, regras de classificação, cronograma e situação atual |
-| `guia-coordenador.html` | Coordenações de curso | Passo a passo: aceitar o convite, convidar alunos em lote, acompanhar cadastros, validar inscrições, métricas |
-| `guia-participante.html` | Participantes (alunos) | Passo a passo: do convite ao resultado, com as regras da prova cronometrada e os envios da Fase 2 |
+| `guia-coordenador.html` | Coordenações de curso | Passo a passo: aceitar o convite, convidar alunos (link reutilizável ou lista por e-mail), acompanhar cadastros, validar inscrições, métricas |
+| `guia-participante.html` | Participantes (alunos) | Passo a passo: do convite (link pessoal por e-mail ou link compartilhado) ao resultado, com as regras da prova cronometrada e os envios da Fase 2 |
 
 A apresentação usa navegação por slides: `→` `←` `Espaço` avançam e voltam,
 `Home`/`End` vão ao primeiro e ao último, `F` alterna tela cheia, e o clique na
@@ -39,3 +39,10 @@ tokens de design (cores, tipografia, símbolos π ∫ Σ) e não repetem conteú
 - **Passos dos guias**: eles descrevem rótulos literais das telas. Ao renomear
   um botão ou campo no painel, o guia correspondente precisa acompanhar, senão
   vira instrução para uma tela que não existe mais.
+- **Cópia servida pelo painel**: `guia-coordenador.html` e
+  `guia-participante.html` têm uma cópia duplicada em
+  `apps/admin/web/public/guias/`, exibida via `<iframe>` nas telas
+  `/coordenador/guia` e `/competidor/guia`. Não há build nem symlink ligando
+  as duas — ao editar um dos dois guias aqui, copie o arquivo de novo para
+  `apps/admin/web/public/guias/` (ou as telas do painel ficam com a versão
+  antiga).

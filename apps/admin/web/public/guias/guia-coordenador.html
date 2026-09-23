@@ -346,7 +346,7 @@
           <tbody>
             <tr><td><span class="ui menu">Visão Geral</span></td><td>Os números do seu curso em quatro cartões</td></tr>
             <tr><td><span class="ui menu">Alunos</span></td><td>Lista de quem já tem cadastro no seu curso</td></tr>
-            <tr><td><span class="ui menu">Convidar Alunos</span></td><td>Enviar convites em lote por e-mail</td></tr>
+            <tr><td><span class="ui menu">Convidar Alunos</span></td><td>Gerar o link de convite ou enviar convites em lote por e-mail</td></tr>
             <tr><td><span class="ui menu">Inscrições</span></td><td>Confirmar ou rejeitar as inscrições na edição</td></tr>
             <tr><td><span class="ui menu">Métricas</span></td><td>Situação das inscrições, com quebra por curso</td></tr>
           </tbody>
@@ -366,10 +366,29 @@
     <section class="passo" id="convidar">
       <span class="ord">Passo 3 · a tarefa principal</span>
       <h2>Convidar seus alunos</h2>
-      <p>É por aqui que os estudantes do seu curso entram na olimpíada. Você só precisa do <strong>nome e do e-mail</strong> de cada um — o resto eles preenchem sozinhos.</p>
+      <p>É por aqui que os estudantes do seu curso entram na olimpíada. Há duas formas de convidar — use a que for mais prática para o seu grupo, ou as duas ao mesmo tempo.</p>
+
+      <h3>Link de convite — recomendado</h3>
+      <p>Um link único, que <strong>não expira e pode ser usado por quantos alunos precisar</strong>. É a forma mais confiável quando o e-mail institucional falha ou demora a chegar — o link não depende de e-mail nenhum.</p>
 
       <ol class="acoes">
         <li>No menu, abra <span class="ui menu">Convidar Alunos</span>.</li>
+        <li>No bloco <strong>Link de convite</strong>, no topo da tela, clique em <span class="ui botao">Gerar Convite</span>.</li>
+        <li>Clique em <span class="ui botao">Copiar</span> e compartilhe o link por onde for mais fácil chegar até seus alunos — WhatsApp, grupo da turma, Discord, mural da coordenação.</li>
+        <li>Cada aluno que abrir o link se cadastra sozinho, informando o próprio nome e e-mail.</li>
+      </ol>
+
+      <p>O contador <strong>"N aluno(s) cadastrado(s) por este link"</strong>, embaixo do link, sobe a cada novo cadastro — é a forma mais rápida de saber se o link está circulando.</p>
+
+      <div class="nota alerta">
+        <span class="rot">Gerar novo link invalida o antigo</span>
+        <p>Se o link vazar para fora do seu grupo, ou você simplesmente quiser trocar, clique em <strong>Gerar novo link (invalida o atual)</strong>. A partir daí, quem ainda tiver o link antigo salvo verá <em>"Link indisponível"</em> ao tentar usá-lo — reenvie o novo para quem ainda não se cadastrou.</p>
+      </div>
+
+      <h3>Lista por e-mail — alternativa</h3>
+      <p>Convite individual, um e-mail por aluno. Você só precisa do <strong>nome e do e-mail</strong> de cada um — o resto eles preenchem sozinhos.</p>
+
+      <ol class="acoes">
         <li>Em <span class="ui campo">Curso *</span>, confira o curso. Se você coordena apenas um, ele já vem selecionado.</li>
         <li>No campo <span class="ui campo">Lista de alunos — um por linha</span>, cole a lista.</li>
         <li>Confira o contador abaixo do campo: ele mostra em tempo real quantos estão prontos e quantos têm problema.</li>
@@ -433,7 +452,7 @@ Carlos Eduardo Nunes &lt;carlos.nunes@ufpi.edu.br&gt;</pre>
       </ul>
 
       <h3>Em <span class="ui menu">Alunos</span></h3>
-      <p>Lista todos que já têm cadastro no seu curso, com nome, e-mail, matrícula, curso e instituição. Há busca por nome, e-mail ou matrícula. Cada linha traz três ações: <strong>ver detalhes</strong>, <strong>editar</strong> e <strong>excluir</strong>.</p>
+      <p>Lista <strong>somente os alunos vinculados a você</strong> — os que aceitaram um convite por e-mail ou se cadastraram pelo seu link — com nome, e-mail, matrícula, curso e instituição. Há busca por nome, e-mail ou matrícula. Cada linha traz três ações: <strong>ver detalhes</strong>, <strong>editar</strong> e <strong>excluir</strong>.</p>
 
       <div class="nota alerta">
         <span class="rot">Cadastrado não é o mesmo que inscrito</span>
@@ -471,7 +490,7 @@ Carlos Eduardo Nunes &lt;carlos.nunes@ufpi.edu.br&gt;</pre>
         <p>Depois de clicar em <strong>✓ verde</strong>, a inscrição fica <strong>Confirmada</strong> e não pode mais ser alterada — nem por você, nem pela administração. Confira os dados e o comprovante com atenção antes de confirmar.</p>
       </div>
 
-      <p>Você só consegue confirmar ou rejeitar inscrições <strong>de alunos do seu curso</strong>. Se o botão parecer não responder, atualize a página e tente de novo; persistindo, fale com a organização.</p>
+      <p>Você só consegue confirmar ou rejeitar inscrições <strong>de alunos que você convidou</strong>. Se o botão parecer não responder, atualize a página e tente de novo; persistindo, fale com a organização.</p>
     </section>
 
     <!-- 6 ─────────────────────────────────────────────── -->
@@ -505,7 +524,7 @@ Carlos Eduardo Nunes &lt;carlos.nunes@ufpi.edu.br&gt;</pre>
       <h2>Ver as métricas do curso</h2>
       <p>A tela <span class="ui menu">Métricas</span> responde à pergunta que mais importa nesta fase: <em>quantos do meu curso já estão efetivamente dentro?</em></p>
       <ul class="pontos">
-        <li><strong>Total</strong> — alunos do seu curso com cadastro, inscritos ou não.</li>
+        <li><strong>Total</strong> — alunos que você convidou com cadastro, inscritos ou não.</li>
         <li><strong>Inscritos</strong> — quantos se inscreveram nesta edição.</li>
         <li><strong>Confirmadas</strong> — quantas inscrições você já validou.</li>
         <li><strong>Taxa</strong> — proporção de confirmadas sobre inscritas.</li>
@@ -529,7 +548,7 @@ Carlos Eduardo Nunes &lt;carlos.nunes@ufpi.edu.br&gt;</pre>
             <tr><td>Você não coordena este curso.</td><td>O curso selecionado não é seu. Escolha um dos seus.</td></tr>
             <tr><td>Nenhum aluno válido na lista.</td><td>Nenhuma linha tem nome e e-mail legíveis. Confira o formato.</td></tr>
             <tr><td>Corrija as N linha(s) com problema antes de enviar.</td><td>Ajuste as linhas apontadas e reenvie.</td></tr>
-            <tr><td>Você só pode gerenciar inscrições de participantes do seu curso.</td><td>A inscrição é de outro curso. Encaminhe à coordenação responsável.</td></tr>
+            <tr><td>Você só pode gerenciar inscrições de alunos que você convidou.</td><td>A inscrição é de um aluno que você não convidou. Fale com a organização.</td></tr>
             <tr><td>Não foi possível validar este convite.</td><td>Convite expirado ou já usado. Peça um novo.</td></tr>
           </tbody>
         </table>
