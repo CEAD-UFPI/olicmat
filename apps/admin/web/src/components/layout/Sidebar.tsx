@@ -10,7 +10,7 @@ import {
   LayoutDashboard, ClipboardList, FileText, Upload, Trophy, Users,
   BarChart3, BookOpen, CheckSquare, Download, ShieldCheck,
   Eye, Building2, GraduationCap, Calendar, Settings, Sliders, Activity,
-  UserPlus, Bell, HelpCircle,
+  UserPlus, Bell, HelpCircle, Link2,
 } from "lucide-react";
 
 interface NavLink { href: string; label: string; icon: React.ReactNode; }
@@ -24,6 +24,7 @@ const configLinks: NavLink[] = [
   { href: "/admin/usuarios", label: "Usuários", icon: <Users size={18} /> },
   { href: "/admin/convidar", label: "Convidar Equipe", icon: <UserPlus size={18} /> },
   { href: "/admin/acompanhamento", label: "Acompanhamento", icon: <BarChart3 size={18} /> },
+  { href: "/admin/links-convite", label: "Links de Convite", icon: <Link2 size={18} /> },
   { href: "/admin/inscricoes", label: "Inscrições", icon: <ClipboardList size={18} /> },
   { href: "/admin/provas", label: "Provas", icon: <BookOpen size={18} /> },
   { href: "/admin/monitoramento", label: "Monitoramento", icon: <Activity size={18} /> },
@@ -147,6 +148,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
           { href: "/comissao/edicoes", label: "Edições", icon: <Calendar size={18} /> },
           { href: "/comissao/usuarios", label: "Usuários", icon: <Users size={18} /> },
           { href: "/comissao/acompanhamento", label: "Acompanhamento", icon: <BarChart3 size={18} /> },
+          { href: "/comissao/links-convite", label: "Links de Convite", icon: <Link2 size={18} /> },
           { href: "/comissao/inscricoes", label: "Inscrições", icon: <ClipboardList size={18} /> },
           { href: "/comissao/provas", label: "Provas", icon: <BookOpen size={18} /> },
           { href: "/comissao/monitoramento", label: "Monitoramento", icon: <Activity size={18} /> },
