@@ -135,6 +135,9 @@ export default function ConvidarAlunosPage() {
   };
 
   const gerarLink = async () => {
+    if (linkToken && !confirm("Gerar um novo link vai invalidar o link atual. Continuar?")) {
+      return;
+    }
     setLinkGerando(true);
     try {
       const r = await api.post("/coordenacao/link-convite");
