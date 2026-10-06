@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import { ConflictException } from "@nestjs/common";
-import { DashboardService } from "./dashboard.service.js";
+import { DashboardService, dataParaCsv } from "./dashboard.service.js";
 
 describe("DashboardService — edicoes", () => {
   let service: DashboardService;
@@ -215,5 +215,17 @@ describe("DashboardService — getAcompanhamento", () => {
 
     expect(resultado.ranking).toHaveLength(1);
     expect(resultado.ranking[0].id).toBe("c2");
+  });
+});
+
+describe("dataParaCsv", () => {
+  it("formata data válida como AAAA-MM-DD", () => {
+    expect(dataParaCsv(new Date("1999-03-07T00:00:00Z"))).toBe("1999-03-07");
+  });
+
+  it("retorna vazio para null, undefined e Invalid Date", () => {
+    expect(dataParaCsv(null)).toBe("");
+    expect(dataParaCsv(undefined)).toBe("");
+    expect(dataParaCsv(new Date("lixo"))).toBe("");
   });
 });

@@ -9,6 +9,11 @@ function escapeCsv(val: unknown): string {
   return str;
 }
 
+/** Data (AAAA-MM-DD) para CSV; vazio se ausente ou inválida, para não derrubar a exportação. */
+export function dataParaCsv(d: Date | null | undefined): string {
+  return d && !Number.isNaN(d.getTime()) ? d.toISOString().split("T")[0] : "";
+}
+
 function ordenarPorAtraso(
   linhas: { id: string; nome: string; alunos: number; inscritos: number }[],
 ) {
@@ -266,7 +271,7 @@ export class DashboardService {
         escapeCsv(i.user.email),
         escapeCsv(i.user.cpf),
         escapeCsv(i.user.matricula),
-        escapeCsv(i.user.dataNascimento?.toISOString().split("T")[0] ?? ""),
+        escapeCsv(dataParaCsv(i.user.dataNascimento)),
         escapeCsv(i.estado),
         escapeCsv(i.municipio ?? ""),
         escapeCsv(i.instituicao?.nome ?? ""),
@@ -302,7 +307,7 @@ export class DashboardService {
           escapeCsv(u.cpf),
           escapeCsv(u.role),
           escapeCsv(u.matricula ?? ""),
-          escapeCsv(u.dataNascimento?.toISOString().split("T")[0] ?? ""),
+          escapeCsv(dataParaCsv(u.dataNascimento)),
           escapeCsv(u.instituicao?.nome ?? ""),
           escapeCsv(u.curso?.nome ?? ""),
           escapeCsv(u.createdAt.toISOString()),
