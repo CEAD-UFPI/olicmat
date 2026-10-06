@@ -37,7 +37,7 @@ export class RelatoriosService {
     const linhas = ordenarAlfabeticamente(
       inscricoes.map((i) => ({
         numero: formatarNumeroInscricao(edicao.ano, i.numero),
-        nome: i.user.nome,
+        nome: i.user.nome.trim().toLocaleUpperCase("pt-BR"),
         curso: i.curso?.nome ?? "—",
         status: "Confirmada",
       })),

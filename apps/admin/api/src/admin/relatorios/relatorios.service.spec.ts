@@ -1,6 +1,7 @@
 import { jest } from "@jest/globals";
 import { NotFoundException } from "@nestjs/common";
 import { RelatoriosService, formatarNumeroInscricao } from "./relatorios.service.js";
+import * as pdf from "./inscricoes-confirmadas.pdf.js";
 import {
   gerarPdfInscricoesConfirmadas,
   ordenarAlfabeticamente,
@@ -90,6 +91,17 @@ describe("RelatoriosService.inscricoesConfirmadasPdf", () => {
     expect(prisma.edicao.findFirst.mock.calls[0][0].where).toEqual({ status: "ATIVA" });
     expect(r.filename).toBe("inscricoes-confirmadas-2026-1.pdf");
     expect(r.buffer.subarray(0, 5).toString()).toBe("%PDF-");
+  });
+
+  it("exibe os nomes em caixa alta", async () => {
+    prisma.edicao.findFirst.mockResolvedValueOnce(edicao);
+    prisma.inscricao.findMany.mockResolvedValue([
+      { numero: 1, user: { nome: " josé da conceição " }, curso: { nome: "Matemática" } },
+    ]);
+    const gerar = jest.spyOn(pdf, "gerarPdfInscricoesConfirmadas");
+    await service.inscricoesConfirmadasPdf();
+    expect(gerar.mock.calls[0][0].linhas[0].nome).toBe("JOSÉ DA CONCEIÇÃO");
+    gerar.mockRestore();
   });
 
   it("usa a edição informada", async () => {
