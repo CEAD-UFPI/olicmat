@@ -13,13 +13,18 @@ export default function ComissaoExportarPage() {
   const exportarCSV = async (tipo: string) => {
     setExportando(tipo);
     try {
-      const response = await api.get(`/admin/export/${tipo}`, {
+      const path =
+        tipo === "inscricoes-confirmadas"
+          ? "/admin/relatorios/inscricoes-confirmadas"
+          : `/admin/export/${tipo}`;
+      const response = await api.get(path, {
         responseType: "blob",
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
+      const ext = tipo === "inscricoes-confirmadas" ? "pdf" : "csv";
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${tipo}_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `${tipo}_${new Date().toISOString().slice(0, 10)}.${ext}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -32,6 +37,7 @@ export default function ComissaoExportarPage() {
   };
 
   const opcoes = [
+    { tipo: "inscricoes-confirmadas", label: "Inscrições confirmadas (PDF)", descricao: "Relatório oficial em PDF com número de inscrição, candidato e curso, em ordem alfabética", botao: "Gerar PDF" },
     { tipo: "inscricoes", label: "Inscrições", descricao: "Lista completa de inscrições com status e dados" },
     { tipo: "usuarios", label: "Usuários", descricao: "Lista de todos os usuários da plataforma" },
     { tipo: "provas", label: "Provas", descricao: "Lista de provas com quantidade de questões e status" },
@@ -50,7 +56,7 @@ export default function ComissaoExportarPage() {
         <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
           Exportar Dados
         </h1>
-        <p className="text-[#9895a4] mt-1">Exporte dados da plataforma em formato CSV</p>
+        <p className="text-[#9895a4] mt-1">Exporte dados da plataforma em formato CSV ou PDF</p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
@@ -68,7 +74,7 @@ export default function ComissaoExportarPage() {
                 className="border-[#2a2a3a] text-[#f0ece4] gap-2 cursor-pointer"
               >
                 <Download size={18} />
-                {exportando === op.tipo ? "Exportando..." : `Exportar ${op.label}`}
+                {exportando === op.tipo ? "Exportando..." : op.botao ?? `Exportar ${op.label}`}
               </Button>
             </CardContent>
           </Card>

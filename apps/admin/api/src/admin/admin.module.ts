@@ -6,12 +6,13 @@ import { AuditoriaModule } from "./auditoria/auditoria.module.js";
 import { AdminUsuariosModule } from "./usuarios/usuarios.module.js";
 import { CursosModule } from "./cursos/cursos.module.js";
 import { MonitoramentoModule } from "./monitoramento/monitoramento.module.js";
+import { RelatoriosModule } from "./relatorios/relatorios.module.js";
 
 @Module({
   imports: [
     ProvasModule, QuestoesModule, DashboardModule,
     AuditoriaModule, AdminUsuariosModule, CursosModule,
-    MonitoramentoModule,
+    MonitoramentoModule, RelatoriosModule,
   ],
   exports: [
     ProvasModule, QuestoesModule, DashboardModule,

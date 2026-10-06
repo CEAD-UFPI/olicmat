@@ -282,6 +282,7 @@ model Edicao {
 
 model Inscricao {
   id              String      @id @default(uuid())
+  numero          Int         @unique @default(autoincrement())
   userId          String
   edicaoId        String
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
