@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
+  { href: "/#noticias", label: "Notícias" },
   { href: "/#sobre", label: "Sobre" },
   { href: "/#cronograma", label: "Cronograma" },
   { href: "/regulamento", label: "Regulamento" },
