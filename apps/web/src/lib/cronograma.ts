@@ -36,25 +36,25 @@ export const CRONOGRAMA: EtapaCronograma[] = [
   {
     id: "inscricoes-validadas",
     atividade: "Divulgação das inscrições validadas",
-    data: "05/10/2026",
+    data: "06/10/2026",
     destaque: false,
   },
   {
     id: "fase1",
     atividade: "Aplicação da Fase 1 (on-line)",
-    data: "24/10/2026",
+    data: "08/11/2026",
     destaque: true,
   },
   {
     id: "resultado-fase1",
     atividade: "Resultado da Fase 1 e convocação para a Fase 2",
-    data: "30/10/2026",
+    data: "11/11/2026",
     destaque: false,
   },
   {
     id: "orientacoes-fase2",
     atividade: "Divulgação das orientações da Fase 2",
-    data: "05/11/2026 a 10/11/2026",
+    data: "13/11/2026 a 16/11/2026",
     destaque: false,
   },
   {
