@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Tutorial passo a passo de como realizar a prova da Fase 1 da OLICMAT 2026.">
+  <title>Como fazer a prova da Fase 1 — OLICMAT 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <style>
+    html { color-scheme: dark; scroll-behavior: smooth; }
+    img { max-width: 100%; }
+
+  :root {
+    --ground: #171722;
+    --surface: #20202e;
+    --surface-2: #262636;
+    --border: #45455c;
+    --ouro: #F4C840;
+    --verde: #5FC964;
+    --azul: #4FC0F0;
+    --rosa: #E88AA8;
+    --txt: #ffffff;
+    --txt-2: #d6d2e4;
+    --txt-3: #b6b2c4;
+    --display: "Fraunces", Georgia, serif;
+    --body: "Outfit", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--txt-2);
+    font-family: var(--body);
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--azul); }
+
+  header.capa {
+    padding: clamp(48px, 9vh, 96px) clamp(20px, 5vw, 56px) clamp(32px, 6vh, 56px);
+    border-bottom: 1px solid var(--border);
+    background:
+      radial-gradient(1000px 380px at 8% -10%, rgba(79,192,240,0.13), transparent 65%),
+      var(--ground);
+  }
+  .capa-inner { max-width: 1180px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--azul); margin: 0 0 16px;
+  }
+  h1 {
+    font-family: var(--display); font-weight: 600;
+    font-size: clamp(34px, 5.6vw, 62px); line-height: 1.03; letter-spacing: -0.02em;
+    color: var(--txt); margin: 0 0 16px; max-width: 17ch; text-wrap: balance;
+  }
+  .lede { font-size: clamp(16px, 1.9vw, 21px); font-weight: 300; color: var(--txt-2); max-width: 60ch; margin: 0; }
+
+  /* Linha do tempo da jornada, no cabeçalho */
+  .jornada { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(26px, 4vh, 40px); }
+  .jornada span {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+    color: var(--txt-3); background: var(--surface);
+  }
+  .jornada span b { color: var(--azul); font-weight: 500; }
+
+  .corpo {
+    max-width: 1180px; margin: 0 auto;
+    padding: clamp(28px, 5vh, 52px) clamp(20px, 5vw, 56px) 120px;
+    display: grid; grid-template-columns: 232px minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 64px); align-items: start;
+  }
+  @media (max-width: 900px) { .corpo { grid-template-columns: 1fr; } }
+
+  nav.indice { position: sticky; top: 24px; font-size: 14px; }
+  @media (max-width: 900px) {
+    nav.indice { position: static; border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; background: var(--surface); }
+  }
+  nav.indice p.titulo {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--txt-3); margin: 0 0 14px;
+  }
+  nav.indice ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; counter-reset: idx; }
+  nav.indice a {
+    display: flex; gap: 10px; padding: 7px 10px; border-radius: 8px;
+    color: var(--txt-3); text-decoration: none; line-height: 1.35;
+    transition: background 0.15s, color 0.15s;
+  }
+  nav.indice a::before {
+    counter-increment: idx; content: counter(idx, decimal-leading-zero);
+    font-family: var(--mono); font-size: 10px; color: var(--border); padding-top: 3px; flex: none;
+  }
+  nav.indice a:hover { background: var(--surface); color: var(--txt); }
+  nav.indice a.ativo { background: rgba(79,192,240,0.13); color: var(--azul); }
+  nav.indice a.ativo::before { color: var(--azul); }
+  nav.indice a:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+
+  section.passo { padding-bottom: clamp(36px, 6vh, 64px); scroll-margin-top: 24px; }
+  section.passo + section.passo { border-top: 1px solid var(--border); padding-top: clamp(36px, 6vh, 60px); }
+
+  .ord {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--azul); display: block; margin-bottom: 10px;
+  }
+  .ord .fase { font-family: var(--display); font-size: 1.5em; vertical-align: -0.1em; margin-right: 7px; }
+  h2 {
+    font-family: var(--display); font-weight: 600; font-size: clamp(24px, 3.1vw, 36px);
+    line-height: 1.14; letter-spacing: -0.012em; color: var(--txt);
+    margin: 0 0 14px; max-width: 24ch; text-wrap: balance;
+  }
+  h3 { font-family: var(--body); font-weight: 600; font-size: 17px; color: var(--txt); margin: 30px 0 10px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  strong { color: var(--txt); font-weight: 600; }
+
+  ol.acoes { counter-reset: ac; list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 14px; max-width: 68ch; }
+  ol.acoes li { position: relative; padding-left: 40px; }
+  ol.acoes li::before {
+    counter-increment: ac; content: counter(ac);
+    position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--azul);
+    font-family: var(--mono); font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  ul.pontos { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 9px; max-width: 68ch; }
+  ul.pontos li { padding-left: 20px; position: relative; }
+  ul.pontos li::before {
+    content: ""; position: absolute; left: 3px; top: 0.66em;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--azul);
+  }
+  ul.pontos li.nao::before { background: var(--rosa); }
+
+  .ui {
+    font-family: var(--mono); font-size: 0.86em; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px;
+    color: var(--txt); white-space: nowrap;
+  }
+  .campo { color: var(--azul); }
+  .botao { color: var(--ouro); }
+  .menu { color: var(--verde); }
+
+  .nota {
+    background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--azul);
+    border-radius: 12px; padding: 16px 20px; margin: 0 0 18px; max-width: 68ch;
+  }
+  .nota p:last-child { margin-bottom: 0; }
+  .nota .rot {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--azul); display: block; margin-bottom: 7px;
+  }
+  .nota.alerta { border-left-color: var(--rosa); }
+  .nota.alerta .rot { color: var(--rosa); }
+  .nota.ok { border-left-color: var(--verde); }
+  .nota.ok .rot { color: var(--verde); }
+  .nota.aviso { border-left-color: var(--ouro); }
+  .nota.aviso .rot { color: var(--ouro); }
+
+  .tabela-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; margin: 0 0 18px; max-width: 68ch; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--txt-3); text-align: left; padding: 10px 14px; background: var(--surface-2); white-space: nowrap;
+  }
+  td { padding: 11px 14px; border-top: 1px solid var(--border); vertical-align: top; }
+  td:first-child { color: var(--txt); }
+  tbody tr:nth-child(odd) td { background: rgba(255,255,255,0.017); }
+
+  .fatos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 0 0 22px; max-width: 68ch; }
+  @media (max-width: 620px) { .fatos { grid-template-columns: repeat(2, 1fr); } }
+  .fato { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+  .fato b {
+    font-family: var(--display); font-size: 26px; font-weight: 700; color: var(--azul);
+    display: block; line-height: 1; margin-bottom: 5px; font-variant-numeric: tabular-nums;
+  }
+  .fato span {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--txt-3);
+  }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 32px clamp(20px, 5vw, 56px) 56px;
+    font-size: 13px; color: var(--txt-3);
+  }
+  footer .inner { max-width: 1180px; margin: 0 auto; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+  figure.tela { margin: 6px 0 26px; max-width: 880px; }
+  figure.tela img {
+    display: block; width: 100%; height: auto; border-radius: 12px;
+    border: 1px solid var(--border); background: #0a0a0f;
+  }
+  figure.tela figcaption {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; color: var(--txt-3);
+    margin-top: 9px; line-height: 1.5;
+  }
+  .par { display: grid; grid-template-columns: 1fr; gap: 4px; max-width: 880px; margin: 6px 0 26px; }
+  .par figure.tela { margin: 0 0 18px; }
+  .cor { display: inline-block; width: 11px; height: 11px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
+  @media (max-width: 900px) { .corpo { grid-template-columns: minmax(0, 1fr); } .ui { white-space: normal; } }
+  main { min-width: 0; }
+  .demo {
+    background: var(--surface); border: 1px dashed var(--border); border-radius: 12px;
+    padding: 14px 18px; font-size: 14px; color: var(--txt-3); max-width: 68ch; margin: 22px 0 0;
+  }
+
+  </style>
+</head>
+<body>
+<header class="capa">
+  <div class="capa-inner">
+    <p class="eyebrow">OLICMAT 2026 · Tutorial do participante</p>
+    <h1>Como fazer a prova da Fase 1</h1>
+    <p class="lede">Do botão “Ir para a prova” até a nota na tela, passo a passo e com as telas reais do sistema. Leia uma vez antes do dia — são 10 minutos que evitam a maioria dos problemas.</p>
+    <div class="jornada">
+      <span><b>01</b> Preparar</span>
+      <span><b>02</b> Entrar</span>
+      <span><b>03</b> Responder</span>
+      <span><b>04</b> Regras</span>
+      <span><b>05</b> Finalizar</span>
+      <span><b>Fase 1</b> · 08/11/2026</span>
+    </div>
+  </div>
+</header>
+
+<div class="corpo">
+
+  <nav class="indice" aria-label="Índice do tutorial">
+    <p class="titulo">Neste tutorial</p>
+    <ol>
+      <li><a href="#preparar">Antes do dia da prova</a></li>
+      <li><a href="#entrar">Entrar na prova</a></li>
+      <li><a href="#responder">Responder uma questão</a></li>
+      <li><a href="#navegar">Navegar entre as questões</a></li>
+      <li><a href="#tempo">Cronômetro e avisos de tempo</a></li>
+      <li><a href="#regras">Tela cheia e advertências</a></li>
+      <li><a href="#finalizar">Finalizar a prova</a></li>
+      <li><a href="#imprevistos">Se algo der errado</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="passo" id="preparar">
+      <span class="ord"><span class="fase">π</span>Passo 1</span>
+      <h2>Antes do dia da prova</h2>
+
+      <div class="fatos">
+        <div class="fato"><b>30</b><span>Questões</span></div>
+        <div class="fato"><b>3h</b><span>De duração</span></div>
+        <div class="fato"><b>5</b><span>Alternativas</span></div>
+        <div class="fato"><b>60</b><span>Pts p/ Fase 2</span></div>
+      </div>
+
+      <ul class="pontos">
+        <li>Confirme no painel que sua inscrição está <strong>Confirmada</strong>. Sem isso a prova não abre.</li>
+        <li>Faça um login de teste e deixe a <strong>senha à mão</strong>: no dia, não dependa de recuperar senha.</li>
+        <li>Use um <strong>computador</strong> com internet estável e o carregador ligado. A prova exige tela cheia.</li>
+        <li>Reserve as <strong>3 horas inteiras</strong>, sem interrupção.</li>
+        <li>Feche e-mail, mensageiros e atualizações automáticas, e silencie o celular. Qualquer coisa que tire o foco da janela gera advertência (veja o <a href="#regras">passo 6</a>).</li>
+      </ul>
+
+      <p class="demo">As telas deste tutorial foram capturadas em uma <strong>prova de demonstração</strong>, com questões de exemplo e apenas 6 questões. A prova oficial tem 30 questões, mas o funcionamento é exatamente o mesmo.</p>
+    </section>
+
+    <section class="passo" id="entrar">
+      <span class="ord"><span class="fase">π</span>Passo 2</span>
+      <h2>Entrar na prova</h2>
+
+      <ol class="acoes">
+        <li>Entre no sistema com seu e-mail e senha. No painel, com a inscrição confirmada, aparece o cartão <span class="ui">Prova disponível</span>.</li>
+        <li>Clique em <span class="ui botao">Ir para a prova</span>. Você é levado à aplicação de prova <strong>já autenticado</strong>, sem precisar entrar de novo.</li>
+      </ol>
+
+      <figure class="tela"><img src="/tutorial-prova/02-painel-prova-disponivel.png" alt="Painel do participante com o cartão Prova disponível e o botão Ir para a prova" loading="lazy" width="1280" height="760"><figcaption>Painel do participante: cartão “Prova disponível” com o botão “Ir para a prova”.</figcaption></figure>
+
+      <div class="nota alerta">
+        <span class="rot">O relógio começa agora</span>
+        <p>O tempo da prova começa a contar <strong>assim que a tela da prova abre</strong> — antes mesmo de você clicar em qualquer coisa nela. Só clique em <span class="ui botao">Ir para a prova</span> quando estiver pronto para começar.</p>
+      </div>
+
+      <figure class="tela"><img src="/tutorial-prova/03-modo-seguro.png" alt="Tela Modo Prova Seguro com o botão Ativar Tela Cheia e Iniciar" loading="lazy" width="1280" height="760"><figcaption>Tela “Modo Prova Seguro”: clique em “Ativar Tela Cheia e Iniciar” para liberar as questões.</figcaption></figure>
+
+      <p>Na tela <span class="ui">Modo Prova Seguro</span>, clique em <span class="ui botao">Ativar Tela Cheia e Iniciar</span>. A prova só pode ser respondida em tela cheia.</p>
+    </section>
+
+    <section class="passo" id="responder">
+      <span class="ord"><span class="fase">π</span>Passo 3</span>
+      <h2>Responder uma questão</h2>
+      <p>Cada questão mostra o <strong>eixo</strong> e a <strong>dificuldade</strong> no alto, o enunciado e cinco alternativas (A a E). As fórmulas aparecem formatadas.</p>
+
+      <figure class="tela"><img src="/tutorial-prova/04-questao-1.png" alt="Questão da prova com cinco alternativas e o botão Salvar Resposta desabilitado" loading="lazy" width="1280" height="760"><figcaption>Questão aberta: ainda sem alternativa marcada, o botão “Salvar Resposta” está apagado.</figcaption></figure>
+
+      <ol class="acoes">
+        <li><strong>Clique na alternativa</strong> que considera correta. Ela fica destacada em laranja.</li>
+        <li>Clique em <span class="ui botao">Salvar Resposta</span>. O botão fica verde e passa a mostrar <span class="ui">✓ Resposta Salva</span>.</li>
+      </ol>
+
+      <div class="par">
+        <figure class="tela"><img src="/tutorial-prova/05-alternativa-marcada.png" alt="Alternativa marcada em laranja, ainda não salva" loading="lazy" width="1280" height="760"><figcaption>1. Alternativa marcada (laranja) — ainda <strong>não</strong> salva.</figcaption></figure>
+        <figure class="tela"><img src="/tutorial-prova/06-resposta-salva.png" alt="Botão verde Resposta Salva" loading="lazy" width="1280" height="760"><figcaption>2. Depois de clicar em “Salvar Resposta”.</figcaption></figure>
+      </div>
+
+      <div class="nota alerta">
+        <span class="rot">Marcar não é salvar</span>
+        <p>Só conta a resposta em que você clicou em <span class="ui botao">Salvar Resposta</span>. Se marcar uma alternativa e passar para a próxima sem salvar, <strong>aquela resposta não é registrada</strong>. Antes de mudar de questão, confira que o botão está verde.</p>
+      </div>
+
+      <div class="nota ok">
+        <span class="rot">Dá para mudar de ideia</span>
+        <p>Quer trocar uma resposta já salva? Volte à questão, marque outra alternativa e clique em <span class="ui botao">Salvar Resposta</span> de novo. Vale a última que você salvar.</p>
+      </div>
+    </section>
+
+    <section class="passo" id="navegar">
+      <span class="ord"><span class="fase">π</span>Passo 4</span>
+      <h2>Navegar entre as questões</h2>
+
+      <figure class="tela"><img src="/tutorial-prova/07-navegacao-bolinhas.png" alt="Barra inferior com botões Anterior e Próxima e bolinhas numeradas das questões" loading="lazy" width="1280" height="760"><figcaption>Barra inferior: “← Anterior”, “Próxima →” e as bolinhas numeradas.</figcaption></figure>
+
+      <p>Use <span class="ui botao">← Anterior</span> e <span class="ui botao">Próxima →</span>, ou clique direto na bolinha numerada. Você pode ir e voltar quantas vezes quiser. As cores mostram onde você está:</p>
+      <ul class="pontos">
+        <li><span class="cor" style="background:#E85D04"></span><strong>Laranja:</strong> a questão em que você está agora.</li>
+        <li><span class="cor" style="background:#2EC4B6"></span><strong>Verde:</strong> já respondida e salva.</li>
+        <li><span class="cor" style="background:#3a3a4a"></span><strong>Cinza:</strong> ainda sem resposta.</li>
+      </ul>
+      <p>Uma boa estratégia: faça primeiro as que você domina, deixe as difíceis para depois e use as bolinhas cinzas como sua lista de pendências.</p>
+
+      <div class="nota">
+        <span class="rot">A ordem é só sua</span>
+        <p>As questões e as alternativas aparecem em <strong>ordem sorteada para cada participante</strong>. A sua ordem não muda durante a prova, mas não é a mesma do colega ao lado: a “letra C” dele não é a sua “letra C”.</p>
+      </div>
+    </section>
+
+    <section class="passo" id="tempo">
+      <span class="ord"><span class="fase">π</span>Passo 5</span>
+      <h2>Cronômetro e avisos de tempo</h2>
+      <p>O cronômetro fica no canto superior direito, em contagem regressiva. Ele avisa com uma mensagem na tela quando faltam <strong>30 minutos</strong>, <strong>10 minutos</strong> e <strong>1 minuto</strong>, e fica vermelho nos últimos 10 minutos.</p>
+
+      <div class="nota alerta">
+        <span class="rot">O relógio não para</span>
+        <p>O tempo é contado desde o momento em que você abriu a prova. Se a internet cair ou o navegador fechar, <strong>o relógio continua correndo</strong>. Reabra a prova o quanto antes: tudo o que você salvou estará lá.</p>
+      </div>
+
+      <p>Quando o tempo chega a zero, a prova é <strong>finalizada automaticamente</strong>, valendo as respostas que estiverem salvas.</p>
+    </section>
+
+    <section class="passo" id="regras">
+      <span class="ord"><span class="fase">π</span>Passo 6</span>
+      <h2>Tela cheia e advertências</h2>
+      <p>O sistema acompanha se você permanece na prova. Cada vez que isso falha, aparece uma <strong>advertência</strong>. <strong>Na terceira, a prova é encerrada automaticamente</strong>, valendo apenas o que estiver salvo.</p>
+
+      <figure class="tela"><img src="/tutorial-prova/08-advertencia.png" alt="Janela de advertência por violação de foco, indicando advertência 1 de 3" loading="lazy" width="1280" height="760"><figcaption>Advertência 1 de 3: clique em “Entendido — Retornar à Prova” para continuar.</figcaption></figure>
+
+      <p>Geram advertência:</p>
+      <ul class="pontos">
+        <li class="nao">Sair da tela cheia (inclusive apertando <span class="ui">Esc</span>)</li>
+        <li class="nao">Trocar de aba ou de janela</li>
+        <li class="nao">Clicar fora da janela da prova, ou receber uma notificação que roube o foco</li>
+        <li class="nao">Tentar abrir as ferramentas do navegador: <span class="ui">F12</span>, <span class="ui">Ctrl+Shift+I</span>, <span class="ui">Ctrl+Shift+J</span>, <span class="ui">Ctrl+Shift+C</span> ou <span class="ui">Ctrl+U</span></li>
+      </ul>
+
+      <div class="nota">
+        <span class="rot">Se receber uma advertência</span>
+        <p>Não entre em pânico: leia o motivo, clique em <span class="ui botao">Entendido — Retornar à Prova</span> e volte a responder. O sistema devolve a tela cheia. Você tem duas chances antes do encerramento — mas o melhor é não gastar nenhuma. O botão direito do mouse também fica desativado durante a prova.</p>
+      </div>
+    </section>
+
+    <section class="passo" id="finalizar">
+      <span class="ord"><span class="fase">π</span>Passo 7</span>
+      <h2>Finalizar a prova</h2>
+      <p>Terminou? Clique em <span class="ui botao">Finalizar Prova</span>, no canto superior direito. Antes de encerrar, o sistema pede uma confirmação e mostra quantas questões você respondeu.</p>
+
+      <div class="par">
+        <figure class="tela"><img src="/tutorial-prova/09-confirmar-finalizacao.png" alt="Janela de confirmação perguntando se deseja finalizar, com o número de questões respondidas" loading="lazy" width="1280" height="760"><figcaption>Confirmação: mostra quantas questões foram respondidas.</figcaption></figure>
+        <figure class="tela"><img src="/tutorial-prova/10-questoes-pendentes.png" alt="Janela de aviso de questões não respondidas com os botões Revisar Pendentes e Finalizar Assim Mesmo" loading="lazy" width="1280" height="760"><figcaption>Se houver questões em branco, o sistema avisa antes.</figcaption></figure>
+      </div>
+
+      <p>Se ainda houver questões sem resposta, aparece <span class="ui">Questões Não Respondidas</span>. Clique em <span class="ui botao">Revisar Pendentes</span> para voltar à prova. Só use <span class="ui botao">Finalizar Assim Mesmo</span> se tiver certeza.</p>
+
+      <figure class="tela"><img src="/tutorial-prova/11-prova-finalizada.png" alt="Tela Prova Finalizada mostrando a nota da Fase 1" loading="lazy" width="1280" height="760"><figcaption>Tela final: a nota da Fase 1 aparece na hora.</figcaption></figure>
+
+      <p>Ao finalizar, a <strong>correção é automática</strong> e a sua nota da Fase 1 aparece na tela. A nota é o percentual de acertos: <strong>acertos ÷ total de questões × 100</strong>. Questão em branco e questão errada valem o mesmo — <strong>não há desconto por erro</strong>, então vale responder todas. Quem faz <strong>60 pontos ou mais</strong> é convocado para a Fase 2.</p>
+
+      <div class="nota alerta">
+        <span class="rot">Finalizar é definitivo</span>
+        <p>Depois de finalizar, <strong>não é possível voltar à prova</strong> nem alterar respostas. Revise com calma antes de confirmar. O resultado oficial e a convocação para a Fase 2 são divulgados em <strong>11/11/2026</strong>.</p>
+      </div>
+    </section>
+
+    <section class="passo" id="imprevistos">
+      <span class="ord">Referência</span>
+      <h2>Se algo der errado</h2>
+      <div class="tabela-wrap">
+        <table>
+          <thead><tr><th>O que aconteceu</th><th>O que fazer</th></tr></thead>
+          <tbody>
+            <tr><td>A internet caiu ou o navegador fechou sozinho.</td><td>Volte ao sistema, entre e clique em <span class="ui botao">Ir para a prova</span>. Suas respostas salvas estão lá. <strong>O relógio não parou</strong>, então volte rápido.</td></tr>
+            <tr><td>Saí da tela cheia sem querer.</td><td>Clique em <span class="ui botao">Entendido — Retornar à Prova</span>. Isso conta uma advertência (são 3 no máximo).</td></tr>
+            <tr><td>“A prova ainda não está disponível para realização.”</td><td>Você tentou entrar fora do horário da prova. Confira o horário divulgado para 08/11.</td></tr>
+            <tr><td>“Inscrição não confirmada para realizar a prova.”</td><td>Sua inscrição ainda está pendente. Procure a coordenação do seu curso <strong>antes</strong> do dia da prova.</td></tr>
+            <tr><td>“Tempo de prova esgotado ou já finalizada.”</td><td>As 3 horas terminaram, ou a prova já foi finalizada. O que estava salvo foi contabilizado.</td></tr>
+            <tr><td>A tela travou ou algo não carrega.</td><td>Recarregue a página (<span class="ui">F5</span>) e entre de novo na prova. Se persistir, fale com a organização da OLICMAT imediatamente, com seu nome e horário.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="nota">
+        <span class="rot">Quer ver o guia completo?</span>
+        <p>Este tutorial cobre só a Fase 1. Para cadastro, inscrição, Fase 2 e resultado, veja o <strong>Guia do Participante</strong> no painel (menu <span class="ui menu">Guia</span>).</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="inner">
+    <p style="margin:0;">OLICMAT 2026 · Tutorial da prova da Fase 1 — Olimpíada para Licenciandos em Matemática. Fase 1 em <strong>08/11/2026</strong> · Resultado e convocação em <strong>11/11/2026</strong>. Datas conforme o Regulamento oficial.</p>
+  </div>
+</footer>
+</body>
+</html>
