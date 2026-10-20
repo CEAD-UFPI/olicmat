@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Link as LinkIcon } from "lucide-react";
 
 interface StatusEnvio {
+  fase2Liberada?: boolean;
+  fase2LiberadaEm?: string;
   fase2Tema: string | null;
   enviosFase2: Array<{
     id: string;
@@ -106,6 +108,27 @@ export default function EnvioPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (status && status.fase2Liberada === false) {
+    const data = status.fase2LiberadaEm
+      ? new Date(status.fase2LiberadaEm).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })
+      : null;
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          Fase 2 — Desafio Didático-Tecnológico
+        </h1>
+        <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-3">
+          <p className="text-lg font-semibold text-[#f0ece4]">A Fase 2 ainda não foi liberada</p>
+          <p className="text-[#b0adc0] leading-relaxed">
+            A convocação para a Fase 2 será divulgada
+            {data ? <> em <strong className="text-[#f0ece4]">{data}</strong></> : " na data prevista no cronograma"}.
+            Até lá, o sorteio do tema e o envio do vídeo e do portfólio ficam indisponíveis.
+          </p>
+        </div>
       </div>
     );
   }

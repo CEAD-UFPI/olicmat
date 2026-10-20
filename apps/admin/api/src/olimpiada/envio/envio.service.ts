@@ -5,6 +5,11 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
 import { UploadService } from "../../upload/upload.service.js";
+import {
+  exigirFase2Liberada,
+  fase2Liberada,
+  fase2LiberadaEm,
+} from "../fase2-liberacao.js";
 
 interface FileBuffer {
   buffer: Buffer;
@@ -21,6 +26,7 @@ export class EnvioService {
   ) {}
 
   async enviarVideoLink(userId: string, videoLink: string) {
+    exigirFase2Liberada();
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
     });
@@ -64,6 +70,7 @@ export class EnvioService {
   }
 
   async uploadPortfolio(userId: string, file: FileBuffer) {
+    exigirFase2Liberada();
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
     });
@@ -146,6 +153,10 @@ export class EnvioService {
       throw new NotFoundException("Inscrição não encontrada");
     }
 
-    return inscricao;
+    return {
+      ...inscricao,
+      fase2Liberada: fase2Liberada(),
+      fase2LiberadaEm: fase2LiberadaEm().toISOString(),
+    };
   }
 }

@@ -16,6 +16,7 @@ import type {
 } from "./dto/inscricao.dto.js";
 import type { PaginationParams } from "../../common/pagination.js";
 import { getSkipTake, paginate } from "../../common/pagination.js";
+import { exigirFase2Liberada } from "../fase2-liberacao.js";
 
 const TEMAS_GERADORES = [
   "Funções no Cotidiano",
@@ -428,6 +429,7 @@ export class InscricaoService {
   }
 
   async sortearTema(inscricaoId: string) {
+    exigirFase2Liberada();
     const inscricao = await this.prisma.inscricao.findUnique({
       where: { id: inscricaoId },
     });

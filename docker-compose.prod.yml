@@ -62,6 +62,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       FRONTEND_URL: ${FRONTEND_URL:-https://olicmat.cead.ufpi.br}
       EXAM_APP_URL: ${EXAM_APP_URL:-https://prova.olicmat.cead.ufpi.br}
+      FASE2_LIBERADA_EM: ${FASE2_LIBERADA_EM:-}
       # Armazenamento local (substitui o Cloudinary — bloqueado na rede UFPI).
       UPLOAD_DIR: /app/uploads
       PUBLIC_API_URL: ${PUBLIC_API_URL:-https://olicmat.cead.ufpi.br}

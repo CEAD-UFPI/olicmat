@@ -51,6 +51,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev_secret_change_in_production}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3006}
       EXAM_APP_URL: ${EXAM_APP_URL:-http://localhost:3007}
+      FASE2_LIBERADA_EM: ${FASE2_LIBERADA_EM:-}
       UPLOAD_DIR: /app/uploads
       PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:3333}
       SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
