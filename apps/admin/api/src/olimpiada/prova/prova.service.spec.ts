@@ -72,12 +72,14 @@ describe("ProvaService", () => {
       prisma.provaQuestao.count.mockResolvedValue(10);
       prisma.inscricao.update.mockResolvedValue({ id: "insc1", fase1Nota: 20 });
 
-      await service.finalizarProva("user1");
+      const result = await service.finalizarProva("user1");
 
+      // A nota é calculada e gravada, mas NÃO devolvida ao participante.
       expect(prisma.inscricao.update).toHaveBeenCalledWith({
         where: { id: "insc1" },
         data: { fase1Nota: 20, fase1Fim: expect.any(Date) },
       });
+      expect(result).not.toHaveProperty("fase1Nota");
     });
 
     it("é idempotente quando a prova já foi finalizada", async () => {
@@ -92,7 +94,8 @@ describe("ProvaService", () => {
 
       const result = await service.finalizarProva("user1");
 
-      expect(result).toEqual(jaFinalizada);
+      expect(result).toEqual({ id: "insc1", fase1Fim: jaFinalizada.fase1Fim });
+      expect(result).not.toHaveProperty("fase1Nota");
       expect(prisma.resposta.groupBy).not.toHaveBeenCalled();
       expect(prisma.inscricao.update).not.toHaveBeenCalled();
     });

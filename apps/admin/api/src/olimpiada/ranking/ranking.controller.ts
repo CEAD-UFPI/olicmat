@@ -38,15 +38,17 @@ export class RankingController {
     return this.rankingService.atualizarMedalhas(req.user.id);
   }
 
+  // Ranking ao vivo (antes da publicação): restrito à equipe, para o participante
+  // não enxergar pontuações de outros antes da divulgação oficial.
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ALUNO, Role.COORDENADOR_CURSO, Role.COMISSAO, Role.AVALIADOR, Role.ADMIN)
+  @Roles(Role.COORDENADOR_CURSO, Role.COMISSAO, Role.AVALIADOR, Role.ADMIN)
   @Get("instituicoes")
   async rankingPorInstituicao() {
     return this.rankingService.rankingPorInstituicao();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ALUNO, Role.COORDENADOR_CURSO, Role.COMISSAO, Role.AVALIADOR, Role.ADMIN)
+  @Roles(Role.COORDENADOR_CURSO, Role.COMISSAO, Role.AVALIADOR, Role.ADMIN)
   @Get("curso")
   async rankingPorCurso(@Query("cursoId") cursoId?: string) {
     return this.rankingService.rankingPorCurso(cursoId);

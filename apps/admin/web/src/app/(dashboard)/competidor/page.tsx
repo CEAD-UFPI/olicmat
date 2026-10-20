@@ -78,10 +78,14 @@ export default function CompetidorPage() {
           />
           <StatusCard
             titulo="Fase 1"
-            valor={inscricao.fase1Nota != null ? `${inscricao.fase1Nota} pts` : "Não iniciada"}
-            cor={inscricao.fase1Nota != null ? "var(--integral-verde)" : "var(--sigma-azul)"}
+            valor={inscricao.fase1Fim ? "Concluída" : "Não iniciada"}
+            cor={inscricao.fase1Fim ? "var(--integral-verde)" : "var(--sigma-azul)"}
             simbolo="π"
-            descricao={inscricao.fase1Nota != null ? "Prova concluída" : "Prova online de múltipla escolha"}
+            descricao={
+              inscricao.fase1Fim
+                ? "Gabarito e pontuações serão publicados no site"
+                : "Prova online de múltipla escolha"
+            }
           />
           <StatusCard
             titulo="Fase 2"
@@ -93,7 +97,7 @@ export default function CompetidorPage() {
         </div>
       )}
 
-      {inscricao?.status === "CONFIRMADA" && !inscricao.fase1Nota && (
+      {inscricao?.status === "CONFIRMADA" && !inscricao.fase1Fim && (
         <motion.div
           className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a]"
           initial={{ opacity: 0, y: 20 }}

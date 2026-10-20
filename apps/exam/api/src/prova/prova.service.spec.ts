@@ -141,12 +141,14 @@ describe("ProvaService (exam-api)", () => {
       prisma.provaQuestao.count.mockResolvedValue(10);
       prisma.inscricao.update.mockResolvedValue({ id: "i1", fase1Nota: 20 });
 
-      await service.finalizarProva("u1");
+      const result = await service.finalizarProva("u1");
 
+      // A nota é calculada e gravada, mas NÃO devolvida ao participante.
       expect(prisma.inscricao.update).toHaveBeenCalledWith({
         where: { id: "i1" },
         data: { fase1Nota: 20, fase1Fim: expect.any(Date) },
       });
+      expect(result).not.toHaveProperty("fase1Nota");
     });
 
     it("é idempotente quando a prova já foi finalizada", async () => {
@@ -158,9 +160,31 @@ describe("ProvaService (exam-api)", () => {
 
       const result = await service.finalizarProva("u1");
 
-      expect(result).toEqual(finalizada);
+      expect(result).toEqual({ id: "i1", fase1Fim: finalizada.fase1Fim });
+      expect(result).not.toHaveProperty("fase1Nota");
       expect(prisma.resposta.groupBy).not.toHaveBeenCalled();
       expect(prisma.inscricao.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("resumoProva", () => {
+    it("não expõe nota, acertos nem percentual", async () => {
+      prisma.inscricao.findFirst.mockResolvedValue({
+        id: "i1", edicaoId: "ed1", fase1Inicio: new Date(), fase1Fim: new Date(),
+      });
+      prisma.prova.findFirst.mockResolvedValue({ id: "p1" });
+      prisma.provaQuestao.count.mockResolvedValue(10);
+      prisma.resposta.groupBy.mockResolvedValue([
+        { correta: true, _count: { _all: 2 } },
+        { correta: false, _count: { _all: 3 } },
+      ]);
+
+      const r = await service.resumoProva("u1");
+
+      expect(r).toMatchObject({ inscricaoId: "i1", respondidas: 5, total: 10 });
+      for (const campo of ["fase1Nota", "corretas", "percentual"]) {
+        expect(r).not.toHaveProperty(campo);
+      }
     });
   });
 });

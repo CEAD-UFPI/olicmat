@@ -6,6 +6,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
 import type { ResponderQuestaoDto } from "./dto/prova.dto.js";
+import { semNotaFase1 } from "../sem-nota-fase1.js";
 
 const DURACAO_PROVA_MINUTOS = 180; // 3 horas
 
@@ -197,7 +198,7 @@ export class ProvaService {
    *       means "exam is over". This is the critical write; once it is
    *       committed, the user can no longer submit answers.
    *    2. Compute and persist fase1Nota in the same transaction.
-   *       The user sees their score immediately in the response.
+   *       The score is stored but NOT returned: it is published later on the site.
    *
    *  Asynchronous (enqueued after synchronous persistence succeeds):
    *    1. Cache invalidation for the user's exam session.
@@ -248,7 +249,9 @@ export class ProvaService {
         `finalizar idempotent return inscricao=${inscricao.id} ` +
           `nota=${inscricao.fase1Nota} duration_ms=${Date.now() - start}`
       );
-      return this.prisma.inscricao.findUnique({ where: { id: inscricao.id } });
+      return semNotaFase1(
+        await this.prisma.inscricao.findUnique({ where: { id: inscricao.id } }),
+      );
     }
 
     const prova = await this.prisma.prova.findFirst({
@@ -299,7 +302,7 @@ export class ProvaService {
         `duration_ms=${Date.now() - start}`
     );
 
-    return updated;
+    return semNotaFase1(updated);
   }
 
   async resumoProva(userId: string) {
@@ -311,7 +314,6 @@ export class ProvaService {
         edicaoId: true,
         fase1Inicio: true,
         fase1Fim: true,
-        fase1Nota: true,
       },
     });
 
@@ -338,21 +340,16 @@ export class ProvaService {
     });
 
     let respondidas = 0;
-    let corretas = 0;
     for (const g of groups) {
       respondidas += g._count._all;
-      if (g.correta) corretas = g._count._all;
     }
 
     return {
       inscricaoId: inscricao.id,
       inicio: inscricao.fase1Inicio?.toISOString() || null,
       fim: inscricao.fase1Fim?.toISOString() || null,
-      fase1Nota: inscricao.fase1Nota,
       respondidas,
-      corretas,
       total,
-      percentual: total > 0 ? Math.round((corretas / total) * 100) : 0,
     };
   }
 }

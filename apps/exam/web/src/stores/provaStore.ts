@@ -22,7 +22,6 @@ interface ProvaState {
   fim: string | null;
   carregando: boolean;
   finalizada: boolean;
-  nota: number | null;
   salvando: boolean;
   erro: string | null;
   limparErro: () => void;
@@ -42,7 +41,6 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   fim: null,
   carregando: false,
   finalizada: false,
-  nota: null,
   salvando: false,
   erro: null,
 
@@ -64,12 +62,7 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
       });
     } catch (err: any) {
       if (err?.response?.data?.message === "Tempo de prova esgotado ou já finalizada") {
-        const resumo = await api.get("/prova/resumo").then((res) => res.data).catch(() => null);
-        set({
-          finalizada: true,
-          nota: resumo?.fase1Nota ?? null,
-          carregando: false,
-        });
+        set({ finalizada: true, carregando: false });
         return;
       }
       set({
@@ -123,12 +116,8 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   finalizar: async () => {
     set({ salvando: true, erro: null });
     try {
-      const { data } = await api.post("/prova/finalizar");
-      set({
-        finalizada: true,
-        nota: data.fase1Nota,
-        salvando: false,
-      });
+      await api.post("/prova/finalizar");
+      set({ finalizada: true, salvando: false });
     } catch (err: any) {
       set({
         salvando: false,

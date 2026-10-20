@@ -9,6 +9,17 @@ import { shuffleIds, permutacaoAlternativas } from "./shuffle.js";
 
 const DURACAO_PROVA_MINUTOS = 180; // 3 horas
 
+/**
+ * A nota da Fase 1 NÃO é divulgada ao participante ao final da prova: o gabarito
+ * e a pontuação de todos serão publicados no site da OLICMAT. Nenhuma resposta
+ * desta API deve carregar nota, número de acertos ou percentual.
+ */
+function semNotaFase1<T extends { fase1Nota?: unknown }>(inscricao: T | null): Omit<T, "fase1Nota"> | null {
+  if (!inscricao) return null;
+  const { fase1Nota: _omitida, ...resto } = inscricao;
+  return resto;
+}
+
 @Injectable()
 export class ProvaService {
   constructor(private prisma: PrismaService) {}
@@ -265,7 +276,9 @@ export class ProvaService {
     }
 
     if (inscricao.fase1Fim) {
-      return this.prisma.inscricao.findUnique({ where: { id: inscricao.id } });
+      return semNotaFase1(
+        await this.prisma.inscricao.findUnique({ where: { id: inscricao.id } }),
+      );
     }
 
     const prova = await this.prisma.prova.findFirst({
@@ -293,13 +306,14 @@ export class ProvaService {
 
     const nota = totalQuestoes > 0 ? (corretas / totalQuestoes) * 100 : 0;
 
-    return this.prisma.inscricao.update({
+    const atualizada = await this.prisma.inscricao.update({
       where: { id: inscricao.id },
       data: {
         fase1Nota: Math.round(nota * 100) / 100,
         fase1Fim: new Date(),
       },
     });
+    return semNotaFase1(atualizada);
   }
 
   async resumoProva(userId: string) {
@@ -311,7 +325,6 @@ export class ProvaService {
         edicaoId: true,
         fase1Inicio: true,
         fase1Fim: true,
-        fase1Nota: true,
       },
     });
 
@@ -336,21 +349,16 @@ export class ProvaService {
     });
 
     let respondidas = 0;
-    let corretas = 0;
     for (const g of groups) {
       respondidas += g._count._all;
-      if (g.correta) corretas = g._count._all;
     }
 
     return {
       inscricaoId: inscricao.id,
       inicio: inscricao.fase1Inicio?.toISOString() || null,
       fim: inscricao.fase1Fim?.toISOString() || null,
-      fase1Nota: inscricao.fase1Nota,
       respondidas,
-      corretas,
       total,
-      percentual: total > 0 ? Math.round((corretas / total) * 100) : 0,
     };
   }
 

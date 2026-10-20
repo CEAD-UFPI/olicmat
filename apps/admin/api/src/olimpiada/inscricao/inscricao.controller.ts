@@ -28,6 +28,7 @@ import {
 import type { CriarInscricaoDto } from "./dto/inscricao.dto.js";
 import type { Request as ExpressReq } from "express";
 import { UploadService } from "../../upload/upload.service.js";
+import { semNotaFase1 } from "../sem-nota-fase1.js";
 
 interface AuthUser {
   id: string;
@@ -76,7 +77,8 @@ export class InscricaoController {
   @UseGuards(JwtAuthGuard)
   @Get("minha")
   async minha(@Request() req: ExpressReq & { user: AuthUser }) {
-    return this.inscricaoService.buscarPorUsuario(req.user.id);
+    // A nota da Fase 1 é divulgada no site, não no painel do participante.
+    return semNotaFase1(await this.inscricaoService.buscarPorUsuario(req.user.id));
   }
 
   @UseGuards(JwtAuthGuard)

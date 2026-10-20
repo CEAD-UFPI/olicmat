@@ -80,7 +80,7 @@ export default function CompetidorResultadoPage() {
             <div className="border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a] text-center">
               <p className="text-sm text-[#b0adc0] uppercase tracking-widest mb-2">Fase 1</p>
               <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
-                {inscricao.fase1Nota != null ? `${inscricao.fase1Nota} pts` : "-"}
+                {inscricao.fase1Fim ? "A divulgar" : "-"}
               </p>
             </div>
             <div className="border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a] text-center">
