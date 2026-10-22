@@ -41,7 +41,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 const DIST = "../dist/src";
 
 /** O texto fala em "Hoje": só pode sair no dia da live (fuso de Brasília). */
-const DIA_DA_LIVE = "2026-10-23";
+const DIA_DA_LIVE = "2026-10-22";
 const LINK_LIVE = "https://youtube.com/live/BL7i-hALVZc";
 const ASSUNTO =
   "OLICMAT — Live de orientação da Fase 1 hoje, às 19h, e atualização do seu cadastro";
@@ -59,7 +59,7 @@ function montarHtml(frontendUrl: string): string {
   <p>Convidamos vocês para uma live de orientação sobre a prova da Fase 1!</p>
 
   <div style="background: #FBF6E4; border-left: 4px solid #E8B829; border-radius: 6px; padding: 14px 18px; margin: 16px 0;">
-    <p style="margin: 0 0 6px;">📅 <strong>Hoje, 23/10/2026</strong></p>
+    <p style="margin: 0 0 6px;">📅 <strong>Hoje, 22/10/2026</strong></p>
     <p style="margin: 0 0 6px;">🕘 <strong>Às 19h</strong> (horário de Brasília)</p>
     <p style="margin: 0;">Link: <a href="${LINK_LIVE}" style="color: #1a5fb4;">${LINK_LIVE}</a></p>
   </div>
@@ -166,7 +166,7 @@ async function main() {
 
     if (!tem("--forcar-data") && hojeEmBrasilia() !== DIA_DA_LIVE) {
       throw new Error(
-        `O texto diz "Hoje, 23/10/2026", mas hoje (Brasília) é ${hojeEmBrasilia()}. ` +
+        `O texto diz "Hoje, 22/10/2026", mas hoje (Brasília) é ${hojeEmBrasilia()}. ` +
           "Envie no dia da live ou ajuste o texto. Para ignorar esta trava: --forcar-data.",
       );
     }
