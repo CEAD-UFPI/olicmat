@@ -109,7 +109,7 @@ export default function CompetidorPage() {
               <h3 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
                 Prova disponível
               </h3>
-              <p className="text-base text-[#b0adc0]">30 questões · 3 horas de duração (Ambiente Isolado)</p>
+              <p className="text-base text-[#b0adc0]">20 questões · 2h30 de duração (Ambiente Isolado)</p>
             </div>
             <Button
               size="lg"

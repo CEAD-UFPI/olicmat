@@ -111,7 +111,7 @@ export function ProvaEditor({
       setProva({
         id: "nova",
         titulo: "",
-        duracaoMinutos: 180,
+        duracaoMinutos: 150,
         status: "RASCUNHO",
         questoes: [],
       });

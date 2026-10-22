@@ -67,7 +67,7 @@ export default function ProvaPage() {
 
       <p className="text-[#9895a4] text-sm leading-relaxed">
         A prova é executada em uma aplicação isolada, separada deste painel,
-        para garantir estabilidade durante as 3 horas de realização. Ao
+        para garantir estabilidade durante as 2h30 de realização. Ao
         continuar, você será levado até ela já autenticado — não precisa
         entrar de novo.
       </p>
@@ -79,7 +79,7 @@ export default function ProvaPage() {
           Feche outras abas e silencie notificações: sair da tela cheia ou
           trocar de janela gera advertência.
         </p>
-        <p>Reserve as 3 horas sem interrupção.</p>
+        <p>Reserve as 2h30 sem interrupção.</p>
       </div>
 
       {erro && (

@@ -8,8 +8,8 @@ const destaques = [
     cor: "#E8B829",
     titulo: "Fase 1",
     descricao:
-      "Prova online com 30 questões de múltipla escolha, abrangendo matemática e didática. Duração de 3 horas com tempo cronometrado.",
-    detalhes: ["Prova cronometrada", "30 questões", "Online"],
+      "Prova online com 20 questões de múltipla escolha, abrangendo matemática e didática. Duração de 2h30 com tempo cronometrado.",
+    detalhes: ["Prova cronometrada", "20 questões", "Online"],
   },
   {
     simbolo: "∫",

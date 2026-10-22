@@ -279,7 +279,7 @@ async function main() {
       edicaoId: edicao2026.id,
       fase: 1,
       titulo: "Prova Objetiva — Fase 1",
-      duracaoMinutos: 180,
+      duracaoMinutos: 150,
       status: StatusProva.RASCUNHO,
       versao: 1,
       createdBy: avaliador.id,

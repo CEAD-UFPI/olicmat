@@ -8,7 +8,7 @@ import { PrismaService } from "../../prisma.service.js";
 import type { ResponderQuestaoDto } from "./dto/prova.dto.js";
 import { semNotaFase1 } from "../sem-nota-fase1.js";
 
-const DURACAO_PROVA_MINUTOS = 180; // 3 horas
+const DURACAO_PROVA_MINUTOS = 150; // 2h30
 
 @Injectable()
 export class ProvaService {

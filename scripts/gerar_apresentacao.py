@@ -183,7 +183,7 @@ add_textbox(sl, 1.0, 1.8, 11.0, 1.2,
 
 # 3 pilares como cards
 add_icon_text(sl, 1.0, 3.5, "🏆", "OLICMAT — Competição",
-              "Olimpíada em duas fases: prova objetiva online (30 questões) + "
+              "Olimpíada em duas fases: prova objetiva online (20 questões) + "
               "produção de videoaula e portfólio digital. Ranking estadual com "
               "medalhas de ouro, prata e bronze.",
               icon_color=ACCENT_GOLD)
@@ -348,9 +348,9 @@ add_textbox(sl, 1.0, 1.7, 11.0, 0.5,
 add_card(sl, 1.0, 2.5, 5.5, 3.2, border_color=ACCENT_GOLD)
 add_textbox(sl, 1.3, 2.7, 5.0, 0.4, "FASE 1 — Prova Objetiva", font_size=20, color=ACCENT_GOLD, bold=True)
 f1_items = [
-    "30 questões de múltipla escolha (A-E)",
+    "20 questões de múltipla escolha (A-E)",
     "Eixos: Álgebra, Geometria, Análise, Estatística, Didática",
-    "Cronômetro regressivo de 180 minutos",
+    "Cronômetro regressivo de 150 minutos",
     "Correção automática ao finalizar",
     "Salvamento contínuo das respostas",
     "Peso: 40% da nota final",
@@ -463,7 +463,7 @@ add_textbox(sl, 1.0, 1.6, 11.0, 0.4,
 done = [
     ("✅", "Autenticação completa", "Registro em 2 etapas, login JWT, 3 perfis (Aluno, Avaliador, Admin)"),
     ("✅", "Inscrição OLICMAT", "Formulário com UF, instituição, curso, período + validação por admin"),
-    ("✅", "Prova Fase 1", "30 questões com timer de 180 min, salvamento contínuo, correção automática"),
+    ("✅", "Prova Fase 1", "20 questões com timer de 150 min, salvamento contínuo, correção automática"),
     ("✅", "Upload Fase 2", "Videoaula (MP4) + Portfólio (PDF) via Cloudinary com barra de progresso"),
     ("✅", "Ranking + Medalhas", "Por estado, distribuição automática Ouro/Prata/Bronze (5%/10%/15%)"),
     ("✅", "FORPEMAT", "14 módulos com conteúdo, progresso individual, certificado automático 120h"),

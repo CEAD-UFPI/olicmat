@@ -12,7 +12,7 @@ export type StatusAlunoMonitoramento =
   | "em_andamento"
   | "finalizado";
 
-const DURACAO_PROVA_MINUTOS = 180;
+const DURACAO_PROVA_MINUTOS = 150; // 2h30
 
 @Injectable()
 export class MonitoramentoService {

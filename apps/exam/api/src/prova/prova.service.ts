@@ -7,7 +7,7 @@ import { PrismaService } from "../prisma.service.js";
 import type { ResponderQuestaoDto } from "./dto/prova.dto.js";
 import { shuffleIds, permutacaoAlternativas } from "./shuffle.js";
 
-const DURACAO_PROVA_MINUTOS = 180; // 3 horas
+const DURACAO_PROVA_MINUTOS = 150; // 2h30
 
 /**
  * A nota da Fase 1 NÃO é divulgada ao participante ao final da prova: o gabarito
