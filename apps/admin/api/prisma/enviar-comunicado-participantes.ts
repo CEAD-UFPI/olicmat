@@ -1,35 +1,43 @@
 /**
- * Comunicado a todos os participantes da OLICMAT: convite para a live de
- * orientação da Fase 1 + pedido para completarem o cadastro.
+ * Comunicados por e-mail aos participantes da OLICMAT.
  *
  * Envia UM e-mail por pessoa (nunca com cópia para os demais), a todos os
  * ALUNOS com inscrição CONFIRMADA na edição ativa.
+ *
+ * Cada comunicado é escolhido com --mensagem <nome> (obrigatório) e tem o seu
+ * próprio registro de quem já recebeu — assim um novo comunicado não é
+ * "pulado" por causa de um envio anterior:
+ *
+ *   gravacao-live    link da live de orientação da Fase 1 (para rever)
+ *   live-orientacao  convite para a live + pedido de atualização cadastral
+ *                    (só pode sair no dia da live, 22/10/2026)
  *
  * Por segurança, o padrão é SIMULAR: nada é enviado sem a flag --enviar.
  *
  * Uso (dentro do container do admin-api, em PRODUÇÃO):
  *
  *   # 1) Conferir quem receberia e quantos são (não envia nada)
- *   docker exec -it olicmat-admin-api npx tsx prisma/enviar-comunicado-participantes.ts
+ *   docker exec -it olicmat-admin-api npx tsx prisma/enviar-comunicado-participantes.ts --mensagem gravacao-live
  *
  *   # 2) Gerar a prévia do e-mail para olhar no navegador
- *   docker exec -it olicmat-admin-api npx tsx prisma/enviar-comunicado-participantes.ts --preview /tmp/previa.html
+ *   docker exec -it olicmat-admin-api npx tsx prisma/enviar-comunicado-participantes.ts --mensagem gravacao-live --preview /tmp/previa.html
  *   docker cp olicmat-admin-api:/tmp/previa.html .
  *
  *   # 3) Enviar UM e-mail de teste para você mesmo
- *   docker exec -it olicmat-admin-api npx tsx prisma/enviar-comunicado-participantes.ts --teste seu@email.com
+ *   docker exec -it olicmat-admin-api npx tsx prisma/enviar-comunicado-participantes.ts --mensagem gravacao-live --teste seu@email.com
  *
  *   # 4) Enviar de verdade
- *   docker exec -it olicmat-admin-api npx tsx prisma/enviar-comunicado-participantes.ts --enviar
+ *   docker exec -it olicmat-admin-api npx tsx prisma/enviar-comunicado-participantes.ts --mensagem gravacao-live --enviar
  *
  * Opções:
  *   --limite N     envia no máximo N e-mails nesta execução (provedores têm
  *                  limite diário; o Brevo gratuito aceita ~300/dia)
- *   --forcar-data  ignora a trava que só permite o envio no dia da live
+ *   --forcar-data  ignora a trava de dia, nas mensagens que a têm
  *
- * Pode ser executado de novo sem medo: quem já recebeu fica registrado em
- * COMUNICADO_LOG (padrão /tmp/comunicado-participantes-enviados.txt) e é
- * pulado. Esse arquivo vive no container: não o recrie entre execuções.
+ * Pode ser executado de novo sem medo: quem já recebeu fica registrado em um
+ * arquivo por mensagem (padrão /tmp/comunicado-<mensagem>-enviados.txt; para
+ * live-orientacao, o nome histórico /tmp/comunicado-participantes-enviados.txt)
+ * e é pulado. Esses arquivos vivem no container: não o recrie entre execuções.
  */
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from "fs";
 import { PrismaClient } from "../generated/prisma/client.js";
@@ -40,17 +48,21 @@ import { PrismaPg } from "@prisma/adapter-pg";
 // scripts desta pasta).
 const DIST = "../dist/src";
 
-/** O texto fala em "Hoje": só pode sair no dia da live (fuso de Brasília). */
-const DIA_DA_LIVE = "2026-10-22";
 const LINK_LIVE = "https://youtube.com/live/BL7i-hALVZc";
-const ASSUNTO =
-  "OLICMAT — Live de orientação da Fase 1 hoje, às 19h, e atualização do seu cadastro";
+const LINK_GRAVACAO = "https://www.youtube.com/live/BL7i-hALVZc";
 
-const LOG_ENVIADOS =
-  process.env.COMUNICADO_LOG ?? "/tmp/comunicado-participantes-enviados.txt";
-const PAUSA_ENTRE_ENVIOS_MS = 250;
+interface Mensagem {
+  assunto: string;
+  html: (frontendUrl: string) => string;
+  /** Se definida, o envio só é permitido neste dia (AAAA-MM-DD, Brasília). */
+  soNoDia?: string;
+  /** Texto exibido quando a trava de dia recusa o envio. */
+  motivoDia?: string;
+  /** Arquivo com os e-mails que já receberam esta mensagem. */
+  arquivoLog: string;
+}
 
-function montarHtml(frontendUrl: string): string {
+function htmlLiveOrientacao(frontendUrl: string): string {
   const perfil = `${frontendUrl}/perfil`;
   return `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #222; line-height: 1.55;">
@@ -93,6 +105,47 @@ function montarHtml(frontendUrl: string): string {
 </div>`;
 }
 
+function htmlGravacaoLive(): string {
+  return `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #222; line-height: 1.55;">
+  <h2 style="color: #B8860B; margin-bottom: 4px;">🎥 Live de orientação sobre a prova da Fase 1</h2>
+
+  <p>Olá, competidores e competidoras da OLICMAT!</p>
+
+  <p>A live de orientação sobre a prova da Fase 1 está disponível no YouTube. Se você não conseguiu acompanhar ao vivo, ou quer rever as orientações e as respostas às dúvidas, é só assistir quando quiser:</p>
+
+  <a href="${LINK_GRAVACAO}" style="display: inline-block; background-color: #E8B829; color: #1a1a1a; font-weight: bold; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 8px 0 4px;">
+    Assistir no YouTube
+  </a>
+  <p style="color: #666; font-size: 13px;">Se o botão não funcionar, copie e cole este endereço no navegador: <a href="${LINK_GRAVACAO}" style="color: #1a5fb4;">${LINK_GRAVACAO}</a></p>
+
+  <p>A prova da Fase 1 será aplicada em <strong>08/11/2026</strong>. Assista com atenção às orientações para chegar bem preparado(a) a essa etapa.</p>
+  <p>Boa preparação! 🧮📚</p>
+
+  <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 28px 0 14px;" />
+  <p style="color: #888; font-size: 12px;">Você recebeu este e-mail por estar inscrito(a) na 1ª OLICMAT — Olimpíada para Licenciandos em Matemática.</p>
+</div>`;
+}
+
+const MENSAGENS: Record<string, Mensagem> = {
+  "gravacao-live": {
+    assunto: "OLICMAT — Assista à live de orientação sobre a prova da Fase 1",
+    html: () => htmlGravacaoLive(),
+    arquivoLog: "/tmp/comunicado-gravacao-live-enviados.txt",
+  },
+  "live-orientacao": {
+    assunto:
+      "OLICMAT — Live de orientação da Fase 1 hoje, às 19h, e atualização do seu cadastro",
+    html: htmlLiveOrientacao,
+    // O texto fala em "Hoje": só pode sair no dia da live (fuso de Brasília).
+    soNoDia: "2026-10-22",
+    motivoDia: 'O texto diz "Hoje, 22/10/2026"',
+    arquivoLog: "/tmp/comunicado-participantes-enviados.txt",
+  },
+};
+
+const PAUSA_ENTRE_ENVIOS_MS = 250;
+
 function argumento(nome: string): string | undefined {
   const i = process.argv.indexOf(nome);
   return i >= 0 ? process.argv[i + 1] : undefined;
@@ -110,6 +163,15 @@ const mascarar = (email: string) => email.replace(/^(.{2}).*(@.*)$/, "$1***$2");
 const dormir = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function main() {
+  const nomeMensagem = argumento("--mensagem");
+  const mensagem = nomeMensagem ? MENSAGENS[nomeMensagem] : undefined;
+  if (!mensagem) {
+    throw new Error(
+      `Informe a mensagem com --mensagem <nome>. Disponíveis: ${Object.keys(MENSAGENS).join(", ")}.`,
+    );
+  }
+  const { assunto, arquivoLog } = mensagem;
+
   const frontendUrl = (process.env.FRONTEND_URL ?? "").replace(/\/$/, "");
   if (!frontendUrl) {
     throw new Error(
@@ -120,7 +182,7 @@ async function main() {
   // --- prévia: só grava o HTML ---
   const destinoPrevia = argumento("--preview");
   if (destinoPrevia) {
-    writeFileSync(destinoPrevia, montarHtml(frontendUrl), "utf-8");
+    writeFileSync(destinoPrevia, mensagem.html(frontendUrl), "utf-8");
     console.log(`Prévia gravada em ${destinoPrevia}`);
     return;
   }
@@ -147,8 +209,8 @@ async function main() {
 
     const emails = [...new Set(alunos.map((a) => a.email.trim().toLowerCase()))];
     const jaEnviados = new Set(
-      existsSync(LOG_ENVIADOS)
-        ? readFileSync(LOG_ENVIADOS, "utf-8").split("\n").filter(Boolean)
+      existsSync(arquivoLog)
+        ? readFileSync(arquivoLog, "utf-8").split("\n").filter(Boolean)
         : [],
     );
     const pendentes = emails.filter((e) => !jaEnviados.has(e));
@@ -160,24 +222,28 @@ async function main() {
     if (!enviar && !emailTeste) {
       console.log("\nSIMULAÇÃO: nada foi enviado. Primeiros destinatários:");
       pendentes.slice(0, 8).forEach((e) => console.log(`  ${mascarar(e)}`));
-      console.log("\nPara enviar de verdade, use --enviar (ou --teste seu@email.com).");
+      console.log("\nPara enviar de verdade, use --enviar (ou --teste seu@email.com), mantendo --mensagem.");
       return;
     }
 
-    if (!tem("--forcar-data") && hojeEmBrasilia() !== DIA_DA_LIVE) {
+    if (
+      mensagem.soNoDia &&
+      !tem("--forcar-data") &&
+      hojeEmBrasilia() !== mensagem.soNoDia
+    ) {
       throw new Error(
-        `O texto diz "Hoje, 22/10/2026", mas hoje (Brasília) é ${hojeEmBrasilia()}. ` +
-          "Envie no dia da live ou ajuste o texto. Para ignorar esta trava: --forcar-data.",
+        `${mensagem.motivoDia}, mas hoje (Brasília) é ${hojeEmBrasilia()}. ` +
+          "Envie no dia certo ou ajuste o texto. Para ignorar esta trava: --forcar-data.",
       );
     }
 
     const { EmailService } = await import(`${DIST}/email/email.service.js`);
     const { ConfigService } = await import("@nestjs/config");
     const email = new EmailService(new ConfigService());
-    const html = montarHtml(frontendUrl);
+    const html = mensagem.html(frontendUrl);
 
     if (emailTeste) {
-      await email.sendMail(emailTeste, `[TESTE] ${ASSUNTO}`, html);
+      await email.sendMail(emailTeste, `[TESTE] ${assunto}`, html);
       console.log(`\nE-mail de teste enviado para ${emailTeste}.`);
       return;
     }
@@ -189,8 +255,8 @@ async function main() {
     const falhas: { email: string; motivo: string }[] = [];
     for (const destino of lote) {
       try {
-        await email.sendMail(destino, ASSUNTO, html);
-        appendFileSync(LOG_ENVIADOS, destino + "\n");
+        await email.sendMail(destino, assunto, html);
+        appendFileSync(arquivoLog, destino + "\n");
         ok++;
         if (ok % 25 === 0) console.log(`  ${ok}/${lote.length} enviados`);
       } catch (e) {
