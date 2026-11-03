@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useMemo } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -91,20 +90,28 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
         >
           <Button
+            variant="outline"
             size="lg"
-            render={<Link href="/login" />}
-            className="h-14 px-8 text-base font-semibold"
-            style={{ backgroundColor: "var(--color-gold)", color: "#fff" }}
+            render={<a href="https://olicmat.cead.ufpi.br/regulamento" target="_blank" rel="noopener noreferrer" />}
+            className="h-14 px-8 text-base font-semibold border-[#2a2a3a] text-[#f0ece4] hover:bg-[#1a1a26] border-glow"
           >
-            Acessar plataforma
+            Regulamento
           </Button>
           <Button
             variant="outline"
             size="lg"
-            render={<Link href="/cronograma" />}
+            render={<a href="https://olicmat.cead.ufpi.br/tutorial-prova.html" target="_blank" rel="noopener noreferrer" />}
             className="h-14 px-8 text-base font-semibold border-[#2a2a3a] text-[#f0ece4] hover:bg-[#1a1a26] border-glow"
           >
-            Ver cronograma completo
+            Tutorial Fase 1
+          </Button>
+          <Button
+            size="lg"
+            render={<a href="https://admin.olicmat.cead.ufpi.br/competidor" target="_blank" rel="noopener noreferrer" />}
+            className="h-14 px-8 text-base font-semibold"
+            style={{ backgroundColor: "var(--color-gold)", color: "#fff" }}
+          >
+            Fazer a Prova
           </Button>
         </motion.div>
 
