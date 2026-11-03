@@ -3,6 +3,7 @@ import { Fraunces, Outfit, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -69,6 +70,7 @@ export default function RootLayout({
         <Header />
         {children}
         <Footer />
+        <FloatingWhatsApp />
       </body>
     </html>
   );

@@ -1,4 +1,5 @@
 import { Hero } from "@/components/landing/Hero";
+import { Suporte } from "@/components/landing/Suporte";
 import { Noticias } from "@/components/landing/Noticias";
 import { Sobre } from "@/components/landing/Sobre";
 import { Cronograma } from "@/components/landing/Cronograma";
@@ -20,6 +21,7 @@ export default function Home() {
   return (
     <main className="overflow-hidden">
       <Hero />
+      <Suporte />
       <Noticias />
       <Sobre />
       <Cronograma />
