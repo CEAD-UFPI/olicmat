@@ -1,12 +1,32 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { DESTAQUES_HOME } from "@/lib/cronograma";
 
 const cronogramaDestaques = DESTAQUES_HOME;
+
+// Posições e parâmetros das partículas, calculados uma única vez em tempo de
+// módulo. Como são estáticos e não dependem do render, o `Math.random()` aqui
+// não fere a regra de pureza de componentes/hooks.
+const particles = [
+  { left: 28, top: 35 }, { left: 52, top: 22 }, { left: 75, top: 48 },
+  { left: 31, top: 67 }, { left: 68, top: 31 }, { left: 44, top: 79 },
+  { left: 82, top: 55 }, { left: 23, top: 52 }, { left: 59, top: 68 },
+  { left: 71, top: 42 }, { left: 38, top: 25 }, { left: 85, top: 73 },
+  { left: 26, top: 58 }, { left: 63, top: 84 }, { left: 47, top: 39 },
+  { left: 79, top: 29 }, { left: 33, top: 71 }, { left: 56, top: 46 },
+  { left: 72, top: 62 }, { left: 41, top: 55 },
+].map((p, i) => ({
+  left: p.left,
+  top: p.top,
+  color: i % 3 === 0 ? "var(--color-gold)" : i % 3 === 1 ? "var(--color-green)" : "var(--color-blue)",
+  delay: (i * 0.2) % 4,
+  duration: 4 + (i * 0.3) % 4,
+  yOffset: -20 + Math.random() * 40,
+}));
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -17,24 +37,6 @@ export function Hero() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
-  const particles = useMemo(() => {
-    const positions = [
-      { left: 28, top: 35 }, { left: 52, top: 22 }, { left: 75, top: 48 },
-      { left: 31, top: 67 }, { left: 68, top: 31 }, { left: 44, top: 79 },
-      { left: 82, top: 55 }, { left: 23, top: 52 }, { left: 59, top: 68 },
-      { left: 71, top: 42 }, { left: 38, top: 25 }, { left: 85, top: 73 },
-      { left: 26, top: 58 }, { left: 63, top: 84 }, { left: 47, top: 39 },
-      { left: 79, top: 29 }, { left: 33, top: 71 }, { left: 56, top: 46 },
-      { left: 72, top: 62 }, { left: 41, top: 55 },
-    ];
-    return positions.map((p, i) => ({
-      left: p.left, top: p.top,
-      color: i % 3 === 0 ? "var(--color-gold)" : i % 3 === 1 ? "var(--color-green)" : "var(--color-blue)",
-      delay: (i * 0.2) % 4,
-      duration: 4 + (i * 0.3) % 4,
-    }));
-  }, []);
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center overflow-hidden pt-20">
@@ -50,7 +52,7 @@ export function Hero() {
               key={i}
               className="absolute w-1 h-1 rounded-full"
               style={{ backgroundColor: p.color, left: `${p.left}%`, top: `${p.top}%` }}
-              animate={{ y: [0, -20 + Math.random() * 40, 0], opacity: [0.3, 0.6, 0.3] }}
+              animate={{ y: [0, p.yOffset, 0], opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: p.duration, repeat: Infinity, delay: p.delay, ease: "easeInOut" }}
             />
           ))}
