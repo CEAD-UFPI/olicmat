@@ -99,6 +99,14 @@ export class DashboardController {
   }
 
   @Roles(Role.ADMIN)
+  @Get("export/candidatos")
+  @Header("Content-Type", "text/csv; charset=utf-8")
+  @Header("Content-Disposition", 'attachment; filename="candidatos.csv"')
+  async exportCandidatos(@Query("edicaoId") edicaoId?: string) {
+    return this.dashboardService.exportCandidatos(edicaoId);
+  }
+
+  @Roles(Role.ADMIN)
   @Get("export/usuarios")
   @Header("Content-Type", "text/csv")
   @Header("Content-Disposition", 'attachment; filename="usuarios.csv"')

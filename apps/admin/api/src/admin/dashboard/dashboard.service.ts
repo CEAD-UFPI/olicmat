@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from "@nestjs/common";
+import { Injectable, ConflictException, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma.service.js";
 
 function escapeCsv(val: unknown): string {
@@ -7,6 +7,20 @@ function escapeCsv(val: unknown): string {
     return `"${str.replace(/"/g, '""')}"`;
   }
   return str;
+}
+
+/** 12345678901 → 123.456.789-01 (mantém o zero à esquerda, que o Excel apagaria). */
+export function formatarCpf(cpf: string): string {
+  const d = (cpf ?? "").replace(/\D/g, "");
+  return d.length === 11
+    ? `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`
+    : (cpf ?? "");
+}
+
+/** Campo de CSV com ";" (padrão do Excel em português): aspas se houver ";", aspas ou quebra de linha. */
+function escapeCsvPontoEVirgula(val: unknown): string {
+  const str = val == null ? "" : String(val).trim();
+  return /[;"\n\r]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
 }
 
 /** Data (AAAA-MM-DD) para CSV; vazio se ausente ou inválida, para não derrubar a exportação. */
@@ -286,6 +300,43 @@ export class DashboardService {
     );
 
     return [header, ...rows].join("\n");
+  }
+
+  /**
+   * Listagem enxuta dos candidatos: Matrícula, CPF, Nome e E-mail.
+   *
+   * "Candidatos" = alunos com inscrição CONFIRMADA na edição indicada (padrão:
+   * a edição ativa). Pensada para abrir direto no Excel em português: separador
+   * ";", UTF-8 com BOM (acentos corretos) e CPF formatado (não perde o zero).
+   */
+  async exportCandidatos(edicaoId?: string) {
+    const edicao = edicaoId
+      ? await this.prisma.edicao.findUnique({ where: { id: edicaoId } })
+      : await this.prisma.edicao.findFirst({
+          where: { status: "ATIVA" },
+          orderBy: [{ ano: "desc" }, { semestre: "desc" }],
+        });
+    if (!edicao) throw new NotFoundException("Edição não encontrada");
+
+    const inscricoes = await this.prisma.inscricao.findMany({
+      where: { edicaoId: edicao.id, status: "CONFIRMADA" },
+      select: {
+        user: { select: { matricula: true, cpf: true, nome: true, email: true } },
+      },
+    });
+
+    const collator = new Intl.Collator("pt-BR", { sensitivity: "base" });
+    const candidatos = inscricoes
+      .map((i) => i.user)
+      .sort((a, b) => collator.compare(a.nome, b.nome));
+
+    const linhas = candidatos.map((u) =>
+      [u.matricula ?? "", formatarCpf(u.cpf), u.nome, u.email]
+        .map(escapeCsvPontoEVirgula)
+        .join(";"),
+    );
+
+    return "\uFEFF" + ["Matricula;CPF;Nome;Email", ...linhas].join("\r\n") + "\r\n";
   }
 
   async exportUsuarios() {

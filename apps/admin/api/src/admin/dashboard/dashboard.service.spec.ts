@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 import { ConflictException } from "@nestjs/common";
-import { DashboardService, dataParaCsv } from "./dashboard.service.js";
+import { DashboardService, dataParaCsv, formatarCpf } from "./dashboard.service.js";
 
 describe("DashboardService — edicoes", () => {
   let service: DashboardService;
@@ -227,5 +227,64 @@ describe("dataParaCsv", () => {
     expect(dataParaCsv(null)).toBe("");
     expect(dataParaCsv(undefined)).toBe("");
     expect(dataParaCsv(new Date("lixo"))).toBe("");
+  });
+});
+
+describe("formatarCpf", () => {
+  it("formata e preserva o zero à esquerda", () => {
+    expect(formatarCpf("00012345678")).toBe("000.123.456-78");
+    expect(formatarCpf("12345678901")).toBe("123.456.789-01");
+  });
+
+  it("não inventa formato para valor fora do padrão", () => {
+    expect(formatarCpf("123")).toBe("123");
+  });
+});
+
+describe("DashboardService — exportCandidatos", () => {
+  let prisma: any;
+  let service: DashboardService;
+  const edicao = { id: "ed1", ano: 2026 };
+
+  beforeEach(() => {
+    prisma = {
+      edicao: { findFirst: jest.fn(), findUnique: jest.fn() },
+      inscricao: { findMany: jest.fn() },
+    };
+    service = new DashboardService(prisma as any);
+  });
+
+  it("gera CSV com BOM, separador ';', 4 colunas e ordem alfabética", async () => {
+    prisma.edicao.findFirst.mockResolvedValue(edicao);
+    prisma.inscricao.findMany.mockResolvedValue([
+      { user: { matricula: "2024002", cpf: "00012345678", nome: "Zélia Souza", email: "zelia@x.com" } },
+      { user: { matricula: "2024001", cpf: "12345678901", nome: "álvaro Dias", email: "alvaro@x.com" } },
+      { user: { matricula: "", cpf: "98765432100", nome: "Ana; \"Maria\" Lima", email: "ana@x.com" } },
+    ]);
+
+    const csv = await service.exportCandidatos();
+
+    expect(csv.startsWith("\uFEFF")).toBe(true);
+    const linhas = csv.replace("\uFEFF", "").trim().split("\r\n");
+    expect(linhas[0]).toBe("Matricula;CPF;Nome;Email");
+    expect(linhas[1]).toBe("2024001;123.456.789-01;álvaro Dias;alvaro@x.com");
+    expect(linhas[2]).toBe(';987.654.321-00;"Ana; ""Maria"" Lima";ana@x.com');
+    expect(linhas[3]).toBe("2024002;000.123.456-78;Zélia Souza;zelia@x.com");
+  });
+
+  it("filtra só inscrições CONFIRMADAS da edição ativa", async () => {
+    prisma.edicao.findFirst.mockResolvedValue(edicao);
+    prisma.inscricao.findMany.mockResolvedValue([]);
+    await service.exportCandidatos();
+    expect(prisma.edicao.findFirst.mock.calls[0][0].where).toEqual({ status: "ATIVA" });
+    expect(prisma.inscricao.findMany.mock.calls[0][0].where).toEqual({
+      edicaoId: "ed1",
+      status: "CONFIRMADA",
+    });
+  });
+
+  it("usa a edição informada e recusa edição inexistente", async () => {
+    prisma.edicao.findUnique.mockResolvedValue(null);
+    await expect(service.exportCandidatos("nao-existe")).rejects.toThrow("Edição não encontrada");
   });
 });

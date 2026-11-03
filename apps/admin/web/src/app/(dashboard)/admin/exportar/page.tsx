@@ -40,6 +40,7 @@ export default function AdminExportarPage() {
 
   const opcoes = [
     { tipo: "inscricoes-confirmadas", label: "Inscrições confirmadas (PDF)", descricao: "Relatório oficial em PDF com número de inscrição, candidato e curso, em ordem alfabética", botao: "Gerar PDF" },
+    { tipo: "candidatos", label: "Candidatos", descricao: "Matrícula, CPF, nome e e-mail dos candidatos com inscrição confirmada, em ordem alfabética (abre direto no Excel)" },
     { tipo: "inscricoes", label: "Inscrições", descricao: "Lista completa de inscrições com status e dados" },
     { tipo: "usuarios", label: "Usuários", descricao: "Lista de todos os usuários da plataforma" },
     { tipo: "provas", label: "Provas", descricao: "Lista de provas com quantidade de questões e status" },
