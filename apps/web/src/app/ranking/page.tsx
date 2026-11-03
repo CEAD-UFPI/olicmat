@@ -35,32 +35,36 @@ const medalhaEmoji: Record<string, string> = {
 export default function RankingPage() {
   const [estado, setEstado] = useState("");
   const [ranking, setRanking] = useState<Record<string, Competidor[]>>({});
-  const [carregando, setCarregando] = useState(false);
-
-  const buscarRanking = async (uf: string) => {
-    setCarregando(true);
-    try {
-      const { data } = await api.get(`/ranking${uf ? `?estado=${uf}` : ""}`);
-      if (uf) {
-        setRanking({ [uf]: [...(data.OURO || []), ...(data.PRATA || []), ...(data.BRONZE || [])] });
-      } else {
-        const agrupado: Record<string, Competidor[]> = {};
-        for (const [est, grupo] of Object.entries<
-          { OURO?: Competidor[]; PRATA?: Competidor[]; BRONZE?: Competidor[] }
-        >(data)) {
-          agrupado[est] = [...(grupo.OURO || []), ...(grupo.PRATA || []), ...(grupo.BRONZE || [])];
-        }
-        setRanking(agrupado);
-      }
-    } catch {
-      setRanking({});
-    } finally {
-      setCarregando(false);
-    }
-  };
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
-    buscarRanking(estado);
+    let ativo = true;
+
+    (async () => {
+      try {
+        const { data } = await api.get(`/ranking${estado ? `?estado=${estado}` : ""}`);
+        if (!ativo) return;
+        if (estado) {
+          setRanking({ [estado]: [...(data.OURO || []), ...(data.PRATA || []), ...(data.BRONZE || [])] });
+        } else {
+          const agrupado: Record<string, Competidor[]> = {};
+          for (const [est, grupo] of Object.entries<
+            { OURO?: Competidor[]; PRATA?: Competidor[]; BRONZE?: Competidor[] }
+          >(data)) {
+            agrupado[est] = [...(grupo.OURO || []), ...(grupo.PRATA || []), ...(grupo.BRONZE || [])];
+          }
+          setRanking(agrupado);
+        }
+      } catch {
+        if (ativo) setRanking({});
+      } finally {
+        if (ativo) setCarregando(false);
+      }
+    })();
+
+    return () => {
+      ativo = false;
+    };
   }, [estado]);
 
   return (
@@ -80,7 +84,10 @@ export default function RankingPage() {
       <div className="flex justify-center mb-10">
         <select
           value={estado}
-          onChange={(e) => setEstado(e.target.value)}
+          onChange={(e) => {
+            setCarregando(true);
+            setEstado(e.target.value);
+          }}
           className="h-12 px-4 rounded-xl bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base focus:outline-none focus:border-[#E8B829] min-w-[200px]"
         >
           <option value="">Todos os estados</option>
