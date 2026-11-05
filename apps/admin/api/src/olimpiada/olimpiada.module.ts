@@ -2,7 +2,6 @@ import { Module } from "@nestjs/common";
 import { InscricaoService } from "./inscricao/inscricao.service.js";
 import { InscricaoController } from "./inscricao/inscricao.controller.js";
 import { ProvaService } from "./prova/prova.service.js";
-import { ProvaController } from "./prova/prova.controller.js";
 import { EnvioService } from "./envio/envio.service.js";
 import { EnvioController } from "./envio/envio.controller.js";
 import { RankingService } from "./ranking/ranking.service.js";
@@ -15,7 +14,6 @@ import { NotificacoesModule } from "../notificacoes/notificacoes.module.js";
   imports: [UploadModule, EmailModule, NotificacoesModule],
   controllers: [
     InscricaoController,
-    ProvaController,
     EnvioController,
     RankingController,
   ],

@@ -109,7 +109,13 @@ export default function CompetidorPage() {
               <h3 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
                 Prova disponível
               </h3>
-              <p className="text-base text-[#b0adc0]">20 questões · 2h30 de duração (Ambiente Isolado)</p>
+              <p className="text-base text-[#b0adc0]">20 questões · 3 horas · das 08:30 às 11:30 (horário de Brasília) · termina às 11:30 para todos (Ambiente Isolado)</p>
+              <div className="mt-3 rounded-xl border border-[#E8B829]/40 bg-[#E8B829]/[0.08] p-3 text-sm text-[#f0ece4] space-y-1">
+                <p className="font-semibold">Início até 09:00, sem exceção</p>
+                <p>
+                  Depois das 09:00 ninguém inicia a prova, qualquer que seja o motivo, inclusive problemas de internet, aparelho ou acesso. Entre no sistema a partir de 08:15, para não deixar para a última hora. Quem iniciou antes das 09:00 e caiu pode voltar depois das 09:00, enquanto a prova estiver aberta. O tempo não para.
+                </p>
+              </div>
             </div>
             <Button
               size="lg"
@@ -125,7 +131,7 @@ export default function CompetidorPage() {
               }}
               style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
             >
-              Ir para a prova
+              Acessar a aplicação de prova
             </Button>
           </div>
         </motion.div>

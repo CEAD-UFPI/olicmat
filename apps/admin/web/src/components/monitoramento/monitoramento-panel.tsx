@@ -15,6 +15,7 @@ interface ProvaMonitor {
   status: string;
   janelaInicio: string | null;
   janelaFim: string | null;
+  limiteInicio: string | null;
   totalQuestoes: number;
   statusMonitoramento: StatusProva;
 }
@@ -41,6 +42,8 @@ interface InscricaoStatus {
   pendenteEncerramento: boolean;
   fase1FimMotivo: string | null;
   advertencias: number;
+  sessaoAtiva: boolean;
+  outroAparelho: boolean;
   fase1Inicio: string | null;
   fase1Fim: string | null;
   fase1Nota: number | null;
@@ -77,6 +80,11 @@ function formatarTempo(minutos: number): string {
   return `${m}min`;
 }
 
+/** Antes das 08:30 o suporte já precisa atender login e sessão. */
+function provaAcompanhavel(prova: ProvaMonitor) {
+  return prova.status !== "RASCUNHO" && prova.status !== "EM_REVISAO";
+}
+
 function dentroDaJanela(prova: ProvaMonitor, agora: Date): boolean {
   if (!prova.janelaInicio || !prova.janelaFim) return false;
   const ini = new Date(prova.janelaInicio).getTime();
@@ -104,6 +112,7 @@ export function MonitoramentoPanel() {
   const [modalSenha, setModalSenha] = useState<InscricaoStatus | null>(null);
   const [senhaGerada, setSenhaGerada] = useState<string | null>(null);
   const [modalEncerrar, setModalEncerrar] = useState(false);
+  const [modalSessao, setModalSessao] = useState<InscricaoStatus | null>(null);
   const [acaoLoading, setAcaoLoading] = useState(false);
 
   const mostrarFeedback = useCallback((tipo: "sucesso" | "erro", mensagem: string) => {
@@ -153,7 +162,7 @@ export function MonitoramentoPanel() {
   }, [provaSelecionada, fetchInscricoes]);
 
   const selecionarProva = (prova: ProvaMonitor) => {
-    if (prova.statusMonitoramento === "em_breve") return;
+    if (!provaAcompanhavel(prova)) return;
     setProvaSelecionada(prova);
   };
 
@@ -252,6 +261,22 @@ export function MonitoramentoPanel() {
     }
   };
 
+  const handleLiberarSessao = async () => {
+    if (!modalSessao) return;
+    setAcaoLoading(true);
+    try {
+      await api.post(`/admin/monitoramento/inscricoes/${modalSessao.id}/liberar-sessao`);
+      mostrarFeedback("sucesso", `Sessão de ${modalSessao.nome} liberada. A pessoa já pode entrar em outro aparelho.`);
+      setModalSessao(null);
+      if (provaSelecionada) fetchInscricoes(provaSelecionada.id);
+    } catch (err: any) {
+      const msg = err.response?.data?.message;
+      mostrarFeedback("erro", typeof msg === "string" ? msg : "Erro ao liberar sessão.");
+    } finally {
+      setAcaoLoading(false);
+    }
+  };
+
   const handleEncerrarPendentes = async () => {
     if (!provaSelecionada) return;
     setAcaoLoading(true);
@@ -312,6 +337,7 @@ export function MonitoramentoPanel() {
           onTempo={(insc) => { setModalTempo(insc); setMinutosInput("30"); }}
           onDestravar={(insc) => { setModalDestravar(insc); setMinutosInput("0"); setJustificativa(""); }}
           onSenha={(insc) => { setModalSenha(insc); setSenhaGerada(null); }}
+          onLiberarSessao={setModalSessao}
           onEncerrarPendentes={() => setModalEncerrar(true)}
         />
       ) : (
@@ -385,6 +411,25 @@ export function MonitoramentoPanel() {
               uma provisória. <strong className="text-[#f0ece4]">Confirme a identidade antes</strong> (CPF e matrícula abaixo do nome).
             </p>
           )}
+        </Modal>
+      )}
+
+      {modalSessao && (
+        <Modal
+          onClose={() => setModalSessao(null)}
+          loading={acaoLoading}
+          onConfirm={handleLiberarSessao}
+          cor="#3A86EF"
+          titulo="Liberar Sessão"
+          confirmarLabel={acaoLoading ? "Liberando..." : "Liberar"}
+        >
+          <p className="text-sm text-[#9895a4]">
+            Permite que <strong className="text-[#f0ece4]">{modalSessao.nome}</strong> entre agora em outro aparelho.
+            O aparelho anterior será desconectado assim que o novo login acontecer. Respostas e tempo não mudam.
+          </p>
+          <p className="text-sm text-[#9895a4]">
+            Confirme a identidade antes: <span className="font-mono">CPF {modalSessao.cpf}</span>.
+          </p>
         </Modal>
       )}
 
@@ -524,7 +569,7 @@ function ListaEdicoes({
           ) : (
             <div className="divide-y divide-[#2a2a3a]/50">
               {edicao.provas.map((prova) => {
-                const selecionavel = prova.statusMonitoramento !== "em_breve";
+                const selecionavel = provaAcompanhavel(prova);
                 return (
                   <button
                     key={prova.id}
@@ -583,6 +628,7 @@ function TabelaAlunos({
   onTempo,
   onDestravar,
   onSenha,
+  onLiberarSessao,
   onEncerrarPendentes,
 }: {
   prova: ProvaMonitor;
@@ -594,6 +640,7 @@ function TabelaAlunos({
   onTempo: (insc: InscricaoStatus) => void;
   onDestravar: (insc: InscricaoStatus) => void;
   onSenha: (insc: InscricaoStatus) => void;
+  onLiberarSessao: (insc: InscricaoStatus) => void;
   onEncerrarPendentes: () => void;
 }) {
   const [busca, setBusca] = useState("");
@@ -607,10 +654,16 @@ function TabelaAlunos({
 
   const termo = normalizar(busca.trim());
   const pendentes = inscricoes.filter((i) => i.pendenteEncerramento).length;
+  const prazoEncerrado = !!prova.limiteInicio && agora > new Date(prova.limiteInicio);
   const contadores = [
-    { label: "Não iniciaram", valor: inscricoes.filter((i) => i.status === "nao_iniciado").length, cor: "#9895a4" },
+    {
+      label: prazoEncerrado ? "Perderam o início" : "Não iniciaram",
+      valor: inscricoes.filter((i) => i.status === "nao_iniciado").length,
+      cor: "#9895a4",
+    },
     { label: "Em andamento", valor: inscricoes.filter((i) => i.status === "em_andamento").length, cor: "#E8B829" },
     { label: "Encerradas", valor: inscricoes.filter((i) => i.status === "finalizado").length, cor: "#2EC4B6" },
+    { label: "Outro aparelho", valor: inscricoes.filter((i) => i.outroAparelho).length, cor: "#e53e3e" },
     { label: "Por advertência", valor: inscricoes.filter((i) => i.fase1FimMotivo === "ADVERTENCIAS").length, cor: "#e53e3e" },
     { label: "Sem finalizar", valor: pendentes, cor: "#FAA307" },
   ];
@@ -647,7 +700,7 @@ function TabelaAlunos({
         </button>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {contadores.map((c) => (
           <div key={c.label} className="border border-[#2a2a3a] rounded-xl bg-[#12121a] px-4 py-3">
             <p className="text-2xl font-bold" style={{ color: c.cor }}>{c.valor}</p>
@@ -756,6 +809,9 @@ function TabelaAlunos({
                           {MOTIVO_LABEL[insc.fase1FimMotivo] ?? insc.fase1FimMotivo}
                         </p>
                       )}
+                      {insc.outroAparelho && (
+                        <p className="text-xs font-semibold text-[#e53e3e] mt-1">Tentativa em outro aparelho</p>
+                      )}
                       {insc.pendenteEncerramento && (
                         <p className="text-xs text-[#FAA307] mt-1">Sem finalizar</p>
                       )}
@@ -787,6 +843,15 @@ function TabelaAlunos({
                         >
                           Senha
                         </button>
+                        {insc.sessaoAtiva && (
+                          <button
+                            type="button"
+                            onClick={() => onLiberarSessao(insc)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#3A86EF]/40 text-[#3A86EF] hover:bg-[#3A86EF]/10 transition-colors"
+                          >
+                            Liberar sessão
+                          </button>
+                        )}
                         {insc.status === "finalizado" && (
                           <button
                             type="button"

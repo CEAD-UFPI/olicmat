@@ -47,7 +47,7 @@ import { NotificacoesModule } from "./notificacoes/notificacoes.module.js";
     CoordenacaoModule,
 
     // ── Module 2: Exam execution (isolated) ──
-    // (handled by ProvaController within OlimpiadaModule)
+    // (apps/exam: aplicação isolada, que concentra todas as regras da prova)
 
     // ── Module 3: Correction / Evaluation ──
     CorrecaoModule,

@@ -201,6 +201,15 @@ model User {
   dataNascimento        DateTime
   emailConfirmado       Boolean     @default(false)
 
+  /// Sessão única do participante: uma conta em um aparelho por vez.
+  sessaoId              String?
+  sessaoDispositivo     String?
+  sessaoVistaEm         DateTime?
+  /// Última tentativa recusada de entrar em outro aparelho.
+  sessaoConflitoEm      DateTime?
+  /// Último link de entrada usado: cada link vale uma vez.
+  sessaoEntradaId       String?
+
   telefone              String?
   celular               String?
   genero                Genero?
@@ -357,6 +366,8 @@ model Prova {
   publicadaEm     DateTime?
   janelaInicio    DateTime?
   janelaFim       DateTime?
+  /// Depois deste horário, quem ainda não começou não pode mais iniciar.
+  limiteInicio    DateTime?
   versao          Int         @default(1)
   createdBy       String
   createdAt       DateTime    @default(now())

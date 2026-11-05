@@ -14,10 +14,13 @@ export type StatusAlunoMonitoramento =
   | "em_andamento"
   | "finalizado";
 
-const DURACAO_PROVA_MINUTOS = 150; // 2h30
+const DURACAO_PROVA_MINUTOS = 180; // 3h
 
 /** O suporte continua atuando por este tempo depois que a janela fecha. */
 const TOLERANCIA_SUPORTE_MS = 2 * 60 * 60 * 1000;
+
+/** Mesmo valor de AuthService: sem atividade por este tempo, a sessão expirou. */
+const SESSAO_ATIVA_MS = 90_000;
 
 /**
  * Mesma regra de apps/exam/api (calcularFimProva): a prova acaba no que vier
@@ -70,6 +73,7 @@ export class MonitoramentoService {
         status: prova.status,
         janelaInicio: prova.janelaInicio?.toISOString() ?? null,
         janelaFim: prova.janelaFim?.toISOString() ?? null,
+        limiteInicio: prova.limiteInicio?.toISOString() ?? null,
         totalQuestoes: prova._count.questoes,
         statusMonitoramento: this.derivarStatusProva(prova, agora),
       })),
@@ -101,7 +105,16 @@ export class MonitoramentoService {
         fase1Advertencias: true,
         fase1FimMotivo: true,
         user: {
-          select: { id: true, nome: true, email: true, cpf: true, matricula: true },
+          select: {
+            id: true,
+            nome: true,
+            email: true,
+            cpf: true,
+            matricula: true,
+            sessaoId: true,
+            sessaoVistaEm: true,
+            sessaoConflitoEm: true,
+          },
         },
         curso: { select: { nome: true } },
       },
@@ -145,6 +158,13 @@ export class MonitoramentoService {
         fase1Nota: insc.fase1Nota,
         fase1FimMotivo: insc.fase1FimMotivo,
         advertencias: insc.fase1Advertencias,
+        outroAparelho:
+          !!insc.user.sessaoConflitoEm &&
+          agora.getTime() - insc.user.sessaoConflitoEm.getTime() < SESSAO_ATIVA_MS,
+        sessaoAtiva:
+          !!insc.user.sessaoId &&
+          !!insc.user.sessaoVistaEm &&
+          agora.getTime() - insc.user.sessaoVistaEm.getTime() < SESSAO_ATIVA_MS,
         tempoExtraMinutos: insc.fase1TempoExtraMinutos || 0,
         tempoRestanteMinutos,
         respondidas: respondidasPor.get(insc.id) ?? 0,
@@ -378,7 +398,13 @@ export class MonitoramentoService {
 
     await this.prisma.user.update({
       where: { id: inscricao.userId },
-      data: { senhaHash: await bcrypt.hash(senha, 10) },
+      // Quem perdeu o acesso costuma voltar por outro aparelho.
+      data: {
+        senhaHash: await bcrypt.hash(senha, 10),
+        sessaoId: null,
+        sessaoDispositivo: null,
+        sessaoVistaEm: null,
+      },
     });
 
     await this.auditoria.log(actorId, "SENHA_TEMPORARIA", "User", inscricao.userId, {
@@ -386,6 +412,27 @@ export class MonitoramentoService {
     });
 
     return { senha };
+  }
+
+  /** Libera a conta para entrar em outro aparelho sem esperar a sessão expirar. */
+  async liberarSessao(inscricaoId: string, actorId: string) {
+    const inscricao = await this.prisma.inscricao.findUnique({
+      where: { id: inscricaoId },
+      select: { userId: true },
+    });
+
+    if (!inscricao) {
+      throw new NotFoundException("Inscrição não encontrada");
+    }
+
+    await this.prisma.user.update({
+      where: { id: inscricao.userId },
+      data: { sessaoId: null, sessaoDispositivo: null, sessaoVistaEm: null, sessaoConflitoEm: null },
+    });
+
+    await this.auditoria.log(actorId, "LIBERAR_SESSAO", "User", inscricao.userId, { inscricaoId });
+
+    return { message: "Sessão liberada" };
   }
 
   /**
@@ -455,7 +502,8 @@ export class MonitoramentoService {
   private async validarJanelaFase1(edicaoId: string) {
     const agora = new Date();
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId, fase: 1 },
+      where: { edicaoId, fase: 1, status: { in: ["PUBLICADA", "EM_ANDAMENTO", "ENCERRADA"] } },
+      orderBy: { publicadaEm: { sort: "desc", nulls: "last" } },
       select: { janelaInicio: true, janelaFim: true, duracaoMinutos: true },
     });
 

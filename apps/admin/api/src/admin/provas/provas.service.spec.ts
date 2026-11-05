@@ -67,6 +67,18 @@ describe("ProvasService", () => {
     });
   });
 
+  describe("encerrar", () => {
+    it("recusa durante a realização", async () => {
+      prisma.prova.findUnique.mockResolvedValue({
+        id: "p1", status: "PUBLICADA", questoes: [],
+        janelaInicio: new Date(Date.now() - 60_000), janelaFim: new Date(Date.now() + 60_000),
+      });
+
+      await expect(service.encerrar("p1", "admin1")).rejects.toThrow(/durante a realização/);
+      expect(prisma.prova.update).not.toHaveBeenCalled();
+    });
+  });
+
   describe("publicar", () => {
     it("lança erro quando a prova já está em andamento", async () => {
       prisma.prova.findUnique.mockResolvedValue({ id: "p1", status: "EM_ANDAMENTO", questoes: [] });
@@ -79,6 +91,50 @@ describe("ProvasService", () => {
       prisma.provaQuestao.count.mockResolvedValue(0);
 
       await expect(service.publicar("p1", "admin1")).rejects.toThrow(BadRequestException);
+    });
+
+    describe("Fase 1", () => {
+      const dia = (hora: string) => new Date(`2026-11-08T${hora}:00-03:00`);
+      const prova = {
+        id: "p1", status: "RASCUNHO", fase: 1, edicaoId: "e1", questoes: [],
+        janelaInicio: dia("08:30"), limiteInicio: dia("09:00"), janelaFim: dia("11:30"),
+      };
+
+      beforeEach(() => {
+        prisma.provaQuestao.count.mockResolvedValue(20);
+        prisma.prova.findFirst = jest.fn(async () => null);
+        prisma.prova.update.mockResolvedValue({ id: "p1", status: "PUBLICADA" });
+      });
+
+      it("recusa sem horários definidos", async () => {
+        prisma.prova.findUnique.mockResolvedValue({ ...prova, limiteInicio: null });
+
+        await expect(service.publicar("p1", "admin1")).rejects.toThrow(/limite para iniciar/);
+        expect(prisma.prova.update).not.toHaveBeenCalled();
+      });
+
+      it("recusa limite fora da janela", async () => {
+        prisma.prova.findUnique.mockResolvedValue({ ...prova, limiteInicio: dia("12:00") });
+
+        await expect(service.publicar("p1", "admin1")).rejects.toThrow(/entre o início e o fim/);
+      });
+
+      it("recusa segunda prova de Fase 1 publicada na edição", async () => {
+        prisma.prova.findUnique.mockResolvedValue(prova);
+        prisma.prova.findFirst = jest.fn(async () => ({ titulo: "Outra" }));
+
+        await expect(service.publicar("p1", "admin1")).rejects.toThrow(/já tem uma prova/);
+      });
+
+      it("publica com os horários corretos", async () => {
+        prisma.prova.findUnique.mockResolvedValue(prova);
+
+        await service.publicar("p1", "admin1");
+
+        expect(prisma.prova.update).toHaveBeenCalledWith(
+          expect.objectContaining({ data: expect.objectContaining({ status: "PUBLICADA" }) }),
+        );
+      });
     });
   });
 });

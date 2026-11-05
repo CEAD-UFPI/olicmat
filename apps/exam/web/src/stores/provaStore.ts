@@ -23,6 +23,7 @@ interface ProvaState {
   /** servidor - navegador, em ms: o cronômetro não confia no relógio local. */
   offsetRelogio: number;
   advertencias: number;
+  outroAparelho: boolean;
   carregando: boolean;
   finalizada: boolean;
   salvando: boolean;
@@ -34,7 +35,7 @@ interface ProvaState {
   questaoAnterior: () => void;
   irParaQuestao: (index: number) => void;
   sincronizar: () => Promise<void>;
-  registrarAdvertencia: () => void;
+  registrarAdvertencia: () => Promise<boolean>;
   finalizar: (motivo?: "ALUNO" | "TEMPO" | "ADVERTENCIAS") => Promise<void>;
 }
 
@@ -46,6 +47,7 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   fim: null,
   offsetRelogio: 0,
   advertencias: 0,
+  outroAparelho: false,
   carregando: false,
   finalizada: false,
   salvando: false,
@@ -55,9 +57,13 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
 
   carregarProva: async () => {
     set({ carregando: true, erro: null });
+    // O motivo real da recusa (prazo, janela) vem daqui; a busca das questões
+    // diria apenas que a prova não foi iniciada.
+    let erroIniciar: string | null = null;
     try {
-      // Ensure exam is initiated
-      await api.post("/prova/iniciar").catch(() => {});
+      await api.post("/prova/iniciar").catch((err) => {
+        erroIniciar = err?.response?.data?.message ?? null;
+      });
 
       const { data } = await api.get("/prova/questoes");
       set({
@@ -76,8 +82,9 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
         set({ finalizada: true, carregando: false });
         return;
       }
+      const mensagem = err?.response?.data?.message;
       set({
-        erro: err?.response?.data?.message || "Erro ao carregar prova",
+        erro: (mensagem === "Prova não foi iniciada" && erroIniciar) || mensagem || "Erro ao carregar prova",
         carregando: false,
       });
       throw err;
@@ -131,6 +138,7 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
         fim: data.fim,
         offsetRelogio: new Date(data.agora).getTime() - Date.now(),
         advertencias: data.advertencias ?? 0,
+        outroAparelho: !!data.outroAparelho,
         finalizada: data.finalizada,
       });
     } catch {
@@ -138,8 +146,14 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
     }
   },
 
-  registrarAdvertencia: () => {
-    api.post("/prova/advertencia").catch(() => {});
+  registrarAdvertencia: async () => {
+    try {
+      const { data } = await api.post("/prova/advertencia");
+      if (data.finalizada) set({ finalizada: true });
+      return true;
+    } catch {
+      return false;
+    }
   },
 
   finalizar: async (motivo = "ALUNO") => {

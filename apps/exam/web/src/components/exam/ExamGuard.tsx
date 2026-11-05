@@ -9,6 +9,8 @@ interface ExamGuardProps {
   onAdvertencia?: () => void;
   /** Vêm do servidor, para que recarregar a página não zere a contagem. */
   advertenciasIniciais?: number;
+  /** Encerramento já pedido e ainda não confirmado pelo servidor. */
+  encerrando?: boolean;
   maxWarnings?: number;
 }
 
@@ -21,10 +23,17 @@ interface ExamGuardProps {
  */
 const JANELA_MESMO_EVENTO_MS = 2_500;
 
-const suportaTelaCheia = () => {
-  if (typeof document === "undefined") return true;
+/**
+ * No celular a prova não exige tela cheia: o iPhone não oferece esse recurso, e
+ * nos demais o gesto de voltar sairia dela sem querer. Ali, a saída é detectada
+ * só pela troca de aba ou de aplicativo. O evento de foco também fica de fora,
+ * porque dispara por interações comuns do próprio aparelho.
+ */
+const ehCelular = () => {
+  if (typeof window === "undefined") return false;
   const doc = document as any;
-  return !!(doc.fullscreenEnabled || doc.webkitFullscreenEnabled || doc.msFullscreenEnabled);
+  const semTelaCheia = !(doc.fullscreenEnabled || doc.webkitFullscreenEnabled || doc.msFullscreenEnabled);
+  return semTelaCheia || window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 };
 
 export function ExamGuard({
@@ -32,6 +41,7 @@ export function ExamGuard({
   onAutoSubmit,
   onAdvertencia,
   advertenciasIniciais = 0,
+  encerrando = false,
   maxWarnings = 3,
 }: ExamGuardProps) {
   const desativado = process.env.NEXT_PUBLIC_DISABLE_EXAM_GUARD === "true";
@@ -40,16 +50,44 @@ export function ExamGuard({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [warningReason, setWarningReason] = useState("");
-  const [semSuporte, setSemSuporte] = useState(false);
-  const submittedRef = useRef(false);
+  const [celular] = useState(ehCelular);
+  const [semTravaDeTela, setSemTravaDeTela] = useState(false);
+  const submittedRef = useRef(encerrando);
   const contagemRef = useRef(advertenciasIniciais);
   const ultimoEventoRef = useRef(0);
   const callbacksRef = useRef({ onAutoSubmit, onAdvertencia });
   callbacksRef.current = { onAutoSubmit, onAdvertencia };
 
+  // Sem isto, o celular apagaria a tela durante a leitura de uma questão, e a
+  // tela apagada conta como saída da prova.
   useEffect(() => {
-    setSemSuporte(!suportaTelaCheia());
-  }, []);
+    if (desativado) return;
+    let trava: { release: () => Promise<void> } | null = null;
+
+    const manterTelaLigada = async () => {
+      if (document.visibilityState !== "visible") return;
+      if (!("wakeLock" in navigator)) {
+        setSemTravaDeTela(true);
+        return;
+      }
+      try {
+        trava = await (navigator as any).wakeLock.request("screen");
+        setSemTravaDeTela(false);
+      } catch {
+        setSemTravaDeTela(true);
+      }
+    };
+
+    manterTelaLigada();
+    document.addEventListener("visibilitychange", manterTelaLigada);
+    // Alguns navegadores só concedem a trava depois de um toque na tela.
+    document.addEventListener("pointerdown", manterTelaLigada, { once: true });
+    return () => {
+      document.removeEventListener("visibilitychange", manterTelaLigada);
+      document.removeEventListener("pointerdown", manterTelaLigada);
+      trava?.release().catch(() => {});
+    };
+  }, [desativado]);
 
   // Só sobe: a sincronização pode trazer um valor anterior à advertência que acabou
   // de ser enviada. Destravar zera a contagem, mas isso chega pelo F5 (novo estado).
@@ -61,6 +99,7 @@ export function ExamGuard({
   }, [advertenciasIniciais]);
 
   const requestFullscreen = () => {
+    if (celular) return;
     try {
       const elem = document.documentElement as any;
       if (elem.requestFullscreen) {
@@ -91,9 +130,10 @@ export function ExamGuard({
       const proxima = contagemRef.current + 1;
       contagemRef.current = proxima;
       setWarnings(proxima);
-      callbacksRef.current.onAdvertencia?.();
 
-      if (proxima >= maxWarnings) {
+      if (proxima < maxWarnings) {
+        callbacksRef.current.onAdvertencia?.();
+      } else {
         if (process.env.NODE_ENV === "development") {
           console.warn(`[ExamGuard] Limite de advertências atingido, mas ignorado em modo de desenvolvimento.`);
         } else {
@@ -110,7 +150,7 @@ export function ExamGuard({
         (document as any).msFullscreenElement
       );
       setIsFullscreen(fs);
-      if (!fs) {
+      if (!fs && !celular) {
         triggerWarning("Saída do modo tela cheia detectada.");
       }
     };
@@ -122,7 +162,7 @@ export function ExamGuard({
     };
 
     const handleBlur = () => {
-      triggerWarning("Foco da janela perdido.");
+      if (!celular) triggerWarning("Foco da janela perdido.");
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -155,7 +195,7 @@ export function ExamGuard({
       window.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
-  }, [desativado, maxWarnings]);
+  }, [celular, desativado, maxWarnings]);
 
   if (desativado) {
     return <>{children}</>;
@@ -163,29 +203,20 @@ export function ExamGuard({
 
   return (
     <div className="relative min-h-screen">
-      {!isFullscreen && !submittedRef.current && (
+      {!celular && !isFullscreen && !submittedRef.current && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-6">
           <div className="max-w-md w-full border border-[#2a2a3a] bg-[#12121a] rounded-2xl p-8 text-center space-y-6">
             <div className="text-5xl text-[#E85D04]">⚠️</div>
             <h2 className="text-2xl font-bold text-[#f0ece4]">Modo Prova Seguro</h2>
-            {semSuporte ? (
-              <p className="text-sm text-[#9895a4] leading-relaxed">
-                Este aparelho não permite o modo Tela Cheia exigido pela prova (é o caso do iPhone).
-                Entre pelo computador. Seu tempo está correndo, e suas respostas já salvas continuam lá.
-              </p>
-            ) : (
-              <>
-                <p className="text-sm text-[#9895a4] leading-relaxed">
-                  Para garantir a integridade da prova da OLICMAT, esta aplicação exige execução em modo Tela Cheia sem alteração de foco.
-                </p>
-                <button
-                  onClick={requestFullscreen}
-                  className="w-full py-3.5 px-6 rounded-xl bg-[#E85D04] text-white font-semibold text-base hover:bg-[#d05303] transition-colors"
-                >
-                  Ativar Tela Cheia e Iniciar
-                </button>
-              </>
-            )}
+            <p className="text-sm text-[#9895a4] leading-relaxed">
+              Para garantir a integridade da prova da OLICMAT, esta aplicação exige execução em modo Tela Cheia sem alteração de foco.
+            </p>
+            <button
+              onClick={requestFullscreen}
+              className="w-full py-3.5 px-6 rounded-xl bg-[#E85D04] text-white font-semibold text-base hover:bg-[#d05303] transition-colors"
+            >
+              Ativar Tela Cheia e Iniciar
+            </button>
           </div>
         </div>
       )}
@@ -209,6 +240,12 @@ export function ExamGuard({
             </button>
           </div>
         </div>
+      )}
+
+      {celular && semTravaDeTela && (
+        <p className="fixed bottom-0 inset-x-0 z-40 bg-[#FAA307] text-[#0a0a0f] text-xs font-medium text-center px-3 py-2">
+          Desative o bloqueio automático da tela nos ajustes do aparelho: a tela apagada conta como saída da prova.
+        </p>
       )}
 
       {children}

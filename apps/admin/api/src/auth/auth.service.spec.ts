@@ -22,7 +22,8 @@ describe("AuthService", () => {
 
   beforeEach(() => {
     prisma = {
-      user: { findFirst: jest.fn(), findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
+      user: {
+        updateMany: jest.fn(async () => ({ count: 1 })), findFirst: jest.fn(), findUnique: jest.fn(), create: jest.fn(), update: jest.fn() },
       token: { create: jest.fn(), findUnique: jest.fn(), update: jest.fn() },
       instituicao: { upsert: jest.fn() },
       curso: { upsert: jest.fn() },
@@ -39,6 +40,61 @@ describe("AuthService", () => {
   });
 
   describe("login", () => {
+    describe("sessão única", () => {
+      const aluno = {
+        id: "u1", email: "a@x.com", nome: "A", role: "ALUNO", senhaHash: "h",
+        sessaoId: null, sessaoDispositivo: null, emailConfirmado: true,
+      };
+      const entrada = { email: "a@x.com", senha: "123456", dispositivo: "navegador-1" };
+
+      it("abre a sessão e a inclui no token", async () => {
+        prisma.user.findUnique.mockResolvedValue(aluno);
+        prisma.user.updateMany.mockResolvedValue({ count: 1 });
+
+        await service.login(entrada as any);
+
+        expect(jwt.sign.mock.calls[0][0].sid).toEqual(expect.any(String));
+      });
+
+      it("recusa enquanto outro aparelho está ativo", async () => {
+        prisma.user.findUnique.mockResolvedValue({
+          ...aluno, sessaoId: "s1", sessaoDispositivo: "navegador-2",
+        });
+        prisma.user.updateMany.mockResolvedValue({ count: 0 });
+
+        await expect(service.login(entrada as any)).rejects.toThrow(ConflictException);
+        expect(jwt.sign).not.toHaveBeenCalled();
+      });
+
+      it("o mesmo navegador volta para a mesma sessão", async () => {
+        prisma.user.findUnique.mockResolvedValue({
+          ...aluno, sessaoId: "s1", sessaoDispositivo: "navegador-1",
+        });
+        prisma.user.update.mockResolvedValue({});
+
+        await service.login(entrada as any);
+
+        expect(prisma.user.updateMany).not.toHaveBeenCalled();
+        expect(jwt.sign.mock.calls[0][0].sid).toBe("s1");
+      });
+
+      it("não vale para administradores", async () => {
+        prisma.user.findUnique.mockResolvedValue({ ...aluno, role: "ADMIN" });
+
+        await service.login(entrada as any);
+
+        expect(prisma.user.updateMany).not.toHaveBeenCalled();
+        expect(jwt.sign.mock.calls[0][0].sid).toBeUndefined();
+      });
+
+      it("a senha errada não revela que a conta está em uso", async () => {
+        prisma.user.findUnique.mockResolvedValue({ ...aluno, sessaoId: "s1" });
+        (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+        await expect(service.login(entrada as any)).rejects.toThrow(UnauthorizedException);
+      });
+    });
+
     it("lança UnauthorizedException quando o usuário não existe", async () => {
       prisma.user.findUnique.mockResolvedValue(null);
 
@@ -72,6 +128,7 @@ describe("AuthService", () => {
         sub: "u1",
         email: "ana@x.com",
         role: "ALUNO",
+        sid: expect.any(String),
       });
       expect(result.accessToken).toBe("jwt-token");
       expect(result.user.email).toBe("ana@x.com");

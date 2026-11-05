@@ -5,12 +5,30 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service.js";
 import type { ResponderQuestaoDto } from "./dto/prova.dto.js";
-import { shuffleIds, permutacaoAlternativas } from "./shuffle.js";
+import { permutacaoAlternativas } from "./shuffle.js";
 
-const DURACAO_PROVA_MINUTOS = 150; // 2h30
+const DURACAO_PROVA_MINUTOS = 180; // 3h
 
-/** Tolerância para o salvamento que já estava a caminho quando o tempo acabou. */
-const TOLERANCIA_ENVIO_MS = 30_000;
+/** Só para o salvamento que já estava a caminho quando o tempo acabou. */
+const TOLERANCIA_ENVIO_MS = 5_000;
+
+/** Por quanto tempo uma tentativa em outro aparelho mantém o aviso na tela. */
+const AVISO_CONFLITO_MS = 90_000;
+
+/**
+ * Rascunhos e cópias nunca chegam ao participante. ENCERRADA fica de fora só no
+ * início da prova: quem já fez precisa continuar finalizando e consultando.
+ */
+const PROVA_FASE1 = {
+  fase: 1,
+  status: { in: ["PUBLICADA", "EM_ANDAMENTO", "ENCERRADA"] as ("PUBLICADA" | "EM_ANDAMENTO" | "ENCERRADA")[] },
+};
+
+/** Se uma prova foi encerrada e substituída, vale a publicada por último. */
+const PROVA_MAIS_RECENTE = { publicadaEm: { sort: "desc", nulls: "last" } } as const;
+
+/** Limite do regulamento: a terceira saída encerra a prova. */
+const MAX_ADVERTENCIAS = 3;
 
 export const MOTIVOS_FIM = ["ALUNO", "TEMPO", "ADVERTENCIAS"] as const;
 export type MotivoFim = (typeof MOTIVOS_FIM)[number];
@@ -65,8 +83,9 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
-      select: { id: true, janelaInicio: true, janelaFim: true },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
+      select: { id: true, status: true, janelaInicio: true, janelaFim: true, limiteInicio: true },
     });
 
     if (!prova) {
@@ -77,9 +96,19 @@ export class ProvaService {
     if (prova.janelaInicio && agora < prova.janelaInicio) {
       throw new BadRequestException("A prova ainda não está disponível para realização");
     }
-    // Quem já começou pode ter tempo extra além do fechamento da janela.
-    if (!inscricao.fase1Inicio && prova.janelaFim && agora > prova.janelaFim) {
-      throw new BadRequestException("A janela de realização desta prova já se encerrou");
+    // Quem já começou pode continuar, inclusive com tempo extra além da janela.
+    if (!inscricao.fase1Inicio) {
+      if (prova.status === "ENCERRADA" || (prova.janelaFim && agora > prova.janelaFim)) {
+        throw new BadRequestException("A janela de realização desta prova já se encerrou");
+      }
+      if (prova.limiteInicio && agora > prova.limiteInicio) {
+        const horario = prova.limiteInicio.toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "America/Sao_Paulo",
+        });
+        throw new BadRequestException(`O prazo para iniciar a prova terminou às ${horario}`);
+      }
     }
 
     if (!inscricao.fase1Inicio) {
@@ -117,7 +146,8 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { id: true, duracaoMinutos: true, janelaFim: true },
     });
 
@@ -157,14 +187,8 @@ export class ProvaService {
       orderBy: { ordem: "asc" },
     });
 
-    // Embaralha as questões de forma determinística por aluno (anti-cola).
-    const ordemQuestoes = shuffleIds(
-      inscricao.id,
-      provasQuestoes.map((pq) => pq.questao.id)
-    );
-    const questoes = ordemQuestoes.map(
-      (id) => provasQuestoes.find((pq) => pq.questao.id === id)!.questao
-    );
+    // A ordem das questões é a do cadastro, igual para todos.
+    const questoes = provasQuestoes.map((pq) => pq.questao);
 
     const respostas = await this.prisma.resposta.findMany({
       where: {
@@ -235,7 +259,8 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { id: true, duracaoMinutos: true, janelaFim: true },
     });
 
@@ -306,7 +331,8 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { id: true },
     });
 
@@ -356,6 +382,7 @@ export class ProvaService {
         fase1Fim: true,
         fase1TempoExtraMinutos: true,
         fase1Advertencias: true,
+        user: { select: { sessaoConflitoEm: true } },
       },
     });
 
@@ -364,9 +391,12 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { duracaoMinutos: true, janelaFim: true },
     });
+
+    const conflitoEm = inscricao.user?.sessaoConflitoEm?.getTime() ?? 0;
 
     const fim =
       inscricao.fase1Inicio && prova
@@ -383,6 +413,7 @@ export class ProvaService {
       fim: fim?.toISOString() ?? null,
       finalizada: inscricao.fase1Fim !== null,
       advertencias: inscricao.fase1Advertencias ?? 0,
+      outroAparelho: Date.now() - conflitoEm < AVISO_CONFLITO_MS,
     };
   }
 
@@ -403,7 +434,13 @@ export class ProvaService {
       data: { fase1Advertencias: { increment: 1 } },
       select: { fase1Advertencias: true },
     });
-    return { advertencias: atualizada.fase1Advertencias };
+
+    // O servidor decide: o navegador pode estar suspenso ou ter sido alterado.
+    const encerrada = atualizada.fase1Advertencias >= MAX_ADVERTENCIAS;
+    if (encerrada) {
+      await this.finalizarProva(userId, "ADVERTENCIAS");
+    }
+    return { advertencias: atualizada.fase1Advertencias, finalizada: encerrada };
   }
 
   async resumoProva(userId: string) {
@@ -423,7 +460,8 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { id: true },
     });
 

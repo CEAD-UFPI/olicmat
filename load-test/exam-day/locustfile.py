@@ -119,11 +119,12 @@ class Participante(Base):
 
     @task
     def fazer_prova(self):
-        email = f"carga{self.indice()}@carga.olicmat.test"
+        indice = self.indice()
+        email = f"carga{indice}@carga.olicmat.test"
 
         self.chamar(ADMIN, "GET", "/login", "01 GET /login (html)", tentativas=1)
         login = self.chamar(SITE, "POST", "/api/auth/login", "02 POST auth/login",
-                            corpo={"email": email, "senha": SENHA})
+                            corpo={"email": email, "senha": SENHA, "dispositivo": f"gerador-carga-{indice}"})
         if not login:
             raise StopUser()
         painel = login.json()["accessToken"]
@@ -156,7 +157,7 @@ class Participante(Base):
                         {"questaoId": questao["id"], "alternativa": random.choice("ABCDE")})
             if i == recarga:
                 self.carregar(token)
-            if i % 5 == 0:
+            if i % 2 == 0:
                 self.chamar(PROVA, "GET", "/api/prova/estado", "11b GET prova/estado", token, tentativas=1)
 
         self.chamar(PROVA, "GET", "/api/prova/resumo", "12 GET prova/resumo", token, tentativas=1)

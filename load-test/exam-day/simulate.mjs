@@ -126,7 +126,7 @@ async function aluno(idx) {
     await c.request("admin", "GET", "/login", { step: "01 GET /login (html)" });
 
     const login = await tentar(() =>
-      c.request("site", "POST", "/api/auth/login", { body: { email, senha: SENHA }, step: "02 POST auth/login" }));
+      c.request("site", "POST", "/api/auth/login", { body: { email, senha: SENHA, dispositivo: `gerador-carga-${idx}` }, step: "02 POST auth/login" }));
     if (!login) return desistir("login");
     const painel = login.json.accessToken;
 
@@ -171,7 +171,7 @@ async function aluno(idx) {
       minhas[q.id] = alternativa;
       contadores.salvas++;
       if (i === reload) await carregar(); // F5 no meio da prova
-      if (i % 5 === 0) await c.request("prova", "GET", "/api/prova/estado", { token, step: "11b GET prova/estado" });
+      if (i % 2 === 0) await c.request("prova", "GET", "/api/prova/estado", { token, step: "11b GET prova/estado" });
       if (i === 7 && idx % 10 === 0) await c.request("prova", "POST", "/api/prova/advertencia", { token, step: "11c POST prova/advertencia" });
     }
 

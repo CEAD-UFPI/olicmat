@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+/** Em segundos, do maior para o menor. */
+const AVISOS = [600, 300, 60];
+
+const textoAviso = (segundos: number) =>
+  segundos === 60
+    ? "Falta 1 minuto para o encerramento da prova. Salve suas respostas!"
+    : `Faltam ${segundos / 60} minutos para o encerramento da prova.`;
 
 interface TimerProps {
   fim: string;
@@ -12,9 +20,7 @@ interface TimerProps {
 export function Timer({ fim, offset = 0, onTimeUp }: TimerProps) {
   const [restante, setRestante] = useState<number | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
-  const [avisado30, setAvisado30] = useState(false);
-  const [avisado10, setAvisado10] = useState(false);
-  const [avisado1, setAvisado1] = useState(false);
+  const ultimoAviso = useRef<number | null>(null);
 
   useEffect(() => {
     const calcular = () => {
@@ -30,31 +36,24 @@ export function Timer({ fim, offset = 0, onTimeUp }: TimerProps) {
     return () => clearInterval(interval);
   }, [fim, offset, onTimeUp]);
 
+  // Compara por faixa, não por segundo exato: o celular congela a página em
+  // segundo plano, e quem volta com 4 minutos ainda precisa ver o aviso de 5.
   useEffect(() => {
-    if (restante !== null) {
-      // 30 minutos = 1800 segundos
-      if (restante <= 1800 && restante > 1790 && !avisado30) {
-        setAviso("Restam 30 minutos para o fim do tempo de prova.");
-        setAvisado30(true);
-      }
-      // 10 minutos = 600 segundos
-      else if (restante <= 600 && restante > 590 && !avisado10) {
-        setAviso("Restam 10 minutos para o fim do tempo de prova.");
-        setAvisado10(true);
-      }
-      // 1 minuto = 60 segundos
-      else if (restante <= 60 && restante > 50 && !avisado1) {
-        setAviso("Restam apenas 1 minuto para o fim do tempo de prova!");
-        setAvisado1(true);
-      }
+    if (restante === null || restante <= 0) return;
+    // Sem .at(): não existe em iPhones com iOS antigo.
+    const faixas = AVISOS.filter((s) => restante <= s);
+    const faixa = faixas.length > 0 ? faixas[faixas.length - 1] : null;
+    if (faixa !== null && faixa !== ultimoAviso.current) {
+      ultimoAviso.current = faixa;
+      setAviso(textoAviso(faixa));
     }
-  }, [restante, avisado30, avisado10, avisado1]);
+  }, [restante]);
 
   useEffect(() => {
     if (aviso) {
       const timeout = setTimeout(() => {
         setAviso(null);
-      }, 10000); // 10 segundos
+      }, 15000); // 15 segundos
       return () => clearTimeout(timeout);
     }
   }, [aviso]);

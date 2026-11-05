@@ -14,12 +14,15 @@ interface EdicaoSelectorProps {
   value: string;
   onChange: (edicaoId: string) => void;
   incluirTodas?: boolean;
+  /** Opção vazia inicial, para formulários em que a escolha é obrigatória. */
+  placeholder?: string;
 }
 
 export function EdicaoSelector({
   value,
   onChange,
   incluirTodas = true,
+  placeholder,
 }: EdicaoSelectorProps) {
   const [edicoes, setEdicoes] = useState<Edicao[]>([]);
   const [carregando, setCarregando] = useState(true);
@@ -40,6 +43,7 @@ export function EdicaoSelector({
       className="h-8 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-2.5 py-0 outline-none focus:border-[#4CAF50] transition-colors disabled:opacity-50 cursor-pointer"
     >
       {incluirTodas && <option value="">Todas as edições</option>}
+      {placeholder && <option value="">{placeholder}</option>}
       {edicoes.map((ed) => (
         <option key={ed.id} value={ed.id}>
           {ed.titulo || ed.ano} ({ed.status})

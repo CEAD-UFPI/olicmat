@@ -1,6 +1,7 @@
-// Embaralhamento determinístico (anti-cola).
-// O mesmo aluno vê sempre a mesma ordem (consistente entre refreshes),
-// mas alunos diferentes veem ordens diferentes (anti-cola entre carteiras).
+// Embaralhamento determinístico das alternativas (anti-cola).
+// A ordem das questões é a mesma para todos; só as alternativas mudam.
+// O mesmo aluno vê sempre a mesma ordem, consistente entre recarregamentos,
+// e alunos diferentes veem ordens diferentes.
 
 const LETRAS_CANONICAS = ["A", "B", "C", "D", "E"] as const;
 
@@ -43,11 +44,6 @@ function shuffle<T>(items: readonly T[], seed: string): T[] {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
-}
-
-/** Embaralha IDs de questões com seed determinística (ex.: inscricao.id). */
-export function shuffleIds(seed: string, ids: string[]): string[] {
-  return shuffle(ids, seed);
 }
 
 /** Permutação das letras canônicas A–E para uma questão específica. */

@@ -91,6 +91,14 @@ export class MonitoramentoController {
     return this.monitoramentoService.senhaTemporaria(id, req.user.id);
   }
 
+  @Post("inscricoes/:id/liberar-sessao")
+  async liberarSessao(
+    @Param("id") id: string,
+    @Req() req: ExpressReq & { user: AuthUser },
+  ) {
+    return this.monitoramentoService.liberarSessao(id, req.user.id);
+  }
+
   @Post("provas/:provaId/encerrar-pendentes")
   async encerrarPendentes(
     @Param("provaId") provaId: string,

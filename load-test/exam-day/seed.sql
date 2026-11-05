@@ -27,9 +27,9 @@ SELECT 'lt-q-'||i, 'Questão sintética '||i||'. '||repeat('Seja f uma função 
        chr(65+(i%5)),'ALGEBRA','MEDIO',now()
 FROM generate_series(1,20) i ON CONFLICT DO NOTHING;
 
-INSERT INTO "Prova"(id,"edicaoId",fase,titulo,"duracaoMinutos",status,"janelaInicio","janelaFim","createdBy","updatedAt")
-VALUES ('lt-prova','lt-edicao',1,'Prova de Carga',150,'PUBLICADA',now()-interval '1 hour',now()+interval '12 hours','lt-admin',now())
-ON CONFLICT (id) DO UPDATE SET "janelaInicio"=now()-interval '1 hour',"janelaFim"=now()+interval '12 hours';
+INSERT INTO "Prova"(id,"edicaoId",fase,titulo,"duracaoMinutos",status,"janelaInicio","limiteInicio","janelaFim","createdBy","updatedAt")
+VALUES ('lt-prova','lt-edicao',1,'Prova de Carga',180,'PUBLICADA',now()-interval '1 hour',now()+interval '6 hours',now()+interval '12 hours','lt-admin',now())
+ON CONFLICT (id) DO UPDATE SET "janelaInicio"=now()-interval '1 hour',"limiteInicio"=now()+interval '6 hours',"janelaFim"=now()+interval '12 hours';
 INSERT INTO "ProvaQuestao"(id,"provaId","questaoId",ordem)
 SELECT 'lt-pq-'||i,'lt-prova','lt-q-'||i,i FROM generate_series(1,20) i ON CONFLICT DO NOTHING;
 COMMIT;
