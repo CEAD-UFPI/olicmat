@@ -1,0 +1,251 @@
+{
+  "label": "fin2-pool20",
+  "config": {
+    "N": 567,
+    "RAMP_S": 60,
+    "THINK_MS": 3000,
+    "FINAL_RAMP_S": 2,
+    "RELOAD_PCT": 20,
+    "ADMIN_POLLERS": 2,
+    "hosts": {
+      "site": "http://127.0.0.1:18080|olicmat.cead.ufpi.br",
+      "admin": "http://127.0.0.1:18080|admin.olicmat.cead.ufpi.br",
+      "prova": "http://127.0.0.1:18080|prova.olicmat.cead.ufpi.br"
+    }
+  },
+  "duracaoSegundos": 141,
+  "alunos": {
+    "concluiram": 567,
+    "desistencias": {},
+    "repeticoes": 0,
+    "respostasConfirmadas": 11340
+  },
+  "tempoAteVerQuestoesMs": {
+    "p50": 113,
+    "p95": 1603,
+    "max": 3997
+  },
+  "geradorLagMs": {
+    "p99": 21,
+    "max": 25
+  },
+  "etapas": [
+    {
+      "etapa": "01 GET /login (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 3,
+      "p95": 5,
+      "p99": 8,
+      "max": 10,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "02 POST auth/login",
+      "req": 567,
+      "falhas": 0,
+      "p50": 59,
+      "p95": 73,
+      "p99": 108,
+      "max": 129,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "03 GET users/me",
+      "req": 567,
+      "falhas": 0,
+      "p50": 4,
+      "p95": 9,
+      "p99": 18,
+      "max": 58,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "04 GET inscricoes/minha",
+      "req": 567,
+      "falhas": 0,
+      "p50": 4,
+      "p95": 8,
+      "p99": 12,
+      "max": 58,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "05 POST transition-token",
+      "req": 567,
+      "falhas": 0,
+      "p50": 4,
+      "p95": 9,
+      "p99": 16,
+      "max": 60,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "06 GET /auth/claim (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 2,
+      "p95": 7,
+      "p99": 31,
+      "max": 227,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "07 POST auth/claim",
+      "req": 567,
+      "falhas": 0,
+      "p50": 7,
+      "p95": 18,
+      "p99": 40,
+      "max": 249,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "08 GET /prova (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 2,
+      "p95": 6,
+      "p99": 16,
+      "max": 31,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "09 POST prova/iniciar",
+      "req": 671,
+      "falhas": 0,
+      "p50": 10,
+      "p95": 865,
+      "p99": 2136,
+      "max": 2568,
+      "status": {
+        "201": 671
+      }
+    },
+    {
+      "etapa": "10 GET prova/questoes",
+      "req": 671,
+      "falhas": 0,
+      "p50": 10,
+      "p95": 192,
+      "p99": 1916,
+      "max": 2765,
+      "status": {
+        "200": 671
+      }
+    },
+    {
+      "etapa": "11 POST prova/responder",
+      "req": 11340,
+      "falhas": 0,
+      "p50": 11,
+      "p95": 62,
+      "p99": 424,
+      "max": 2921,
+      "status": {
+        "201": 11340
+      }
+    },
+    {
+      "etapa": "11b GET prova/estado",
+      "req": 2268,
+      "falhas": 0,
+      "p50": 7,
+      "p95": 29,
+      "p99": 246,
+      "max": 1785,
+      "status": {
+        "200": 2268
+      }
+    },
+    {
+      "etapa": "11c POST prova/advertencia",
+      "req": 56,
+      "falhas": 0,
+      "p50": 10,
+      "p95": 45,
+      "p99": 113,
+      "max": 113,
+      "status": {
+        "201": 56
+      }
+    },
+    {
+      "etapa": "12 GET prova/resumo",
+      "req": 567,
+      "falhas": 0,
+      "p50": 6,
+      "p95": 25,
+      "p99": 62,
+      "max": 151,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "13 POST prova/finalizar",
+      "req": 567,
+      "falhas": 0,
+      "p50": 6757,
+      "p95": 10835,
+      "p99": 10883,
+      "max": 10944,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "A0 admin login",
+      "req": 2,
+      "falhas": 0,
+      "p50": 162,
+      "p95": 162,
+      "p99": 162,
+      "max": 162,
+      "status": {
+        "201": 2
+      }
+    },
+    {
+      "etapa": "A1 GET monitoramento",
+      "req": 56,
+      "falhas": 0,
+      "p50": 7,
+      "p95": 16,
+      "p99": 29,
+      "max": 29,
+      "status": {
+        "200": 56
+      }
+    },
+    {
+      "etapa": "A2 GET monitoramento/inscricoes",
+      "req": 56,
+      "falhas": 0,
+      "p50": 23,
+      "p95": 42,
+      "p99": 82,
+      "max": 82,
+      "status": {
+        "200": 56
+      }
+    }
+  ],
+  "amostrasDeErro": {}
+}

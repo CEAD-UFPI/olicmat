@@ -1,0 +1,76 @@
+{
+  "label": "smoke",
+  "config": {
+    "N": 3,
+    "RAMP_S": 1,
+    "THINK_MS": 200,
+    "FINAL_RAMP_S": 1,
+    "RELOAD_PCT": 100,
+    "ADMIN_POLLERS": 1,
+    "hosts": {
+      "site": "http://127.0.0.1:18080|olicmat.cead.ufpi.br",
+      "admin": "http://127.0.0.1:18080|admin.olicmat.cead.ufpi.br",
+      "prova": "http://127.0.0.1:18080|prova.olicmat.cead.ufpi.br"
+    }
+  },
+  "duracaoSegundos": 14,
+  "alunos": {
+    "concluiram": 0,
+    "desistencias": {
+      "login": 3
+    },
+    "repeticoes": 8,
+    "respostasConfirmadas": 0
+  },
+  "tempoAteVerQuestoesMs": {
+    "p50": 0,
+    "p95": 0,
+    "max": 0
+  },
+  "geradorLagMs": {
+    "p99": 21,
+    "max": 22
+  },
+  "etapas": [
+    {
+      "etapa": "01 GET /login (html)",
+      "req": 3,
+      "falhas": 0,
+      "p50": 77,
+      "p95": 139,
+      "p99": 139,
+      "max": 139,
+      "status": {
+        "200": 3
+      }
+    },
+    {
+      "etapa": "02 POST auth/login",
+      "req": 9,
+      "falhas": 9,
+      "p50": 6,
+      "p95": 16,
+      "p99": 16,
+      "max": 16,
+      "status": {
+        "401": 9
+      }
+    },
+    {
+      "etapa": "A0 admin login",
+      "req": 3,
+      "falhas": 3,
+      "p50": 7,
+      "p95": 99,
+      "p99": 99,
+      "max": 99,
+      "status": {
+        "401": 3
+      }
+    }
+  ],
+  "amostrasDeErro": {
+    "A0 admin login 401": "{\"message\":\"Credenciais inválidas\",\"error\":\"Unauthorized\",\"statusCode\":401}",
+    "02 POST auth/login 401": "{\"message\":\"Credenciais inválidas\",\"error\":\"Unauthorized\",\"statusCode\":401}"
+  }
+}

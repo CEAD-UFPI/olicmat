@@ -1,0 +1,236 @@
+{
+  "label": "base-ramp5",
+  "config": {
+    "N": 567,
+    "RAMP_S": 5,
+    "THINK_MS": 3000,
+    "FINAL_RAMP_S": 10,
+    "RELOAD_PCT": 20,
+    "ADMIN_POLLERS": 2,
+    "hosts": {
+      "site": "http://127.0.0.1:18080|olicmat.cead.ufpi.br",
+      "admin": "http://127.0.0.1:18080|admin.olicmat.cead.ufpi.br",
+      "prova": "http://127.0.0.1:18080|prova.olicmat.cead.ufpi.br"
+    }
+  },
+  "duracaoSegundos": 109,
+  "alunos": {
+    "concluiram": 567,
+    "desistencias": {},
+    "repeticoes": 443,
+    "respostasConfirmadas": 11340
+  },
+  "tempoAteVerQuestoesMs": {
+    "p50": 15361,
+    "p95": 20390,
+    "max": 20847
+  },
+  "geradorLagMs": {
+    "p99": 22,
+    "max": 29
+  },
+  "etapas": [
+    {
+      "etapa": "01 GET /login (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 4,
+      "p95": 12,
+      "p99": 26,
+      "max": 59,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "02 POST auth/login",
+      "req": 976,
+      "falhas": 409,
+      "p50": 2200,
+      "p95": 6102,
+      "p99": 6387,
+      "max": 6480,
+      "status": {
+        "201": 567,
+        "429": 409
+      }
+    },
+    {
+      "etapa": "03 GET users/me",
+      "req": 567,
+      "falhas": 34,
+      "p50": 11,
+      "p95": 312,
+      "p99": 500,
+      "max": 764,
+      "status": {
+        "200": 533,
+        "429": 34
+      }
+    },
+    {
+      "etapa": "04 GET inscricoes/minha",
+      "req": 567,
+      "falhas": 36,
+      "p50": 9,
+      "p95": 300,
+      "p99": 591,
+      "max": 593,
+      "status": {
+        "200": 531,
+        "429": 36
+      }
+    },
+    {
+      "etapa": "05 POST transition-token",
+      "req": 601,
+      "falhas": 34,
+      "p50": 9,
+      "p95": 219,
+      "p99": 310,
+      "max": 377,
+      "status": {
+        "201": 567,
+        "429": 34
+      }
+    },
+    {
+      "etapa": "06 GET /auth/claim (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 3,
+      "p95": 20,
+      "p99": 38,
+      "max": 42,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "07 POST auth/claim",
+      "req": 567,
+      "falhas": 0,
+      "p50": 10,
+      "p95": 32,
+      "p99": 48,
+      "max": 76,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "08 GET /prova (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 3,
+      "p95": 16,
+      "p99": 44,
+      "max": 72,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "09 POST prova/iniciar",
+      "req": 670,
+      "falhas": 0,
+      "p50": 1533,
+      "p95": 4247,
+      "p99": 4340,
+      "max": 4407,
+      "status": {
+        "201": 670
+      }
+    },
+    {
+      "etapa": "10 GET prova/questoes",
+      "req": 670,
+      "falhas": 0,
+      "p50": 1343,
+      "p95": 6605,
+      "p99": 7100,
+      "max": 7107,
+      "status": {
+        "200": 670
+      }
+    },
+    {
+      "etapa": "11 POST prova/responder",
+      "req": 11340,
+      "falhas": 0,
+      "p50": 14,
+      "p95": 358,
+      "p99": 5044,
+      "max": 5695,
+      "status": {
+        "201": 11340
+      }
+    },
+    {
+      "etapa": "12 GET prova/resumo",
+      "req": 567,
+      "falhas": 0,
+      "p50": 9,
+      "p95": 40,
+      "p99": 87,
+      "max": 302,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "13 POST prova/finalizar",
+      "req": 567,
+      "falhas": 0,
+      "p50": 699,
+      "p95": 1504,
+      "p99": 1662,
+      "max": 1820,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "A0 admin login",
+      "req": 2,
+      "falhas": 0,
+      "p50": 110,
+      "p95": 110,
+      "p99": 110,
+      "max": 110,
+      "status": {
+        "201": 2
+      }
+    },
+    {
+      "etapa": "A1 GET monitoramento",
+      "req": 42,
+      "falhas": 0,
+      "p50": 7,
+      "p95": 25,
+      "p99": 637,
+      "max": 637,
+      "status": {
+        "200": 42
+      }
+    },
+    {
+      "etapa": "A2 GET monitoramento/inscricoes",
+      "req": 42,
+      "falhas": 0,
+      "p50": 130,
+      "p95": 390,
+      "p99": 1212,
+      "max": 1212,
+      "status": {
+        "200": 42
+      }
+    }
+  ],
+  "amostrasDeErro": {
+    "02 POST auth/login 429": "{\"statusCode\":429,\"message\":\"ThrottlerException: Too Many Requests\"}",
+    "05 POST transition-token 429": "{\"statusCode\":429,\"message\":\"ThrottlerException: Too Many Requests\"}",
+    "04 GET inscricoes/minha 429": "{\"statusCode\":429,\"message\":\"ThrottlerException: Too Many Requests\"}",
+    "03 GET users/me 429": "{\"statusCode\":429,\"message\":\"ThrottlerException: Too Many Requests\"}"
+  }
+}

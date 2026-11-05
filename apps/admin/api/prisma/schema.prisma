@@ -298,6 +298,8 @@ model Inscricao {
   fase1Inicio     DateTime?
   fase1Fim        DateTime?
   fase1TempoExtraMinutos Int @default(0)
+  fase1Advertencias Int @default(0)
+  fase1FimMotivo  String?
   fase2Tema       String?
   notaFinal       Float?
   medalha         Medalha?

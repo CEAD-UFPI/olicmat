@@ -24,13 +24,15 @@ import { NotificacoesModule } from "./notificacoes/notificacoes.module.js";
     HealthModule,
 
     // --- Rate limiting (in-memory) ---
-    // Production-safe defaults: an exam has 30 questions, so 100 req/s short
-    // tier is generous enough for legitimate traffic while still preventing abuse.
+    // Os contadores são por rota e por IP, e atrás do proxy todos os participantes
+    // chegam com o mesmo IP. Com os limites antigos (100/s, 500/10s), 567 pessoas
+    // entrando em 5 segundos receberam 409 respostas 429 no login (teste de carga
+    // de 04/11/2026). Estes valores têm que comportar a turma inteira ao mesmo tempo.
     ThrottlerModule.forRoot({
       throttlers: [
-        { name: "short", ttl: 1000, limit: 100 },
-        { name: "medium", ttl: 10000, limit: 500 },
-        { name: "long", ttl: 60000, limit: 5000 },
+        { name: "short", ttl: 1000, limit: Number(process.env.THROTTLE_SHORT ?? 2000) },
+        { name: "medium", ttl: 10000, limit: Number(process.env.THROTTLE_MEDIUM ?? 10000) },
+        { name: "long", ttl: 60000, limit: Number(process.env.THROTTLE_LONG ?? 60000) },
       ],
     }),
 

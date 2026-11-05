@@ -4,6 +4,8 @@ const MAIN_APP_URL = process.env.NEXT_PUBLIC_MAIN_APP_URL || "https://olicmat.ce
 
 export const api = axios.create({
   baseURL: "/api",
+  // Sem isto, uma conexão pendurada deixaria "Salvando..." travado para sempre.
+  timeout: 20_000,
   headers: {
     "Content-Type": "application/json",
   },

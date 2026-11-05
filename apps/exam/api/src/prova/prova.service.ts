@@ -9,6 +9,31 @@ import { shuffleIds, permutacaoAlternativas } from "./shuffle.js";
 
 const DURACAO_PROVA_MINUTOS = 150; // 2h30
 
+/** Tolerância para o salvamento que já estava a caminho quando o tempo acabou. */
+const TOLERANCIA_ENVIO_MS = 30_000;
+
+export const MOTIVOS_FIM = ["ALUNO", "TEMPO", "ADVERTENCIAS"] as const;
+export type MotivoFim = (typeof MOTIVOS_FIM)[number];
+
+/**
+ * Horário em que a prova deste participante termina.
+ *
+ * A prova acaba no que vier primeiro, a duração ou o fechamento da janela: quem
+ * entra às 08:40 numa janela até 11:00 tem até 11:00. O tempo extra concedido
+ * pelo suporte soma DEPOIS desse corte; caso contrário, uma compensação dada
+ * perto do fechamento não teria efeito nenhum.
+ */
+export function calcularFimProva(
+  inicio: Date,
+  duracaoMinutos: number | null,
+  janelaFim: Date | null,
+  tempoExtraMinutos: number | null,
+): Date {
+  const pelaDuracao = inicio.getTime() + (duracaoMinutos || DURACAO_PROVA_MINUTOS) * 60_000;
+  const base = janelaFim ? Math.min(pelaDuracao, janelaFim.getTime()) : pelaDuracao;
+  return new Date(base + (tempoExtraMinutos || 0) * 60_000);
+}
+
 /**
  * A nota da Fase 1 NÃO é divulgada ao participante ao final da prova: o gabarito
  * e a pontuação de todos serão publicados no site da OLICMAT. Nenhuma resposta
@@ -52,7 +77,8 @@ export class ProvaService {
     if (prova.janelaInicio && agora < prova.janelaInicio) {
       throw new BadRequestException("A prova ainda não está disponível para realização");
     }
-    if (prova.janelaFim && agora > prova.janelaFim) {
+    // Quem já começou pode ter tempo extra além do fechamento da janela.
+    if (!inscricao.fase1Inicio && prova.janelaFim && agora > prova.janelaFim) {
       throw new BadRequestException("A janela de realização desta prova já se encerrou");
     }
 
@@ -77,6 +103,7 @@ export class ProvaService {
         fase1Inicio: true,
         fase1Fim: true,
         fase1TempoExtraMinutos: true,
+        fase1Advertencias: true,
         edicaoId: true,
       },
     });
@@ -99,14 +126,11 @@ export class ProvaService {
     }
 
     const agora = new Date();
-    if (prova.janelaFim && agora > prova.janelaFim) {
-      throw new BadRequestException("A janela de realização desta prova já se encerrou");
-    }
-
-    const tempoExtra = inscricao.fase1TempoExtraMinutos || 0;
-    const duracaoTotal = (prova.duracaoMinutos || DURACAO_PROVA_MINUTOS) + tempoExtra;
-    const fimProva = new Date(
-      inscricao.fase1Inicio.getTime() + duracaoTotal * 60 * 1000
+    const fimProva = calcularFimProva(
+      inscricao.fase1Inicio,
+      prova.duracaoMinutos,
+      prova.janelaFim,
+      inscricao.fase1TempoExtraMinutos,
     );
 
     if (agora > fimProva || inscricao.fase1Fim) {
@@ -158,6 +182,8 @@ export class ProvaService {
       inscricaoId: inscricao.id,
       inicio: inscricao.fase1Inicio.toISOString(),
       fim: fimProva.toISOString(),
+      agora: agora.toISOString(),
+      advertencias: inscricao.fase1Advertencias ?? 0,
       questoes: questoes.map((q) => {
         const perm = permutacaoAlternativas(`${inscricao.id}:${q.id}`);
         const textoCanonico: Record<string, string> = {
@@ -217,18 +243,16 @@ export class ProvaService {
       throw new BadRequestException("Nenhuma prova disponível para esta edição");
     }
 
-    const agora = new Date();
-    if (prova.janelaFim && agora > prova.janelaFim) {
-      throw new BadRequestException("A janela de realização desta prova já se encerrou");
-    }
-
-    const tempoExtra = inscricao.fase1TempoExtraMinutos || 0;
-    const duracaoTotal = (prova.duracaoMinutos || DURACAO_PROVA_MINUTOS) + tempoExtra;
     const fimProva = inscricao.fase1Inicio
-      ? new Date(inscricao.fase1Inicio.getTime() + duracaoTotal * 60 * 1000)
+      ? calcularFimProva(
+          inscricao.fase1Inicio,
+          prova.duracaoMinutos,
+          prova.janelaFim,
+          inscricao.fase1TempoExtraMinutos,
+        )
       : null;
 
-    if (fimProva && agora > fimProva) {
+    if (fimProva && Date.now() > fimProva.getTime() + TOLERANCIA_ENVIO_MS) {
       throw new BadRequestException("Tempo de prova esgotado");
     }
 
@@ -259,7 +283,7 @@ export class ProvaService {
     });
   }
 
-  async finalizarProva(userId: string) {
+  async finalizarProva(userId: string, motivo: MotivoFim = "ALUNO") {
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
@@ -311,9 +335,75 @@ export class ProvaService {
       data: {
         fase1Nota: Math.round(nota * 100) / 100,
         fase1Fim: new Date(),
+        fase1FimMotivo: motivo,
       },
     });
     return semNotaFase1(atualizada);
+  }
+
+  /**
+   * Estado vivo da prova, consultado periodicamente pelo navegador. É o que faz
+   * um "+ Tempo" do suporte chegar a quem está com a prova aberta, e dá ao
+   * cronômetro a hora do servidor (o relógio do computador pode estar errado).
+   */
+  async estadoProva(userId: string) {
+    const inscricao = await this.prisma.inscricao.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        edicaoId: true,
+        fase1Inicio: true,
+        fase1Fim: true,
+        fase1TempoExtraMinutos: true,
+        fase1Advertencias: true,
+      },
+    });
+
+    if (!inscricao) {
+      throw new NotFoundException("Inscrição não encontrada");
+    }
+
+    const prova = await this.prisma.prova.findFirst({
+      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      select: { duracaoMinutos: true, janelaFim: true },
+    });
+
+    const fim =
+      inscricao.fase1Inicio && prova
+        ? calcularFimProva(
+            inscricao.fase1Inicio,
+            prova.duracaoMinutos,
+            prova.janelaFim,
+            inscricao.fase1TempoExtraMinutos,
+          )
+        : null;
+
+    return {
+      agora: new Date().toISOString(),
+      fim: fim?.toISOString() ?? null,
+      finalizada: inscricao.fase1Fim !== null,
+      advertencias: inscricao.fase1Advertencias ?? 0,
+    };
+  }
+
+  /** Registra no servidor: o suporte precisa ver, e recarregar a página não zera. */
+  async registrarAdvertencia(userId: string) {
+    const inscricao = await this.prisma.inscricao.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: { id: true },
+    });
+
+    if (!inscricao) {
+      throw new NotFoundException("Inscrição não encontrada");
+    }
+
+    const atualizada = await this.prisma.inscricao.update({
+      where: { id: inscricao.id },
+      data: { fase1Advertencias: { increment: 1 } },
+      select: { fase1Advertencias: true },
+    });
+    return { advertencias: atualizada.fase1Advertencias };
   }
 
   async resumoProva(userId: string) {

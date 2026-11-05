@@ -20,6 +20,9 @@ interface ProvaState {
   questaoAtual: number;
   inicio: string | null;
   fim: string | null;
+  /** servidor - navegador, em ms: o cronômetro não confia no relógio local. */
+  offsetRelogio: number;
+  advertencias: number;
   carregando: boolean;
   finalizada: boolean;
   salvando: boolean;
@@ -30,7 +33,9 @@ interface ProvaState {
   proximaQuestao: () => void;
   questaoAnterior: () => void;
   irParaQuestao: (index: number) => void;
-  finalizar: () => Promise<void>;
+  sincronizar: () => Promise<void>;
+  registrarAdvertencia: () => void;
+  finalizar: (motivo?: "ALUNO" | "TEMPO" | "ADVERTENCIAS") => Promise<void>;
 }
 
 export const useProvaStore = create<ProvaState>((set, get) => ({
@@ -39,6 +44,8 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   questaoAtual: 0,
   inicio: null,
   fim: null,
+  offsetRelogio: 0,
+  advertencias: 0,
   carregando: false,
   finalizada: false,
   salvando: false,
@@ -58,10 +65,14 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
         questoes: data.questoes,
         inicio: data.inicio,
         fim: data.fim,
+        offsetRelogio: new Date(data.agora).getTime() - Date.now(),
+        advertencias: data.advertencias ?? 0,
         carregando: false,
       });
     } catch (err: any) {
       if (err?.response?.data?.message === "Tempo de prova esgotado ou já finalizada") {
+        // Quem fechou o navegador e só voltou depois do tempo ainda não tem nota.
+        await api.post("/prova/finalizar", { motivo: "TEMPO" }).catch(() => {});
         set({ finalizada: true, carregando: false });
         return;
       }
@@ -113,10 +124,29 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
     }
   },
 
-  finalizar: async () => {
+  sincronizar: async () => {
+    try {
+      const { data } = await api.get("/prova/estado");
+      set({
+        fim: data.fim,
+        offsetRelogio: new Date(data.agora).getTime() - Date.now(),
+        advertencias: data.advertencias ?? 0,
+        finalizada: data.finalizada,
+      });
+    } catch {
+      // Rede instável: a próxima rodada tenta de novo.
+    }
+  },
+
+  registrarAdvertencia: () => {
+    api.post("/prova/advertencia").catch(() => {});
+  },
+
+  finalizar: async (motivo = "ALUNO") => {
     set({ salvando: true, erro: null });
     try {
-      await api.post("/prova/finalizar");
+      // Às 11:00 todos finalizam juntos: no teste de carga a fila levou até 11s.
+      await api.post("/prova/finalizar", { motivo }, { timeout: 60_000 });
       set({ finalizada: true, salvando: false });
     } catch (err: any) {
       set({

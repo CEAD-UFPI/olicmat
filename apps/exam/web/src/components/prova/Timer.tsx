@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 
 interface TimerProps {
   fim: string;
+  /** servidor - navegador, em ms. */
+  offset?: number;
   onTimeUp: () => void;
 }
 
-export function Timer({ fim, onTimeUp }: TimerProps) {
+export function Timer({ fim, offset = 0, onTimeUp }: TimerProps) {
   const [restante, setRestante] = useState<number | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [avisado30, setAvisado30] = useState(false);
@@ -16,7 +18,7 @@ export function Timer({ fim, onTimeUp }: TimerProps) {
 
   useEffect(() => {
     const calcular = () => {
-      const diff = Math.max(0, Math.floor((new Date(fim).getTime() - Date.now()) / 1000));
+      const diff = Math.max(0, Math.floor((new Date(fim).getTime() - (Date.now() + offset)) / 1000));
       setRestante(diff);
       if (diff <= 0) {
         onTimeUp();
@@ -26,7 +28,7 @@ export function Timer({ fim, onTimeUp }: TimerProps) {
     calcular();
     const interval = setInterval(calcular, 1000);
     return () => clearInterval(interval);
-  }, [fim, onTimeUp]);
+  }, [fim, offset, onTimeUp]);
 
   useEffect(() => {
     if (restante !== null) {

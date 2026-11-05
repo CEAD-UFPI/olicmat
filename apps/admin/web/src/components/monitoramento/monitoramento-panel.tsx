@@ -35,7 +35,12 @@ interface InscricaoStatus {
   nome: string;
   email: string;
   curso: string;
+  cpf: string;
+  matricula: string;
   status: StatusAluno;
+  pendenteEncerramento: boolean;
+  fase1FimMotivo: string | null;
+  advertencias: number;
   fase1Inicio: string | null;
   fase1Fim: string | null;
   fase1Nota: number | null;
@@ -57,6 +62,13 @@ const STATUS_PROVA_COR: Record<StatusProva, string> = {
   realizada: "#2EC4B6",
 };
 
+const MOTIVO_LABEL: Record<string, string> = {
+  ALUNO: "Finalizou",
+  TEMPO: "Tempo esgotado",
+  ADVERTENCIAS: "3 advertências",
+  ENCERRAMENTO_ADMIN: "Encerrada pelo suporte",
+};
+
 function formatarTempo(minutos: number): string {
   if (minutos <= 0) return "Esgotado";
   const h = Math.floor(minutos / 60);
@@ -68,7 +80,8 @@ function formatarTempo(minutos: number): string {
 function dentroDaJanela(prova: ProvaMonitor, agora: Date): boolean {
   if (!prova.janelaInicio || !prova.janelaFim) return false;
   const ini = new Date(prova.janelaInicio).getTime();
-  const fim = new Date(prova.janelaFim).getTime();
+  // O suporte continua atuando até 2h depois do fechamento (mesma regra da API).
+  const fim = new Date(prova.janelaFim).getTime() + 2 * 60 * 60 * 1000;
   const t = agora.getTime();
   return t >= ini && t <= fim;
 }
@@ -86,6 +99,11 @@ export function MonitoramentoPanel() {
   const [modalReset, setModalReset] = useState<InscricaoStatus | null>(null);
   const [modalTempo, setModalTempo] = useState<InscricaoStatus | null>(null);
   const [minutosInput, setMinutosInput] = useState("30");
+  const [modalDestravar, setModalDestravar] = useState<InscricaoStatus | null>(null);
+  const [justificativa, setJustificativa] = useState("");
+  const [modalSenha, setModalSenha] = useState<InscricaoStatus | null>(null);
+  const [senhaGerada, setSenhaGerada] = useState<string | null>(null);
+  const [modalEncerrar, setModalEncerrar] = useState(false);
   const [acaoLoading, setAcaoLoading] = useState(false);
 
   const mostrarFeedback = useCallback((tipo: "sucesso" | "erro", mensagem: string) => {
@@ -135,7 +153,7 @@ export function MonitoramentoPanel() {
   }, [provaSelecionada, fetchInscricoes]);
 
   const selecionarProva = (prova: ProvaMonitor) => {
-    if (prova.statusMonitoramento !== "em_andamento") return;
+    if (prova.statusMonitoramento === "em_breve") return;
     setProvaSelecionada(prova);
   };
 
@@ -183,6 +201,78 @@ export function MonitoramentoPanel() {
     }
   };
 
+  const handleDestravar = async () => {
+    if (!modalDestravar) return;
+    const mins = parseInt(minutosInput, 10);
+    if (isNaN(mins) || mins < 0 || mins > 480) {
+      mostrarFeedback("erro", "Informe um valor entre 0 e 480 minutos.");
+      return;
+    }
+    if (justificativa.trim().length < 5) {
+      mostrarFeedback("erro", "Registre a justificativa.");
+      return;
+    }
+    setAcaoLoading(true);
+    try {
+      await api.post(`/admin/monitoramento/inscricoes/${modalDestravar.id}/destravar`, {
+        minutos: mins,
+        justificativa,
+      });
+      mostrarFeedback("sucesso", `${modalDestravar.nome} destravado. Peça para recarregar a página (F5).`);
+      setModalDestravar(null);
+      setJustificativa("");
+      if (provaSelecionada) fetchInscricoes(provaSelecionada.id);
+    } catch (err: any) {
+      const msg = err.response?.data?.message;
+      mostrarFeedback("erro", typeof msg === "string" ? msg : "Erro ao destravar.");
+    } finally {
+      setAcaoLoading(false);
+    }
+  };
+
+  const handleSenha = async () => {
+    if (!modalSenha) return;
+    if (senhaGerada) {
+      setModalSenha(null);
+      setSenhaGerada(null);
+      return;
+    }
+    setAcaoLoading(true);
+    try {
+      const { data } = await api.post<{ senha: string }>(
+        `/admin/monitoramento/inscricoes/${modalSenha.id}/senha-temporaria`,
+      );
+      setSenhaGerada(data.senha);
+    } catch (err: any) {
+      const msg = err.response?.data?.message;
+      mostrarFeedback("erro", typeof msg === "string" ? msg : "Erro ao gerar senha.");
+      setModalSenha(null);
+    } finally {
+      setAcaoLoading(false);
+    }
+  };
+
+  const handleEncerrarPendentes = async () => {
+    if (!provaSelecionada) return;
+    setAcaoLoading(true);
+    try {
+      const { data } = await api.post<{ encerradas: number; aindaEmAndamento: number }>(
+        `/admin/monitoramento/provas/${provaSelecionada.id}/encerrar-pendentes`,
+      );
+      mostrarFeedback(
+        "sucesso",
+        `${data.encerradas} prova(s) encerrada(s). ${data.aindaEmAndamento} ainda com tempo.`,
+      );
+      setModalEncerrar(false);
+      fetchInscricoes(provaSelecionada.id);
+    } catch (err: any) {
+      const msg = err.response?.data?.message;
+      mostrarFeedback("erro", typeof msg === "string" ? msg : "Erro ao encerrar pendentes.");
+    } finally {
+      setAcaoLoading(false);
+    }
+  };
+
   return (
     <motion.div
       className="space-y-6"
@@ -220,6 +310,9 @@ export function MonitoramentoPanel() {
           onVoltar={voltar}
           onReset={(insc) => setModalReset(insc)}
           onTempo={(insc) => { setModalTempo(insc); setMinutosInput("30"); }}
+          onDestravar={(insc) => { setModalDestravar(insc); setMinutosInput("0"); setJustificativa(""); }}
+          onSenha={(insc) => { setModalSenha(insc); setSenhaGerada(null); }}
+          onEncerrarPendentes={() => setModalEncerrar(true)}
         />
       ) : (
         <ListaEdicoes
@@ -227,6 +320,88 @@ export function MonitoramentoPanel() {
           carregando={carregandoEdicoes}
           onSelecionar={selecionarProva}
         />
+      )}
+
+      {modalDestravar && (
+        <Modal
+          onClose={() => setModalDestravar(null)}
+          loading={acaoLoading}
+          onConfirm={handleDestravar}
+          cor="#2EC4B6"
+          titulo="Destravar Participante"
+          confirmarLabel={acaoLoading ? "Destravando..." : "Destravar"}
+        >
+          <p className="text-sm text-[#9895a4]">
+            Devolve <strong className="text-[#f0ece4]">{modalDestravar.nome}</strong> à prova e zera as
+            advertências ({modalDestravar.advertencias}). As respostas salvas são mantidas e o início não muda.
+            Depois, peça para a pessoa recarregar a página (F5).
+          </p>
+          <label htmlFor="minutos-destravar" className="block text-xs text-[#9895a4] text-left">
+            Minutos a compensar (0 se ainda houver tempo)
+          </label>
+          <input
+            id="minutos-destravar"
+            type="number"
+            min={0}
+            max={480}
+            value={minutosInput}
+            onChange={(e) => setMinutosInput(e.target.value)}
+            className="w-full px-4 py-3 bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl text-[#f0ece4] text-center text-lg font-mono focus:outline-none focus:border-[#2EC4B6]"
+          />
+          <label htmlFor="justificativa" className="block text-xs text-[#9895a4] text-left">
+            Justificativa (fica na auditoria)
+          </label>
+          <textarea
+            id="justificativa"
+            rows={3}
+            value={justificativa}
+            onChange={(e) => setJustificativa(e.target.value)}
+            className="w-full px-4 py-3 bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl text-sm text-[#f0ece4] focus:outline-none focus:border-[#2EC4B6]"
+          />
+        </Modal>
+      )}
+
+      {modalSenha && (
+        <Modal
+          onClose={() => { setModalSenha(null); setSenhaGerada(null); }}
+          loading={acaoLoading}
+          onConfirm={handleSenha}
+          cor="#E8B829"
+          titulo="Senha Temporária"
+          confirmarLabel={senhaGerada ? "Já informei" : acaoLoading ? "Gerando..." : "Gerar senha"}
+        >
+          {senhaGerada ? (
+            <>
+              <p className="text-sm text-[#9895a4]">
+                Informe a <strong className="text-[#f0ece4]">{modalSenha.nome}</strong>. Ela não será mostrada de novo.
+              </p>
+              <p className="text-center text-2xl font-mono font-bold tracking-widest text-[#E8B829] select-all">
+                {senhaGerada}
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-[#9895a4]">
+              Troca a senha de <strong className="text-[#f0ece4]">{modalSenha.nome}</strong> ({modalSenha.email}) por
+              uma provisória. <strong className="text-[#f0ece4]">Confirme a identidade antes</strong> (CPF e matrícula abaixo do nome).
+            </p>
+          )}
+        </Modal>
+      )}
+
+      {modalEncerrar && (
+        <Modal
+          onClose={() => setModalEncerrar(false)}
+          loading={acaoLoading}
+          onConfirm={handleEncerrarPendentes}
+          cor="#e53e3e"
+          titulo="Encerrar Pendentes"
+          confirmarLabel={acaoLoading ? "Encerrando..." : "Encerrar"}
+        >
+          <p className="text-sm text-[#9895a4]">
+            Calcula a nota de quem ficou com o tempo esgotado e não finalizou (fechou o navegador, caiu a
+            internet). Quem ainda tem tempo não é afetado. Use depois do fechamento da prova.
+          </p>
+        </Modal>
       )}
 
       {modalReset && (
@@ -268,7 +443,7 @@ export function MonitoramentoPanel() {
           </p>
           {modalTempo.status === "finalizado" && (
             <p className="text-sm text-[#FAA307]">
-              A prova deste aluno já foi encerrada — o tempo adicionado reabrirá a prova.
+              A prova deste aluno já foi encerrada: os minutos reabrem a prova e somam ao prazo original.
             </p>
           )}
           <div className="text-left space-y-1.5">
@@ -349,7 +524,7 @@ function ListaEdicoes({
           ) : (
             <div className="divide-y divide-[#2a2a3a]/50">
               {edicao.provas.map((prova) => {
-                const selecionavel = prova.statusMonitoramento === "em_andamento";
+                const selecionavel = prova.statusMonitoramento !== "em_breve";
                 return (
                   <button
                     key={prova.id}
@@ -406,6 +581,9 @@ function TabelaAlunos({
   onVoltar,
   onReset,
   onTempo,
+  onDestravar,
+  onSenha,
+  onEncerrarPendentes,
 }: {
   prova: ProvaMonitor;
   inscricoes: InscricaoStatus[];
@@ -414,6 +592,9 @@ function TabelaAlunos({
   onVoltar: () => void;
   onReset: (insc: InscricaoStatus) => void;
   onTempo: (insc: InscricaoStatus) => void;
+  onDestravar: (insc: InscricaoStatus) => void;
+  onSenha: (insc: InscricaoStatus) => void;
+  onEncerrarPendentes: () => void;
 }) {
   const [busca, setBusca] = useState("");
   const [filtroStatus, setFiltroStatus] = useState<"todos" | StatusAluno>("todos");
@@ -425,12 +606,23 @@ function TabelaAlunos({
     s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
   const termo = normalizar(busca.trim());
+  const pendentes = inscricoes.filter((i) => i.pendenteEncerramento).length;
+  const contadores = [
+    { label: "Não iniciaram", valor: inscricoes.filter((i) => i.status === "nao_iniciado").length, cor: "#9895a4" },
+    { label: "Em andamento", valor: inscricoes.filter((i) => i.status === "em_andamento").length, cor: "#E8B829" },
+    { label: "Encerradas", valor: inscricoes.filter((i) => i.status === "finalizado").length, cor: "#2EC4B6" },
+    { label: "Por advertência", valor: inscricoes.filter((i) => i.fase1FimMotivo === "ADVERTENCIAS").length, cor: "#e53e3e" },
+    { label: "Sem finalizar", valor: pendentes, cor: "#FAA307" },
+  ];
+
   const filtradas = inscricoes.filter((insc) => {
     if (filtroStatus !== "todos" && insc.status !== filtroStatus) return false;
     if (!termo) return true;
     return (
       normalizar(insc.nome).includes(termo) ||
       normalizar(insc.email).includes(termo) ||
+      insc.cpf.includes(termo.replace(/\D/g, "") || "\0") ||
+      normalizar(insc.matricula ?? "").includes(termo) ||
       normalizar(insc.curso).includes(termo)
     );
   });
@@ -455,12 +647,34 @@ function TabelaAlunos({
         </button>
       </div>
 
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {contadores.map((c) => (
+          <div key={c.label} className="border border-[#2a2a3a] rounded-xl bg-[#12121a] px-4 py-3">
+            <p className="text-2xl font-bold" style={{ color: c.cor }}>{c.valor}</p>
+            <p className="text-xs text-[#9895a4]">{c.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {pendentes > 0 && (
+        <div className="flex items-center justify-between gap-3 text-sm text-[#FAA307] bg-[#FAA307]/10 border border-[#FAA307]/20 rounded-xl p-3">
+          <span>{pendentes} participante(s) com tempo esgotado e sem nota.</span>
+          <button
+            type="button"
+            onClick={onEncerrarPendentes}
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#FAA307]/40 hover:bg-[#FAA307]/10 shrink-0"
+          >
+            Encerrar pendentes
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row gap-3">
         <input
           type="text"
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
-          placeholder="Buscar por nome, e-mail ou curso…"
+          placeholder="Buscar por nome, CPF, matrícula, e-mail ou curso…"
           className="flex-1 px-4 py-2.5 bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl text-sm text-[#f0ece4] placeholder-[#9895a4] focus:outline-none focus:border-[#E8B829] transition-colors"
         />
         <select
@@ -525,12 +739,29 @@ function TabelaAlunos({
                     <td className="p-4">
                       <p className="font-medium text-[#f0ece4]">{insc.nome}</p>
                       <p className="text-xs text-[#9895a4] mt-0.5">{insc.email}</p>
+                      <p className="text-xs text-[#9895a4] mt-0.5 font-mono">
+                        CPF {insc.cpf} · Mat. {insc.matricula}
+                      </p>
                     </td>
                     <td className="p-4 hidden md:table-cell text-[#9895a4] text-xs max-w-[160px] truncate" title={insc.curso}>
                       {insc.curso}
                     </td>
                     <td className="p-4 text-center">
                       {statusAlunoBadge(insc.status, insc.tempoRestanteMinutos)}
+                      {insc.fase1FimMotivo && (
+                        <p
+                          className="text-xs mt-1"
+                          style={{ color: insc.fase1FimMotivo === "ADVERTENCIAS" ? "#e53e3e" : "#9895a4" }}
+                        >
+                          {MOTIVO_LABEL[insc.fase1FimMotivo] ?? insc.fase1FimMotivo}
+                        </p>
+                      )}
+                      {insc.pendenteEncerramento && (
+                        <p className="text-xs text-[#FAA307] mt-1">Sem finalizar</p>
+                      )}
+                      {insc.advertencias > 0 && (
+                        <p className="text-xs text-[#e53e3e] mt-1">{insc.advertencias} advertência(s)</p>
+                      )}
                       {insc.status === "finalizado" && insc.fase1Nota != null && (
                         <p className="text-xs text-[#9895a4] mt-1">{insc.fase1Nota.toFixed(1)} pts</p>
                       )}
@@ -548,7 +779,23 @@ function TabelaAlunos({
                       )}
                     </td>
                     <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex flex-wrap items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => onSenha(insc)}
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#9895a4]/40 text-[#9895a4] hover:bg-[#9895a4]/10 transition-colors"
+                        >
+                          Senha
+                        </button>
+                        {insc.status === "finalizado" && (
+                          <button
+                            type="button"
+                            onClick={() => onDestravar(insc)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#2EC4B6]/40 text-[#2EC4B6] hover:bg-[#2EC4B6]/10 transition-colors"
+                          >
+                            Destravar
+                          </button>
+                        )}
                         {(insc.status === "em_andamento" || insc.status === "finalizado") && (
                           <>
                             <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { useProvaStore } from "@/stores/provaStore";
@@ -18,6 +18,8 @@ export default function ProvaStandalonePage() {
     questoes,
     questaoAtual,
     fim,
+    offsetRelogio,
+    advertencias,
     carregando,
     finalizada,
     salvando,
@@ -29,12 +31,17 @@ export default function ProvaStandalonePage() {
     questaoAnterior,
     irParaQuestao,
     finalizar,
+    sincronizar,
+    registrarAdvertencia,
   } = useProvaStore();
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [unanswered, setUnanswered] = useState<{ index: number; id: string }[] | null>(null);
   const [selecaoLocal, setSelecaoLocal] = useState<Record<string, string | null>>({});
   const [respondeuAtual, setRespondeuAtual] = useState(false);
+  const selecaoRef = useRef(selecaoLocal);
+  selecaoRef.current = selecaoLocal;
+  const encerrandoRef = useRef(false);
 
   useEffect(() => {
     carregarProva().catch(() => {});
@@ -50,6 +57,13 @@ export default function ProvaStandalonePage() {
       setRespondeuAtual(!!q.respondida);
     }
   }, [questaoAtual, questoes]);
+
+  // Mantém prazo, relógio e reaberturas do suporte em dia com a prova aberta.
+  useEffect(() => {
+    if (questoes.length === 0 || finalizada) return;
+    const interval = setInterval(sincronizar, 60_000);
+    return () => clearInterval(interval);
+  }, [questoes.length, finalizada, sincronizar]);
 
   const handleSelecionar = (letra: string) => {
     const q = questoes[questaoAtual];
@@ -72,13 +86,47 @@ export default function ProvaStandalonePage() {
     }
   };
 
-  const handleTimeUp = useCallback(() => {
-    finalizar();
-  }, [finalizar]);
+  /** Marcou uma alternativa e saiu sem clicar em salvar: não perde a resposta. */
+  const salvarPendente = useCallback(async () => {
+    const { questoes: atuais, questaoAtual: indice } = useProvaStore.getState();
+    const q = atuais[indice];
+    const marcada = q ? selecaoRef.current[q.id] : null;
+    if (q && marcada && marcada !== q.respondida) {
+      await responder(q.id, marcada).catch(() => {});
+    }
+  }, [responder]);
+
+  const handleTimeUp = useCallback(async () => {
+    if (encerrandoRef.current) return;
+    encerrandoRef.current = true;
+    try {
+      await salvarPendente();
+      // O suporte pode ter concedido tempo depois da última sincronização.
+      await sincronizar();
+      const { fim: fimAtual, offsetRelogio: offset, finalizada: jaFinalizada } = useProvaStore.getState();
+      const aindaHaTempo = fimAtual && new Date(fimAtual).getTime() > Date.now() + offset;
+      if (!aindaHaTempo && !jaFinalizada) await finalizar("TEMPO");
+    } finally {
+      encerrandoRef.current = false;
+    }
+  }, [finalizar, salvarPendente, sincronizar]);
+
+  const handleLimiteAdvertencias = useCallback(async () => {
+    await salvarPendente();
+    await finalizar("ADVERTENCIAS");
+  }, [finalizar, salvarPendente]);
+
+  const navegar = async (acao: () => void) => {
+    await salvarPendente();
+    acao();
+  };
 
   const handleFinalizar = async () => {
     setShowConfirm(false);
-    const semResposta = questoes
+    await salvarPendente();
+    const semResposta = useProvaStore
+      .getState()
+      .questoes
       .map((q, i) => ({ index: i + 1, id: q.id, respondida: q.respondida }))
       .filter((q) => !q.respondida);
 
@@ -147,7 +195,11 @@ export default function ProvaStandalonePage() {
   const selecionadaAtual = questao ? selecaoLocal[questao.id] ?? null : null;
 
   return (
-    <ExamGuard onAutoSubmit={handleTimeUp}>
+    <ExamGuard
+      advertenciasIniciais={advertencias}
+      onAdvertencia={registrarAdvertencia}
+      onAutoSubmit={handleLimiteAdvertencias}
+    >
       <div className="max-w-4xl mx-auto p-6 min-h-screen flex flex-col justify-between">
         <div>
           {/* Top Navbar */}
@@ -164,7 +216,7 @@ export default function ProvaStandalonePage() {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              {fim && <Timer fim={fim} onTimeUp={handleTimeUp} />}
+              {fim && <Timer fim={fim} offset={offsetRelogio} onTimeUp={handleTimeUp} />}
               <button
                 onClick={() => setShowConfirm(true)}
                 className="px-4 py-2 rounded-xl text-sm font-semibold border border-[#e53e3e]/40 text-[#e53e3e] hover:bg-[#e53e3e]/10 transition-colors"
@@ -211,7 +263,7 @@ export default function ProvaStandalonePage() {
         {/* Bottom Pagination & Selector */}
         <div className="mt-8 pt-6 border-t border-[#2a2a3a] flex items-center justify-between gap-4">
           <button
-            onClick={questaoAnterior}
+            onClick={() => navegar(questaoAnterior)}
             disabled={questaoAtual === 0}
             className="px-5 py-2.5 rounded-xl border border-[#2a2a3a] text-sm font-medium hover:bg-[#12121a] disabled:opacity-30"
           >
@@ -222,7 +274,7 @@ export default function ProvaStandalonePage() {
             {questoes.map((q, i) => (
               <button
                 key={q.id}
-                onClick={() => irParaQuestao(i)}
+                onClick={() => navegar(() => irParaQuestao(i))}
                 className={`w-9 h-9 rounded-lg text-xs font-bold shrink-0 transition-all ${
                   i === questaoAtual
                     ? "bg-[#E85D04] text-white"
@@ -237,7 +289,7 @@ export default function ProvaStandalonePage() {
           </div>
 
           <button
-            onClick={proximaQuestao}
+            onClick={() => navegar(proximaQuestao)}
             disabled={questaoAtual === questoes.length - 1}
             className="px-5 py-2.5 rounded-xl border border-[#2a2a3a] text-sm font-medium hover:bg-[#12121a] disabled:opacity-30"
           >

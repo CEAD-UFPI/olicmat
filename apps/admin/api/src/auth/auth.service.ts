@@ -123,9 +123,13 @@ export class AuthService {
   }
 
   async login(data: LoginDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: data.email },
-    });
+    const email = data.email.trim();
+    // Busca exata primeiro: é o caso comum e usa o índice único.
+    const user =
+      (await this.prisma.user.findUnique({ where: { email } })) ??
+      (await this.prisma.user.findFirst({
+        where: { email: { equals: email, mode: "insensitive" } },
+      }));
 
     if (!user) {
       throw new UnauthorizedException("Credenciais inválidas");

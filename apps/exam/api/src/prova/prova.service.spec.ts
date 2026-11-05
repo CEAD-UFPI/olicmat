@@ -1,7 +1,27 @@
 import { jest } from "@jest/globals";
 import { NotFoundException, BadRequestException } from "@nestjs/common";
-import { ProvaService } from "./prova.service.js";
+import { ProvaService, calcularFimProva } from "./prova.service.js";
 import { permutacaoAlternativas } from "./shuffle.js";
+
+describe("calcularFimProva", () => {
+  const as = (hhmm: string) => new Date(`2026-11-08T${hhmm}:00-03:00`);
+
+  it("quem entra no horário tem a duração completa", () => {
+    expect(calcularFimProva(as("08:30"), 150, as("11:00"), 0)).toEqual(as("11:00"));
+  });
+
+  it("quem entra atrasado termina no fechamento da janela", () => {
+    expect(calcularFimProva(as("08:40"), 150, as("11:00"), 0)).toEqual(as("11:00"));
+  });
+
+  it("o tempo extra soma depois do corte da janela", () => {
+    expect(calcularFimProva(as("08:40"), 150, as("11:00"), 20)).toEqual(as("11:20"));
+  });
+
+  it("sem janela, vale só a duração", () => {
+    expect(calcularFimProva(as("08:40"), 150, null, 0)).toEqual(as("11:10"));
+  });
+});
 
 describe("ProvaService (exam-api)", () => {
   let service: ProvaService;
@@ -146,7 +166,7 @@ describe("ProvaService (exam-api)", () => {
       // A nota é calculada e gravada, mas NÃO devolvida ao participante.
       expect(prisma.inscricao.update).toHaveBeenCalledWith({
         where: { id: "i1" },
-        data: { fase1Nota: 20, fase1Fim: expect.any(Date) },
+        data: { fase1Nota: 20, fase1Fim: expect.any(Date), fase1FimMotivo: "ALUNO" },
       });
       expect(result).not.toHaveProperty("fase1Nota");
     });
