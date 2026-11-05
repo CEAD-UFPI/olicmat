@@ -24,10 +24,18 @@ inscrição, então os participantes reais não são alcançados. Os usuários d
 em listagens e contagens do admin até a limpeza.
 
 1. Backup; janela combinada com o CEAD, pois todo o tráfego sairá de um único IP.
-2. Na Máquina 3: `psql -v N=567 -v hash="'<bcrypt>'" -f seed.sql`, com senha gerada na hora.
-3. No gerador:
+2. Na Máquina 3, com uma senha gerada na hora (`N=600` deixa contas de folga para repartir entre geradores):
    ```zsh
-   SENHA='...' SITE_URL=https://olicmat.cead.ufpi.br ADMIN_URL=https://admin.olicmat.cead.ufpi.br \
-   PROVA_URL=https://prova.olicmat.cead.ufpi.br RAMP_S=30 node simulate.mjs
+   docker exec -i olicmat-db psql -U olicmat -d olicmat -v N=600 -v hash="'<bcrypt>'" -f - < seed.sql
    ```
-4. Na Máquina 3: `psql -f verify.sql` e depois `psql -f cleanup.sql`.
+3. No gerador (`pip install locust==2.32.4`). `GERADORES` é o total de processos; `--users` é N+2, pois 2 são o painel de suporte:
+   ```zsh
+   SENHA='...' GERADORES=3 FINALIZAR_EM_S=135 \
+   SITE_URL=https://olicmat.cead.ufpi.br ADMIN_URL=https://admin.olicmat.cead.ufpi.br \
+   PROVA_URL=https://prova.olicmat.cead.ufpi.br \
+   locust -f locustfile.py --processes 3 --users 569 --spawn-rate 10
+   ```
+   Painel em http://localhost:8089. Suba por etapas: 52, 202 e 569 usuários. O teste para sozinho se os erros passarem de `ABORT_PCT` (2%).
+4. Na Máquina 3: `verify.sql` entre as rodadas (`iniciaram` igual aos participantes e demais contadores de falha em 0), `reset.sql` para repetir e `cleanup.sql` ao final.
+
+Sem navegador, o Locust não exercita tela cheia, advertências nem cronômetro: mantenha algumas pessoas fazendo a prova sintética durante a carga.
