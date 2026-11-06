@@ -202,7 +202,7 @@ export function ExamGuard({
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className={`relative min-h-screen ${celular && semTravaDeTela ? "pb-16" : ""}`}>
       {!celular && !isFullscreen && !submittedRef.current && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-6">
           <div className="max-w-md w-full border border-[#2a2a3a] bg-[#12121a] rounded-2xl p-8 text-center space-y-6">
