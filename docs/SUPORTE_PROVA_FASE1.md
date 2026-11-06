@@ -20,16 +20,16 @@ Confirme a identidade (CPF e matrícula, mostrados abaixo do nome) antes de qual
 | "Sessão encerrada" / voltou para o login no meio da prova | A conta entrou em outro aparelho | Entrar de novo no aparelho atual. As respostas salvas estão lá |
 | Advertência ao receber ligação ou tela apagada no celular | Sair do aplicativo conta como saída | Orientar a usar o modo Não Perturbe e desativar o bloqueio automático de tela. Se chegar a 3 e for procedente: **Destravar** |
 | Prova encerrada por 3 advertências, com justificativa | Saiu da tela (notificação, queda) | Avaliar. Se aceitar: **Destravar** + justificativa + F5 |
-| Caiu a internet, a luz ou o computador | Tempo continuou correndo | Só voltar a entrar, mesmo depois das 09:00, se iniciou antes: as respostas salvas estão lá. Se procedente: **+ Tempo** |
+| Caiu a internet, a luz ou o computador | Tempo continuou correndo | Só voltar a entrar, mesmo depois das 09:00, se iniciou antes: as respostas salvas estão lá |
 | "Marquei e não salvei" / "O sistema não salvou no fim" | Só contam respostas salvas | O sistema não salva sozinho às 11:30 nem no encerramento por 3 advertências. Questões em branco e alternativas marcadas sem salvar não são contabilizadas. Ao trocar de questão, a alternativa marcada é salva |
 | Clicou em "Finalizar" por engano | | **Destravar** com justificativa + F5. As respostas são mantidas |
+| Botão da prova desativado antes das 08:30 | Regra: libera às 08:30 de 08/11, no horário do servidor | Aguardar. Libera sozinho, sem recarregar. O relógio do aparelho não muda isso |
 | Tela travada ou "Serviço indisponível" | Rede ou serviço | Pedir F5. Se atingir vários, ver "Incidentes" |
 
 ## Ações do painel
 
 | Ação | Efeito | Precisa de F5? |
 |---|---|---|
-| **+ Tempo** | Soma minutos, inclusive além das 11:30 | Não, com a prova aberta o prazo se atualiza sozinho |
 | **Destravar** | Reabre, zera advertências, mantém início e respostas; soma os minutos informados | Sim |
 | **Resetar** | Reinicia o cronômetro e zera tudo, menos as respostas | Sim. Excepcional: quem é resetado às 10:00 ainda termina às 11:30 |
 | **Senha** | Gera senha provisória, invalida a anterior e libera a sessão | Novo login |
@@ -39,7 +39,7 @@ Confirme a identidade (CPF e matrícula, mostrados abaixo do nome) antes de qual
 Toda ação fica em **Auditoria**. O suporte pode atuar até 13:30 (2 h após o fechamento).
 Quem não iniciou até 09:00 não entra mais, e nenhuma ação do painel muda isso.
 
-**Regra de tempo:** a prova termina às 11:30 para todos, seja qual for o horário de início. Quem inicia às 09:00 tem até 11:30, então tem 2h30. Início até 09:00, sem exceção, inclusive por alegação de falha. Só o **+ Tempo** passa das 11:30. A duração cadastrada deve ser 180 minutos.
+**Regra de tempo:** a prova termina às 11:30 para todos, seja qual for o horário de início. Quem inicia às 09:00 tem até 11:30, então tem 2h30. Início até 09:00, sem exceção, inclusive por alegação de falha. A duração cadastrada deve ser 180 minutos.
 
 **Avisos na tela:** quando faltam 10 minutos, 5 minutos e 1 minuto para o encerramento. Nos últimos 10 minutos o relógio fica em destaque.
 
@@ -48,7 +48,7 @@ Quem não iniciou até 09:00 não entra mais, e nenhuma ação do painel muda is
 ## Incidentes
 
 - **Muitos sem conseguir entrar às 08:30:** a fila de login pode levar de 10 a 20 segundos no pico. Peça para aguardar, sem recarregar repetidamente, e divulgue antes que todos entrem no sistema a partir de 08:15.
-- **Serviço de provas fora do ar:** reinicie o `exam-api` na Máquina 2. No teste, um reinício gerou 8 s de erro sem perder respostas confirmadas. Depois, compense com **+ Tempo** se necessário.
+- **Serviço de provas fora do ar:** reinicie o `exam-api` na Máquina 2. No teste, um reinício gerou 8 s de erro sem perder respostas confirmadas.
 - **Banco fora do ar:** ninguém salva. Registre o horário de início e fim: a comissão decide a compensação depois.
 
 ## Antes da prova

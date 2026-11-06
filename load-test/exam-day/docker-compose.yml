@@ -33,7 +33,7 @@ services:
       <<: *api-env
       PORT: 3333
       FRONTEND_URL: http://admin.olicmat.cead.ufpi.br
-      EXAM_APP_URL: http://prova.olicmat.cead.ufpi.br
+      EXAM_APP_URL: http://prova.localhost:18080
       UPLOAD_DIR: /tmp/uploads
       PUBLIC_API_URL: http://olicmat.cead.ufpi.br
       EMAIL_PROVIDER: smtp
@@ -64,7 +64,7 @@ services:
       dockerfile: apps/exam/web/Dockerfile
       args:
         NEXT_PUBLIC_EXAM_API_URL: /api
-        NEXT_PUBLIC_MAIN_APP_URL: http://admin.olicmat.cead.ufpi.br
+        NEXT_PUBLIC_MAIN_APP_URL: http://admin.localhost:18080
     environment:
       NODE_ENV: production
       EXAM_API_URL: http://exam-api:3334/api

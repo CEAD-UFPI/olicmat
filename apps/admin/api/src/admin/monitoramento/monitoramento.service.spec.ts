@@ -84,57 +84,6 @@ describe("MonitoramentoService — janela de prova", () => {
     );
   });
 
-  it("adicionarTempo soma minutos dentro da janela", async () => {
-    prisma.inscricao.findUnique.mockResolvedValue(inscricaoBase);
-    prisma.prova.findFirst.mockResolvedValue(janelaAberta);
-    prisma.inscricao.update.mockResolvedValue({
-      fase1TempoExtraMinutos: 20,
-    });
-
-    const result = await service.adicionarTempo("insc1", 10, "admin1");
-
-    expect(result.tempoExtraTotal).toBe(20);
-    expect(prisma.inscricao.update).toHaveBeenCalledWith({
-      where: { id: "insc1" },
-      data: { fase1TempoExtraMinutos: 20 },
-    });
-    expect(auditoria.log).toHaveBeenCalledWith(
-      "admin1",
-      "ADICIONAR_TEMPO_PROVA",
-      "Inscricao",
-      "insc1",
-      expect.any(Object),
-    );
-  });
-
-  it("adicionarTempo funciona até 2h depois do fechamento da janela", async () => {
-    prisma.inscricao.findUnique.mockResolvedValue(inscricaoBase);
-    prisma.prova.findFirst.mockResolvedValue({
-      janelaInicio: new Date(Date.now() - 4 * 3600_000),
-      janelaFim: new Date(Date.now() - 3600_000),
-    });
-    prisma.inscricao.update.mockResolvedValue({ fase1TempoExtraMinutos: 20 });
-
-    await expect(service.adicionarTempo("insc1", 10, "admin1")).resolves.toBeDefined();
-  });
-
-  it("reabrir com adicionarTempo mantém o início e soma ao tempo extra", async () => {
-    prisma.inscricao.findUnique.mockResolvedValue({ ...inscricaoBase, fase1Fim: new Date() });
-    prisma.prova.findFirst.mockResolvedValue(janelaAberta);
-    prisma.inscricao.update.mockResolvedValue({ fase1TempoExtraMinutos: 25 });
-
-    await service.adicionarTempo("insc1", 15, "admin1");
-
-    const { data } = prisma.inscricao.update.mock.calls[0][0];
-    expect(data).toEqual({
-      fase1Fim: null,
-      fase1Nota: null,
-      fase1FimMotivo: null,
-      fase1TempoExtraMinutos: 25,
-    });
-    expect(data.fase1Inicio).toBeUndefined();
-  });
-
   describe("destravar", () => {
     const provaDuasHoras = { ...janelaAberta, duracaoMinutos: 120 };
     const encerrada = {
@@ -200,18 +149,5 @@ describe("MonitoramentoService — janela de prova", () => {
     prisma.inscricao.findUnique.mockResolvedValue({ userId: "user1", user: { role: "ADMIN" } });
 
     await expect(service.senhaTemporaria("insc1", "admin1")).rejects.toThrow(BadRequestException);
-  });
-
-  it("adicionarTempo lança BadRequest fora da janela", async () => {
-    prisma.inscricao.findUnique.mockResolvedValue(inscricaoBase);
-    prisma.prova.findFirst.mockResolvedValue({
-      janelaInicio: new Date(Date.now() - 5 * 3600_000),
-      janelaFim: new Date(Date.now() - 3 * 3600_000),
-    });
-
-    await expect(service.adicionarTempo("insc1", 10, "admin1")).rejects.toThrow(
-      BadRequestException,
-    );
-    expect(prisma.inscricao.update).not.toHaveBeenCalled();
   });
 });

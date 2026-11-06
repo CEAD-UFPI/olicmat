@@ -17,6 +17,15 @@ docker compose -f docker-compose.yml down -v
 `THINK_MS`: leitura por questão. O ritmo real é de cerca de 7 min por questão; 3 s é estresse.
 `router.conf` difere de `nginx/router.conf` só no host de provas e em `/api` no host admin.
 
+## Teste visual local com a prova real
+
+```zsh
+./prova-local.sh ~/Downloads/olicmat-prova-importacao/importar.sql
+```
+
+Abre em http://admin.localhost:18080, com banco próprio. O botão libera 2 minutos depois do comando.
+Para repetir: `./prova-local.sh repetir`. Para desligar: `./prova-local.sh parar`.
+
 ## Produção
 
 Dados sintéticos numa edição própria (ano 2099): a prova é encontrada pela edição da

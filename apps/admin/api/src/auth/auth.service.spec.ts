@@ -39,6 +39,42 @@ describe("AuthService", () => {
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
   });
 
+  describe("liberação da prova", () => {
+    const aluno = { id: "u1", email: "a@x.com", nome: "A", role: "ALUNO" };
+
+    beforeEach(() => {
+      prisma.user.findUnique.mockResolvedValue(aluno);
+      prisma.inscricao.findFirst.mockResolvedValue({ id: "i1", status: "CONFIRMADA", edicaoId: "e1" });
+      prisma.prova = { findFirst: jest.fn() };
+    });
+
+    it("recusa a entrada antes do horário, mesmo sem passar pelo botão", async () => {
+      prisma.prova.findFirst.mockResolvedValue({ janelaInicio: new Date(Date.now() + 60_000) });
+
+      await expect(service.gerarTransitionToken("u1", "s1")).rejects.toThrow(/será liberada/);
+      expect(jwt.sign).not.toHaveBeenCalled();
+    });
+
+    it("recusa quando não há prova publicada", async () => {
+      prisma.prova.findFirst.mockResolvedValue(null);
+
+      await expect(service.gerarTransitionToken("u1", "s1")).rejects.toThrow(/ainda não está disponível/);
+    });
+
+    it("libera no horário", async () => {
+      prisma.prova.findFirst.mockResolvedValue({ janelaInicio: new Date(Date.now() - 1000) });
+
+      await expect(service.gerarTransitionToken("u1", "s1")).resolves.toHaveProperty("transitionToken");
+    });
+
+    it("administrador não depende do horário", async () => {
+      prisma.user.findUnique.mockResolvedValue({ ...aluno, role: "ADMIN" });
+
+      await expect(service.gerarTransitionToken("u1")).resolves.toHaveProperty("transitionToken");
+      expect(prisma.prova.findFirst).not.toHaveBeenCalled();
+    });
+  });
+
   describe("login", () => {
     describe("sessão única", () => {
       const aluno = {

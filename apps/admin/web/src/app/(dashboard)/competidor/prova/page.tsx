@@ -19,10 +19,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { useLiberacaoProva } from "@/lib/useLiberacaoProva";
 
 export default function ProvaPage() {
   const [erro, setErro] = useState("");
   const [indo, setIndo] = useState(false);
+  const { liberada, aviso } = useLiberacaoProva();
 
   const irParaProva = async () => {
     setIndo(true);
@@ -127,12 +129,14 @@ export default function ProvaPage() {
       <Button
         size="lg"
         onClick={irParaProva}
-        disabled={indo}
+        disabled={indo || !liberada}
         style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
         className="w-full"
       >
         {indo ? "Abrindo a prova..." : "Acessar a aplicação de prova"}
       </Button>
+
+      {!liberada && <p className="text-sm text-[#E8B829]">{aviso}</p>}
     </motion.div>
   );
 }

@@ -9,8 +9,8 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { MonitoramentoService } from "./monitoramento.service.js";
-import { adicionarTempoSchema, destravarSchema } from "./dto/monitoramento.dto.js";
-import type { AdicionarTempoDto, DestravarDto } from "./dto/monitoramento.dto.js";
+import { destravarSchema } from "./dto/monitoramento.dto.js";
+import type { DestravarDto } from "./dto/monitoramento.dto.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
 import { Roles } from "../../common/decorators/roles.decorator.js";
@@ -46,23 +46,6 @@ export class MonitoramentoController {
     @Req() req: ExpressReq & { user: AuthUser },
   ) {
     return this.monitoramentoService.resetarTempo(id, req.user.id);
-  }
-
-  @Post("inscricoes/:id/adicionar-tempo")
-  async adicionarTempo(
-    @Param("id") id: string,
-    @Req() req: ExpressReq & { user: AuthUser },
-    @Body() body: AdicionarTempoDto,
-  ) {
-    const parsed = adicionarTempoSchema.safeParse(body);
-    if (!parsed.success) {
-      throw new BadRequestException(parsed.error.flatten().fieldErrors);
-    }
-    return this.monitoramentoService.adicionarTempo(
-      id,
-      parsed.data.minutos,
-      req.user.id,
-    );
   }
 
   @Post("inscricoes/:id/destravar")

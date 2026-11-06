@@ -28,6 +28,9 @@ THINK_MS = int(os.environ.get("THINK_MS", "3000"))
 RELOAD_PCT = float(os.environ.get("RELOAD_PCT", "20"))
 FINALIZAR_EM_S = float(os.environ.get("FINALIZAR_EM_S", "150"))
 FINAL_RAMP_S = float(os.environ.get("FINAL_RAMP_S", "10"))
+# Botão liberado às 08:30: todos esperam logados e clicam juntos.
+ABERTURA_EM_S = float(os.environ.get("ABERTURA_EM_S", "0"))
+ABERTURA_RAMP_S = float(os.environ.get("ABERTURA_RAMP_S", "5"))
 ABORT_PCT = float(os.environ.get("ABORT_PCT", "2"))
 PROVA_ID = os.environ.get("PROVA_ID", "lt-prova")
 GERADORES = int(os.environ.get("GERADORES", "1"))  # processos no total, somando as máquinas
@@ -131,6 +134,9 @@ class Participante(Base):
 
         self.chamar(SITE, "GET", "/api/users/me", "03 GET users/me", painel, tentativas=1)
         self.chamar(SITE, "GET", "/api/inscricoes/minha", "04 GET inscricoes/minha", painel, tentativas=1)
+
+        if ABERTURA_EM_S:
+            gevent.sleep(max(0, inicio_teste[0] + ABERTURA_EM_S - time.time()) + random.uniform(0, ABERTURA_RAMP_S))
 
         passagem = self.chamar(SITE, "POST", "/api/auth/transition-token", "05 POST transition-token", painel)
         if not passagem:

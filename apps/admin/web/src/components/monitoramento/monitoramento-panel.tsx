@@ -105,7 +105,6 @@ export function MonitoramentoPanel() {
 
   const [feedback, setFeedback] = useState<{ tipo: "sucesso" | "erro"; mensagem: string } | null>(null);
   const [modalReset, setModalReset] = useState<InscricaoStatus | null>(null);
-  const [modalTempo, setModalTempo] = useState<InscricaoStatus | null>(null);
   const [minutosInput, setMinutosInput] = useState("30");
   const [modalDestravar, setModalDestravar] = useState<InscricaoStatus | null>(null);
   const [justificativa, setJustificativa] = useState("");
@@ -182,28 +181,6 @@ export function MonitoramentoPanel() {
       if (provaSelecionada) fetchInscricoes(provaSelecionada.id);
     } catch (err: any) {
       const msg = err.response?.data?.message || "Erro ao resetar tempo de prova.";
-      mostrarFeedback("erro", msg);
-    } finally {
-      setAcaoLoading(false);
-    }
-  };
-
-  const handleAdicionarTempo = async () => {
-    if (!modalTempo) return;
-    const mins = parseInt(minutosInput, 10);
-    if (isNaN(mins) || mins < 1 || mins > 480) {
-      mostrarFeedback("erro", "Informe um valor entre 1 e 480 minutos.");
-      return;
-    }
-    setAcaoLoading(true);
-    try {
-      await api.post(`/admin/monitoramento/inscricoes/${modalTempo.id}/adicionar-tempo`, { minutos: mins });
-      mostrarFeedback("sucesso", `${mins} minuto(s) adicionado(s) para ${modalTempo.nome}.`);
-      setModalTempo(null);
-      setMinutosInput("30");
-      if (provaSelecionada) fetchInscricoes(provaSelecionada.id);
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "Erro ao adicionar tempo.";
       mostrarFeedback("erro", msg);
     } finally {
       setAcaoLoading(false);
@@ -334,7 +311,6 @@ export function MonitoramentoPanel() {
           carregando={carregandoLista}
           onVoltar={voltar}
           onReset={(insc) => setModalReset(insc)}
-          onTempo={(insc) => { setModalTempo(insc); setMinutosInput("30"); }}
           onDestravar={(insc) => { setModalDestravar(insc); setMinutosInput("0"); setJustificativa(""); }}
           onSenha={(insc) => { setModalSenha(insc); setSenhaGerada(null); }}
           onLiberarSessao={setModalSessao}
@@ -472,53 +448,6 @@ export function MonitoramentoPanel() {
           )}
         </Modal>
       )}
-
-      {modalTempo && (
-        <Modal
-          onClose={() => setModalTempo(null)}
-          loading={acaoLoading}
-          onConfirm={handleAdicionarTempo}
-          cor="#3A86EF"
-          titulo="Adicionar Tempo Extra"
-          confirmarLabel={acaoLoading ? "Adicionando..." : "Confirmar"}
-        >
-          <p className="text-sm text-[#9895a4]">
-            Adicionar minutos extras ao cronômetro de{" "}
-            <strong className="text-[#f0ece4]">{modalTempo.nome}</strong>.
-          </p>
-          {modalTempo.status === "finalizado" && (
-            <p className="text-sm text-[#FAA307]">
-              A prova deste aluno já foi encerrada: os minutos reabrem a prova e somam ao prazo original.
-            </p>
-          )}
-          <div className="text-left space-y-1.5">
-            <p className="text-xs text-[#9895a4]">
-              Tempo extra atual:{" "}
-              <span className="text-[#FAA307] font-medium">+{modalTempo.tempoExtraMinutos}min</span>
-            </p>
-            {modalTempo.tempoRestanteMinutos != null && (
-              <p className="text-xs text-[#9895a4]">
-                Tempo restante:{" "}
-                <span className="text-[#f0ece4] font-medium">{formatarTempo(modalTempo.tempoRestanteMinutos)}</span>
-              </p>
-            )}
-          </div>
-          <div>
-            <label htmlFor="minutos" className="block text-xs text-[#9895a4] mb-2 text-left">
-              Minutos a adicionar (1–480)
-            </label>
-            <input
-              id="minutos"
-              type="number"
-              min={1}
-              max={480}
-              value={minutosInput}
-              onChange={(e) => setMinutosInput(e.target.value)}
-              className="w-full px-4 py-3 bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl text-[#f0ece4] text-center text-lg font-mono focus:outline-none focus:border-[#3A86EF] transition-colors"
-            />
-          </div>
-        </Modal>
-      )}
     </motion.div>
   );
 }
@@ -625,7 +554,6 @@ function TabelaAlunos({
   carregando,
   onVoltar,
   onReset,
-  onTempo,
   onDestravar,
   onSenha,
   onLiberarSessao,
@@ -637,7 +565,6 @@ function TabelaAlunos({
   carregando: boolean;
   onVoltar: () => void;
   onReset: (insc: InscricaoStatus) => void;
-  onTempo: (insc: InscricaoStatus) => void;
   onDestravar: (insc: InscricaoStatus) => void;
   onSenha: (insc: InscricaoStatus) => void;
   onLiberarSessao: (insc: InscricaoStatus) => void;
@@ -749,7 +676,7 @@ function TabelaAlunos({
 
       {!janelaAberta && (
         <div className="text-sm text-[#FAA307] bg-[#FAA307]/10 border border-[#FAA307]/20 rounded-xl p-3">
-          Fora da janela de realização da prova — resetar/adicionar tempo está bloqueado.
+          Fora do período da prova: resetar e destravar estão bloqueados.
         </div>
       )}
 
@@ -870,14 +797,6 @@ function TabelaAlunos({
                               className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#E8B829]/40 text-[#E8B829] hover:bg-[#E8B829]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                               Resetar
-                            </button>
-                            <button
-                              type="button"
-                              disabled={!janelaAberta}
-                              onClick={() => onTempo(insc)}
-                              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#3A86EF]/40 text-[#3A86EF] hover:bg-[#3A86EF]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-                            >
-                              + Tempo
                             </button>
                           </>
                         )}

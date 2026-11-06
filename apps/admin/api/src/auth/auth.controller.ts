@@ -75,6 +75,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get("liberacao-prova")
+  async liberacaoProva(@Req() req: ExpressReq & { user: AuthUser }) {
+    return this.authService.liberacaoProva(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post("transition-token")
   async gerarTransitionToken(@Req() req: ExpressReq & { user: AuthUser }) {
     return this.authService.gerarTransitionToken(req.user.id, req.user.sid);

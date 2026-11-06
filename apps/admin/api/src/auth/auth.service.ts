@@ -301,6 +301,35 @@ export class AuthService {
     return { message: "Sessão encerrada" };
   }
 
+  /** Prova de Fase 1 ativa na edição da inscrição mais recente do participante. */
+  private async provaDoParticipante(userId: string) {
+    const inscricao = await this.prisma.inscricao.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: { edicaoId: true },
+    });
+    if (!inscricao) return null;
+
+    return this.prisma.prova.findFirst({
+      where: {
+        edicaoId: inscricao.edicaoId,
+        fase: 1,
+        status: { in: ["PUBLICADA", "EM_ANDAMENTO"] },
+      },
+      orderBy: { publicadaEm: { sort: "desc", nulls: "last" } },
+      select: { janelaInicio: true },
+    });
+  }
+
+  /** O horário vai junto: o painel não confia no relógio do aparelho. */
+  async liberacaoProva(userId: string) {
+    const prova = await this.provaDoParticipante(userId);
+    return {
+      agora: new Date().toISOString(),
+      liberadaEm: prova?.janelaInicio?.toISOString() ?? null,
+    };
+  }
+
   async gerarTransitionToken(userId: string, sid?: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -320,6 +349,23 @@ export class AuthService {
 
       if (!inscricao || inscricao.status !== "CONFIRMADA") {
         throw new BadRequestException("Inscrição não confirmada para a prova");
+      }
+
+      // A trava do botão é só visual: quem garante o horário é esta verificação.
+      const prova = await this.provaDoParticipante(user.id);
+      if (!prova?.janelaInicio) {
+        throw new BadRequestException("A prova ainda não está disponível");
+      }
+      if (new Date() < prova.janelaInicio) {
+        const quando = prova.janelaInicio.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "America/Sao_Paulo",
+        });
+        throw new BadRequestException(`A prova será liberada em ${quando}`);
       }
     }
 

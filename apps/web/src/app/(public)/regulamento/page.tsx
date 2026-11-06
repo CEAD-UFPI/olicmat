@@ -121,6 +121,7 @@ export default function RegulamentoPage() {
             `Data: ${dataDe("fase1")}.`,
             "Horário e duração: das 08:30 às 11:30 (horário de Brasília), com duração de 180 minutos (3 horas).",
             "Término: a prova termina às 11:30 para todos, seja qual for o horário em que o participante iniciou. Quem inicia às 09:00 tem até 11:30, então tem 2h30.",
+            "Liberação: o botão de acesso à prova só fica habilitado às 08:30 de 08/11/2026, no horário do sistema.",
             'Início máximo: 09:00, sem exceção. Depois desse horário, o sistema exibe a mensagem "O prazo para iniciar a prova terminou às 09:00".',
             'Respostas salvas: às 11:30 a prova é encerrada automaticamente, e contam somente as respostas salvas. Questões em branco e alternativas marcadas sem salvar não são contabilizadas. O sistema não salva sozinho ao fim do tempo nem no encerramento por 3 advertências. Ao trocar de questão, a alternativa marcada é salva automaticamente; mesmo assim, recomenda-se clicar em "Salvar Resposta".',
             "Avisos de tempo: a tela avisa quando faltam 10 minutos, 5 minutos e 1 minuto para o encerramento. Nos últimos 10 minutos, o relógio fica em destaque.",
