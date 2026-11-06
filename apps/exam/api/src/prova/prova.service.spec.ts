@@ -99,6 +99,15 @@ describe("ProvaService (exam-api)", () => {
       expect((await service.estadoProva("u1")).outroAparelho).toBe(true);
     });
 
+    it("informa o motivo do encerramento", async () => {
+      prisma.inscricao.findFirst.mockResolvedValue({
+        ...inscricao(null), fase1Fim: new Date(), fase1FimMotivo: "ADVERTENCIAS",
+      });
+      prisma.prova.findFirst.mockResolvedValue({ duracaoMinutos: 180, janelaFim: null });
+
+      expect((await service.estadoProva("u1")).motivoFim).toBe("ADVERTENCIAS");
+    });
+
     it("para de avisar quando as tentativas param", async () => {
       prisma.inscricao.findFirst.mockResolvedValue(inscricao(new Date(Date.now() - 120_000)));
       prisma.prova.findFirst.mockResolvedValue({ duracaoMinutos: 180, janelaFim: null });

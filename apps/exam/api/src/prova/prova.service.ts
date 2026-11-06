@@ -386,6 +386,7 @@ export class ProvaService {
         fase1Fim: true,
         fase1TempoExtraMinutos: true,
         fase1Advertencias: true,
+        fase1FimMotivo: true,
         user: { select: { sessaoConflitoEm: true } },
       },
     });
@@ -416,6 +417,7 @@ export class ProvaService {
       agora: new Date().toISOString(),
       fim: fim?.toISOString() ?? null,
       finalizada: inscricao.fase1Fim !== null,
+      motivoFim: inscricao.fase1FimMotivo ?? null,
       advertencias: inscricao.fase1Advertencias ?? 0,
       outroAparelho: Date.now() - conflitoEm < AVISO_CONFLITO_MS,
     };

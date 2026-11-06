@@ -20,7 +20,7 @@ Confirme a identidade (CPF e matrícula, mostrados abaixo do nome) antes de qual
 | "Sessão encerrada" / voltou para o login no meio da prova | A conta entrou em outro aparelho | Entrar de novo no aparelho atual. As respostas salvas estão lá |
 | Advertência ao receber ligação ou tela apagada no celular | Sair do aplicativo conta como saída | Orientar a usar o modo Não Perturbe e desativar o bloqueio automático de tela. Se chegar a 3 e for procedente: **Destravar** |
 | Prova encerrada por 3 advertências, com justificativa | Saiu da tela (notificação, queda) | Avaliar. Se aceitar: **Destravar** + justificativa + F5 |
-| Caiu a internet, a luz ou o computador | Tempo continuou correndo | Só voltar a entrar, mesmo depois das 09:00, se iniciou antes: as respostas salvas estão lá |
+| Caiu a internet, a luz ou o computador, ou fechou o navegador | Tempo continuou correndo; fechar a página não gera advertência | Só voltar a entrar, mesmo depois das 09:00, se iniciou antes: as respostas salvas estão lá |
 | "Marquei e não salvei" / "O sistema não salvou no fim" | Só contam respostas salvas | O sistema não salva sozinho às 11:30 nem no encerramento por 3 advertências. Questões em branco e alternativas marcadas sem salvar não são contabilizadas. Ao trocar de questão, a alternativa marcada é salva |
 | Clicou em "Finalizar" por engano | | **Destravar** com justificativa + F5. As respostas são mantidas |
 | Botão da prova desativado antes das 08:30 | Regra: libera às 08:30 de 08/11, no horário do servidor | Aguardar. Libera sozinho, sem recarregar. O relógio do aparelho não muda isso |

@@ -22,6 +22,7 @@ interface ProvaState {
   offsetRelogio: number;
   advertencias: number;
   outroAparelho: boolean;
+  motivoFim: string | null;
   carregando: boolean;
   finalizada: boolean;
   salvando: boolean;
@@ -46,6 +47,7 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   offsetRelogio: 0,
   advertencias: 0,
   outroAparelho: false,
+  motivoFim: null,
   carregando: false,
   finalizada: false,
   salvando: false,
@@ -77,7 +79,8 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
       if (err?.response?.data?.message === "Tempo de prova esgotado ou já finalizada") {
         // Quem fechou o navegador e só voltou depois do tempo ainda não tem nota.
         await api.post("/prova/finalizar", { motivo: "TEMPO" }).catch(() => {});
-        set({ finalizada: true, carregando: false });
+        const estado = await api.get("/prova/estado").catch(() => null);
+        set({ finalizada: true, motivoFim: estado?.data?.motivoFim ?? null, carregando: false });
         return;
       }
       const mensagem = err?.response?.data?.message;
@@ -137,6 +140,7 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
         offsetRelogio: new Date(data.agora).getTime() - Date.now(),
         advertencias: data.advertencias ?? 0,
         outroAparelho: !!data.outroAparelho,
+        motivoFim: data.motivoFim ?? null,
         finalizada: data.finalizada,
       });
     } catch {
@@ -147,7 +151,7 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   registrarAdvertencia: async () => {
     try {
       const { data } = await api.post("/prova/advertencia");
-      if (data.finalizada) set({ finalizada: true });
+      if (data.finalizada) set({ finalizada: true, motivoFim: "ADVERTENCIAS" });
       return true;
     } catch {
       return false;
@@ -159,7 +163,7 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
     try {
       // Às 11:00 todos finalizam juntos: no teste de carga a fila levou até 11s.
       await api.post("/prova/finalizar", { motivo }, { timeout: 60_000 });
-      set({ finalizada: true, salvando: false });
+      set({ finalizada: true, motivoFim: motivo, salvando: false });
     } catch (err: any) {
       set({
         salvando: false,

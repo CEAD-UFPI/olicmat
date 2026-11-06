@@ -24,6 +24,14 @@ interface ExamGuardProps {
 const JANELA_MESMO_EVENTO_MS = 2_500;
 
 /**
+ * Fechar a página dispara os mesmos eventos de sair dela. Esperar um instante
+ * resolve: quem fecha o navegador, ou perde a energia, não chega a contar, porque
+ * o temporizador morre com a página. O guia promete que essa pessoa pode voltar.
+ * No celular em segundo plano o temporizador só congela, e a saída conta na volta.
+ */
+const ESPERA_CONFIRMAR_SAIDA_MS = 700;
+
+/**
  * No celular a prova não exige tela cheia: o iPhone não oferece esse recurso, e
  * nos demais o gesto de voltar sairia dela sem querer. Ali, a saída é detectada
  * só pela troca de aba ou de aplicativo. O evento de foco também fica de fora,
@@ -117,7 +125,35 @@ export function ExamGuard({
   useEffect(() => {
     if (desativado) return;
 
+    let pendente: ReturnType<typeof setTimeout> | null = null;
+
+    const emTelaCheia = () =>
+      !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).msFullscreenElement
+      );
+
+    // Fora da tela cheia a prova já está coberta pelo aviso: a saída foi contada
+    // uma vez, e trocar de janela nesse estado não pode gerar outra falta.
+    const foraDaProva = () => !celular && !emTelaCheia();
+
     const triggerWarning = (reason: string) => {
+      if (submittedRef.current || pendente) return;
+      pendente = setTimeout(() => {
+        pendente = null;
+        confirmarSaida(reason);
+      }, ESPERA_CONFIRMAR_SAIDA_MS);
+    };
+
+    const handlePageHide = (e: PageTransitionEvent) => {
+      if (pendente && !e.persisted) {
+        clearTimeout(pendente);
+        pendente = null;
+      }
+    };
+
+    const confirmarSaida = (reason: string) => {
       if (submittedRef.current) return;
 
       setWarningReason(reason);
@@ -156,13 +192,13 @@ export function ExamGuard({
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden) {
+      if (document.hidden && !foraDaProva()) {
         triggerWarning("Foco da janela perdido ou mudança de aba detectada.");
       }
     };
 
     const handleBlur = () => {
-      if (!celular) triggerWarning("Foco da janela perdido.");
+      if (!celular && !foraDaProva()) triggerWarning("Foco da janela perdido.");
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -186,8 +222,13 @@ export function ExamGuard({
     window.addEventListener("blur", handleBlur);
     window.addEventListener("keydown", handleKeyDown);
     document.addEventListener("contextmenu", handleContextMenu);
+    window.addEventListener("pagehide", handlePageHide);
+    window.addEventListener("beforeunload", handlePageHide as unknown as EventListener);
 
     return () => {
+      if (pendente) clearTimeout(pendente);
+      window.removeEventListener("pagehide", handlePageHide);
+      window.removeEventListener("beforeunload", handlePageHide as unknown as EventListener);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
       document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
       document.removeEventListener("visibilitychange", handleVisibilityChange);

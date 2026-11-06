@@ -24,6 +24,7 @@ export default function ProvaStandalonePage() {
     offsetRelogio,
     advertencias,
     outroAparelho,
+    motivoFim,
     carregando,
     finalizada,
     salvando,
@@ -214,7 +215,13 @@ export default function ProvaStandalonePage() {
       <div className="max-w-lg mx-auto text-center py-20 px-6 space-y-6">
         <div className="text-7xl font-serif text-[#2EC4B6]">∫</div>
         <h1 className="text-3xl font-bold text-[#f0ece4]">Prova Finalizada</h1>
-        <p className="text-[#9895a4]">Suas respostas foram registradas com sucesso.</p>
+        <p className="text-[#9895a4]">
+          {motivoFim === "ADVERTENCIAS"
+            ? "Sua prova foi encerrada por 3 advertências. Foram registradas apenas as respostas já salvas. Se precisar, fale com o suporte."
+            : motivoFim === "TEMPO"
+            ? "O tempo da prova terminou. Foram registradas apenas as respostas salvas."
+            : "Foram registradas as respostas salvas."}
+        </p>
         <div className="rounded-2xl border border-[#2a2a3a] bg-[#12121a] p-5 text-left space-y-2">
           <p className="text-sm font-semibold text-[#f0ece4]">E agora?</p>
           <p className="text-sm text-[#9895a4] leading-relaxed">
