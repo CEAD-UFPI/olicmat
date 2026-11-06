@@ -32,7 +32,7 @@ services:
     environment:
       <<: *api-env
       PORT: 3333
-      FRONTEND_URL: http://admin.olicmat.cead.ufpi.br
+      FRONTEND_URL: http://admin.localhost:18080
       EXAM_APP_URL: http://prova.localhost:18080
       UPLOAD_DIR: /tmp/uploads
       PUBLIC_API_URL: http://olicmat.cead.ufpi.br
