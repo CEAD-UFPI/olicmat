@@ -33,7 +33,7 @@ describe("ProvaService (exam-api)", () => {
     const q = (id: string) => ({
       questao: {
         id, enunciado: id, alternativaA: "a", alternativaB: "b", alternativaC: "c",
-        alternativaD: "d", alternativaE: "e", eixo: "ALGEBRA", dificuldade: "MEDIO",
+        alternativaD: "d", alternativaE: "e",
       },
     });
     const mock = {
@@ -63,12 +63,27 @@ describe("ProvaService (exam-api)", () => {
   beforeEach(() => {
     prisma = {
       inscricao: { findFirst: jest.fn(), findUnique: jest.fn(), update: jest.fn() },
-      questao: { findUnique: jest.fn() },
+      questao: { findUnique: jest.fn(), count: jest.fn(async () => 0) },
       prova: { findFirst: jest.fn() },
       provaQuestao: { findMany: jest.fn(), count: jest.fn() },
       resposta: { findMany: jest.fn(), groupBy: jest.fn(), upsert: jest.fn() },
     };
     service = new ProvaService(prisma as any);
+  });
+
+  it("sem gabarito oficial, finaliza sem nota em vez de dar zero", async () => {
+    prisma.inscricao.findFirst.mockResolvedValue({ id: "i1", edicaoId: "ed1", fase1Fim: null });
+    prisma.prova.findFirst.mockResolvedValue({ id: "p1" });
+    prisma.resposta.groupBy.mockResolvedValue([]);
+    prisma.provaQuestao.count.mockResolvedValue(20);
+    prisma.questao.count.mockResolvedValue(20);
+    prisma.inscricao.update.mockResolvedValue({ id: "i1" });
+
+    await service.finalizarProva("u1");
+
+    const { data } = prisma.inscricao.update.mock.calls[0][0];
+    expect(data.fase1Nota).toBeNull();
+    expect(data.fase1Fim).toEqual(expect.any(Date));
   });
 
   describe("estadoProva", () => {

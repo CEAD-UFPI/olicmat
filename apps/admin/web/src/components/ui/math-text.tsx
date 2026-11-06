@@ -12,7 +12,7 @@ interface MathTextProps {
 /**
  * Encolhe a fórmula para caber na tela. A rolagem lateral sozinha esconde parte
  * dela no celular: uma coluna inteira de tabela sumia sem nenhum sinal.
- * Abaixo do mínimo legível, a rolagem continua como último recurso.
+ * Abaixo do mínimo legível (50%), a rolagem continua como último recurso.
  */
 function FormulaLarga({ html }: { html: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -22,8 +22,10 @@ function FormulaLarga({ html }: { html: string }) {
     if (!el) return;
     const ajustar = () => {
       el.style.fontSize = "";
-      if (el.scrollWidth > el.clientWidth) {
-        const escala = Math.max(0.55, (el.clientWidth / el.scrollWidth) * 0.98);
+      let escala = 1;
+      // Repete porque a largura não cai na mesma proporção: sobravam alguns pixels.
+      for (let i = 0; i < 6 && escala > 0.5 && el.scrollWidth > el.clientWidth; i++) {
+        escala = Math.max(0.5, escala * (el.clientWidth / el.scrollWidth) * 0.98);
         el.style.fontSize = `${escala * 100}%`;
       }
     };

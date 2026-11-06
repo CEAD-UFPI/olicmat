@@ -443,7 +443,7 @@ export function MonitoramentoPanel() {
           confirmarLabel={acaoLoading ? "Encerrando..." : "Encerrar"}
         >
           <p className="text-sm text-[#9895a4]">
-            Calcula a nota de quem ficou com o tempo esgotado e não finalizou (fechou o navegador, caiu a
+            Encerra quem ficou com o tempo esgotado e não finalizou (fechou o navegador, caiu a
             internet). Quem ainda tem tempo não é afetado. Use depois do fechamento da prova.
           </p>
         </Modal>
@@ -711,7 +711,7 @@ function TabelaAlunos({
 
       {pendentes > 0 && (
         <div className="flex items-center justify-between gap-3 text-sm text-[#FAA307] bg-[#FAA307]/10 border border-[#FAA307]/20 rounded-xl p-3">
-          <span>{pendentes} participante(s) com tempo esgotado e sem nota.</span>
+          <span>{pendentes} participante(s) com tempo esgotado e sem finalizar.</span>
           <button
             type="button"
             onClick={onEncerrarPendentes}

@@ -9,8 +9,6 @@ export interface Questao {
   alternativaC: string;
   alternativaD: string;
   alternativaE: string;
-  eixo: string;
-  dificuldade: string;
   respondida?: string | null;
 }
 

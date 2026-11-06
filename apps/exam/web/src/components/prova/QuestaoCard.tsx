@@ -20,11 +20,6 @@ export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardP
 
   return (
     <div className="border border-[#2a2a3a] rounded-2xl p-4 sm:p-8 bg-[#12121a] space-y-5 sm:space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-[#9895a4] uppercase tracking-wider">
-        <span>Eixo: {questao.eixo}</span>
-        <span>Dificuldade: {questao.dificuldade}</span>
-      </div>
-
       <div className="text-base sm:text-lg font-medium leading-relaxed text-[#f0ece4] whitespace-pre-wrap break-words overflow-x-auto">
         <MathText text={questao.enunciado} />
       </div>

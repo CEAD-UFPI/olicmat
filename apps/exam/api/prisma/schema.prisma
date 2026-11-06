@@ -341,9 +341,9 @@ model Questao {
   alternativaC  String
   alternativaD  String
   alternativaE  String
-  correta       String
-  eixo          Eixo
-  dificuldade   Dificuldade
+  correta       String?
+  eixo          Eixo?
+  dificuldade   Dificuldade?
   createdBy     String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt

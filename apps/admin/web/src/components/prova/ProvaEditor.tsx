@@ -23,9 +23,9 @@ interface QuestaoNested {
   alternativaC: string;
   alternativaD: string;
   alternativaE: string;
-  correta: string;
-  eixo: string;
-  dificuldade: string;
+  correta: string | null;
+  eixo: string | null;
+  dificuldade: string | null;
 }
 
 interface ProvaQuestaoItem {
@@ -212,9 +212,9 @@ export function ProvaEditor({
       alternativaC: pq.questao.alternativaC,
       alternativaD: pq.questao.alternativaD,
       alternativaE: pq.questao.alternativaE,
-      correta: pq.questao.correta,
-      eixo: pq.questao.eixo,
-      dificuldade: pq.questao.dificuldade,
+      correta: pq.questao.correta ?? "",
+      eixo: pq.questao.eixo ?? "",
+      dificuldade: pq.questao.dificuldade ?? "",
     });
     setErroQuestao("");
     setModalQuestao(true);
@@ -230,7 +230,9 @@ export function ProvaEditor({
     setSalvandoQuestao(true);
     try {
       if (editandoQuestaoId) {
-        await api.patch(`/admin/questoes/${editandoQuestaoId}`, formQuestao);
+        // Campo vazio fica como está: editar o texto não pode inventar um gabarito.
+        const preenchidos = Object.fromEntries(Object.entries(formQuestao).filter(([, v]) => v !== ""));
+        await api.patch(`/admin/questoes/${editandoQuestaoId}`, preenchidos);
       } else {
         await api.post(`/admin/provas/${id}/questoes`, formQuestao);
       }
@@ -450,7 +452,7 @@ export function ProvaEditor({
                         <MathText text={pq.questao.enunciado} />
                       </span>
                       <span className="text-xs text-[#9895a4]">
-                        {pq.questao.eixo} · {pq.questao.dificuldade} · Gabarito: {pq.questao.correta}
+                        {pq.questao.eixo ?? "Sem eixo"} · {pq.questao.dificuldade ?? "Sem dificuldade"} · Gabarito: {pq.questao.correta ?? "pendente"}
                       </span>
                     </div>
                   </div>
@@ -520,6 +522,7 @@ export function ProvaEditor({
                 onChange={(e) => setFormQuestao({ ...formQuestao, correta: e.target.value })}
                 className="mt-1.5 w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer"
               >
+                {formQuestao.correta === "" && <option value="">Pendente</option>}
                 {CORRETAS.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -532,6 +535,7 @@ export function ProvaEditor({
                 onChange={(e) => setFormQuestao({ ...formQuestao, eixo: e.target.value })}
                 className="mt-1.5 w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer"
               >
+                {formQuestao.eixo === "" && <option value="">Sem eixo</option>}
                 {EIXOS.map((e) => (
                   <option key={e} value={e}>{e}</option>
                 ))}
@@ -544,6 +548,7 @@ export function ProvaEditor({
                 onChange={(e) => setFormQuestao({ ...formQuestao, dificuldade: e.target.value })}
                 className="mt-1.5 w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer"
               >
+                {formQuestao.dificuldade === "" && <option value="">Sem dificuldade</option>}
                 {DIFICULDADES.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}

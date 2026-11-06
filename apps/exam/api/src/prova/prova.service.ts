@@ -179,8 +179,6 @@ export class ProvaService {
             alternativaC: true,
             alternativaD: true,
             alternativaE: true,
-            eixo: true,
-            dificuldade: true,
           },
         },
       },
@@ -226,8 +224,6 @@ export class ProvaService {
           alternativaC: c,
           alternativaD: d,
           alternativaE: e,
-          eixo: q.eixo,
-          dificuldade: q.dificuldade,
           respondida: respostasMap.get(q.id) || null,
         };
       }),
@@ -354,12 +350,20 @@ export class ProvaService {
       });
     }
 
+    // Sem o gabarito oficial não há nota: ela fica vazia até a correção, e não
+    // zero. As respostas guardadas bastam para corrigir depois.
+    const semGabarito = prova
+      ? await this.prisma.questao.count({
+          where: { correta: null, provas: { some: { provaId: prova.id } } },
+        })
+      : 0;
+
     const nota = totalQuestoes > 0 ? (corretas / totalQuestoes) * 100 : 0;
 
     const atualizada = await this.prisma.inscricao.update({
       where: { id: inscricao.id },
       data: {
-        fase1Nota: Math.round(nota * 100) / 100,
+        fase1Nota: semGabarito > 0 ? null : Math.round(nota * 100) / 100,
         fase1Fim: new Date(),
         fase1FimMotivo: motivo,
       },

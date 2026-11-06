@@ -449,7 +449,7 @@ export class MonitoramentoService {
       throw new NotFoundException("Prova não encontrada");
     }
 
-    const [abertas, totalQuestoes, corretas] = await Promise.all([
+    const [abertas, totalQuestoes, corretas, semGabarito] = await Promise.all([
       this.prisma.inscricao.findMany({
         where: {
           edicaoId: prova.edicaoId,
@@ -464,6 +464,9 @@ export class MonitoramentoService {
         by: ["inscricaoId"],
         where: { provaId, correta: true },
         _count: { _all: true },
+      }),
+      this.prisma.questao.count({
+        where: { correta: null, provas: { some: { provaId } } },
       }),
     ]);
 
@@ -485,7 +488,8 @@ export class MonitoramentoService {
       await this.prisma.inscricao.updateMany({
         where: { id: insc.id, fase1Fim: null },
         data: {
-          fase1Nota: Math.round(nota * 100) / 100,
+          // Sem o gabarito oficial, a nota fica vazia até a correção.
+          fase1Nota: semGabarito > 0 ? null : Math.round(nota * 100) / 100,
           fase1Fim: agora,
           fase1FimMotivo: "ENCERRAMENTO_ADMIN",
         },

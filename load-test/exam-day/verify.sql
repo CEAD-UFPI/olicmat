@@ -11,5 +11,5 @@ SELECT count(*) AS inscricoes,
        count(*) FILTER (WHERE "fase1Inicio" IS NOT NULL AND "fase1Fim" IS NULL) AS sem_finalizar,
        sum(respostas) AS respostas,
        count(*) FILTER (WHERE "fase1Inicio" IS NOT NULL AND respostas<>20) AS incompletas,
-       count(*) FILTER (WHERE "fase1Fim" IS NOT NULL AND abs(coalesce("fase1Nota",-1) - round(corretas*100.0/20,2))>0.01) AS divergencia_nota
+       count(*) FILTER (WHERE "fase1Nota" IS NOT NULL AND abs("fase1Nota" - round(corretas*100.0/20,2))>0.01) AS divergencia_nota
 FROM r;

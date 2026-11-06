@@ -34,7 +34,7 @@ Confirme a identidade (CPF e matrícula, mostrados abaixo do nome) antes de qual
 | **Resetar** | Reinicia o cronômetro e zera tudo, menos as respostas | Sim. Excepcional: quem é resetado às 10:00 ainda termina às 11:30 |
 | **Senha** | Gera senha provisória, invalida a anterior e libera a sessão | Novo login |
 | **Liberar sessão** | Permite entrar em outro aparelho na hora. Aparece com a sessão ativa | Novo login. O aparelho anterior cai quando o novo entrar |
-| **Encerrar pendentes** | Calcula a nota de quem esgotou o tempo sem finalizar | Usar após o fim, quando não houver ninguém com tempo extra |
+| **Encerrar pendentes** | Encerra quem esgotou o tempo sem finalizar. A nota só existe depois da correção pelo gabarito oficial | Usar após o fim, quando não houver ninguém com tempo extra |
 
 Toda ação fica em **Auditoria**. O suporte pode atuar até 13:30 (2 h após o fechamento).
 Quem não iniciou até 09:00 não entra mais, e nenhuma ação do painel muda isso.
