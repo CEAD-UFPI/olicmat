@@ -1,5 +1,6 @@
--- Dados 100% sintéticos numa EDIÇÃO PRÓPRIA (ano 2099): a prova é localizada
--- pela edição da inscrição, então nada aqui alcança os participantes reais.
+-- Dados 100% sintéticos numa EDIÇÃO PRÓPRIA: a prova é localizada pela edição
+-- da inscrição, então nada aqui alcança os participantes reais. O ano é 2000 de
+-- propósito: o ranking público usa a edição de ano mais alto, sem olhar o status.
 -- Uso: psql -v N=567 -v hash="'<bcrypt>'" -f seed.sql
 BEGIN;
 INSERT INTO "Instituicao"(id,nome,sigla,"codigoInep",uf,"updatedAt")
@@ -7,7 +8,7 @@ VALUES ('lt-inst','Instituição Carga','LOADTEST','LOADTEST','PI',now()) ON CON
 INSERT INTO "Curso"(id,nome,"instituicaoId","updatedAt")
 VALUES ('lt-curso','Curso Carga','lt-inst',now()) ON CONFLICT DO NOTHING;
 INSERT INTO "Edicao"(id,ano,semestre,titulo,status,"updatedAt")
-VALUES ('lt-edicao',2099,9,'TESTE DE CARGA','INSCRICOES',now()) ON CONFLICT DO NOTHING;
+VALUES ('lt-edicao',2000,9,'TESTE DE CARGA','ENCERRADA',now()) ON CONFLICT DO NOTHING;
 
 INSERT INTO "User"(id,nome,email,cpf,"senhaHash",role,matricula,"dataNascimento","emailConfirmado","instituicaoId","cursoId","updatedAt")
 SELECT 'lt-user-'||i,'Carga '||i,'carga'||i||'@carga.olicmat.test',lpad((90000000000+i)::text,11,'0'),:hash,'ALUNO',

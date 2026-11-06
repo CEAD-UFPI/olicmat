@@ -100,7 +100,7 @@ describe("MonitoramentoService — janela de prova", () => {
       prisma.inscricao.findUnique.mockResolvedValue(encerrada);
       prisma.prova.findFirst.mockResolvedValue(provaDuasHoras);
 
-      await service.destravar("insc1", 5, "Queda de energia comprovada", "admin1");
+      await service.destravar("insc1", "Queda de energia comprovada", "admin1");
 
       expect(prisma.inscricao.update).toHaveBeenCalledWith({
         where: { id: "insc1" },
@@ -109,7 +109,6 @@ describe("MonitoramentoService — janela de prova", () => {
           fase1Nota: null,
           fase1FimMotivo: null,
           fase1Advertencias: 0,
-          fase1TempoExtraMinutos: 5,
         },
       });
       expect(auditoria.log).toHaveBeenCalledWith(
@@ -121,14 +120,14 @@ describe("MonitoramentoService — janela de prova", () => {
       );
     });
 
-    it("recusa quando os minutos não bastam para haver tempo de prova", async () => {
+    it("recusa quando o tempo da prova já acabou", async () => {
       prisma.inscricao.findUnique.mockResolvedValue({
         ...encerrada,
         fase1Inicio: new Date(Date.now() - 3 * 3600_000),
       });
       prisma.prova.findFirst.mockResolvedValue(provaDuasHoras);
 
-      await expect(service.destravar("insc1", 5, "Motivo válido", "admin1")).rejects.toThrow(
+      await expect(service.destravar("insc1", "Motivo válido", "admin1")).rejects.toThrow(
         BadRequestException,
       );
       expect(prisma.inscricao.update).not.toHaveBeenCalled();

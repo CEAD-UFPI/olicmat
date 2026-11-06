@@ -105,7 +105,6 @@ export function MonitoramentoPanel() {
 
   const [feedback, setFeedback] = useState<{ tipo: "sucesso" | "erro"; mensagem: string } | null>(null);
   const [modalReset, setModalReset] = useState<InscricaoStatus | null>(null);
-  const [minutosInput, setMinutosInput] = useState("30");
   const [modalDestravar, setModalDestravar] = useState<InscricaoStatus | null>(null);
   const [justificativa, setJustificativa] = useState("");
   const [modalSenha, setModalSenha] = useState<InscricaoStatus | null>(null);
@@ -189,21 +188,13 @@ export function MonitoramentoPanel() {
 
   const handleDestravar = async () => {
     if (!modalDestravar) return;
-    const mins = parseInt(minutosInput, 10);
-    if (isNaN(mins) || mins < 0 || mins > 480) {
-      mostrarFeedback("erro", "Informe um valor entre 0 e 480 minutos.");
-      return;
-    }
     if (justificativa.trim().length < 5) {
       mostrarFeedback("erro", "Registre a justificativa.");
       return;
     }
     setAcaoLoading(true);
     try {
-      await api.post(`/admin/monitoramento/inscricoes/${modalDestravar.id}/destravar`, {
-        minutos: mins,
-        justificativa,
-      });
+      await api.post(`/admin/monitoramento/inscricoes/${modalDestravar.id}/destravar`, { justificativa });
       mostrarFeedback("sucesso", `${modalDestravar.nome} destravado. Peça para recarregar a página (F5).`);
       setModalDestravar(null);
       setJustificativa("");
@@ -311,7 +302,7 @@ export function MonitoramentoPanel() {
           carregando={carregandoLista}
           onVoltar={voltar}
           onReset={(insc) => setModalReset(insc)}
-          onDestravar={(insc) => { setModalDestravar(insc); setMinutosInput("0"); setJustificativa(""); }}
+          onDestravar={(insc) => { setModalDestravar(insc); setJustificativa(""); }}
           onSenha={(insc) => { setModalSenha(insc); setSenhaGerada(null); }}
           onLiberarSessao={setModalSessao}
           onEncerrarPendentes={() => setModalEncerrar(true)}
@@ -335,21 +326,9 @@ export function MonitoramentoPanel() {
         >
           <p className="text-sm text-[#9895a4]">
             Devolve <strong className="text-[#f0ece4]">{modalDestravar.nome}</strong> à prova e zera as
-            advertências ({modalDestravar.advertencias}). As respostas salvas são mantidas e o início não muda.
+            advertências ({modalDestravar.advertencias}). As respostas salvas são mantidas, e o fim da prova não muda.
             Depois, peça para a pessoa recarregar a página (F5).
           </p>
-          <label htmlFor="minutos-destravar" className="block text-xs text-[#9895a4] text-left">
-            Minutos a compensar (0 se ainda houver tempo)
-          </label>
-          <input
-            id="minutos-destravar"
-            type="number"
-            min={0}
-            max={480}
-            value={minutosInput}
-            onChange={(e) => setMinutosInput(e.target.value)}
-            className="w-full px-4 py-3 bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl text-[#f0ece4] text-center text-lg font-mono focus:outline-none focus:border-[#2EC4B6]"
-          />
           <label htmlFor="justificativa" className="block text-xs text-[#9895a4] text-left">
             Justificativa (fica na auditoria)
           </label>

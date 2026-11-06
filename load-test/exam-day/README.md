@@ -28,7 +28,7 @@ Para repetir: `./prova-local.sh repetir`. Para desligar: `./prova-local.sh parar
 
 ## Produção
 
-Dados sintéticos numa edição própria (ano 2099): a prova é encontrada pela edição da
+Dados sintéticos numa edição própria (ano 2000, para nunca ser a mais recente): a prova é encontrada pela edição da
 inscrição, então os participantes reais não são alcançados. Os usuários de teste aparecem
 em listagens e contagens do admin até a limpeza.
 

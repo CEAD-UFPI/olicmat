@@ -30,7 +30,7 @@ Confirme a identidade (CPF e matrícula, mostrados abaixo do nome) antes de qual
 
 | Ação | Efeito | Precisa de F5? |
 |---|---|---|
-| **Destravar** | Reabre, zera advertências, mantém início e respostas; soma os minutos informados | Sim |
+| **Destravar** | Reabre, zera advertências, mantém início e respostas. Não dá tempo extra: o fim da prova não muda | Sim |
 | **Resetar** | Reinicia o cronômetro e zera tudo, menos as respostas | Sim. Excepcional: quem é resetado às 10:00 ainda termina às 11:30 |
 | **Senha** | Gera senha provisória, invalida a anterior e libera a sessão | Novo login |
 | **Liberar sessão** | Permite entrar em outro aparelho na hora. Aparece com a sessão ativa | Novo login. O aparelho anterior cai quando o novo entrar |

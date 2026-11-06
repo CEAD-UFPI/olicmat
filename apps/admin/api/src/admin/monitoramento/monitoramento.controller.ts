@@ -60,7 +60,6 @@ export class MonitoramentoController {
     }
     return this.monitoramentoService.destravar(
       id,
-      parsed.data.minutos,
       parsed.data.justificativa,
       req.user.id,
     );

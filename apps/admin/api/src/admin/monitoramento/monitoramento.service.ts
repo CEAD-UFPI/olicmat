@@ -229,12 +229,11 @@ export class MonitoramentoService {
 
   /**
    * Devolve à prova quem foi encerrado (3 advertências, por exemplo) e pôde se
-   * justificar. Mantém respostas e início, zera as advertências e soma os minutos
-   * perdidos. A justificativa fica na auditoria: é uma decisão que pode ser contestada.
+   * justificar. Mantém respostas e início, zera as advertências. Não dá tempo
+   * extra: o fim da prova não muda. A justificativa fica na auditoria: é uma decisão que pode ser contestada.
    */
   async destravar(
     inscricaoId: string,
-    minutos: number,
     justificativa: string,
     actorId: string,
   ) {
@@ -261,18 +260,15 @@ export class MonitoramentoService {
     }
 
     const prova = await this.validarJanelaFase1(inscricao.edicaoId);
-    const novoExtra = (inscricao.fase1TempoExtraMinutos || 0) + minutos;
     const fim = calcularFimProva(
       inscricao.fase1Inicio,
       prova.duracaoMinutos || DURACAO_PROVA_MINUTOS,
       prova.janelaFim,
-      novoExtra,
+      inscricao.fase1TempoExtraMinutos,
     );
 
     if (fim <= new Date()) {
-      throw new BadRequestException(
-        "Com esses minutos o tempo do participante já teria acabado. Informe mais minutos.",
-      );
+      throw new BadRequestException("O tempo da prova já acabou: não há como destravar.");
     }
 
     await this.prisma.inscricao.update({
@@ -282,13 +278,11 @@ export class MonitoramentoService {
         fase1Nota: null,
         fase1FimMotivo: null,
         fase1Advertencias: 0,
-        fase1TempoExtraMinutos: novoExtra,
       },
     });
 
     await this.auditoria.log(actorId, "DESTRAVAR_PROVA", "Inscricao", inscricaoId, {
       justificativa,
-      minutos,
       userId: inscricao.userId,
       estadoAnterior: {
         fase1Fim: inscricao.fase1Fim?.toISOString() ?? null,
