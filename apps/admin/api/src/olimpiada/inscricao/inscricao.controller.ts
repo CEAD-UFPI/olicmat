@@ -89,13 +89,6 @@ export class InscricaoController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("minha/iniciar-prova")
-  async iniciarProva(@Request() req: ExpressReq & { user: AuthUser }) {
-    const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);
-    return this.inscricaoService.iniciarProva(inscricao.id);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Post("minha/sortear-tema")
   async sortearTema(@Request() req: ExpressReq & { user: AuthUser }) {
     const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);

@@ -9,8 +9,6 @@ export interface Questao {
   alternativaC: string;
   alternativaD: string;
   alternativaE: string;
-  eixo: string;
-  dificuldade: string;
   respondida?: string | null;
 }
 
@@ -20,6 +18,11 @@ interface ProvaState {
   questaoAtual: number;
   inicio: string | null;
   fim: string | null;
+  /** servidor - navegador, em ms: o cronômetro não confia no relógio local. */
+  offsetRelogio: number;
+  advertencias: number;
+  outroAparelho: boolean;
+  motivoFim: string | null;
   carregando: boolean;
   finalizada: boolean;
   salvando: boolean;
@@ -30,7 +33,9 @@ interface ProvaState {
   proximaQuestao: () => void;
   questaoAnterior: () => void;
   irParaQuestao: (index: number) => void;
-  finalizar: () => Promise<void>;
+  sincronizar: () => Promise<void>;
+  registrarAdvertencia: () => Promise<boolean>;
+  finalizar: (motivo?: "ALUNO" | "TEMPO" | "ADVERTENCIAS") => Promise<void>;
 }
 
 export const useProvaStore = create<ProvaState>((set, get) => ({
@@ -39,6 +44,10 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
   questaoAtual: 0,
   inicio: null,
   fim: null,
+  offsetRelogio: 0,
+  advertencias: 0,
+  outroAparelho: false,
+  motivoFim: null,
   carregando: false,
   finalizada: false,
   salvando: false,
@@ -48,9 +57,13 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
 
   carregarProva: async () => {
     set({ carregando: true, erro: null });
+    // O motivo real da recusa (prazo, janela) vem daqui; a busca das questões
+    // diria apenas que a prova não foi iniciada.
+    let erroIniciar: string | null = null;
     try {
-      // Ensure exam is initiated
-      await api.post("/prova/iniciar").catch(() => {});
+      await api.post("/prova/iniciar").catch((err) => {
+        erroIniciar = err?.response?.data?.message ?? null;
+      });
 
       const { data } = await api.get("/prova/questoes");
       set({
@@ -58,15 +71,21 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
         questoes: data.questoes,
         inicio: data.inicio,
         fim: data.fim,
+        offsetRelogio: new Date(data.agora).getTime() - Date.now(),
+        advertencias: data.advertencias ?? 0,
         carregando: false,
       });
     } catch (err: any) {
       if (err?.response?.data?.message === "Tempo de prova esgotado ou já finalizada") {
-        set({ finalizada: true, carregando: false });
+        // Quem fechou o navegador e só voltou depois do tempo ainda não tem nota.
+        await api.post("/prova/finalizar", { motivo: "TEMPO" }).catch(() => {});
+        const estado = await api.get("/prova/estado").catch(() => null);
+        set({ finalizada: true, motivoFim: estado?.data?.motivoFim ?? null, carregando: false });
         return;
       }
+      const mensagem = err?.response?.data?.message;
       set({
-        erro: err?.response?.data?.message || "Erro ao carregar prova",
+        erro: (mensagem === "Prova não foi iniciada" && erroIniciar) || mensagem || "Erro ao carregar prova",
         carregando: false,
       });
       throw err;
@@ -113,11 +132,38 @@ export const useProvaStore = create<ProvaState>((set, get) => ({
     }
   },
 
-  finalizar: async () => {
+  sincronizar: async () => {
+    try {
+      const { data } = await api.get("/prova/estado");
+      set({
+        fim: data.fim,
+        offsetRelogio: new Date(data.agora).getTime() - Date.now(),
+        advertencias: data.advertencias ?? 0,
+        outroAparelho: !!data.outroAparelho,
+        motivoFim: data.motivoFim ?? null,
+        finalizada: data.finalizada,
+      });
+    } catch {
+      // Rede instável: a próxima rodada tenta de novo.
+    }
+  },
+
+  registrarAdvertencia: async () => {
+    try {
+      const { data } = await api.post("/prova/advertencia");
+      if (data.finalizada) set({ finalizada: true, motivoFim: "ADVERTENCIAS" });
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  finalizar: async (motivo = "ALUNO") => {
     set({ salvando: true, erro: null });
     try {
-      await api.post("/prova/finalizar");
-      set({ finalizada: true, salvando: false });
+      // Às 11:00 todos finalizam juntos: no teste de carga a fila levou até 11s.
+      await api.post("/prova/finalizar", { motivo }, { timeout: 60_000 });
+      set({ finalizada: true, motivoFim: motivo, salvando: false });
     } catch (err: any) {
       set({
         salvando: false,

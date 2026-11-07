@@ -57,10 +57,13 @@ export default function LoginPage() {
       // qualquer falha — banco fora, rede caída — manda todo mundo procurar
       // no lugar errado: numa indisponibilidade do banco, os usuários
       // acharam que tinham perdido a conta e ficaram tentando outras senhas.
-      const status = (e as { response?: { status?: number } })?.response
-        ?.status;
+      const resposta = (e as { response?: { status?: number; data?: { message?: string } } })
+        ?.response;
+      const status = resposta?.status;
 
-      if (status === 401) {
+      if (status === 409) {
+        setError(resposta?.data?.message ?? "Esta conta já está em uso em outro aparelho.");
+      } else if (status === 401) {
         setError("Email ou senha inválidos.");
       } else if (status === 429) {
         setError("Muitas tentativas seguidas. Aguarde um instante.");
@@ -110,6 +113,8 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
+                autoCapitalize="none"
+                autoCorrect="off"
                 placeholder="seu@email.com"
                 {...register("email")}
                 className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"

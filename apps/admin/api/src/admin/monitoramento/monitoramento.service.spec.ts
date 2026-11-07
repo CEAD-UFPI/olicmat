@@ -76,7 +76,7 @@ describe("MonitoramentoService — janela de prova", () => {
     prisma.inscricao.findUnique.mockResolvedValue(inscricaoBase);
     prisma.prova.findFirst.mockResolvedValue({
       janelaInicio: new Date(Date.now() - 2 * 3600_000),
-      janelaFim: new Date(Date.now() - 3600_000),
+      janelaFim: new Date(Date.now() - 3 * 3600_000),
     });
 
     await expect(service.resetarTempo("insc1", "admin1")).rejects.toThrow(
@@ -84,39 +84,69 @@ describe("MonitoramentoService — janela de prova", () => {
     );
   });
 
-  it("adicionarTempo soma minutos dentro da janela", async () => {
-    prisma.inscricao.findUnique.mockResolvedValue(inscricaoBase);
-    prisma.prova.findFirst.mockResolvedValue(janelaAberta);
-    prisma.inscricao.update.mockResolvedValue({
-      fase1TempoExtraMinutos: 20,
+  describe("destravar", () => {
+    const provaDuasHoras = { ...janelaAberta, duracaoMinutos: 120 };
+    const encerrada = {
+      ...inscricaoBase,
+      fase1Inicio: new Date(Date.now() - 30 * 60_000),
+      fase1Fim: new Date(),
+      fase1Nota: 40,
+      fase1FimMotivo: "ADVERTENCIAS",
+      fase1Advertencias: 3,
+      fase1TempoExtraMinutos: 0,
+    };
+
+    it("devolve à prova, zera advertências e guarda a justificativa", async () => {
+      prisma.inscricao.findUnique.mockResolvedValue(encerrada);
+      prisma.prova.findFirst.mockResolvedValue(provaDuasHoras);
+
+      await service.destravar("insc1", "Queda de energia comprovada", "admin1");
+
+      expect(prisma.inscricao.update).toHaveBeenCalledWith({
+        where: { id: "insc1" },
+        data: {
+          fase1Fim: null,
+          fase1Nota: null,
+          fase1FimMotivo: null,
+          fase1Advertencias: 0,
+        },
+      });
+      expect(auditoria.log).toHaveBeenCalledWith(
+        "admin1",
+        "DESTRAVAR_PROVA",
+        "Inscricao",
+        "insc1",
+        expect.objectContaining({ justificativa: "Queda de energia comprovada" }),
+      );
     });
 
-    const result = await service.adicionarTempo("insc1", 10, "admin1");
+    it("recusa quando o tempo da prova já acabou", async () => {
+      prisma.inscricao.findUnique.mockResolvedValue({
+        ...encerrada,
+        fase1Inicio: new Date(Date.now() - 3 * 3600_000),
+      });
+      prisma.prova.findFirst.mockResolvedValue(provaDuasHoras);
 
-    expect(result.tempoExtraTotal).toBe(20);
-    expect(prisma.inscricao.update).toHaveBeenCalledWith({
-      where: { id: "insc1" },
-      data: { fase1TempoExtraMinutos: 20 },
+      await expect(service.destravar("insc1", "Motivo válido", "admin1")).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(prisma.inscricao.update).not.toHaveBeenCalled();
     });
-    expect(auditoria.log).toHaveBeenCalledWith(
-      "admin1",
-      "ADICIONAR_TEMPO_PROVA",
-      "Inscricao",
-      "insc1",
-      expect.any(Object),
-    );
   });
 
-  it("adicionarTempo lança BadRequest fora da janela", async () => {
-    prisma.inscricao.findUnique.mockResolvedValue(inscricaoBase);
-    prisma.prova.findFirst.mockResolvedValue({
-      janelaInicio: new Date(Date.now() - 2 * 3600_000),
-      janelaFim: new Date(Date.now() - 3600_000),
-    });
+  it("senhaTemporaria não grava a senha na auditoria", async () => {
+    prisma.inscricao.findUnique.mockResolvedValue({ userId: "user1", user: { role: "ALUNO" } });
+    prisma.user = { update: jest.fn() };
 
-    await expect(service.adicionarTempo("insc1", 10, "admin1")).rejects.toThrow(
-      BadRequestException,
-    );
-    expect(prisma.inscricao.update).not.toHaveBeenCalled();
+    const { senha } = await service.senhaTemporaria("insc1", "admin1");
+
+    expect(senha).toMatch(/^[A-Z2-9]{10}$/);
+    expect(JSON.stringify(auditoria.log.mock.calls)).not.toContain(senha);
+  });
+
+  it("senhaTemporaria recusa quem não é participante", async () => {
+    prisma.inscricao.findUnique.mockResolvedValue({ userId: "user1", user: { role: "ADMIN" } });
+
+    await expect(service.senhaTemporaria("insc1", "admin1")).rejects.toThrow(BadRequestException);
   });
 });

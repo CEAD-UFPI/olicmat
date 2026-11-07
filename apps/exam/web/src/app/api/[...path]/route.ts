@@ -3,6 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 const EXAM_API_URL =
   process.env.EXAM_API_URL || "http://localhost:3334/api";
 
+// Cabeçalhos de uma conexão só (RFC 9110 §7.6.1). O fetch do Node recusa alguns
+// deles, e a requisição falharia com 502 antes de sair daqui: o nginx do
+// repositório, por exemplo, sempre envia "Connection: upgrade".
+const HOP_BY_HOP = new Set([
+  "connection", "keep-alive", "proxy-connection", "transfer-encoding",
+  "upgrade", "te", "trailer", "host", "content-length",
+]);
+
 async function proxyRequest(req: NextRequest) {
   try {
     const url = new URL(req.url);
@@ -11,10 +19,7 @@ async function proxyRequest(req: NextRequest) {
 
     const headers = new Headers();
     req.headers.forEach((value, key) => {
-      // Skip host header — use backend's host
-      if (key.toLowerCase() === "host") return;
-      // Skip content-length — fetch will set it correctly
-      if (key.toLowerCase() === "content-length") return;
+      if (HOP_BY_HOP.has(key.toLowerCase())) return;
       headers.set(key, value);
     });
 

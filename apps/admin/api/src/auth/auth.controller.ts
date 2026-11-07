@@ -19,6 +19,7 @@ interface AuthUser {
   email: string;
   nome: string;
   role: string;
+  sid?: string;
 }
 
 @Controller("auth")
@@ -74,8 +75,20 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get("liberacao-prova")
+  async liberacaoProva(@Req() req: ExpressReq & { user: AuthUser }) {
+    return this.authService.liberacaoProva(req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post("transition-token")
   async gerarTransitionToken(@Req() req: ExpressReq & { user: AuthUser }) {
-    return this.authService.gerarTransitionToken(req.user.id);
+    return this.authService.gerarTransitionToken(req.user.id, req.user.sid);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post("logout")
+  async logout(@Req() req: ExpressReq & { user: AuthUser }) {
+    return this.authService.logout(req.user.id, req.user.sid);
   }
 }

@@ -5,9 +5,52 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../prisma.service.js";
 import type { ResponderQuestaoDto } from "./dto/prova.dto.js";
-import { shuffleIds, permutacaoAlternativas } from "./shuffle.js";
+import { permutacaoAlternativas } from "./shuffle.js";
 
-const DURACAO_PROVA_MINUTOS = 150; // 2h30
+const DURACAO_PROVA_MINUTOS = 180; // 3h
+
+/** Só para o salvamento que já estava a caminho quando o tempo acabou. */
+const TOLERANCIA_ENVIO_MS = 5_000;
+
+/** Por quanto tempo uma tentativa em outro aparelho mantém o aviso na tela. */
+const AVISO_CONFLITO_MS = 90_000;
+
+/**
+ * Rascunhos e cópias nunca chegam ao participante. ENCERRADA fica de fora só no
+ * início da prova: quem já fez precisa continuar finalizando e consultando.
+ */
+const PROVA_FASE1 = {
+  fase: 1,
+  status: { in: ["PUBLICADA", "EM_ANDAMENTO", "ENCERRADA"] as ("PUBLICADA" | "EM_ANDAMENTO" | "ENCERRADA")[] },
+};
+
+/** Se uma prova foi encerrada e substituída, vale a publicada por último. */
+const PROVA_MAIS_RECENTE = { publicadaEm: { sort: "desc", nulls: "last" } } as const;
+
+/** Limite do regulamento: a terceira saída encerra a prova. */
+const MAX_ADVERTENCIAS = 3;
+
+export const MOTIVOS_FIM = ["ALUNO", "TEMPO", "ADVERTENCIAS"] as const;
+export type MotivoFim = (typeof MOTIVOS_FIM)[number];
+
+/**
+ * Horário em que a prova deste participante termina.
+ *
+ * A prova acaba no que vier primeiro, a duração ou o fechamento da janela: quem
+ * entra às 08:40 numa janela até 11:00 tem até 11:00. O tempo extra concedido
+ * pelo suporte soma DEPOIS desse corte; caso contrário, uma compensação dada
+ * perto do fechamento não teria efeito nenhum.
+ */
+export function calcularFimProva(
+  inicio: Date,
+  duracaoMinutos: number | null,
+  janelaFim: Date | null,
+  tempoExtraMinutos: number | null,
+): Date {
+  const pelaDuracao = inicio.getTime() + (duracaoMinutos || DURACAO_PROVA_MINUTOS) * 60_000;
+  const base = janelaFim ? Math.min(pelaDuracao, janelaFim.getTime()) : pelaDuracao;
+  return new Date(base + (tempoExtraMinutos || 0) * 60_000);
+}
 
 /**
  * A nota da Fase 1 NÃO é divulgada ao participante ao final da prova: o gabarito
@@ -40,8 +83,9 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
-      select: { id: true, janelaInicio: true, janelaFim: true },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
+      select: { id: true, status: true, janelaInicio: true, janelaFim: true, limiteInicio: true },
     });
 
     if (!prova) {
@@ -52,8 +96,19 @@ export class ProvaService {
     if (prova.janelaInicio && agora < prova.janelaInicio) {
       throw new BadRequestException("A prova ainda não está disponível para realização");
     }
-    if (prova.janelaFim && agora > prova.janelaFim) {
-      throw new BadRequestException("A janela de realização desta prova já se encerrou");
+    // Quem já começou pode continuar, inclusive com tempo extra além da janela.
+    if (!inscricao.fase1Inicio) {
+      if (prova.status === "ENCERRADA" || (prova.janelaFim && agora > prova.janelaFim)) {
+        throw new BadRequestException("A janela de realização desta prova já se encerrou");
+      }
+      if (prova.limiteInicio && agora > prova.limiteInicio) {
+        const horario = prova.limiteInicio.toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "America/Sao_Paulo",
+        });
+        throw new BadRequestException(`O prazo para iniciar a prova terminou às ${horario}`);
+      }
     }
 
     if (!inscricao.fase1Inicio) {
@@ -77,6 +132,7 @@ export class ProvaService {
         fase1Inicio: true,
         fase1Fim: true,
         fase1TempoExtraMinutos: true,
+        fase1Advertencias: true,
         edicaoId: true,
       },
     });
@@ -90,7 +146,8 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { id: true, duracaoMinutos: true, janelaFim: true },
     });
 
@@ -99,14 +156,11 @@ export class ProvaService {
     }
 
     const agora = new Date();
-    if (prova.janelaFim && agora > prova.janelaFim) {
-      throw new BadRequestException("A janela de realização desta prova já se encerrou");
-    }
-
-    const tempoExtra = inscricao.fase1TempoExtraMinutos || 0;
-    const duracaoTotal = (prova.duracaoMinutos || DURACAO_PROVA_MINUTOS) + tempoExtra;
-    const fimProva = new Date(
-      inscricao.fase1Inicio.getTime() + duracaoTotal * 60 * 1000
+    const fimProva = calcularFimProva(
+      inscricao.fase1Inicio,
+      prova.duracaoMinutos,
+      prova.janelaFim,
+      inscricao.fase1TempoExtraMinutos,
     );
 
     if (agora > fimProva || inscricao.fase1Fim) {
@@ -125,22 +179,14 @@ export class ProvaService {
             alternativaC: true,
             alternativaD: true,
             alternativaE: true,
-            eixo: true,
-            dificuldade: true,
           },
         },
       },
       orderBy: { ordem: "asc" },
     });
 
-    // Embaralha as questões de forma determinística por aluno (anti-cola).
-    const ordemQuestoes = shuffleIds(
-      inscricao.id,
-      provasQuestoes.map((pq) => pq.questao.id)
-    );
-    const questoes = ordemQuestoes.map(
-      (id) => provasQuestoes.find((pq) => pq.questao.id === id)!.questao
-    );
+    // A ordem das questões é a do cadastro, igual para todos.
+    const questoes = provasQuestoes.map((pq) => pq.questao);
 
     const respostas = await this.prisma.resposta.findMany({
       where: {
@@ -158,6 +204,8 @@ export class ProvaService {
       inscricaoId: inscricao.id,
       inicio: inscricao.fase1Inicio.toISOString(),
       fim: fimProva.toISOString(),
+      agora: agora.toISOString(),
+      advertencias: inscricao.fase1Advertencias ?? 0,
       questoes: questoes.map((q) => {
         const perm = permutacaoAlternativas(`${inscricao.id}:${q.id}`);
         const textoCanonico: Record<string, string> = {
@@ -176,8 +224,6 @@ export class ProvaService {
           alternativaC: c,
           alternativaD: d,
           alternativaE: e,
-          eixo: q.eixo,
-          dificuldade: q.dificuldade,
           respondida: respostasMap.get(q.id) || null,
         };
       }),
@@ -209,7 +255,8 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { id: true, duracaoMinutos: true, janelaFim: true },
     });
 
@@ -217,18 +264,16 @@ export class ProvaService {
       throw new BadRequestException("Nenhuma prova disponível para esta edição");
     }
 
-    const agora = new Date();
-    if (prova.janelaFim && agora > prova.janelaFim) {
-      throw new BadRequestException("A janela de realização desta prova já se encerrou");
-    }
-
-    const tempoExtra = inscricao.fase1TempoExtraMinutos || 0;
-    const duracaoTotal = (prova.duracaoMinutos || DURACAO_PROVA_MINUTOS) + tempoExtra;
     const fimProva = inscricao.fase1Inicio
-      ? new Date(inscricao.fase1Inicio.getTime() + duracaoTotal * 60 * 1000)
+      ? calcularFimProva(
+          inscricao.fase1Inicio,
+          prova.duracaoMinutos,
+          prova.janelaFim,
+          inscricao.fase1TempoExtraMinutos,
+        )
       : null;
 
-    if (fimProva && agora > fimProva) {
+    if (fimProva && Date.now() > fimProva.getTime() + TOLERANCIA_ENVIO_MS) {
       throw new BadRequestException("Tempo de prova esgotado");
     }
 
@@ -259,7 +304,7 @@ export class ProvaService {
     });
   }
 
-  async finalizarProva(userId: string) {
+  async finalizarProva(userId: string, motivo: MotivoFim = "ALUNO") {
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
@@ -282,7 +327,8 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { id: true },
     });
 
@@ -304,16 +350,103 @@ export class ProvaService {
       });
     }
 
+    // Sem o gabarito oficial não há nota: ela fica vazia até a correção, e não
+    // zero. As respostas guardadas bastam para corrigir depois.
+    const semGabarito = prova
+      ? await this.prisma.questao.count({
+          where: { correta: null, provas: { some: { provaId: prova.id } } },
+        })
+      : 0;
+
     const nota = totalQuestoes > 0 ? (corretas / totalQuestoes) * 100 : 0;
 
     const atualizada = await this.prisma.inscricao.update({
       where: { id: inscricao.id },
       data: {
-        fase1Nota: Math.round(nota * 100) / 100,
+        fase1Nota: semGabarito > 0 ? null : Math.round(nota * 100) / 100,
         fase1Fim: new Date(),
+        fase1FimMotivo: motivo,
       },
     });
     return semNotaFase1(atualizada);
+  }
+
+  /**
+   * Estado vivo da prova, consultado periodicamente pelo navegador. É o que faz
+   * um "+ Tempo" do suporte chegar a quem está com a prova aberta, e dá ao
+   * cronômetro a hora do servidor (o relógio do computador pode estar errado).
+   */
+  async estadoProva(userId: string) {
+    const inscricao = await this.prisma.inscricao.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: {
+        edicaoId: true,
+        fase1Inicio: true,
+        fase1Fim: true,
+        fase1TempoExtraMinutos: true,
+        fase1Advertencias: true,
+        fase1FimMotivo: true,
+        user: { select: { sessaoConflitoEm: true } },
+      },
+    });
+
+    if (!inscricao) {
+      throw new NotFoundException("Inscrição não encontrada");
+    }
+
+    const prova = await this.prisma.prova.findFirst({
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
+      select: { duracaoMinutos: true, janelaFim: true },
+    });
+
+    const conflitoEm = inscricao.user?.sessaoConflitoEm?.getTime() ?? 0;
+
+    const fim =
+      inscricao.fase1Inicio && prova
+        ? calcularFimProva(
+            inscricao.fase1Inicio,
+            prova.duracaoMinutos,
+            prova.janelaFim,
+            inscricao.fase1TempoExtraMinutos,
+          )
+        : null;
+
+    return {
+      agora: new Date().toISOString(),
+      fim: fim?.toISOString() ?? null,
+      finalizada: inscricao.fase1Fim !== null,
+      motivoFim: inscricao.fase1FimMotivo ?? null,
+      advertencias: inscricao.fase1Advertencias ?? 0,
+      outroAparelho: Date.now() - conflitoEm < AVISO_CONFLITO_MS,
+    };
+  }
+
+  /** Registra no servidor: o suporte precisa ver, e recarregar a página não zera. */
+  async registrarAdvertencia(userId: string) {
+    const inscricao = await this.prisma.inscricao.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: { id: true },
+    });
+
+    if (!inscricao) {
+      throw new NotFoundException("Inscrição não encontrada");
+    }
+
+    const atualizada = await this.prisma.inscricao.update({
+      where: { id: inscricao.id },
+      data: { fase1Advertencias: { increment: 1 } },
+      select: { fase1Advertencias: true },
+    });
+
+    // O servidor decide: o navegador pode estar suspenso ou ter sido alterado.
+    const encerrada = atualizada.fase1Advertencias >= MAX_ADVERTENCIAS;
+    if (encerrada) {
+      await this.finalizarProva(userId, "ADVERTENCIAS");
+    }
+    return { advertencias: atualizada.fase1Advertencias, finalizada: encerrada };
   }
 
   async resumoProva(userId: string) {
@@ -333,7 +466,8 @@ export class ProvaService {
     }
 
     const prova = await this.prisma.prova.findFirst({
-      where: { edicaoId: inscricao.edicaoId, fase: 1 },
+      where: { edicaoId: inscricao.edicaoId, ...PROVA_FASE1 },
+      orderBy: PROVA_MAIS_RECENTE,
       select: { id: true },
     });
 

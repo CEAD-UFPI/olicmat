@@ -55,6 +55,17 @@ function removeToken() {
   clearTokenCookie();
 }
 
+/** Fixo por navegador: voltar pelo mesmo não conta como outro aparelho. */
+function identificarDispositivo() {
+  const CHAVE = "olicmat_dispositivo";
+  let id = localStorage.getItem(CHAVE);
+  if (!id) {
+    id = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 14)}`;
+    localStorage.setItem(CHAVE, id);
+  }
+  return id;
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: typeof window !== "undefined" ? localStorage.getItem("token") : null,
@@ -62,7 +73,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
 
   login: async (email, senha) => {
-    const { data } = await api.post("/auth/login", { email, senha });
+    const { data } = await api.post("/auth/login", {
+      email,
+      senha,
+      dispositivo: identificarDispositivo(),
+    });
     storeToken(data.accessToken);
     set({ user: data.user, token: data.accessToken, isAuthenticated: true });
     return data.user;
@@ -75,6 +90,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: () => {
+    // Libera a sessão para outro aparelho; a saída não depende desta resposta.
+    // O token vai explícito porque o interceptor roda depois de removeToken().
+    const token = localStorage.getItem("token");
+    if (token) {
+      api
+        .post("/auth/logout", {}, { headers: { Authorization: `Bearer ${token}` } })
+        .catch(() => {});
+    }
     removeToken();
     set({ user: null, token: null, isAuthenticated: false });
   },

@@ -7,12 +7,20 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { Throttle } from "@nestjs/throttler";
 import * as bcrypt from "bcrypt";
-import { randomBytes } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { EmailService } from "../email/email.service.js";
 import type { LoginDto, RegisterDto } from "./dto/login.dto.js";
 import { TOKEN_TYPE, TRANSITION_TOKEN_TTL } from "@olicmat/shared";
+
+/**
+ * Sem atividade por este tempo, a sessão é tratada como abandonada e outro
+ * aparelho pode entrar. A prova aberta renova a sessão a cada 30 segundos, e o
+ * tempo cobre uma falha na renovação. É o que permite voltar por outro aparelho
+ * quando a bateria acaba, sem depender do suporte.
+ */
+const SESSAO_ATIVA_MS = 90_000;
 
 @Injectable()
 export class AuthService {
@@ -123,9 +131,13 @@ export class AuthService {
   }
 
   async login(data: LoginDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: data.email },
-    });
+    const email = data.email.trim();
+    // Busca exata primeiro: é o caso comum e usa o índice único.
+    const user =
+      (await this.prisma.user.findUnique({ where: { email } })) ??
+      (await this.prisma.user.findFirst({
+        where: { email: { equals: email, mode: "insensitive" } },
+      }));
 
     if (!user) {
       throw new UnauthorizedException("Credenciais inválidas");
@@ -137,7 +149,11 @@ export class AuthService {
       throw new UnauthorizedException("Credenciais inválidas");
     }
 
-    const accessToken = this.generateToken(user.id, user.email, user.role);
+    const sid = user.role === "ALUNO"
+      ? await this.abrirSessao(user, data.dispositivo)
+      : undefined;
+
+    const accessToken = this.generateToken(user.id, user.email, user.role, sid);
 
     return {
       user: {
@@ -226,12 +242,95 @@ export class AuthService {
     return { message: "Email confirmado com sucesso" };
   }
 
-  private generateToken(userId: string, email: string, role: string) {
-    const payload = { sub: userId, email, role };
+  private generateToken(userId: string, email: string, role: string, sid?: string) {
+    const payload = { sub: userId, email, role, ...(sid && { sid }) };
     return this.jwtService.sign(payload);
   }
 
-  async gerarTransitionToken(userId: string) {
+  /**
+   * Recusa a entrada enquanto outro aparelho estiver em uso. Derrubar a sessão
+   * antiga seria mais simples, mas deixaria uma segunda pessoa com a senha tirar
+   * o participante da prova.
+   */
+  private async abrirSessao(
+    user: { id: string; sessaoId: string | null; sessaoDispositivo: string | null },
+    dispositivo?: string,
+  ) {
+    if (dispositivo && user.sessaoId && user.sessaoDispositivo === dispositivo) {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { sessaoVistaEm: new Date() },
+      });
+      return user.sessaoId;
+    }
+
+    const sid = randomUUID();
+    // Condicional no próprio UPDATE: dois logins simultâneos não passam juntos.
+    const { count } = await this.prisma.user.updateMany({
+      where: {
+        id: user.id,
+        OR: [
+          { sessaoId: null },
+          { sessaoVistaEm: null },
+          { sessaoVistaEm: { lt: new Date(Date.now() - SESSAO_ATIVA_MS) } },
+        ],
+      },
+      data: { sessaoId: sid, sessaoDispositivo: dispositivo ?? null, sessaoVistaEm: new Date() },
+    });
+
+    if (count === 0) {
+      // A tela da prova aberta e o painel do suporte avisam enquanto isso continuar.
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: { sessaoConflitoEm: new Date() },
+      });
+      throw new ConflictException(
+        "Esta conta já está em uso em outro aparelho ou navegador. Feche a outra sessão e aguarde cerca de 2 minutos, ou peça ajuda ao suporte.",
+      );
+    }
+    return sid;
+  }
+
+  async logout(userId: string, sid?: string) {
+    if (sid) {
+      await this.prisma.user.updateMany({
+        where: { id: userId, sessaoId: sid },
+        data: { sessaoId: null, sessaoDispositivo: null, sessaoVistaEm: null },
+      });
+    }
+    return { message: "Sessão encerrada" };
+  }
+
+  /** Prova de Fase 1 ativa na edição da inscrição mais recente do participante. */
+  private async provaDoParticipante(userId: string) {
+    const inscricao = await this.prisma.inscricao.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      select: { edicaoId: true },
+    });
+    if (!inscricao) return null;
+
+    return this.prisma.prova.findFirst({
+      where: {
+        edicaoId: inscricao.edicaoId,
+        fase: 1,
+        status: { in: ["PUBLICADA", "EM_ANDAMENTO"] },
+      },
+      orderBy: { publicadaEm: { sort: "desc", nulls: "last" } },
+      select: { janelaInicio: true },
+    });
+  }
+
+  /** O horário vai junto: o painel não confia no relógio do aparelho. */
+  async liberacaoProva(userId: string) {
+    const prova = await this.provaDoParticipante(userId);
+    return {
+      agora: new Date().toISOString(),
+      liberadaEm: prova?.janelaInicio?.toISOString() ?? null,
+    };
+  }
+
+  async gerarTransitionToken(userId: string, sid?: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
       select: { id: true, email: true, role: true, nome: true },
@@ -251,6 +350,23 @@ export class AuthService {
       if (!inscricao || inscricao.status !== "CONFIRMADA") {
         throw new BadRequestException("Inscrição não confirmada para a prova");
       }
+
+      // A trava do botão é só visual: quem garante o horário é esta verificação.
+      const prova = await this.provaDoParticipante(user.id);
+      if (!prova?.janelaInicio) {
+        throw new BadRequestException("A prova ainda não está disponível");
+      }
+      if (new Date() < prova.janelaInicio) {
+        const quando = prova.janelaInicio.toLocaleString("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "America/Sao_Paulo",
+        });
+        throw new BadRequestException(`A prova será liberada em ${quando}`);
+      }
     }
 
     const payload = {
@@ -258,6 +374,7 @@ export class AuthService {
       email: user.email,
       role: user.role,
       nome: user.nome,
+      sid,
       type: TOKEN_TYPE.EXAM_TRANSITION,
       nonce: randomBytes(16).toString("hex"),
     };

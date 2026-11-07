@@ -7,6 +7,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { EdicaoSelector } from "@/components/shared/edicao-selector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Modal } from "@/components/ui/modal";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -22,9 +23,9 @@ interface QuestaoNested {
   alternativaC: string;
   alternativaD: string;
   alternativaE: string;
-  correta: string;
-  eixo: string;
-  dificuldade: string;
+  correta: string | null;
+  eixo: string | null;
+  dificuldade: string | null;
 }
 
 interface ProvaQuestaoItem {
@@ -40,8 +41,23 @@ interface ProvaData {
   edicao?: { id: string; ano: number; titulo: string };
   duracaoMinutos?: number;
   status?: string;
+  janelaInicio?: string | null;
+  limiteInicio?: string | null;
+  janelaFim?: string | null;
   questoes?: ProvaQuestaoItem[];
 }
+
+// Sempre no horário de Brasília (UTC-3), independentemente do fuso do navegador:
+// a prova é às 08:30 para todo mundo, e o Brasil não tem horário de verão.
+const paraCampoLocal = (iso?: string | null) => {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return new Date(d.getTime() - 3 * 60 * 60 * 1000).toISOString().slice(0, 16);
+};
+
+const paraIso = (valor: string) =>
+  valor ? new Date(`${valor}:00-03:00`).toISOString() : undefined;
 
 interface QuestaoForm {
   enunciado: string;
@@ -93,6 +109,11 @@ export function ProvaEditor({
 
   const [titulo, setTitulo] = useState("");
   const [duracao, setDuracao] = useState(0);
+  const [edicaoId, setEdicaoId] = useState("");
+  const [fase, setFase] = useState(1);
+  const [janelaInicio, setJanelaInicio] = useState("");
+  const [limiteInicio, setLimiteInicio] = useState("");
+  const [janelaFim, setJanelaFim] = useState("");
   const [salvando, setSalvando] = useState(false);
 
   // Questão modal
@@ -111,12 +132,15 @@ export function ProvaEditor({
       setProva({
         id: "nova",
         titulo: "",
-        duracaoMinutos: 150,
+        duracaoMinutos: 180,
         status: "RASCUNHO",
         questoes: [],
       });
       setTitulo("");
       setDuracao(180);
+      setJanelaInicio("2026-11-08T08:30");
+      setLimiteInicio("2026-11-08T09:00");
+      setJanelaFim("2026-11-08T11:30");
       setCarregando(false);
       return;
     }
@@ -127,6 +151,9 @@ export function ProvaEditor({
         setProva(data);
         setTitulo(data.titulo || "");
         setDuracao(data.duracaoMinutos || 0);
+        setJanelaInicio(paraCampoLocal(data.janelaInicio));
+        setLimiteInicio(paraCampoLocal(data.limiteInicio));
+        setJanelaFim(paraCampoLocal(data.janelaFim));
       })
       .catch(() => setErro("Prova não encontrada."))
       .finally(() => setCarregando(false));
@@ -141,9 +168,19 @@ export function ProvaEditor({
     setSalvando(true);
     setErro("");
     try {
-      const payload = { titulo, duracaoMinutos: duracao };
+      const payload = {
+        titulo,
+        duracaoMinutos: duracao,
+        janelaInicio: paraIso(janelaInicio),
+        limiteInicio: paraIso(limiteInicio),
+        janelaFim: paraIso(janelaFim),
+      };
       if (id === "nova") {
-        const { data } = await api.post("/admin/provas", payload);
+        if (!edicaoId) {
+          setErro("Selecione a edição da prova.");
+          return;
+        }
+        const { data } = await api.post("/admin/provas", { ...payload, edicaoId, fase });
         router.push(`${basePath}/provas/${data.id}`);
       } else {
         await api.patch(`/admin/provas/${id}`, payload);
@@ -151,8 +188,9 @@ export function ProvaEditor({
           prev ? { ...prev, titulo, duracaoMinutos: duracao } : prev
         );
       }
-    } catch {
-      setErro("Erro ao salvar prova.");
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: unknown } } })?.response?.data?.message;
+      setErro(typeof msg === "string" ? msg : "Erro ao salvar prova. Confira os campos.");
     } finally {
       setSalvando(false);
     }
@@ -174,9 +212,9 @@ export function ProvaEditor({
       alternativaC: pq.questao.alternativaC,
       alternativaD: pq.questao.alternativaD,
       alternativaE: pq.questao.alternativaE,
-      correta: pq.questao.correta,
-      eixo: pq.questao.eixo,
-      dificuldade: pq.questao.dificuldade,
+      correta: pq.questao.correta ?? "",
+      eixo: pq.questao.eixo ?? "",
+      dificuldade: pq.questao.dificuldade ?? "",
     });
     setErroQuestao("");
     setModalQuestao(true);
@@ -192,7 +230,9 @@ export function ProvaEditor({
     setSalvandoQuestao(true);
     try {
       if (editandoQuestaoId) {
-        await api.patch(`/admin/questoes/${editandoQuestaoId}`, formQuestao);
+        // Campo vazio fica como está: editar o texto não pode inventar um gabarito.
+        const preenchidos = Object.fromEntries(Object.entries(formQuestao).filter(([, v]) => v !== ""));
+        await api.patch(`/admin/questoes/${editandoQuestaoId}`, preenchidos);
       } else {
         await api.post(`/admin/provas/${id}/questoes`, formQuestao);
       }
@@ -304,7 +344,58 @@ export function ProvaEditor({
             />
           </div>
 
-          {isDraft && (
+          <p className="text-xs text-[#9895a4] -mt-2">
+            A prova do participante termina na duração ou no fim da prova, o que vier primeiro.
+          </p>
+
+          {id === "nova" && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-1.5">
+                <Label className="text-[#f0ece4]">Edição</Label>
+                <EdicaoSelector
+                  value={edicaoId}
+                  onChange={setEdicaoId}
+                  incluirTodas={false}
+                  placeholder="Selecione a edição"
+                />
+              </div>
+              <div className="grid gap-1.5">
+                <Label htmlFor={`fase${idSuffix}`} className="text-[#f0ece4]">Fase</Label>
+                <select
+                  id={`fase${idSuffix}`}
+                  value={fase}
+                  onChange={(e) => setFase(Number(e.target.value))}
+                  className="h-8 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-2.5"
+                >
+                  <option value={1}>Fase 1</option>
+                  <option value={2}>Fase 2</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          <p className="text-xs text-[#9895a4]">Horários de Brasília.</p>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              { rotulo: "Início da prova", valor: janelaInicio, mudar: setJanelaInicio, chave: "inicio" },
+              { rotulo: "Limite para iniciar", valor: limiteInicio, mudar: setLimiteInicio, chave: "limite" },
+              { rotulo: "Fim da prova", valor: janelaFim, mudar: setJanelaFim, chave: "fim" },
+            ].map(({ rotulo, valor, mudar, chave }) => (
+              <div key={chave}>
+                <Label htmlFor={`${chave}${idSuffix}`} className="text-[#f0ece4]">{rotulo}</Label>
+                <Input
+                  id={`${chave}${idSuffix}`}
+                  type="datetime-local"
+                  value={valor}
+                  onChange={(e) => mudar(e.target.value)}
+                  disabled={prova.status === "ENCERRADA"}
+                  className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                />
+              </div>
+            ))}
+          </div>
+
+          {prova.status !== "ENCERRADA" && (
             <div>
               {erro && <p className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3 mb-3">{erro}</p>}
               <Button
@@ -361,7 +452,7 @@ export function ProvaEditor({
                         <MathText text={pq.questao.enunciado} />
                       </span>
                       <span className="text-xs text-[#9895a4]">
-                        {pq.questao.eixo} · {pq.questao.dificuldade} · Gabarito: {pq.questao.correta}
+                        {pq.questao.eixo ?? "Sem eixo"} · {pq.questao.dificuldade ?? "Sem dificuldade"} · Gabarito: {pq.questao.correta ?? "pendente"}
                       </span>
                     </div>
                   </div>
@@ -431,6 +522,7 @@ export function ProvaEditor({
                 onChange={(e) => setFormQuestao({ ...formQuestao, correta: e.target.value })}
                 className="mt-1.5 w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer"
               >
+                {formQuestao.correta === "" && <option value="">Pendente</option>}
                 {CORRETAS.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -443,6 +535,7 @@ export function ProvaEditor({
                 onChange={(e) => setFormQuestao({ ...formQuestao, eixo: e.target.value })}
                 className="mt-1.5 w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer"
               >
+                {formQuestao.eixo === "" && <option value="">Sem eixo</option>}
                 {EIXOS.map((e) => (
                   <option key={e} value={e}>{e}</option>
                 ))}
@@ -455,6 +548,7 @@ export function ProvaEditor({
                 onChange={(e) => setFormQuestao({ ...formQuestao, dificuldade: e.target.value })}
                 className="mt-1.5 w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer"
               >
+                {formQuestao.dificuldade === "" && <option value="">Sem dificuldade</option>}
                 {DIFICULDADES.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}

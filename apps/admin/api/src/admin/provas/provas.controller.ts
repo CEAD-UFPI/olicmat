@@ -135,6 +135,15 @@ export class ProvasController {
     return this.provasService.publicar(id, req.user.id);
   }
 
+  @Roles(Role.ADMIN)
+  @Post(":id/encerrar")
+  async encerrar(
+    @Param("id") id: string,
+    @Req() req: ExpressReq & { user: AuthUser },
+  ) {
+    return this.provasService.encerrar(id, req.user.id);
+  }
+
   @Roles(Role.AVALIADOR, Role.ADMIN)
   @Post(":id/duplicar")
   async duplicar(

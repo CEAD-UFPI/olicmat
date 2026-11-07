@@ -19,13 +19,8 @@ export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardP
   ];
 
   return (
-    <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] space-y-6">
-      <div className="flex items-center justify-between gap-4 text-xs text-[#9895a4] uppercase tracking-wider">
-        <span>Eixo: {questao.eixo}</span>
-        <span>Dificuldade: {questao.dificuldade}</span>
-      </div>
-
-      <div className="text-lg font-medium leading-relaxed text-[#f0ece4] whitespace-pre-wrap">
+    <div className="border border-[#2a2a3a] rounded-2xl p-4 sm:p-8 bg-[#12121a] space-y-5 sm:space-y-6">
+      <div className="text-base sm:text-lg font-medium leading-relaxed text-[#f0ece4] whitespace-pre-wrap break-words overflow-x-auto">
         <MathText text={questao.enunciado} />
       </div>
 
@@ -36,7 +31,7 @@ export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardP
             <button
               key={letra}
               onClick={() => onSelecionar(letra)}
-              className={`w-full p-4 rounded-xl text-left border flex items-start gap-4 transition-all ${
+              className={`w-full p-3 sm:p-4 rounded-xl text-left border flex items-start gap-3 sm:gap-4 transition-all ${
                 ativa
                   ? "border-[#E85D04] bg-[#E85D04]/10 text-[#f0ece4]"
                   : "border-[#2a2a3a] bg-[#0a0a0f]/60 text-[#9895a4] hover:border-[#3a3a4a] hover:text-[#f0ece4]"
@@ -49,7 +44,7 @@ export function QuestaoCard({ questao, selecionada, onSelecionar }: QuestaoCardP
               >
                 {letra}
               </span>
-              <span className="text-base pt-0.5 leading-snug">
+              <span className="min-w-0 text-base pt-0.5 leading-snug break-words overflow-x-auto">
                 <MathText text={texto} />
               </span>
             </button>

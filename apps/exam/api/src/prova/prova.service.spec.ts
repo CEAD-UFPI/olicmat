@@ -1,21 +1,150 @@
 import { jest } from "@jest/globals";
 import { NotFoundException, BadRequestException } from "@nestjs/common";
-import { ProvaService } from "./prova.service.js";
+import { ProvaService, calcularFimProva } from "./prova.service.js";
 import { permutacaoAlternativas } from "./shuffle.js";
 
+describe("calcularFimProva", () => {
+  const as = (hhmm: string) => new Date(`2026-11-08T${hhmm}:00-03:00`);
+
+  it("quem entra no horário tem a duração completa", () => {
+    expect(calcularFimProva(as("08:30"), 150, as("11:00"), 0)).toEqual(as("11:00"));
+  });
+
+  it("quem entra atrasado termina no fechamento da janela", () => {
+    expect(calcularFimProva(as("08:40"), 150, as("11:00"), 0)).toEqual(as("11:00"));
+  });
+
+  it("com 180 minutos, todos terminam às 11:30", () => {
+    expect(calcularFimProva(as("08:30"), 180, as("11:30"), 0)).toEqual(as("11:30"));
+    expect(calcularFimProva(as("09:00"), 180, as("11:30"), 0)).toEqual(as("11:30"));
+  });
+
+  it("o tempo extra soma depois do corte da janela", () => {
+    expect(calcularFimProva(as("08:40"), 150, as("11:00"), 20)).toEqual(as("11:20"));
+  });
+
+  it("sem janela, vale só a duração", () => {
+    expect(calcularFimProva(as("08:40"), 150, null, 0)).toEqual(as("11:10"));
+  });
+});
+
 describe("ProvaService (exam-api)", () => {
+  it("mantém a ordem do cadastro e embaralha só as alternativas", async () => {
+    const q = (id: string) => ({
+      questao: {
+        id, enunciado: id, alternativaA: "a", alternativaB: "b", alternativaC: "c",
+        alternativaD: "d", alternativaE: "e",
+      },
+    });
+    const mock = {
+      inscricao: {
+        findFirst: jest.fn(async () => ({
+          id: "i1", status: "CONFIRMADA", fase1Inicio: new Date(), fase1Fim: null,
+          fase1TempoExtraMinutos: 0, fase1Advertencias: 0, edicaoId: "ed1",
+        })),
+      },
+      prova: { findFirst: jest.fn(async () => ({ id: "p1", duracaoMinutos: 150, janelaFim: null })) },
+      provaQuestao: { findMany: jest.fn(async () => ["q1", "q2", "q3", "q4", "q5"].map(q)) },
+      resposta: { findMany: jest.fn(async () => []) },
+    };
+
+    const { questoes } = await new ProvaService(mock as any).buscarQuestoes("u1");
+
+    expect(questoes.map((x: { id: string }) => x.id)).toEqual(["q1", "q2", "q3", "q4", "q5"]);
+    const [p] = questoes;
+    const textos = { A: "a", B: "b", C: "c", D: "d", E: "e" } as Record<string, string>;
+    const esperado = permutacaoAlternativas("i1:q1").map((l) => textos[l]);
+    expect([p.alternativaA, p.alternativaB, p.alternativaC, p.alternativaD, p.alternativaE]).toEqual(esperado);
+  });
+
   let service: ProvaService;
   let prisma: any;
 
   beforeEach(() => {
     prisma = {
       inscricao: { findFirst: jest.fn(), findUnique: jest.fn(), update: jest.fn() },
-      questao: { findUnique: jest.fn() },
+      questao: { findUnique: jest.fn(), count: jest.fn(async () => 0) },
       prova: { findFirst: jest.fn() },
       provaQuestao: { findMany: jest.fn(), count: jest.fn() },
       resposta: { findMany: jest.fn(), groupBy: jest.fn(), upsert: jest.fn() },
     };
     service = new ProvaService(prisma as any);
+  });
+
+  it("sem gabarito oficial, finaliza sem nota em vez de dar zero", async () => {
+    prisma.inscricao.findFirst.mockResolvedValue({ id: "i1", edicaoId: "ed1", fase1Fim: null });
+    prisma.prova.findFirst.mockResolvedValue({ id: "p1" });
+    prisma.resposta.groupBy.mockResolvedValue([]);
+    prisma.provaQuestao.count.mockResolvedValue(20);
+    prisma.questao.count.mockResolvedValue(20);
+    prisma.inscricao.update.mockResolvedValue({ id: "i1" });
+
+    await service.finalizarProva("u1");
+
+    const { data } = prisma.inscricao.update.mock.calls[0][0];
+    expect(data.fase1Nota).toBeNull();
+    expect(data.fase1Fim).toEqual(expect.any(Date));
+  });
+
+  describe("estadoProva", () => {
+    const inscricao = (conflito: Date | null) => ({
+      edicaoId: "ed1", fase1Inicio: new Date(), fase1Fim: null, fase1TempoExtraMinutos: 0,
+      fase1Advertencias: 0, user: { sessaoConflitoEm: conflito },
+    });
+
+    it("avisa sobre tentativa recente em outro aparelho", async () => {
+      prisma.inscricao.findFirst.mockResolvedValue(inscricao(new Date()));
+      prisma.prova.findFirst.mockResolvedValue({ duracaoMinutos: 180, janelaFim: null });
+
+      expect((await service.estadoProva("u1")).outroAparelho).toBe(true);
+    });
+
+    it("informa o motivo do encerramento", async () => {
+      prisma.inscricao.findFirst.mockResolvedValue({
+        ...inscricao(null), fase1Fim: new Date(), fase1FimMotivo: "ADVERTENCIAS",
+      });
+      prisma.prova.findFirst.mockResolvedValue({ duracaoMinutos: 180, janelaFim: null });
+
+      expect((await service.estadoProva("u1")).motivoFim).toBe("ADVERTENCIAS");
+    });
+
+    it("para de avisar quando as tentativas param", async () => {
+      prisma.inscricao.findFirst.mockResolvedValue(inscricao(new Date(Date.now() - 120_000)));
+      prisma.prova.findFirst.mockResolvedValue({ duracaoMinutos: 180, janelaFim: null });
+
+      expect((await service.estadoProva("u1")).outroAparelho).toBe(false);
+    });
+  });
+
+  describe("registrarAdvertencia", () => {
+    it("na terceira, o próprio servidor encerra a prova", async () => {
+      prisma.inscricao.findFirst
+        .mockResolvedValueOnce({ id: "i1" })
+        .mockResolvedValue({ id: "i1", edicaoId: "ed1", fase1Fim: null });
+      prisma.inscricao.update
+        .mockResolvedValueOnce({ fase1Advertencias: 3 })
+        .mockResolvedValue({ id: "i1" });
+      prisma.prova.findFirst.mockResolvedValue({ id: "p1" });
+      prisma.resposta.groupBy.mockResolvedValue([]);
+      prisma.provaQuestao.count.mockResolvedValue(20);
+
+      await expect(service.registrarAdvertencia("u1")).resolves.toEqual({
+        advertencias: 3,
+        finalizada: true,
+      });
+      expect(prisma.inscricao.update.mock.calls[1][0].data.fase1FimMotivo).toBe("ADVERTENCIAS");
+    });
+
+    it("antes da terceira, só conta", async () => {
+      prisma.inscricao.findFirst.mockResolvedValue({ id: "i1" });
+      prisma.inscricao.update.mockResolvedValue({ fase1Advertencias: 2 });
+
+      await expect(service.registrarAdvertencia("u1")).resolves.toEqual({
+        advertencias: 2,
+        finalizada: false,
+      });
+      expect(prisma.inscricao.update).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("iniciarProva", () => {
@@ -44,6 +173,52 @@ describe("ProvaService (exam-api)", () => {
         id: "p1", janelaInicio: new Date(Date.now() + 3600_000), janelaFim: null,
       });
       await expect(service.iniciarProva("u1")).rejects.toThrow(BadRequestException);
+    });
+
+    describe("limite para iniciar", () => {
+      const inscricao = { id: "i1", status: "CONFIRMADA", fase1Fim: null, edicaoId: "ed1" };
+      const prova = {
+        id: "p1", status: "PUBLICADA", janelaInicio: new Date(Date.now() - 3 * 3600_000),
+        janelaFim: new Date(Date.now() + 3600_000), limiteInicio: new Date(Date.now() - 60_000),
+      };
+
+      it("recusa quem ainda não começou depois do limite", async () => {
+        prisma.inscricao.findFirst.mockResolvedValue({ ...inscricao, fase1Inicio: null });
+        prisma.prova.findFirst.mockResolvedValue(prova);
+
+        await expect(service.iniciarProva("u1")).rejects.toThrow(/prazo para iniciar/);
+        expect(prisma.inscricao.update).not.toHaveBeenCalled();
+      });
+
+      it("deixa voltar quem começou antes do limite", async () => {
+        prisma.inscricao.findFirst.mockResolvedValue({
+          ...inscricao, fase1Inicio: new Date(Date.now() - 3600_000),
+        });
+        prisma.prova.findFirst.mockResolvedValue(prova);
+
+        await expect(service.iniciarProva("u1")).resolves.toMatchObject({
+          message: "Prova já em andamento",
+        });
+      });
+
+      it("recusa iniciar prova encerrada", async () => {
+        prisma.inscricao.findFirst.mockResolvedValue({ ...inscricao, fase1Inicio: null });
+        prisma.prova.findFirst.mockResolvedValue({ ...prova, status: "ENCERRADA", limiteInicio: null });
+
+        await expect(service.iniciarProva("u1")).rejects.toThrow(/encerrou/);
+      });
+    });
+
+    it("só considera provas publicadas", async () => {
+      prisma.inscricao.findFirst.mockResolvedValue({
+        id: "i1", status: "CONFIRMADA", fase1Inicio: null, fase1Fim: null, edicaoId: "ed1",
+      });
+      prisma.prova.findFirst.mockResolvedValue(null);
+
+      await expect(service.iniciarProva("u1")).rejects.toThrow(BadRequestException);
+      const consulta = prisma.prova.findFirst.mock.calls[0][0];
+      expect(consulta.where.status.in).not.toContain("RASCUNHO");
+      expect(consulta.orderBy).toEqual({ publicadaEm: { sort: "desc", nulls: "last" } });
     });
 
     it("registra o início e retorna sucesso na primeira chamada", async () => {
@@ -146,7 +321,7 @@ describe("ProvaService (exam-api)", () => {
       // A nota é calculada e gravada, mas NÃO devolvida ao participante.
       expect(prisma.inscricao.update).toHaveBeenCalledWith({
         where: { id: "i1" },
-        data: { fase1Nota: 20, fase1Fim: expect.any(Date) },
+        data: { fase1Nota: 20, fase1Fim: expect.any(Date), fase1FimMotivo: "ALUNO" },
       });
       expect(result).not.toHaveProperty("fase1Nota");
     });

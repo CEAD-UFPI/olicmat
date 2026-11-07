@@ -5,21 +5,109 @@ import { useEffect, useState, useRef, ReactNode } from "react";
 interface ExamGuardProps {
   children: ReactNode;
   onAutoSubmit: () => void;
+  /** Avisa o servidor: o suporte precisa ver as advertências em tempo real. */
+  onAdvertencia?: () => void;
+  /** Vêm do servidor, para que recarregar a página não zere a contagem. */
+  advertenciasIniciais?: number;
+  /** Encerramento já pedido e ainda não confirmado pelo servidor. */
+  encerrando?: boolean;
   maxWarnings?: number;
 }
 
-export function ExamGuard({ children, onAutoSubmit, maxWarnings = 3 }: ExamGuardProps) {
-  if (process.env.NEXT_PUBLIC_DISABLE_EXAM_GUARD === "true") {
-    return <>{children}</>;
-  }
+/**
+ * Uma única ação do participante dispara vários eventos: um Alt+Tab gera blur,
+ * visibilitychange e, em alguns sistemas, a saída da tela cheia. Sem esta janela
+ * de agrupamento, uma só saída contaria como duas ou três advertências e poderia
+ * encerrar a prova de uma vez, contrariando o regulamento ("cada saída gera uma
+ * advertência").
+ */
+const JANELA_MESMO_EVENTO_MS = 2_500;
 
-  const [warnings, setWarnings] = useState(0);
+/**
+ * Fechar a página dispara os mesmos eventos de sair dela. Esperar um instante
+ * resolve: quem fecha o navegador, ou perde a energia, não chega a contar, porque
+ * o temporizador morre com a página. O guia promete que essa pessoa pode voltar.
+ * No celular em segundo plano o temporizador só congela, e a saída conta na volta.
+ */
+const ESPERA_CONFIRMAR_SAIDA_MS = 700;
+
+/**
+ * No celular a prova não exige tela cheia: o iPhone não oferece esse recurso, e
+ * nos demais o gesto de voltar sairia dela sem querer. Ali, a saída é detectada
+ * só pela troca de aba ou de aplicativo. O evento de foco também fica de fora,
+ * porque dispara por interações comuns do próprio aparelho.
+ */
+const ehCelular = () => {
+  if (typeof window === "undefined") return false;
+  const doc = document as any;
+  const semTelaCheia = !(doc.fullscreenEnabled || doc.webkitFullscreenEnabled || doc.msFullscreenEnabled);
+  return semTelaCheia || window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+};
+
+export function ExamGuard({
+  children,
+  onAutoSubmit,
+  onAdvertencia,
+  advertenciasIniciais = 0,
+  encerrando = false,
+  maxWarnings = 3,
+}: ExamGuardProps) {
+  const desativado = process.env.NEXT_PUBLIC_DISABLE_EXAM_GUARD === "true";
+
+  const [warnings, setWarnings] = useState(advertenciasIniciais);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [warningReason, setWarningReason] = useState("");
-  const submittedRef = useRef(false);
+  const [celular] = useState(ehCelular);
+  const [semTravaDeTela, setSemTravaDeTela] = useState(false);
+  const submittedRef = useRef(encerrando);
+  const contagemRef = useRef(advertenciasIniciais);
+  const ultimoEventoRef = useRef(0);
+  const callbacksRef = useRef({ onAutoSubmit, onAdvertencia });
+  callbacksRef.current = { onAutoSubmit, onAdvertencia };
+
+  // Sem isto, o celular apagaria a tela durante a leitura de uma questão, e a
+  // tela apagada conta como saída da prova.
+  useEffect(() => {
+    if (desativado) return;
+    let trava: { release: () => Promise<void> } | null = null;
+
+    const manterTelaLigada = async () => {
+      if (document.visibilityState !== "visible") return;
+      if (!("wakeLock" in navigator)) {
+        setSemTravaDeTela(true);
+        return;
+      }
+      try {
+        trava = await (navigator as any).wakeLock.request("screen");
+        setSemTravaDeTela(false);
+      } catch {
+        setSemTravaDeTela(true);
+      }
+    };
+
+    manterTelaLigada();
+    document.addEventListener("visibilitychange", manterTelaLigada);
+    // Alguns navegadores só concedem a trava depois de um toque na tela.
+    document.addEventListener("pointerdown", manterTelaLigada, { once: true });
+    return () => {
+      document.removeEventListener("visibilitychange", manterTelaLigada);
+      document.removeEventListener("pointerdown", manterTelaLigada);
+      trava?.release().catch(() => {});
+    };
+  }, [desativado]);
+
+  // Só sobe: a sincronização pode trazer um valor anterior à advertência que acabou
+  // de ser enviada. Destravar zera a contagem, mas isso chega pelo F5 (novo estado).
+  useEffect(() => {
+    if (advertenciasIniciais > contagemRef.current) {
+      contagemRef.current = advertenciasIniciais;
+      setWarnings(advertenciasIniciais);
+    }
+  }, [advertenciasIniciais]);
 
   const requestFullscreen = () => {
+    if (celular) return;
     try {
       const elem = document.documentElement as any;
       if (elem.requestFullscreen) {
@@ -35,6 +123,62 @@ export function ExamGuard({ children, onAutoSubmit, maxWarnings = 3 }: ExamGuard
   };
 
   useEffect(() => {
+    if (desativado) return;
+
+    let pendente: ReturnType<typeof setTimeout> | null = null;
+
+    const emTelaCheia = () =>
+      !!(
+        document.fullscreenElement ||
+        (document as any).webkitFullscreenElement ||
+        (document as any).msFullscreenElement
+      );
+
+    // Fora da tela cheia a prova já está coberta pelo aviso: a saída foi contada
+    // uma vez, e trocar de janela nesse estado não pode gerar outra falta.
+    const foraDaProva = () => !celular && !emTelaCheia();
+
+    const triggerWarning = (reason: string) => {
+      if (submittedRef.current || pendente) return;
+      pendente = setTimeout(() => {
+        pendente = null;
+        confirmarSaida(reason);
+      }, ESPERA_CONFIRMAR_SAIDA_MS);
+    };
+
+    const handlePageHide = (e: PageTransitionEvent) => {
+      if (pendente && !e.persisted) {
+        clearTimeout(pendente);
+        pendente = null;
+      }
+    };
+
+    const confirmarSaida = (reason: string) => {
+      if (submittedRef.current) return;
+
+      setWarningReason(reason);
+      setShowWarningModal(true);
+
+      const agora = Date.now();
+      if (agora - ultimoEventoRef.current < JANELA_MESMO_EVENTO_MS) return;
+      ultimoEventoRef.current = agora;
+
+      const proxima = contagemRef.current + 1;
+      contagemRef.current = proxima;
+      setWarnings(proxima);
+
+      if (proxima < maxWarnings) {
+        callbacksRef.current.onAdvertencia?.();
+      } else {
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`[ExamGuard] Limite de advertências atingido, mas ignorado em modo de desenvolvimento.`);
+        } else {
+          submittedRef.current = true;
+          callbacksRef.current.onAutoSubmit();
+        }
+      }
+    };
+
     const handleFullscreenChange = () => {
       const fs = !!(
         document.fullscreenElement ||
@@ -42,21 +186,19 @@ export function ExamGuard({ children, onAutoSubmit, maxWarnings = 3 }: ExamGuard
         (document as any).msFullscreenElement
       );
       setIsFullscreen(fs);
-      if (!fs && !submittedRef.current) {
+      if (!fs && !celular) {
         triggerWarning("Saída do modo tela cheia detectada.");
       }
     };
 
     const handleVisibilityChange = () => {
-      if (document.hidden && !submittedRef.current) {
+      if (document.hidden && !foraDaProva()) {
         triggerWarning("Foco da janela perdido ou mudança de aba detectada.");
       }
     };
 
     const handleBlur = () => {
-      if (!submittedRef.current) {
-        triggerWarning("Foco da janela perdido.");
-      }
+      if (!celular && !foraDaProva()) triggerWarning("Foco da janela perdido.");
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -75,41 +217,34 @@ export function ExamGuard({ children, onAutoSubmit, maxWarnings = 3 }: ExamGuard
     };
 
     document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     window.addEventListener("blur", handleBlur);
     window.addEventListener("keydown", handleKeyDown);
     document.addEventListener("contextmenu", handleContextMenu);
+    window.addEventListener("pagehide", handlePageHide);
+    window.addEventListener("beforeunload", handlePageHide as unknown as EventListener);
 
     return () => {
+      if (pendente) clearTimeout(pendente);
+      window.removeEventListener("pagehide", handlePageHide);
+      window.removeEventListener("beforeunload", handlePageHide as unknown as EventListener);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("webkitfullscreenchange", handleFullscreenChange);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("blur", handleBlur);
       window.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("contextmenu", handleContextMenu);
     };
-  }, []);
+  }, [celular, desativado, maxWarnings]);
 
-  const triggerWarning = (reason: string) => {
-    setWarnings((prev) => {
-      const next = prev + 1;
-      setWarningReason(reason);
-      setShowWarningModal(true);
-
-      if (next >= maxWarnings && !submittedRef.current) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn(`[ExamGuard] Limite de advertências atingido, mas ignorado em modo de desenvolvimento.`);
-        } else {
-          submittedRef.current = true;
-          onAutoSubmit();
-        }
-      }
-      return next;
-    });
-  };
+  if (desativado) {
+    return <>{children}</>;
+  }
 
   return (
-    <div className="relative min-h-screen">
-      {!isFullscreen && !submittedRef.current && (
+    <div className={`relative min-h-screen ${celular && semTravaDeTela ? "pb-16" : ""}`}>
+      {!celular && !isFullscreen && !submittedRef.current && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-6">
           <div className="max-w-md w-full border border-[#2a2a3a] bg-[#12121a] rounded-2xl p-8 text-center space-y-6">
             <div className="text-5xl text-[#E85D04]">⚠️</div>
@@ -146,6 +281,12 @@ export function ExamGuard({ children, onAutoSubmit, maxWarnings = 3 }: ExamGuard
             </button>
           </div>
         </div>
+      )}
+
+      {celular && semTravaDeTela && (
+        <p className="fixed bottom-0 inset-x-0 z-40 bg-[#FAA307] text-[#0a0a0f] text-xs font-medium text-center px-3 py-2">
+          Desative o bloqueio automático da tela nos ajustes do aparelho: a tela apagada conta como saída da prova.
+        </p>
       )}
 
       {children}

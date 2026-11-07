@@ -22,6 +22,7 @@ export class ProvasService {
         duracaoMinutos: data.duracaoMinutos,
         janelaInicio: data.janelaInicio ? new Date(data.janelaInicio) : undefined,
         janelaFim: data.janelaFim ? new Date(data.janelaFim) : undefined,
+        limiteInicio: data.limiteInicio ? new Date(data.limiteInicio) : undefined,
         status: "RASCUNHO",
         createdBy: userId,
       },
@@ -78,7 +79,12 @@ export class ProvasService {
   }
 
   async update(id: string, data: AtualizarProvaDto, userId?: string) {
-    await this.findById(id);
+    const atual = await this.findById(id);
+
+    const janelaInicio = data.janelaInicio ? new Date(data.janelaInicio) : atual.janelaInicio;
+    const janelaFim = data.janelaFim ? new Date(data.janelaFim) : atual.janelaFim;
+    const limiteInicio = data.limiteInicio ? new Date(data.limiteInicio) : atual.limiteInicio;
+    this.validarHorarios(janelaInicio, limiteInicio, janelaFim);
 
     const result = await this.prisma.prova.update({
       where: { id },
@@ -87,6 +93,7 @@ export class ProvasService {
         ...(data.duracaoMinutos !== undefined && { duracaoMinutos: data.duracaoMinutos }),
         ...(data.janelaInicio && { janelaInicio: new Date(data.janelaInicio) }),
         ...(data.janelaFim && { janelaFim: new Date(data.janelaFim) }),
+        ...(data.limiteInicio && { limiteInicio: new Date(data.limiteInicio) }),
         versao: { increment: 1 },
       },
     });
@@ -166,6 +173,17 @@ export class ProvasService {
     return result;
   }
 
+  private validarHorarios(inicio: Date | null, limite: Date | null, fim: Date | null) {
+    if (inicio && fim && inicio >= fim) {
+      throw new BadRequestException("O fim da prova precisa ser depois do início");
+    }
+    if ((inicio && limite && limite < inicio) || (fim && limite && limite > fim)) {
+      throw new BadRequestException(
+        "O limite para iniciar precisa estar entre o início e o fim da prova",
+      );
+    }
+  }
+
   async publicar(id: string, userId?: string) {
     const prova = await this.findById(id);
 
@@ -185,6 +203,33 @@ export class ProvasService {
       );
     }
 
+    if (prova.fase === 1) {
+      const { janelaInicio, limiteInicio, janelaFim } = prova;
+
+      // Sem horário definido, a prova ficaria aberta a qualquer momento.
+      if (!janelaInicio || !limiteInicio || !janelaFim) {
+        throw new BadRequestException(
+          "Defina início, limite para iniciar e fim da prova antes de publicar",
+        );
+      }
+      this.validarHorarios(janelaInicio, limiteInicio, janelaFim);
+
+      const outra = await this.prisma.prova.findFirst({
+        where: {
+          id: { not: id },
+          edicaoId: prova.edicaoId,
+          fase: 1,
+          status: { in: ["PUBLICADA", "EM_ANDAMENTO"] },
+        },
+        select: { titulo: true },
+      });
+      if (outra) {
+        throw new BadRequestException(
+          `A edição já tem uma prova de Fase 1 publicada: ${outra.titulo}`,
+        );
+      }
+    }
+
     const result = await this.prisma.prova.update({
       where: { id },
       data: { status: "PUBLICADA", publicadaEm: new Date() },
@@ -192,6 +237,32 @@ export class ProvasService {
 
     if (userId) {
       await this.auditoria.log(userId, "PUBLICAR_PROVA", "Prova", id);
+    }
+
+    return result;
+  }
+
+  async encerrar(id: string, userId?: string) {
+    const prova = await this.findById(id);
+
+    if (prova.status !== "PUBLICADA" && prova.status !== "EM_ANDAMENTO") {
+      throw new BadRequestException("Apenas provas publicadas podem ser encerradas");
+    }
+
+    // Encerrar impede novos inícios e não tem volta: durante a prova, seria um
+    // clique capaz de barrar todos que ainda não começaram.
+    const agora = new Date();
+    if (prova.janelaInicio && prova.janelaFim && agora >= prova.janelaInicio && agora <= prova.janelaFim) {
+      throw new BadRequestException("A prova não pode ser encerrada durante a realização");
+    }
+
+    const result = await this.prisma.prova.update({
+      where: { id },
+      data: { status: "ENCERRADA" },
+    });
+
+    if (userId) {
+      await this.auditoria.log(userId, "ENCERRAR_PROVA", "Prova", id);
     }
 
     return result;
@@ -208,6 +279,7 @@ export class ProvasService {
         duracaoMinutos: prova.duracaoMinutos,
         janelaInicio: prova.janelaInicio,
         janelaFim: prova.janelaFim,
+        limiteInicio: prova.limiteInicio,
         status: "RASCUNHO",
         createdBy: userId,
       },

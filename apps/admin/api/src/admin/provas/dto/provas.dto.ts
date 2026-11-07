@@ -7,6 +7,7 @@ export const criarProvaSchema = z.object({
   duracaoMinutos: z.number().int().min(1, "Duração mínima de 1 minuto"),
   janelaInicio: z.string().datetime().optional(),
   janelaFim: z.string().datetime().optional(),
+  limiteInicio: z.string().datetime().optional(),
 });
 
 export type CriarProvaDto = z.infer<typeof criarProvaSchema>;
@@ -16,6 +17,7 @@ export const atualizarProvaSchema = z.object({
   duracaoMinutos: z.number().int().min(1).optional(),
   janelaInicio: z.string().datetime().optional(),
   janelaFim: z.string().datetime().optional(),
+  limiteInicio: z.string().datetime().optional(),
 });
 
 export type AtualizarProvaDto = z.infer<typeof atualizarProvaSchema>;

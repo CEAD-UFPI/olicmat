@@ -1,0 +1,227 @@
+{
+  "label": "base-ramp60",
+  "config": {
+    "N": 567,
+    "RAMP_S": 60,
+    "THINK_MS": 3000,
+    "FINAL_RAMP_S": 10,
+    "RELOAD_PCT": 20,
+    "ADMIN_POLLERS": 2,
+    "hosts": {
+      "site": "http://127.0.0.1:18080|olicmat.cead.ufpi.br",
+      "admin": "http://127.0.0.1:18080|admin.olicmat.cead.ufpi.br",
+      "prova": "http://127.0.0.1:18080|prova.olicmat.cead.ufpi.br"
+    }
+  },
+  "duracaoSegundos": 153,
+  "alunos": {
+    "concluiram": 567,
+    "desistencias": {},
+    "repeticoes": 0,
+    "respostasConfirmadas": 11340
+  },
+  "tempoAteVerQuestoesMs": {
+    "p50": 104,
+    "p95": 189,
+    "max": 503
+  },
+  "geradorLagMs": {
+    "p99": 21,
+    "max": 26
+  },
+  "etapas": [
+    {
+      "etapa": "01 GET /login (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 4,
+      "p95": 7,
+      "p99": 13,
+      "max": 20,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "02 POST auth/login",
+      "req": 567,
+      "falhas": 0,
+      "p50": 56,
+      "p95": 82,
+      "p99": 123,
+      "max": 325,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "03 GET users/me",
+      "req": 567,
+      "falhas": 0,
+      "p50": 4,
+      "p95": 9,
+      "p99": 58,
+      "max": 287,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "04 GET inscricoes/minha",
+      "req": 567,
+      "falhas": 0,
+      "p50": 3,
+      "p95": 6,
+      "p99": 10,
+      "max": 43,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "05 POST transition-token",
+      "req": 567,
+      "falhas": 0,
+      "p50": 4,
+      "p95": 7,
+      "p99": 11,
+      "max": 26,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "06 GET /auth/claim (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 2,
+      "p95": 5,
+      "p99": 10,
+      "max": 32,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "07 POST auth/claim",
+      "req": 567,
+      "falhas": 0,
+      "p50": 6,
+      "p95": 13,
+      "p99": 21,
+      "max": 32,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "08 GET /prova (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 2,
+      "p95": 4,
+      "p99": 8,
+      "max": 14,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "09 POST prova/iniciar",
+      "req": 666,
+      "falhas": 0,
+      "p50": 9,
+      "p95": 48,
+      "p99": 111,
+      "max": 267,
+      "status": {
+        "201": 666
+      }
+    },
+    {
+      "etapa": "10 GET prova/questoes",
+      "req": 666,
+      "falhas": 0,
+      "p50": 9,
+      "p95": 18,
+      "p99": 34,
+      "max": 146,
+      "status": {
+        "200": 666
+      }
+    },
+    {
+      "etapa": "11 POST prova/responder",
+      "req": 11340,
+      "falhas": 0,
+      "p50": 9,
+      "p95": 56,
+      "p99": 238,
+      "max": 2561,
+      "status": {
+        "201": 11340
+      }
+    },
+    {
+      "etapa": "12 GET prova/resumo",
+      "req": 567,
+      "falhas": 0,
+      "p50": 5,
+      "p95": 10,
+      "p99": 34,
+      "max": 76,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "13 POST prova/finalizar",
+      "req": 567,
+      "falhas": 0,
+      "p50": 1428,
+      "p95": 7554,
+      "p99": 8137,
+      "max": 8242,
+      "status": {
+        "201": 567
+      }
+    },
+    {
+      "etapa": "A0 admin login",
+      "req": 2,
+      "falhas": 0,
+      "p50": 76,
+      "p95": 76,
+      "p99": 76,
+      "max": 76,
+      "status": {
+        "201": 2
+      }
+    },
+    {
+      "etapa": "A1 GET monitoramento",
+      "req": 60,
+      "falhas": 0,
+      "p50": 4,
+      "p95": 12,
+      "p99": 85,
+      "max": 85,
+      "status": {
+        "200": 60
+      }
+    },
+    {
+      "etapa": "A2 GET monitoramento/inscricoes",
+      "req": 60,
+      "falhas": 0,
+      "p50": 82,
+      "p95": 204,
+      "p99": 305,
+      "max": 305,
+      "status": {
+        "200": 60
+      }
+    }
+  ],
+  "amostrasDeErro": {}
+}

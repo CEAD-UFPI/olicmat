@@ -8,6 +8,7 @@ interface JwtPayload {
   sub: string;
   email: string;
   role: string;
+  sid?: string;
 }
 
 @Injectable()
@@ -28,6 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         email: true,
         nome: true,
         role: true,
+        sessaoId: true,
       },
     });
 
@@ -35,6 +37,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException("Usuário não encontrado");
     }
 
-    return user;
+    const { sessaoId, ...dados } = user;
+
+    // Só a prova renova a sessão. O painel consulta notificações sozinho, e uma
+    // aba esquecida no notebook prenderia a conta e bloquearia a entrada no celular.
+    if (user.role === "ALUNO" && sessaoId && payload.sid !== sessaoId) {
+      throw new UnauthorizedException("Esta conta entrou em outro aparelho.");
+    }
+
+    return { ...dados, sid: payload.sid };
   }
 }

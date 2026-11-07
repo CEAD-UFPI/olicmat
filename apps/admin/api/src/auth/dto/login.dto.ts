@@ -1,8 +1,10 @@
 import { z } from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email("Email inválido"),
+  email: z.string().trim().email("Email inválido"),
   senha: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
+  /** Identifica o navegador: voltar pelo mesmo não conta como outro aparelho. */
+  dispositivo: z.string().min(8).max(64).optional(),
 });
 
 export type LoginDto = z.infer<typeof loginSchema>;

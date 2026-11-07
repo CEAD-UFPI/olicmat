@@ -103,10 +103,32 @@ export default function RegulamentoPage() {
         </div>
 
         <SubTitle>Fase 1 — Avaliação de Conhecimentos</SubTitle>
+        <div className="rounded-xl border border-[#E8B829]/40 bg-[#E8B829]/[0.08] p-5">
+          <p className="text-[#f0ece4] font-semibold text-sm">
+            Início até 09:00, sem exceção
+          </p>
+          <p className="mt-2 text-sm text-[#f0ece4] leading-relaxed">
+            Depois das 09:00 ninguém inicia a prova, qualquer que seja o motivo,
+            inclusive problemas de internet, aparelho ou acesso. Recomenda-se
+            entrar no sistema a partir de 08:15, para não deixar para a última
+            hora. Quem iniciou antes das 09:00 e caiu pode voltar depois das
+            09:00, enquanto a prova estiver aberta. O tempo não para.
+          </p>
+        </div>
         <Bullets
           items={[
             "Formato: prova on-line composta por 20 (vinte) questões objetivas, valendo 100 pontos no total.",
             `Data: ${dataDe("fase1")}.`,
+            "Horário e duração: das 08:30 às 11:30 (horário de Brasília), com duração de 180 minutos (3 horas).",
+            "Término: a prova termina às 11:30 para todos, seja qual for o horário em que o participante iniciou. Quem inicia às 09:00 tem até 11:30, então tem 2h30.",
+            "Liberação: o botão de acesso à prova só fica habilitado às 08:30 de 08/11/2026, no horário do sistema.",
+            'Início máximo: 09:00, sem exceção. Depois desse horário, o sistema exibe a mensagem "O prazo para iniciar a prova terminou às 09:00".',
+            'Respostas salvas: às 11:30 a prova é encerrada automaticamente, e contam somente as respostas salvas. Questões em branco e alternativas marcadas sem salvar não são contabilizadas. O sistema não salva sozinho ao fim do tempo nem no encerramento por 3 advertências. Ao trocar de questão, a alternativa marcada é salva automaticamente; mesmo assim, recomenda-se clicar em "Salvar Resposta".',
+            "Avisos de tempo: a tela avisa quando faltam 10 minutos, 5 minutos e 1 minuto para o encerramento. Nos últimos 10 minutos, o relógio fica em destaque.",
+            "Dispositivos: a prova pode ser feita pelo celular ou pelo computador. Recomenda-se internet estável e bateria carregada ou carregador. No computador, a tela cheia é obrigatória; no celular, não há exigência de tela cheia, e recomenda-se desativar o bloqueio automático de tela.",
+            "Saída da prova: em qualquer aparelho, trocar de aba ou de aplicativo gera advertência; no computador, também sair da tela cheia ou tirar o foco da janela. Três advertências encerram a prova. No celular, uma ligação recebida conta como saída, por isso recomenda-se o modo Não Perturbe ou, quando possível, o modo avião com Wi-Fi, com as notificações silenciadas.",
+            "Ordem das questões e alternativas: as questões aparecem na mesma ordem para todos. Apenas as alternativas são embaralhadas para cada participante.",
+            'Aparelho único: é proibido usar o mesmo usuário em dois aparelhos ou navegadores ao mesmo tempo. O segundo acesso é recusado e o participante é avisado, inclusive na tela da prova aberta, até a tentativa parar. Quem perdeu o aparelho ou a conexão pode entrar por outro depois de cerca de 2 minutos, ou pedir a liberação ao suporte; as respostas salvas são mantidas. O link de entrada na prova só funciona uma vez; para entrar de novo, volte ao painel e clique outra vez em "Acessar a aplicação de prova".',
             "Conteúdo avaliado: conhecimentos matemáticos e saberes didático-pedagógicos para a Educação Básica, baseados na BNCC e na Matriz do Inep (Portaria nº 330/2025).",
             "Classificação para a Fase 2: serão classificados até 50% dos participantes de cada instituição que realizarem a prova, em ordem decrescente de nota.",
           ]}

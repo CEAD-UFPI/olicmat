@@ -1,0 +1,256 @@
+{
+  "label": "fix-ramp60",
+  "config": {
+    "N": 567,
+    "RAMP_S": 60,
+    "THINK_MS": 3000,
+    "FINAL_RAMP_S": 10,
+    "RELOAD_PCT": 20,
+    "ADMIN_POLLERS": 2,
+    "hosts": {
+      "site": "http://127.0.0.1:18080|olicmat.cead.ufpi.br",
+      "admin": "http://127.0.0.1:18080|admin.olicmat.cead.ufpi.br",
+      "prova": "http://127.0.0.1:18080|prova.olicmat.cead.ufpi.br"
+    }
+  },
+  "duracaoSegundos": 161,
+  "alunos": {
+    "concluiram": 566,
+    "desistencias": {
+      "login": 1
+    },
+    "repeticoes": 2,
+    "respostasConfirmadas": 11320
+  },
+  "tempoAteVerQuestoesMs": {
+    "p50": 135,
+    "p95": 370,
+    "max": 602
+  },
+  "geradorLagMs": {
+    "p99": 22,
+    "max": 34
+  },
+  "etapas": [
+    {
+      "etapa": "01 GET /login (html)",
+      "req": 567,
+      "falhas": 0,
+      "p50": 5,
+      "p95": 11,
+      "p99": 17,
+      "max": 31,
+      "status": {
+        "200": 567
+      }
+    },
+    {
+      "etapa": "02 POST auth/login",
+      "req": 569,
+      "falhas": 3,
+      "p50": 65,
+      "p95": 87,
+      "p99": 115,
+      "max": 150,
+      "status": {
+        "201": 566,
+        "401": 3
+      }
+    },
+    {
+      "etapa": "03 GET users/me",
+      "req": 566,
+      "falhas": 0,
+      "p50": 6,
+      "p95": 13,
+      "p99": 28,
+      "max": 84,
+      "status": {
+        "200": 566
+      }
+    },
+    {
+      "etapa": "04 GET inscricoes/minha",
+      "req": 566,
+      "falhas": 0,
+      "p50": 5,
+      "p95": 12,
+      "p99": 25,
+      "max": 82,
+      "status": {
+        "200": 566
+      }
+    },
+    {
+      "etapa": "05 POST transition-token",
+      "req": 566,
+      "falhas": 0,
+      "p50": 6,
+      "p95": 12,
+      "p99": 23,
+      "max": 74,
+      "status": {
+        "201": 566
+      }
+    },
+    {
+      "etapa": "06 GET /auth/claim (html)",
+      "req": 566,
+      "falhas": 0,
+      "p50": 3,
+      "p95": 30,
+      "p99": 61,
+      "max": 121,
+      "status": {
+        "200": 566
+      }
+    },
+    {
+      "etapa": "07 POST auth/claim",
+      "req": 566,
+      "falhas": 0,
+      "p50": 10,
+      "p95": 49,
+      "p99": 84,
+      "max": 134,
+      "status": {
+        "201": 566
+      }
+    },
+    {
+      "etapa": "08 GET /prova (html)",
+      "req": 566,
+      "falhas": 0,
+      "p50": 3,
+      "p95": 30,
+      "p99": 63,
+      "max": 104,
+      "status": {
+        "200": 566
+      }
+    },
+    {
+      "etapa": "09 POST prova/iniciar",
+      "req": 684,
+      "falhas": 0,
+      "p50": 13,
+      "p95": 78,
+      "p99": 133,
+      "max": 251,
+      "status": {
+        "201": 684
+      }
+    },
+    {
+      "etapa": "10 GET prova/questoes",
+      "req": 684,
+      "falhas": 0,
+      "p50": 13,
+      "p95": 64,
+      "p99": 125,
+      "max": 154,
+      "status": {
+        "200": 684
+      }
+    },
+    {
+      "etapa": "11 POST prova/responder",
+      "req": 11320,
+      "falhas": 0,
+      "p50": 15,
+      "p95": 104,
+      "p99": 211,
+      "max": 599,
+      "status": {
+        "201": 11320
+      }
+    },
+    {
+      "etapa": "11b GET prova/estado",
+      "req": 2264,
+      "falhas": 0,
+      "p50": 9,
+      "p95": 76,
+      "p99": 106,
+      "max": 147,
+      "status": {
+        "200": 2264
+      }
+    },
+    {
+      "etapa": "11c POST prova/advertencia",
+      "req": 56,
+      "falhas": 0,
+      "p50": 14,
+      "p95": 96,
+      "p99": 105,
+      "max": 105,
+      "status": {
+        "201": 56
+      }
+    },
+    {
+      "etapa": "12 GET prova/resumo",
+      "req": 566,
+      "falhas": 0,
+      "p50": 7,
+      "p95": 44,
+      "p99": 84,
+      "max": 133,
+      "status": {
+        "200": 566
+      }
+    },
+    {
+      "etapa": "13 POST prova/finalizar",
+      "req": 566,
+      "falhas": 0,
+      "p50": 9199,
+      "p95": 20170,
+      "p99": 21620,
+      "max": 22212,
+      "status": {
+        "201": 566
+      }
+    },
+    {
+      "etapa": "A0 admin login",
+      "req": 2,
+      "falhas": 0,
+      "p50": 80,
+      "p95": 80,
+      "p99": 80,
+      "max": 80,
+      "status": {
+        "201": 2
+      }
+    },
+    {
+      "etapa": "A1 GET monitoramento",
+      "req": 63,
+      "falhas": 0,
+      "p50": 6,
+      "p95": 17,
+      "p99": 33,
+      "max": 33,
+      "status": {
+        "200": 63
+      }
+    },
+    {
+      "etapa": "A2 GET monitoramento/inscricoes",
+      "req": 63,
+      "falhas": 0,
+      "p50": 25,
+      "p95": 46,
+      "p99": 5018,
+      "max": 5018,
+      "status": {
+        "200": 63
+      }
+    }
+  ],
+  "amostrasDeErro": {
+    "02 POST auth/login 401": "{\"message\":\"Credenciais inválidas\",\"error\":\"Unauthorized\",\"statusCode\":401}"
+  }
+}

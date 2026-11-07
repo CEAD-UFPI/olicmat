@@ -9,8 +9,8 @@ import {
   BadRequestException,
 } from "@nestjs/common";
 import { MonitoramentoService } from "./monitoramento.service.js";
-import { adicionarTempoSchema } from "./dto/monitoramento.dto.js";
-import type { AdicionarTempoDto } from "./dto/monitoramento.dto.js";
+import { destravarSchema } from "./dto/monitoramento.dto.js";
+import type { DestravarDto } from "./dto/monitoramento.dto.js";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../../common/guards/roles.guard.js";
 import { Roles } from "../../common/decorators/roles.decorator.js";
@@ -48,20 +48,44 @@ export class MonitoramentoController {
     return this.monitoramentoService.resetarTempo(id, req.user.id);
   }
 
-  @Post("inscricoes/:id/adicionar-tempo")
-  async adicionarTempo(
+  @Post("inscricoes/:id/destravar")
+  async destravar(
     @Param("id") id: string,
     @Req() req: ExpressReq & { user: AuthUser },
-    @Body() body: AdicionarTempoDto,
+    @Body() body: DestravarDto,
   ) {
-    const parsed = adicionarTempoSchema.safeParse(body);
+    const parsed = destravarSchema.safeParse(body);
     if (!parsed.success) {
       throw new BadRequestException(parsed.error.flatten().fieldErrors);
     }
-    return this.monitoramentoService.adicionarTempo(
+    return this.monitoramentoService.destravar(
       id,
-      parsed.data.minutos,
+      parsed.data.justificativa,
       req.user.id,
     );
+  }
+
+  @Post("inscricoes/:id/senha-temporaria")
+  async senhaTemporaria(
+    @Param("id") id: string,
+    @Req() req: ExpressReq & { user: AuthUser },
+  ) {
+    return this.monitoramentoService.senhaTemporaria(id, req.user.id);
+  }
+
+  @Post("inscricoes/:id/liberar-sessao")
+  async liberarSessao(
+    @Param("id") id: string,
+    @Req() req: ExpressReq & { user: AuthUser },
+  ) {
+    return this.monitoramentoService.liberarSessao(id, req.user.id);
+  }
+
+  @Post("provas/:provaId/encerrar-pendentes")
+  async encerrarPendentes(
+    @Param("provaId") provaId: string,
+    @Req() req: ExpressReq & { user: AuthUser },
+  ) {
+    return this.monitoramentoService.encerrarPendentes(provaId, req.user.id);
   }
 }

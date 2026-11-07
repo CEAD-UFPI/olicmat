@@ -193,6 +193,15 @@ model User {
   dataNascimento        DateTime
   emailConfirmado       Boolean     @default(false)
 
+  /// Sessão única do participante: uma conta em um aparelho por vez.
+  sessaoId              String?
+  sessaoDispositivo     String?
+  sessaoVistaEm         DateTime?
+  /// Última tentativa recusada de entrar em outro aparelho.
+  sessaoConflitoEm      DateTime?
+  /// Último link de entrada usado: cada link vale uma vez.
+  sessaoEntradaId       String?
+
   telefone              String?
   celular               String?
   genero                Genero?
@@ -281,6 +290,8 @@ model Inscricao {
   fase1Inicio            DateTime?
   fase1Fim               DateTime?
   fase1TempoExtraMinutos Int          @default(0)
+  fase1Advertencias      Int          @default(0)
+  fase1FimMotivo         String?
   fase2Tema       String?
   notaFinal       Float?
   medalha         Medalha?
@@ -310,6 +321,8 @@ model Prova {
   publicadaEm     DateTime?
   janelaInicio    DateTime?
   janelaFim       DateTime?
+  /// Depois deste horário, quem ainda não começou não pode mais iniciar.
+  limiteInicio    DateTime?
   versao          Int         @default(1)
   createdBy       String
   createdAt       DateTime    @default(now())
@@ -328,9 +341,9 @@ model Questao {
   alternativaC  String
   alternativaD  String
   alternativaE  String
-  correta       String
-  eixo          Eixo
-  dificuldade   Dificuldade
+  correta       String?
+  eixo          Eixo?
+  dificuldade   Dificuldade?
   createdBy     String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt

@@ -7,7 +7,8 @@ import {
   Request,
   BadRequestException,
 } from "@nestjs/common";
-import { ProvaService } from "./prova.service.js";
+import { ProvaService, MOTIVOS_FIM } from "./prova.service.js";
+import type { MotivoFim } from "./prova.service.js";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../common/guards/roles.guard.js";
 import { responderQuestaoSchema } from "./dto/prova.dto.js";
@@ -49,8 +50,24 @@ export class ProvaController {
   }
 
   @Post("finalizar")
-  async finalizar(@Request() req: ExpressReq & { user: AuthUser }) {
-    return this.provaService.finalizarProva(req.user.id);
+  async finalizar(
+    @Request() req: ExpressReq & { user: AuthUser },
+    @Body() body: { motivo?: string } | undefined,
+  ) {
+    const motivo = MOTIVOS_FIM.includes(body?.motivo as MotivoFim)
+      ? (body?.motivo as MotivoFim)
+      : "ALUNO";
+    return this.provaService.finalizarProva(req.user.id, motivo);
+  }
+
+  @Get("estado")
+  async estado(@Request() req: ExpressReq & { user: AuthUser }) {
+    return this.provaService.estadoProva(req.user.id);
+  }
+
+  @Post("advertencia")
+  async advertencia(@Request() req: ExpressReq & { user: AuthUser }) {
+    return this.provaService.registrarAdvertencia(req.user.id);
   }
 
   @Get("resumo")

@@ -19,10 +19,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { useLiberacaoProva } from "@/lib/useLiberacaoProva";
 
 export default function ProvaPage() {
   const [erro, setErro] = useState("");
   const [indo, setIndo] = useState(false);
+  const { liberada, aviso } = useLiberacaoProva();
 
   const irParaProva = async () => {
     setIndo(true);
@@ -67,19 +69,55 @@ export default function ProvaPage() {
 
       <p className="text-[#9895a4] text-sm leading-relaxed">
         A prova é executada em uma aplicação isolada, separada deste painel,
-        para garantir estabilidade durante as 2h30 de realização. Ao
-        continuar, você será levado até ela já autenticado — não precisa
-        entrar de novo.
+        para garantir estabilidade durante a realização. Ao continuar, você
+        será levado até ela já autenticado — não precisa entrar de novo.
       </p>
 
       <div className="text-left text-sm text-[#9895a4] bg-[#12121a] border border-[#2a2a3a] rounded-xl p-4 space-y-2">
         <p className="text-[#f0ece4] font-medium">Antes de continuar</p>
-        <p>A prova exige tela cheia e o cronômetro começa ao iniciar.</p>
+        <div className="rounded-lg border border-[#E8B829]/40 bg-[#E8B829]/[0.08] p-3 text-[#f0ece4] space-y-1">
+          <p className="font-semibold">Início até 09:00, sem exceção</p>
+          <p>
+            Depois das 09:00 ninguém inicia a prova, qualquer que seja o motivo,
+            inclusive problemas de internet, aparelho ou acesso. Entre no
+            sistema a partir de 08:15, para não deixar para a última hora. Quem
+            iniciou antes das 09:00 e caiu pode voltar depois das 09:00,
+            enquanto a prova estiver aberta. O tempo não para.
+          </p>
+          <p>
+            A prova tem 3 horas, das 08:30 às 11:30 (horário de Brasília), e
+            termina às 11:30 para todos. Quem inicia às 09:00 tem até 11:30,
+            então tem 2h30.
+          </p>
+          <p>
+            Contam somente as respostas salvas. Questões em branco e
+            alternativas marcadas sem salvar não são contabilizadas, e o sistema
+            não salva sozinho ao fim do tempo nem no encerramento por 3
+            advertências.
+          </p>
+        </div>
         <p>
-          Feche outras abas e silencie notificações: sair da tela cheia ou
-          trocar de janela gera advertência.
+          Você pode usar o celular ou o computador, com internet estável e
+          bateria carregada ou carregador. No computador, a tela cheia é
+          obrigatória; no celular, não há exigência de tela cheia. No celular,
+          desative o bloqueio automático de tela.
         </p>
-        <p>Reserve as 2h30 sem interrupção.</p>
+        <p>
+          Feche outras abas e silencie notificações. Em qualquer aparelho,
+          trocar de aba ou de aplicativo gera advertência; no computador,
+          também sair da tela cheia ou tirar o foco da janela. Três
+          advertências encerram a prova.
+        </p>
+        <p>
+          No celular, uma ligação recebida conta como saída: ative o modo Não
+          Perturbe ou, quando possível, o modo avião com Wi-Fi.
+        </p>
+        <p>
+          É proibido usar o mesmo usuário em dois aparelhos ou navegadores ao
+          mesmo tempo. O link de entrada só funciona uma vez: para entrar de
+          novo, volte aqui e clique outra vez em “Acessar a aplicação de prova”.
+        </p>
+        <p>Reserve a manhã até 11:30, sem interrupção.</p>
       </div>
 
       {erro && (
@@ -91,12 +129,14 @@ export default function ProvaPage() {
       <Button
         size="lg"
         onClick={irParaProva}
-        disabled={indo}
+        disabled={indo || !liberada}
         style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
         className="w-full"
       >
         {indo ? "Abrindo a prova..." : "Acessar a aplicação de prova"}
       </Button>
+
+      {!liberada && <p className="text-sm text-[#E8B829]">{aviso}</p>}
     </motion.div>
   );
 }

@@ -24,6 +24,8 @@ export default function AdminProvasPage() {
   const [carregando, setCarregando] = useState(true);
   const [processando, setProcessando] = useState<Record<string, boolean>>({});
   const [edicaoId, setEdicaoId] = useState("");
+  const [erro, setErro] = useState("");
+  const [encerrarTarget, setEncerrarTarget] = useState<ProvaItem | null>(null);
 
   // Delete state
   const [deleteTarget, setDeleteTarget] = useState<ProvaItem | null>(null);
@@ -44,12 +46,15 @@ export default function AdminProvasPage() {
   const alterarStatus = async (id: string, novoStatus: string) => {
     setProcessando((prev) => ({ ...prev, [id]: true }));
     try {
-      await api.patch(`/admin/provas/${id}`, { status: novoStatus });
+      const acao = novoStatus === "PUBLICADA" ? "publicar" : "encerrar";
+      await api.post(`/admin/provas/${id}/${acao}`);
+      setErro("");
       setProvas((prev) =>
         prev.map((p) => (p.id === id ? { ...p, status: novoStatus } : p))
       );
-    } catch {
-      // silently fail
+    } catch (e: unknown) {
+      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      setErro(typeof msg === "string" ? msg : "Não foi possível alterar o status da prova.");
     } finally {
       setProcessando((prev) => ({ ...prev, [id]: false }));
     }
@@ -126,6 +131,10 @@ export default function AdminProvasPage() {
         </Button>
       </div>
 
+      {erro && (
+        <p role="alert" className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3">{erro}</p>
+      )}
+
       <div className="flex items-center gap-3">
         <EdicaoSelector value={edicaoId} onChange={(id) => { setEdicaoId(id); setPagina(1); }} />
       </div>
@@ -200,7 +209,7 @@ export default function AdminProvasPage() {
                               size="default"
                               variant="ghost"
                               disabled={processando[prova.id]}
-                              onClick={() => alterarStatus(prova.id, "ENCERRADA")}
+                              onClick={() => setEncerrarTarget(prova)}
                               className="text-red-400 hover:bg-red-400/10 text-sm cursor-pointer"
                             >
                               Encerrar
@@ -233,6 +242,17 @@ export default function AdminProvasPage() {
           <Pagination pagina={paginaAtual} totalPaginas={totalPaginas} onPageChange={setPagina} />
         </>
       )}
+
+      <ConfirmDialog
+        aberto={!!encerrarTarget}
+        onClose={() => setEncerrarTarget(null)}
+        onConfirm={() => {
+          if (encerrarTarget) alterarStatus(encerrarTarget.id, "ENCERRADA");
+          setEncerrarTarget(null);
+        }}
+        titulo="Encerrar Prova"
+        mensagem={`Encerrar "${encerrarTarget?.titulo || "Prova sem título"}"? Ninguém mais poderá iniciar, e esta ação não pode ser desfeita.`}
+      />
 
       <ConfirmDialog
         aberto={!!deleteTarget}
