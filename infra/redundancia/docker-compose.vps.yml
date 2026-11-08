@@ -1,0 +1,169 @@
+# ============================================================================
+# OLICMAT v2.1 — Docker Compose (VPS Hostinger — STANDBY)
+#
+# Stack COMPLETA numa única máquina (a VPS), para assumir em caso de falha
+# total da UFPI. Diferente da produção (3 máquinas), aqui tudo roda junto:
+#   - postgres  : banco local (restaurado pelo restaurar-na-vps.sh)
+#   - admin-api : Cadastro/Configurações (NestJS)   (interno)
+#   - admin-web : Cadastro/Configurações (Next.js)  (interno)
+#   - web       : landing pública (Next.js)         (interno)
+#   - exam-api  : Provas (NestJS)                   (interno)
+#   - exam-web  : Provas (Next.js)                  (interno)
+#   - router    : nginx na porta 8080 — distribui por domínio
+#
+# Só a porta do router é publicada (8080 por padrão, pois o Easypanel usa 80/443).
+# O build context aponta para a raiz do repositório (../..), porque este
+# arquivo vive em infra/redundancia/.
+#
+# A stack fica PARADA (standby frio/quente): faça `docker compose build` para
+# deixar as imagens prontas, mas NÃO rode `up` — o banco é recriado a cada
+# restore. No dia da falha: `docker compose up -d` (ver RUNBOOK-FAILOVER.md).
+#
+# Uso (na VPS, dentro de infra/redundancia/):
+#   docker compose -f docker-compose.vps.yml --env-file .env.vps build
+#   docker compose -f docker-compose.vps.yml --env-file .env.vps up -d postgres
+# ============================================================================
+
+name: olicmat-vps
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: olicmat-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-olicmat}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-olicmat}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-olicmat} -d ${DB_NAME:-olicmat}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  admin-api:
+    build:
+      context: ../..
+      dockerfile: apps/admin/api/Dockerfile
+    container_name: olicmat-admin-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3333
+      DATABASE_URL: postgresql://${DB_USER:-olicmat}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-olicmat}?schema=public
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL:-https://admin.olicmat.cead.ufpi.br}
+      EXAM_APP_URL: ${EXAM_APP_URL:-https://prova.olicmat.cead.ufpi.br}
+      FASE2_LIBERADA_EM: ${FASE2_LIBERADA_EM:-}
+      UPLOAD_DIR: /app/uploads
+      PUBLIC_API_URL: ${PUBLIC_API_URL:-https://olicmat.cead.ufpi.br}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-brevo}
+      BREVO_API_KEY: ${BREVO_API_KEY}
+      SMTP_FROM: ${SMTP_FROM}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+    volumes:
+      - ./uploads:/app/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3333/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  admin-web:
+    build:
+      context: ../..
+      dockerfile: apps/admin/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://olicmat.cead.ufpi.br/api}
+    container_name: olicmat-admin-web
+    restart: unless-stopped
+    depends_on:
+      - admin-api
+    environment:
+      NODE_ENV: production
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://olicmat.cead.ufpi.br/api}
+        NEXT_PUBLIC_ADMIN_URL: ${NEXT_PUBLIC_ADMIN_URL:-https://admin.olicmat.cead.ufpi.br}
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID:-}
+    container_name: olicmat-web
+    restart: unless-stopped
+    depends_on:
+      - admin-api
+    environment:
+      NODE_ENV: production
+
+  exam-api:
+    build:
+      context: ../..
+      dockerfile: apps/exam/api/Dockerfile
+    container_name: olicmat-exam-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3334
+      DATABASE_URL: postgresql://${DB_USER:-olicmat}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-olicmat}?schema=public
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-10}
+      JWT_SECRET: ${JWT_SECRET}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3334/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  exam-web:
+    build:
+      context: ../..
+      dockerfile: apps/exam/web/Dockerfile
+      args:
+        NEXT_PUBLIC_EXAM_API_URL: /api
+        NEXT_PUBLIC_MAIN_APP_URL: ${NEXT_PUBLIC_MAIN_APP_URL:-https://admin.olicmat.cead.ufpi.br}
+    container_name: olicmat-exam-web
+    restart: unless-stopped
+    depends_on:
+      - exam-api
+    environment:
+      NODE_ENV: production
+      EXAM_API_URL: http://exam-api:3334/api
+
+  router:
+    image: nginx:alpine
+    container_name: olicmat-router
+    restart: unless-stopped
+    depends_on:
+      - web
+      - admin-web
+      - admin-api
+      - exam-web
+      - exam-api
+    ports:
+      - "${APP_BIND_IP:-0.0.0.0}:${WEB_HOST_PORT:-8080}:80"
+    volumes:
+      - ./router-vps.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  pgdata:
