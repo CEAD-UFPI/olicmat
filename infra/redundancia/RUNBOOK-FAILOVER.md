@@ -95,6 +95,12 @@ Quando a UFPI cair (energia/rede/banco):
 ```bash
 cd /opt/olicmat/app/infra/redundancia
 
+# 0) CRÍTICO: desativa o cron de restore enquanto a app estiver no ar.
+#    O restore faz DROP no banco — se rodar com a app de pé, apaga as
+#    respostas que chegaram desde o último backup. Reative-o só ao voltar
+#    ao standby (ver "Volta", passo 3).
+crontab -l 2>/dev/null | grep -v restaurar-na-vps.sh | crontab -
+
 # 1) Restaura o último dump disponível (em ~segundos):
 ./restaurar-na-vps.sh
 
@@ -148,9 +154,16 @@ o login funcionar, o failover está completo.
 
 1. Aguardar a UFPI estabilizar o banco (Máquina 3).
 2. Reverter o DNS no CEAD de volta para a Máquina 1.
-3. Na VPS, manter os crons rodando (ela volta a ser standby). Opcionalmente
-   `docker compose -f docker-compose.vps.yml down` para liberar memória, e
-   re-subir o `postgres` só.
+3. Na VPS, derrubar a app (`docker compose -f docker-compose.vps.yml down`) e
+   **reativar o cron de restore** (que foi desligado no B1), para ela voltar a
+   ser standby espelhado:
+
+   ```bash
+   cd /opt/olicmat/app/infra/redundancia
+   docker compose -f docker-compose.vps.yml --env-file .env.vps down
+   docker compose -f docker-compose.vps.yml --env-file .env.vps up -d postgres
+   ( crontab -l 2>/dev/null | grep -v restaurar-na-vps.sh ; echo '*/6 * * * * /opt/olicmat/app/infra/redundancia/restaurar-na-vps.sh >> /var/log/olicmat-restore.log 2>&1' ) | crontab -
+   ```
 
 > **Atenção a respostas fora da UFPI:** durante o período na VPS, as respostas
 > ficam no banco da VPS. Ao retornar para a UFPI, é preciso **copiar as
