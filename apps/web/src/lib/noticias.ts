@@ -28,6 +28,26 @@ export interface Noticia {
 
 export const NOTICIAS: Noticia[] = [
   {
+    slug: "resolucao-prova-fase-1",
+    titulo: "Divulgada a resolução comentada da prova da Fase 1 da 1ª OLICMAT",
+    data: "2026-11-09",
+    resumo:
+      "Consulte as 20 questões da prova da Fase 1 com o gabarito e o comentário pedagógico-matemático de cada uma.",
+    corpo: [
+      `A Comissão Organizadora da 1ª Olimpíada de Licenciandos em Matemática (OLICMAT) torna pública a resolução comentada da prova da Fase 1, aplicada em ${dataDe("fase1")}.`,
+      "O documento, disponível em PDF, apresenta as 20 questões da prova, o gabarito e um comentário pedagógico-matemático sobre cada uma delas.",
+      "Atenção ao conferir suas respostas: durante a prova, a ordem das alternativas foi embaralhada para cada participante. Por isso, as letras da resolução podem não coincidir com as que apareceram na sua tela. Compare o conteúdo da alternativa escolhida, e não apenas a letra. A ordem das questões foi a mesma para todos.",
+      `O resultado da Fase 1 e a convocação para a Fase 2 serão divulgados em ${dataDe("resultado-fase1")}, conforme o cronograma oficial.`,
+    ],
+    anexos: [
+      {
+        rotulo: "Baixar a resolução comentada da Fase 1",
+        href: "/arquivos/resolucao-fase1-2026.pdf",
+        detalhe: "PDF · 18 páginas",
+      },
+    ],
+  },
+  {
     slug: "inscricoes-confirmadas",
     titulo: "Divulgada a relação das inscrições confirmadas da 1ª OLICMAT",
     data: "2026-10-06",
