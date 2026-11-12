@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { CRONOGRAMA, dataDe } from "@/lib/cronograma";
 
@@ -24,6 +25,21 @@ export default function RegulamentoPage() {
           UFDPar.
         </p>
       </div>
+
+      <Link
+        href="/regulamento/edital"
+        className="flex items-center justify-between gap-4 rounded-2xl border border-[#E8B829]/30 bg-[#E8B829]/5 p-5 transition-colors hover:bg-[#E8B829]/10"
+      >
+        <span className="flex flex-col">
+          <span className="font-semibold text-[#f0ece4]">Edital nº 01/2026 e documentos oficiais</span>
+          <span className="text-sm text-[#9895a4]">
+            Edital, relação das inscrições confirmadas e retificação, em ordem de publicação
+          </span>
+        </span>
+        <span className="text-[#E8B829] text-xl shrink-0" aria-hidden>
+          →
+        </span>
+      </Link>
 
       <Section n="1" title="Apresentação e Objetivos">
         <P>
