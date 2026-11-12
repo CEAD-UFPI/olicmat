@@ -28,6 +28,25 @@ export interface Noticia {
 
 export const NOTICIAS: Noticia[] = [
   {
+    slug: "errata-classificados-fase-2",
+    titulo: "Errata: relação dos classificados para a Fase 2 da 1ª OLICMAT",
+    data: "2026-11-12",
+    resumo:
+      "Inclusão de um participante por critério de desempate. A relação retificada passa a contar com 182 classificados.",
+    corpo: [
+      "A Comissão Organizadora da 1ª Olimpíada de Licenciandos em Matemática (OLICMAT) torna pública a errata da relação dos classificados para a Fase 2, divulgada em 11/11/2026, para incluir, em razão de critério de desempate, o participante LUCAS VINÍCIUS FERNANDES BEIRÃO (IFPI).",
+      "Com a inclusão, a relação passa a contar com 182 classificados: IFPI (79), UFPI (53), UFDPar (36) e UESPI (14). A relação retificada, disponível em PDF, substitui a anterior.",
+      `As orientações da Fase 2 serão divulgadas de ${dataDe("orientacoes-fase2")}, e o envio dos vídeos e portfólios ocorrerá de ${dataDe("envio-fase2")}. Acompanhe os canais oficiais da OLICMAT.`,
+    ],
+    anexos: [
+      {
+        rotulo: "Baixar a relação retificada dos classificados para a Fase 2",
+        href: "/arquivos/classificados-fase2-2026-retificada.pdf",
+        detalhe: "PDF · 7 páginas · retificada em 12/11/2026",
+      },
+    ],
+  },
+  {
     slug: "classificados-fase-2",
     titulo: "Divulgada a relação dos classificados para a Fase 2 da 1ª OLICMAT",
     data: "2026-11-11",
@@ -37,12 +56,18 @@ export const NOTICIAS: Noticia[] = [
       "A Comissão Organizadora da 1ª Olimpíada de Licenciandos em Matemática (OLICMAT) torna pública a relação dos participantes classificados para a Fase 2, totalizando 181 licenciandos: IFPI (78), UFPI (53), UFDPar (36) e UESPI (14).",
       "A relação está disponível em PDF, organizada por instituição e em ordem alfabética pelo nome do participante.",
       `As orientações da Fase 2 serão divulgadas de ${dataDe("orientacoes-fase2")}, e o envio dos vídeos e portfólios ocorrerá de ${dataDe("envio-fase2")}. Acompanhe os canais oficiais da OLICMAT.`,
+      "Atualização em 12/11/2026: esta relação foi retificada para incluir um participante por critério de desempate, totalizando 182 classificados. Consulte a relação retificada abaixo.",
     ],
     anexos: [
       {
-        rotulo: "Baixar a relação dos classificados para a Fase 2",
+        rotulo: "Baixar a relação retificada dos classificados para a Fase 2",
+        href: "/arquivos/classificados-fase2-2026-retificada.pdf",
+        detalhe: "PDF · 7 páginas · retificada em 12/11/2026",
+      },
+      {
+        rotulo: "Relação original divulgada em 11/11/2026",
         href: "/arquivos/classificados-fase2-2026.pdf",
-        detalhe: "PDF · 7 páginas",
+        detalhe: "PDF · 7 páginas · substituída pela versão retificada",
       },
     ],
   },
