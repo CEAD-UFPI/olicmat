@@ -28,6 +28,25 @@ export interface Noticia {
 
 export const NOTICIAS: Noticia[] = [
   {
+    slug: "classificados-fase-2",
+    titulo: "Divulgada a relação dos classificados para a Fase 2 da 1ª OLICMAT",
+    data: "2026-11-11",
+    resumo:
+      "181 participantes foram classificados para a Fase 2. Consulte a relação completa, organizada por instituição.",
+    corpo: [
+      "A Comissão Organizadora da 1ª Olimpíada de Licenciandos em Matemática (OLICMAT) torna pública a relação dos participantes classificados para a Fase 2, totalizando 181 licenciandos: IFPI (78), UFPI (53), UFDPar (36) e UESPI (14).",
+      "A relação está disponível em PDF, organizada por instituição e em ordem alfabética pelo nome do participante.",
+      `As orientações da Fase 2 serão divulgadas de ${dataDe("orientacoes-fase2")}, e o envio dos vídeos e portfólios ocorrerá de ${dataDe("envio-fase2")}. Acompanhe os canais oficiais da OLICMAT.`,
+    ],
+    anexos: [
+      {
+        rotulo: "Baixar a relação dos classificados para a Fase 2",
+        href: "/arquivos/classificados-fase2-2026.pdf",
+        detalhe: "PDF · 7 páginas",
+      },
+    ],
+  },
+  {
     slug: "resolucao-prova-fase-1",
     titulo: "Divulgada a resolução comentada da prova da Fase 1 da 1ª OLICMAT",
     data: "2026-11-09",
