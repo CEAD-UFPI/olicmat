@@ -16,20 +16,7 @@ import type {
 } from "./dto/inscricao.dto.js";
 import type { PaginationParams } from "../../common/pagination.js";
 import { getSkipTake, paginate } from "../../common/pagination.js";
-import { exigirFase2Liberada } from "../fase2-liberacao.js";
 
-const TEMAS_GERADORES = [
-  "Funções no Cotidiano",
-  "Geometria e Arte",
-  "Probabilidade e Jogos",
-  "Matemática Financeira",
-  "Trigonometria Aplicada",
-  "Modelagem Matemática",
-  "Educação Matemática Inclusiva",
-  "Tecnologias no Ensino de Matemática",
-  "Resolução de Problemas",
-  "História da Matemática em Sala de Aula",
-];
 
 @Injectable()
 export class InscricaoService {
@@ -425,36 +412,6 @@ export class InscricaoService {
     return this.prisma.inscricao.update({
       where: { id: inscricaoId },
       data: { fase1Inicio: new Date() },
-    });
-  }
-
-  async sortearTema(inscricaoId: string) {
-    exigirFase2Liberada();
-    const inscricao = await this.prisma.inscricao.findUnique({
-      where: { id: inscricaoId },
-    });
-
-    if (!inscricao || inscricao.status !== "CONFIRMADA") {
-      throw new BadRequestException(
-        "Inscrição não está apta para a Fase 2",
-      );
-    }
-
-    if (!inscricao.fase1Nota || inscricao.fase1Nota < 60) {
-      throw new BadRequestException(
-        "Nota mínima da Fase 1 não atingida",
-      );
-    }
-
-    if (inscricao.fase2Tema) {
-      throw new BadRequestException("Tema já foi sorteado");
-    }
-
-    const tema = TEMAS_GERADORES[Math.floor(Math.random() * TEMAS_GERADORES.length)];
-
-    return this.prisma.inscricao.update({
-      where: { id: inscricaoId },
-      data: { fase2Tema: tema },
     });
   }
 

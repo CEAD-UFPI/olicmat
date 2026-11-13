@@ -1,108 +1,104 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link as LinkIcon } from "lucide-react";
+import { CheckCircle2, Clock, ExternalLink, AlertTriangle } from "lucide-react";
 
-interface StatusEnvio {
-  fase2Liberada?: boolean;
-  fase2LiberadaEm?: string;
-  fase2Tema: string | null;
-  enviosFase2: Array<{
-    id: string;
-    tipo: string;
-    arquivoUrl: string;
-    videoLink: string | null;
-    status: string;
-    enviadoEm: string;
-  }>;
-  avaliacoes: Array<{
-    id: string;
-    nota: number;
-    parecer: string | null;
-    avaliadoEm: string;
-  }>;
+interface StatusFase2 {
+  classificado: boolean;
+  agora: string;
+  situacao?: "NAO_INICIADA" | "ABERTA" | "ENCERRADA";
+  tema?: string | null;
+  inicioEm?: string | null;
+  prazoEm?: string | null;
+  ultimoEnvio?: { videoLink: string; portfolioLink: string; enviadoEm: string } | null;
+  totalEnvios?: number;
 }
 
-export default function EnvioPage() {
-  const [status, setStatus] = useState<StatusEnvio | null>(null);
+const dataHora = (iso: string) =>
+  new Date(iso).toLocaleString("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit", month: "2-digit", year: "numeric",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+  });
+
+function restante(ms: number) {
+  if (ms <= 0) return "00:00:00";
+  const s = Math.floor(ms / 1000);
+  const h = String(Math.floor(s / 3600)).padStart(2, "0");
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
+  const ss = String(s % 60).padStart(2, "0");
+  return `${h}:${m}:${ss}`;
+}
+
+function mensagemErro(err: unknown, padrao: string) {
+  const m = (err as { response?: { data?: { message?: unknown } } })?.response?.data?.message;
+  if (Array.isArray(m)) return m.join(" ");
+  if (typeof m === "string") return m;
+  if (m && typeof m === "object") return Object.values(m).flat().join(" ");
+  return padrao;
+}
+
+const cartao = "border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]";
+const titulo = "text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]";
+
+export default function EnvioFase2Page() {
+  const [status, setStatus] = useState<StatusFase2 | null>(null);
   const [carregando, setCarregando] = useState(true);
-  const [sorteando, setSorteando] = useState(false);
+  const [desvio, setDesvio] = useState(0); // relógio do servidor − relógio local
+  const [agora, setAgora] = useState(() => Date.now());
   const [videoLink, setVideoLink] = useState("");
-  const [enviandoLink, setEnviandoLink] = useState(false);
-  const [uploadingPortfolio, setUploadingPortfolio] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [portfolioLink, setPortfolioLink] = useState("");
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
 
-  const carregarStatus = () => {
-    api.get("/envio/status")
-      .then(({ data }) => setStatus(data))
-      .catch(() => {})
+  const carregar = useCallback(() => {
+    api.get<StatusFase2>("/envio/status")
+      .then(({ data }) => {
+        setStatus(data);
+        setDesvio(new Date(data.agora).getTime() - Date.now());
+        if (data.ultimoEnvio) {
+          setVideoLink((v) => v || data.ultimoEnvio!.videoLink);
+          setPortfolioLink((p) => p || data.ultimoEnvio!.portfolioLink);
+        }
+      })
+      .catch(() => setErro("Não foi possível carregar a Fase 2. Recarregue a página."))
       .finally(() => setCarregando(false));
-  };
-
-  useEffect(() => {
-    carregarStatus();
   }, []);
 
-  const sortearTema = async () => {
-    setSorteando(true);
+  useEffect(() => { carregar(); }, [carregar]);
+  useEffect(() => {
+    const t = setInterval(() => setAgora(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const agoraServidor = agora + desvio;
+  const prazoMs = status?.prazoEm ? new Date(status.prazoEm).getTime() : null;
+  const aberta = status?.situacao === "ABERTA" && prazoMs != null && agoraServidor <= prazoMs;
+
+  // Quando o prazo acaba com a página aberta, recarrega para mostrar o encerramento.
+  useEffect(() => {
+    if (status?.situacao === "ABERTA" && prazoMs != null && agoraServidor > prazoMs + 1500) carregar();
+  }, [status?.situacao, prazoMs, agoraServidor, carregar]);
+
+  const enviar = async () => {
+    setErro("");
+    setSucesso("");
+    setEnviando(true);
     try {
-      const { data } = await api.post("/inscricoes/minha/sortear-tema");
-      setStatus((prev) => prev ? { ...prev, fase2Tema: data.fase2Tema } : null);
-      setMsg("Tema sorteado com sucesso!");
-    } catch (err: unknown) {
-      const msgErr = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setMsg(typeof msgErr === "string" ? msgErr : "Erro ao sortear tema");
+      await api.post("/envio/links", { videoLink: videoLink.trim(), portfolioLink: portfolioLink.trim() });
+      setSucesso("Links enviados com sucesso! Você pode corrigi-los até o prazo final; vale o último envio.");
+      carregar();
+    } catch (err) {
+      setErro(mensagemErro(err, "Não foi possível enviar os links. Tente novamente."));
     } finally {
-      setSorteando(false);
+      setEnviando(false);
     }
   };
-
-  const enviarLink = async () => {
-    if (!videoLink.trim()) {
-      setMsg("Informe o link do vídeo");
-      return;
-    }
-    setEnviandoLink(true);
-    setMsg("");
-    try {
-      await api.post("/envio/video-link", { videoLink: videoLink.trim() });
-      setMsg("Link do vídeo enviado com sucesso!");
-      carregarStatus();
-    } catch (err: unknown) {
-      const msgErr = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setMsg(typeof msgErr === "string" ? msgErr : "Erro ao enviar link");
-    } finally {
-      setEnviandoLink(false);
-    }
-  };
-
-  const uploadPortfolio = async (file: File) => {
-    setUploadingPortfolio(true);
-    setMsg("");
-    const formData = new FormData();
-    formData.append("portfolio", file);
-
-    try {
-      await api.post("/envio/portfolio", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setMsg("Portfólio enviado!");
-      carregarStatus();
-    } catch (err: unknown) {
-      const msgErr = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      setMsg(typeof msgErr === "string" ? msgErr : "Erro no upload");
-    } finally {
-      setUploadingPortfolio(false);
-    }
-  };
-
-  const videoEnviado = status?.enviosFase2?.find((e) => e.tipo === "video");
-  const portfolioEnviado = status?.enviosFase2?.find((e) => e.tipo === "portfolio");
 
   if (carregando) {
     return (
@@ -112,177 +108,153 @@ export default function EnvioPage() {
     );
   }
 
-  if (status && status.fase2Liberada === false) {
-    const data = status.fase2LiberadaEm
-      ? new Date(status.fase2LiberadaEm).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })
-      : null;
+  if (!status?.classificado) {
     return (
       <div className="max-w-2xl mx-auto space-y-6">
-        <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
-          Fase 2 — Desafio Didático-Tecnológico
-        </h1>
-        <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-3">
-          <p className="text-lg font-semibold text-[#f0ece4]">A Fase 2 ainda não foi liberada</p>
+        <h1 className={titulo}>Envio — Fase 2</h1>
+        <div className={cartao}>
           <p className="text-[#b0adc0] leading-relaxed">
-            A convocação para a Fase 2 será divulgada
-            {data ? <> em <strong className="text-[#f0ece4]">{data}</strong></> : " na data prevista no cronograma"}.
-            Até lá, o sorteio do tema e o envio do vídeo e do portfólio ficam indisponíveis.
+            O envio da Fase 2 está disponível apenas para os participantes da relação oficial de
+            classificados, divulgada no site da OLICMAT.
           </p>
+          {erro && <p className="text-sm text-red-400 mt-3">{erro}</p>}
         </div>
       </div>
     );
   }
 
+  const enviado = status.ultimoEnvio;
+
   return (
-    <motion.div
-      className="max-w-2xl mx-auto space-y-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-    >
+    <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
-          Fase 2 — Desafio Didático-Tecnológico
-        </h1>
-        <p className="text-[#9895a4] text-sm mt-1">
-          Produza uma videoaula de até 20 minutos e envie o link e o portfólio digital
-        </p>
+        <h1 className={titulo}>Envio — Fase 2</h1>
+        <p className="text-[#9895a4] text-sm mt-1">Desafio Didático-Tecnológico: videoaula autoral e portfólio digital</p>
       </div>
 
-      {/* Tema Gerador */}
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]">
-        <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
-          <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
-            Tema Gerador
-          </h2>
-          {!status?.fase2Tema && (
-            <Button
-              size="sm"
-              onClick={sortearTema}
-              disabled={sorteando}
-              style={{ backgroundColor: "var(--sigma-azul)", color: "#fff" }}
-            >
-              {sorteando ? "Sorteando..." : "Sortear tema"}
-            </Button>
+      {status.situacao === "NAO_INICIADA" && (
+        <div className={cartao}>
+          <div className="flex items-center gap-3 mb-2">
+            <Clock className="text-[#E8B829]" size={20} />
+            <p className="text-lg font-semibold text-[#f0ece4]">Aguardando o início da Fase 2</p>
+          </div>
+          <p className="text-[#b0adc0] leading-relaxed">
+            Você está classificado(a) para a Fase 2. A Comissão Organizadora divulgará o tema e
+            iniciará a fase; você receberá um e-mail com a data e a hora do início. A partir do
+            início, você terá <strong className="text-[#f0ece4]">24 horas</strong> para enviar os links.
+          </p>
+        </div>
+      )}
+
+      {status.situacao !== "NAO_INICIADA" && (
+        <div className={cartao}>
+          <span className="text-xs text-[#E8B829] uppercase tracking-widest">Tema da videoaula</span>
+          <p className="text-xl font-bold text-[#f0ece4] mt-1 font-[family-name:var(--font-fraunces)]">{status.tema}</p>
+          <div className="grid sm:grid-cols-2 gap-4 mt-5 text-sm">
+            <div>
+              <p className="text-[#9895a4]">Início</p>
+              <p className="text-[#f0ece4] font-medium">{status.inicioEm && dataHora(status.inicioEm)}</p>
+            </div>
+            <div>
+              <p className="text-[#9895a4]">Prazo final (horário de Brasília)</p>
+              <p className="text-[#f0ece4] font-medium">{status.prazoEm && dataHora(status.prazoEm)}</p>
+            </div>
+          </div>
+          {aberta && prazoMs != null ? (
+            <div className="mt-5 rounded-xl border border-[#E8B829]/40 bg-[#E8B829]/10 p-4 text-center">
+              <p className="text-xs text-[#E8B829] uppercase tracking-widest">Tempo restante</p>
+              <p className="text-3xl font-bold text-[#f0ece4] tabular-nums mt-1">{restante(prazoMs - agoraServidor)}</p>
+            </div>
+          ) : (
+            <div className="mt-5 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-center">
+              <p className="font-semibold text-red-300">Prazo de envio encerrado</p>
+            </div>
           )}
         </div>
+      )}
 
-        {status?.fase2Tema ? (
-          <div
-            className="p-4 rounded-xl border text-center"
-            style={{
-              backgroundColor: "rgba(76, 175, 80, 0.1)",
-              borderColor: "rgba(76, 175, 80, 0.3)",
-            }}
-          >
-            <span className="text-xs text-[#4CAF50] uppercase tracking-widest mb-1 block">Seu tema</span>
-            <p className="text-xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "var(--integral-verde)" }}>
-              {status.fase2Tema}
+      {enviado && (
+        <div className="border border-emerald-500/40 rounded-2xl p-6 bg-emerald-500/10 space-y-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="text-emerald-400" size={20} />
+            <p className="font-semibold text-emerald-300">
+              Envio registrado em {dataHora(enviado.enviadoEm)}
             </p>
           </div>
-        ) : (
-          <p className="text-sm text-[#9895a4]">Clique em &quot;Sortear tema&quot; para descobrir o tema da sua videoaula.</p>
-        )}
-      </div>
-
-      {/* Video Link */}
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]">
-        <h2 className="text-lg font-bold text-[#f0ece4] mb-4 font-[family-name:var(--font-fraunces)]">
-          Link da Videoaula
-        </h2>
-        {videoEnviado && videoEnviado.status !== "PENDENTE" ? (
-          <div>
-            <p className="text-sm" style={{ color: "var(--integral-verde)" }}>
-              Videoaula enviada
-            </p>
-            {videoEnviado.videoLink && (
-              <a
-                href={videoEnviado.videoLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-[#3AAFE0] hover:underline mt-2 inline-flex items-center gap-1"
-              >
-                <LinkIcon size={14} />
-                {videoEnviado.videoLink}
-              </a>
-            )}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <p className="text-sm text-[#9895a4]">
-              Após produzir sua videoaula, publique-a em uma plataforma (YouTube, Vimeo, Google Drive, etc.) e cole o link abaixo.
-            </p>
-            <div>
-              <Label htmlFor="videoLink" className="text-[#f0ece4]">Link do vídeo</Label>
-              <Input
-                id="videoLink"
-                type="url"
-                placeholder="https://youtube.com/watch?v=..."
-                value={videoLink}
-                onChange={(e) => setVideoLink(e.target.value)}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
-              />
-            </div>
-            <Button
-              onClick={enviarLink}
-              disabled={enviandoLink || !videoLink.trim()}
-              style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
-            >
-              {enviandoLink ? "Enviando..." : "Enviar link"}
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Upload Portfolio */}
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]">
-        <h2 className="text-lg font-bold text-[#f0ece4] mb-4 font-[family-name:var(--font-fraunces)]">
-          Portfólio Digital (PDF)
-        </h2>
-        {portfolioEnviado && portfolioEnviado.status !== "PENDENTE" ? (
-          <p className="text-sm" style={{ color: "var(--integral-verde)" }}>
-            Portfólio enviado
-          </p>
-        ) : (
-          <div>
-            <input
-              type="file"
-              accept=".pdf"
-              id="portfolio-upload"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && uploadPortfolio(e.target.files[0])}
-            />
-            <label
-              htmlFor="portfolio-upload"
-              className="flex items-center justify-center h-32 border-2 border-dashed border-[#2a2a3a] rounded-xl cursor-pointer hover:border-[#3a3a4a] transition-colors"
-            >
-              <span className="text-sm text-[#9895a4]">
-                {uploadingPortfolio ? "Enviando..." : "Clique para enviar o portfólio (PDF)"}
-              </span>
-            </label>
-          </div>
-        )}
-      </div>
-
-      {status?.avaliacoes && status.avaliacoes.length > 0 && (
-        <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a] text-center">
-          <p className="text-sm text-[#9895a4] mb-1">Nota da Fase 2</p>
-          <p className="text-3xl font-bold font-[family-name:var(--font-fraunces)]" style={{ color: "var(--pi-dourado)" }}>
-            {status.avaliacoes[0].nota} pts
-          </p>
+          <a href={enviado.videoLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#3AAFE0] hover:underline break-all">
+            <ExternalLink size={14} className="shrink-0" /> Videoaula: {enviado.videoLink}
+          </a>
+          <a href={enviado.portfolioLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#3AAFE0] hover:underline break-all">
+            <ExternalLink size={14} className="shrink-0" /> Portfólio: {enviado.portfolioLink}
+          </a>
+          {aberta && <p className="text-xs text-[#9895a4]">Você ainda pode corrigir os links abaixo até o prazo final. Vale o último envio.</p>}
         </div>
       )}
 
-      {msg && (
-        <motion.p
-          className="text-sm p-3 rounded-lg text-center"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          style={{ backgroundColor: "rgba(76, 175, 80, 0.1)", color: "var(--integral-verde)" }}
-        >
-          {msg}
-        </motion.p>
+      {aberta && (
+        <div className={`${cartao} space-y-5`}>
+          <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            {enviado ? "Corrigir os links" : "Enviar os links"}
+          </h2>
+          <div>
+            <Label htmlFor="videoLink" className="text-[#f0ece4]">Link da videoaula</Label>
+            <Input
+              id="videoLink" type="url" inputMode="url" placeholder="https://..."
+              value={videoLink} onChange={(e) => setVideoLink(e.target.value)}
+              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+            />
+          </div>
+          <div>
+            <Label htmlFor="portfolioLink" className="text-[#f0ece4]">Link do portfólio (PDF)</Label>
+            <Input
+              id="portfolioLink" type="url" inputMode="url" placeholder="https://..."
+              value={portfolioLink} onChange={(e) => setPortfolioLink(e.target.value)}
+              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+            />
+            <p className="text-xs text-[#9895a4] mt-1.5">
+              Confira se o link está com acesso liberado para qualquer pessoa com o link (por exemplo, no Google Drive).
+            </p>
+          </div>
+          <Button
+            onClick={enviar}
+            disabled={enviando || !videoLink.trim() || !portfolioLink.trim()}
+            className="w-full"
+            style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
+          >
+            {enviando ? "Enviando..." : enviado ? "Atualizar envio" : "Enviar links"}
+          </Button>
+        </div>
       )}
-    </motion.div>
+
+      {sucesso && <p className="text-sm p-3 rounded-lg text-center bg-emerald-500/10 text-emerald-300">{sucesso}</p>}
+      {erro && (
+        <p className="text-sm p-3 rounded-lg text-center bg-red-500/10 text-red-300 flex items-center justify-center gap-2">
+          <AlertTriangle size={16} /> {erro}
+        </p>
+      )}
+
+      <div className={`${cartao} space-y-4 text-sm text-[#b0adc0] leading-relaxed`}>
+        <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">Materiais obrigatórios</h2>
+        <div>
+          <p className="font-semibold text-[#f0ece4]">Videoaula autoral</p>
+          <ul className="list-disc pl-5 mt-1 space-y-1">
+            <li>Publicada em uma plataforma de vídeo, com acesso pelo link (no YouTube, use a opção &quot;Não listado&quot;).</li>
+            <li>Título no padrão: <em>Nome do Participante - Tema da Videoaula</em>.</li>
+            <li>Deve apresentar o conteúdo, a situação-problema e as estratégias pedagógicas.</li>
+          </ul>
+        </div>
+        <div>
+          <p className="font-semibold text-[#f0ece4]">Portfólio digital — arquivo único em PDF</p>
+          <p className="mt-1">
+            Deve conter plano de aula, objetivos, público-alvo, metodologia, recursos digitais,
+            atividade ou situação-problema, avaliação, referências e reflexão crítica sobre a prática.
+          </p>
+        </div>
+        <p className="text-xs text-[#9895a4]">
+          O conteúdo dos links é de responsabilidade do participante. Após o prazo final, o envio é
+          encerrado automaticamente e não há prorrogação.
+        </p>
+      </div>
+    </div>
   );
 }

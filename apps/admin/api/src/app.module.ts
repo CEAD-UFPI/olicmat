@@ -10,7 +10,7 @@ import { OlimpiadaModule } from "./olimpiada/olimpiada.module.js";
 import { InstituicoesModule } from "./instituicoes/instituicoes.module.js";
 import { AdminModule } from "./admin/admin.module.js";
 import { CoordenacaoModule } from "./coordenacao/coordenacao.module.js";
-import { CorrecaoModule } from "./correcao/correcao.module.js";
+import { Fase2Module } from "./fase2/fase2.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { ConvitesModule } from "./convites/convites.module.js";
 import { LinksConviteModule } from "./links-convite/links-convite.module.js";
@@ -50,7 +50,7 @@ import { NotificacoesModule } from "./notificacoes/notificacoes.module.js";
     // (apps/exam: aplicação isolada, que concentra todas as regras da prova)
 
     // ── Module 3: Correction / Evaluation ──
-    CorrecaoModule,
+    Fase2Module,
     ConvitesModule,
     LinksConviteModule,
   ],

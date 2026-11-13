@@ -89,13 +89,6 @@ export class InscricaoController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("minha/sortear-tema")
-  async sortearTema(@Request() req: ExpressReq & { user: AuthUser }) {
-    const inscricao = await this.inscricaoService.buscarPorUsuario(req.user.id);
-    return this.inscricaoService.sortearTema(inscricao.id);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Patch("minha/reenviar")
   async reenviar(
     @Request() req: ExpressReq & { user: AuthUser },

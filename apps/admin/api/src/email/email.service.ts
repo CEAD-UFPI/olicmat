@@ -230,4 +230,42 @@ export class EmailService {
       html,
     );
   }
+
+  /** E-mail de início da Fase 2 (tema, início e prazo de 24h). */
+  async enviarInicioFase2(
+    email: string,
+    nome: string,
+    tema: string,
+    inicio: Date,
+    prazo: Date,
+  ) {
+    const fmt = (d: Date) =>
+      d.toLocaleString("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit",
+      });
+    const esc = (t: string) =>
+      t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const link = `${this.configService.get("FRONTEND_URL")}/competidor/envio`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #E8B829;">OLICMAT — Início da Fase 2</h2>
+        <p>Olá, <strong>${esc(nome)}</strong>!</p>
+        <p>A Fase 2 da 1ª Olimpíada de Licenciandos em Matemática (OLICMAT) foi iniciada.</p>
+        <p><strong>Tema da videoaula:</strong> ${esc(tema)}</p>
+        <p><strong>Início:</strong> ${fmt(inicio)}<br>
+           <strong>Prazo final para envio:</strong> ${fmt(prazo)} (horário de Brasília)</p>
+        <p>Até o prazo final, envie no sistema da OLICMAT os dois links:</p>
+        <ul>
+          <li><strong>Videoaula autoral</strong>: título no padrão "Nome do Participante - Tema da Videoaula"; deve apresentar o conteúdo, a situação-problema e as estratégias pedagógicas.</li>
+          <li><strong>Portfólio digital</strong>, em arquivo único PDF, com acesso público pelo link: plano de aula, objetivos, público-alvo, metodologia, recursos digitais, atividade ou situação-problema, avaliação, referências e reflexão crítica sobre a prática.</li>
+        </ul>
+        <p>Você pode corrigir os links até o prazo final; vale o último envio. Após o prazo, o envio é encerrado automaticamente.</p>
+        <p><a href="${link}" style="color: #E8B829;">Acessar o envio da Fase 2</a></p>
+        <p>Comissão Organizadora da OLICMAT</p>
+      </div>
+    `;
+    await this.sendMail(email, "Início da Fase 2 — OLICMAT", html);
+  }
 }

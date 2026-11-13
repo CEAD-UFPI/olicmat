@@ -240,6 +240,7 @@ model User {
   tokens                Token[]
   coordenadorias        CoordenadorCurso[]
   avaliacoes            AvaliacaoFase2[]
+  atribuicoesFase2      AtribuicaoFase2[]   @relation("AtribuicoesDoAvaliador")
   auditLogs             AuditLog[]
   inscricaoHistoricos   InscricaoHistorico[]
   notificacoes          Notificacao[]
@@ -275,6 +276,12 @@ model Edicao {
   pesoFase1       Float     @default(0.5)
   pesoFase2       Float     @default(0.5)
   desempate       String[]  @default(["NOTA_FASE2", "NOTA_FASE1", "IDADE"])
+  // Fase 2: o tema é sorteado fora do sistema e informado no início. O prazo
+  // de envio é o mesmo para todos: início + 24 horas.
+  fase2Tema          String?
+  fase2InicioEm      DateTime?
+  fase2PrazoEm       DateTime?
+  fase2IniciadaPorId String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -310,6 +317,10 @@ model Inscricao {
   fase1Advertencias Int @default(0)
   fase1FimMotivo  String?
   fase2Tema       String?
+  /// Na relação oficial de classificados para a Fase 2 (importada por script).
+  fase2Classificado Boolean   @default(false)
+  /// Nota consolidada da Fase 2 (média das avaliações, regra do 3º avaliador).
+  fase2Nota       Float?
   notaFinal       Float?
   medalha         Medalha?
   createdAt       DateTime    @default(now())
@@ -320,6 +331,8 @@ model Inscricao {
   respostas       Resposta[]
   enviosFase2     EnvioFase2[]
   avaliacoes      AvaliacaoFase2[]
+  atribuicoesFase2 AtribuicaoFase2[]
+  emailsFase2     EmailFase2[]
   historico       InscricaoHistorico[]
 
   @@unique([userId, edicaoId])
@@ -434,30 +447,80 @@ model Resposta {
 // Phase 2
 // ============================================
 
+/// Cada envio dos links é uma linha (histórico). Vale o mais recente.
 model EnvioFase2 {
-  id          String            @id @default(uuid())
-  inscricaoId String
-  tipo        String
-  arquivoUrl  String
-  videoLink   String?
-  status      StatusEnvioFase2  @default(PENDENTE)
-  enviadoEm   DateTime          @default(now())
+  id            String            @id @default(uuid())
+  inscricaoId   String
+  tipo          String            @default("links")
+  arquivoUrl    String            @default("")
+  videoLink     String?
+  portfolioLink String?
+  status        StatusEnvioFase2  @default(PENDENTE)
+  enviadoEm     DateTime          @default(now())
 
   inscricao   Inscricao         @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+
+  @@index([inscricaoId, enviadoEm])
 }
 
 model AvaliacaoFase2 {
   id          String    @id @default(uuid())
   inscricaoId String
   avaliadorId String
+  /// Total (soma dos critérios), 0 a 100.
   nota        Float
   parecer     String?
+  dominioConteudo     Float?
+  estrategiasEnsino   Float?
+  usoTdics            Float?
+  reflexaoCritica     Float?
+  coerenciaPedagogica Float?
+  /// false = rascunho; true = avaliação concluída (travada).
+  concluida   Boolean   @default(false)
   avaliadoEm  DateTime  @default(now())
 
   inscricao   Inscricao @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
   avaliador   User      @relation(fields: [avaliadorId], references: [id])
 
   @@unique([inscricaoId, avaliadorId])
+}
+
+enum StatusAtribuicaoFase2 {
+  PENDENTE
+  CONCLUIDA
+  REMANEJADA
+}
+
+/// Participante entregue a um avaliador. ordem 1 e 2 = avaliadores iniciais;
+/// ordem 3 = desempate quando as duas notas divergem mais de 20 pontos.
+model AtribuicaoFase2 {
+  id             String                @id @default(uuid())
+  inscricaoId    String
+  avaliadorId    String
+  ordem          Int
+  status         StatusAtribuicaoFase2 @default(PENDENTE)
+  atribuidoEm    DateTime              @default(now())
+  atribuidoPorId String?
+  concluidoEm    DateTime?
+
+  inscricao      Inscricao             @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+  avaliador      User                  @relation("AtribuicoesDoAvaliador", fields: [avaliadorId], references: [id])
+
+  @@unique([inscricaoId, avaliadorId])
+  @@index([avaliadorId, status])
+}
+
+/// E-mail de início da Fase 2 por participante (para reenviar só as falhas).
+model EmailFase2 {
+  id           String    @id @default(uuid())
+  inscricaoId  String    @unique
+  email        String
+  status       String
+  erro         String?
+  tentativas   Int       @default(0)
+  atualizadoEm DateTime  @updatedAt
+
+  inscricao    Inscricao @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
 }
 
 // ============================================
