@@ -39,7 +39,7 @@ const examLinks: NavLink[] = [
 
 /* ── Module 3: Correction / Evaluation ── */
 const correctionLinks: NavLink[] = [
-  { href: "/admin/avaliacao", label: "Avaliação Fase 2", icon: <CheckSquare size={18} /> },
+  { href: "/admin/avaliacao", label: "Fase 2: Envio e Avaliação", icon: <CheckSquare size={18} /> },
 ];
 
 interface SidebarProps { role: Role; userName?: string; }
@@ -178,7 +178,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
         ];
       case "COMISSAO":
         return [
-          { href: "/comissao/avaliacao", label: "Avaliação", icon: <Eye size={18} /> },
+          { href: "/comissao/avaliacao", label: "Fase 2: Envio e Avaliação", icon: <Eye size={18} /> },
         ];
       default:
         return [];

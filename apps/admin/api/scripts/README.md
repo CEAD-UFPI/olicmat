@@ -30,3 +30,19 @@ no ranking e distribuir medalhas, execute as ações existentes do admin
 
 Rodar `--commit` de novo é seguro: respostas já corretas não mudam e notas já
 iguais não são regravadas (só é criado um novo registro de auditoria).
+
+# Classificados para a Fase 2
+
+Marca `Inscricao.fase2Classificado` a partir de `scripts/classificados-fase2-2026.json`
+(relação retificada publicada em 12/11/2026, 182 nomes). Só grava se **todos** os
+nomes forem localizados exatamente uma vez (mesma instituição, nome sem acentos).
+
+Os scripts não vão na imagem: copie-os para o container e rode lá dentro.
+
+```zsh
+docker exec olicmat-admin-api mkdir -p /app/scripts
+docker cp apps/admin/api/scripts/importar-classificados-fase2.ts olicmat-admin-api:/app/scripts/
+docker cp apps/admin/api/scripts/classificados-fase2-2026.json olicmat-admin-api:/app/scripts/
+docker exec -w /app olicmat-admin-api npx tsx scripts/importar-classificados-fase2.ts          # simulação
+docker exec -w /app olicmat-admin-api npx tsx scripts/importar-classificados-fase2.ts --commit --actor <adminId>
+```
