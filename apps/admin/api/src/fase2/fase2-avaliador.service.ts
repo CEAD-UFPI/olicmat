@@ -4,6 +4,7 @@ import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { CRITERIOS, ESCALA, ESCALA_MAX, conceitoValido, consolidarNotas, escolherTerceiro, pontosDoConceito, totalCriterios } from "./fase2.regras.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
 import { formatarEnvio } from "./fase2-participante.service.js";
+import { Fase2VideosService } from "./fase2-videos.service.js";
 
 type Notas = Partial<Record<string, unknown>>;
 
@@ -14,6 +15,7 @@ export class Fase2AvaliadorService {
     private prisma: PrismaService,
     private auditoria: AuditoriaService,
     private armazenamento: Fase2ArmazenamentoService,
+    private videos: Fase2VideosService,
   ) {}
 
   private async minhaAtribuicao(atribuicaoId: string, avaliadorId: string) {
@@ -50,8 +52,9 @@ export class Fase2AvaliadorService {
   private formatar(
     a: Awaited<ReturnType<Fase2AvaliadorService["minhaAtribuicao"]>>,
     av: { nota: number; parecer: string | null; concluida: boolean; [k: string]: unknown } | null,
+    videos: Awaited<ReturnType<Fase2VideosService["mapaPorChaves"]>>,
   ) {
-    const envio = formatarEnvio(a.inscricao.enviosFase2[0], this.armazenamento);
+    const envio = formatarEnvio(a.inscricao.enviosFase2[0], this.armazenamento, videos);
     return {
       id: a.id,
       status: a.status,
@@ -96,7 +99,7 @@ export class Fase2AvaliadorService {
     const av = await this.prisma.avaliacaoFase2.findUnique({
       where: { inscricaoId_avaliadorId: { inscricaoId: a.inscricaoId, avaliadorId } },
     });
-    return this.formatar(a, av);
+    return this.formatar(a, av, await this.videos.mapaPorChaves([a.inscricao.enviosFase2[0]?.videoKey]));
   }
 
   /** Rascunho: aceita critérios em branco, mas não conceitos fora de 0 a 5. */

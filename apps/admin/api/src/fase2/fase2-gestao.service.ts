@@ -7,6 +7,7 @@ import { ALERTA_AVALIACAO_HORAS, distribuir, prazoDe, situacaoEnvio } from "./fa
 import { edicaoAtual } from "./fase2.edicao.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
 import { formatarEnvio } from "./fase2-participante.service.js";
+import { Fase2VideosService } from "./fase2-videos.service.js";
 
 const HORA = 3600_000;
 
@@ -21,6 +22,7 @@ export class Fase2GestaoService {
     private auditoria: AuditoriaService,
     private email: EmailService,
     private armazenamento: Fase2ArmazenamentoService,
+    private videos: Fase2VideosService,
   ) {}
 
   private async edicaoOuErro() {
@@ -77,8 +79,9 @@ export class Fase2GestaoService {
       orderBy: { user: { nome: "asc" } },
     });
 
+    const mapaVideos = await this.videos.mapaPorChaves(inscricoes.map((i) => i.enviosFase2[0]?.videoKey));
     const participantes = inscricoes.map((i) => {
-      const ultimo = formatarEnvio(i.enviosFase2[0], this.armazenamento);
+      const ultimo = formatarEnvio(i.enviosFase2[0], this.armazenamento, mapaVideos);
       const temVideo = !!(ultimo?.video || ultimo?.videoLink);
       const temPortfolio = !!(ultimo?.portfolio || ultimo?.portfolioLink);
       const ativas = i.atribuicoesFase2.filter((a) => a.status !== "REMANEJADA");
@@ -172,6 +175,7 @@ export class Fase2GestaoService {
         terceiroAvaliador: participantes.filter((p) => p.situacaoAvaliacao === "TERCEIRO_AVALIADOR").length,
       },
       emails,
+      videos: await this.videos.resumo(),
       porInstituicao: Object.entries(porInstituicao).map(([sigla, v]) => ({ sigla, ...v })),
       avaliadores: [...porAvaliador.values()].map(({ somaHoras, ...r }) => ({
         ...r,

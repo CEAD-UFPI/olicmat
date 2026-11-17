@@ -5,6 +5,7 @@ import {
   extensao,
   FORMATOS,
   limitesMb,
+  nomeFinalDe,
   linkValido,
   planoDePartes,
   prefixoArquivos,
@@ -14,6 +15,7 @@ import {
 } from "./fase2.regras.js";
 import { edicaoAtual } from "./fase2.edicao.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
+import { Fase2VideosService, MAX_TENTATIVAS, type VideoInfo } from "./fase2-videos.service.js";
 
 const camposEnvio = {
   videoLink: true,
@@ -41,19 +43,45 @@ type EnvioBruto = {
 
 /**
  * Converte o último envio para o formato da API. Os arquivos ganham uma URL
- * temporária de leitura (vale para participante, avaliador e gestão).
+ * temporária de leitura (vale para participante, avaliador e gestão). O vídeo
+ * aponta para a versão comprimida quando ela já existe.
  */
-export function formatarEnvio(e: EnvioBruto | null | undefined, armazenamento: Fase2ArmazenamentoService) {
+export function formatarEnvio(
+  e: EnvioBruto | null | undefined,
+  armazenamento: Fase2ArmazenamentoService,
+  videos: Map<string, VideoInfo> = new Map(),
+) {
   if (!e) return null;
   const arquivo = (chave: string | null, nome: string | null, bytes: bigint | null) =>
     chave && nome
       ? { nome, bytes: bytes == null ? null : Number(bytes), url: armazenamento.urlLeitura(chave, nome) }
       : null;
+  let video: (ReturnType<typeof arquivo> & { processamento?: string; bytesOriginal?: number | null }) | null =
+    arquivo(e.videoKey, e.videoNome, e.videoBytes);
+  const info = e.videoKey ? videos.get(e.videoKey) : undefined;
+  if (video && info) {
+    if (info.status === "PRONTO" && info.chaveFinal) {
+      const nome = nomeFinalDe(info.nomeOriginal);
+      video = {
+        nome,
+        bytes: info.bytesFinal == null ? null : Number(info.bytesFinal),
+        url: armazenamento.urlLeitura(info.chaveFinal, nome),
+        processamento: "PRONTO",
+        bytesOriginal: Number(info.bytesOriginal),
+      };
+    } else {
+      // Falha só é definitiva depois de esgotadas as tentativas; antes disso o
+      // compressor tenta de novo e o participante vê "em preparação".
+      const processamento =
+        info.status === "FALHA" && info.tentativas < MAX_TENTATIVAS ? "PROCESSANDO" : info.status;
+      video = { ...video, processamento, ...(info.arquivosRemovidos ? { url: null } : {}) };
+    }
+  }
   return {
     enviadoEm: e.enviadoEm.toISOString(),
     videoLink: e.videoLink,
     portfolioLink: e.portfolioLink,
-    video: arquivo(e.videoKey, e.videoNome, e.videoBytes),
+    video,
     portfolio: arquivo(e.portfolioKey, e.portfolioNome, e.portfolioBytes),
   };
 }
@@ -64,7 +92,12 @@ export class Fase2ParticipanteService {
   constructor(
     private prisma: PrismaService,
     private armazenamento: Fase2ArmazenamentoService,
+    private videos: Fase2VideosService,
   ) {}
+
+  private async formatar(e: EnvioBruto | null | undefined) {
+    return formatarEnvio(e, this.armazenamento, await this.videos.mapaPorChaves([e?.videoKey]));
+  }
 
   private async inscricaoClassificada(userId: string) {
     const edicao = await edicaoAtual(this.prisma);
@@ -116,7 +149,7 @@ export class Fase2ParticipanteService {
       tema: situacao === "NAO_INICIADA" ? null : edicao.fase2Tema,
       inicioEm: edicao.fase2InicioEm?.toISOString() ?? null,
       prazoEm: edicao.fase2PrazoEm?.toISOString() ?? null,
-      ultimoEnvio: formatarEnvio(ultimo, this.armazenamento),
+      ultimoEnvio: await this.formatar(ultimo),
       totalEnvios,
     };
   }
@@ -142,7 +175,7 @@ export class Fase2ParticipanteService {
       },
       select: camposEnvio,
     });
-    return formatarEnvio(envio, this.armazenamento);
+    return this.formatar(envio);
   }
 
   /* ----------------------------- Upload (S3) ----------------------------- */
@@ -217,6 +250,7 @@ export class Fase2ParticipanteService {
       },
       select: camposEnvio,
     });
-    return { ...formatarEnvio(envio, this.armazenamento), conferencia };
+    if (tipo === "video") await this.videos.registrar(inscricao.id, chave, nome, bytes);
+    return { ...(await this.formatar(envio)), conferencia };
   }
 }

@@ -1,0 +1,42 @@
+# Nuvem de arquivos da Fase 2 (SeaweedFS/S3) + compressor de vídeos.
+# Roda na VPS ao lado do EasyPanel; o HTTPS é feito pelo Traefik do EasyPanel
+# (arquivo traefik-olicmat-fase2.yaml). Nenhuma porta é publicada no host.
+name: olicmat-fase2
+
+services:
+  nuvem:
+    image: chrislusf/seaweedfs:4.54
+    container_name: olicmat-nuvem
+    restart: unless-stopped
+    command: >
+      server -dir=/data -ip=olicmat-nuvem -ip.bind=0.0.0.0 -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+      -volume.max=0 -volume.minFreeSpace=5
+      -s3.allowedOrigins=https://admin.olicmat.cead.ufpi.br
+    volumes:
+      - nuvem:/data
+      - ./s3.json:/etc/seaweedfs/s3.json:ro
+    networks: [interna, easypanel]
+
+  compressor:
+    build: ./compressor
+    container_name: olicmat-compressor
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      S3_ENDPOINT: http://nuvem:8333
+      PASTA_TRABALHO: /trabalho
+    volumes:
+      - trabalho:/trabalho
+    networks: [interna]
+    depends_on: [nuvem]
+    # Deixa folga de CPU para o restante da VPS (EasyPanel, banco de standby).
+    cpus: 6
+
+networks:
+  interna: {}
+  easypanel:
+    external: true
+
+volumes:
+  nuvem:
+  trabalho:

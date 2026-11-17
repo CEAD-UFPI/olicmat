@@ -9,7 +9,7 @@ import { formatarBytes } from "@/lib/uploadFase2";
 
 interface Criterio { chave: string; nome: string; descricao: string; max: number }
 interface NivelEscala { conceito: number; pontos: number; rotulo: string }
-interface Arquivo { nome: string; bytes: number | null; url: string | null }
+interface Arquivo { nome: string; bytes: number | null; url: string | null; processamento?: string }
 interface Ficha {
   id: string;
   status: "PENDENTE" | "CONCLUIDA";
@@ -113,6 +113,13 @@ export default function FichasAvaliador() {
           <h1 className="text-xl font-bold text-[var(--text-primary)] mt-1">{aberta.participante.nome}</h1>
           <p className="text-sm text-[var(--text-tertiary)]">{aberta.participante.instituicao} · {aberta.participante.curso}</p>
           <p className="text-sm text-[var(--text-primary)] mt-3"><span className="text-[var(--color-gold-ink)]">Competência sorteada:</span> {aberta.tema}</p>
+          {aberta.video && aberta.video.processamento && aberta.video.processamento !== "PRONTO" && (
+            <p className="mt-4 text-xs p-2 rounded bg-amber-500/10 text-amber-300">
+              {aberta.video.processamento === "FALHA"
+                ? "Não foi possível preparar este vídeo; se ele não abrir abaixo, use “Baixar vídeo” ou avise a Comissão."
+                : "Este vídeo ainda está sendo preparado (versão leve). Por enquanto, a reprodução usa o arquivo original e pode demorar a carregar."}
+            </p>
+          )}
           {aberta.video?.url && (
             <div className="mt-4">
               <video controls preload="metadata" src={aberta.video.url} className="w-full rounded-xl bg-black max-h-[480px]">

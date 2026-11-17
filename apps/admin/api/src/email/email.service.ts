@@ -260,11 +260,11 @@ export class EmailService {
            <strong>Prazo final para envio:</strong> ${fmt(prazo)} (horário de Brasília)</p>
         <p>Escolha uma ou mais habilidades da competência sorteada e, até o prazo final, envie pela plataforma da OLICMAT, com o seu login e senha:</p>
         <ul>
-          <li><strong>Videoaula autoral de 20 minutos</strong> (arquivo de vídeo, por exemplo MP4, com até ${lim.video} MB — comprima o vídeo se passar desse limite), desenvolvendo uma situação de ensino ligada à competência e às habilidades escolhidas;</li>
+          <li><strong>Videoaula autoral de 20 minutos</strong> (arquivo de vídeo, por exemplo MP4, com até ${(lim.video / 1024).toLocaleString("pt-BR")} GB, enviado como foi gravado — a plataforma prepara o vídeo automaticamente), desenvolvendo uma situação de ensino ligada à competência e às habilidades escolhidas;</li>
           <li><strong>Portfólio digital em arquivo único PDF</strong> (até ${lim.portfolio} MB), preferencialmente no modelo oficial (Template do Portfólio), coerente com a videoaula.</li>
         </ul>
-        <p>Comece o envio com antecedência: vídeos grandes podem levar tempo para subir. Você pode substituir os arquivos até o prazo final; vale o último envio. Após o prazo, o envio é encerrado automaticamente, sem prorrogação.</p>
-        <p>Veja o passo a passo do envio, inclusive como comprimir o vídeo, no <a href="${process.env.SITE_URL || "https://olicmat.cead.ufpi.br"}/tutorial-fase2" style="color: #E8B829;">Tutorial da Fase 2</a>.</p>
+        <p>Comece o envio com antecedência: um vídeo de 1 a 3 GB pode levar de 15 minutos a mais de uma hora para subir, conforme a sua internet. Você pode substituir os arquivos até o prazo final; vale o último envio. Após o prazo, o envio é encerrado automaticamente, sem prorrogação.</p>
+        <p>Veja o passo a passo do envio no <a href="${process.env.SITE_URL || "https://olicmat.cead.ufpi.br"}/tutorial-fase2" style="color: #E8B829;">Tutorial da Fase 2</a>.</p>
         <p>O Manual do Participante e o Template do Portfólio estão em <a href="${process.env.SITE_URL || "https://olicmat.cead.ufpi.br"}/regulamento" style="color: #E8B829;">Regulamento, Edital e Documentos</a>.</p>
         <p><a href="${link}" style="color: #E8B829;">Acessar o envio da Fase 2</a></p>
         <p>Comissão Organizadora da OLICMAT</p>

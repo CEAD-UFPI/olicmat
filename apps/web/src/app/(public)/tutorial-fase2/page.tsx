@@ -14,7 +14,7 @@ const TEMPLATE = "/arquivos/OLICMAT_2026_Template_Portfolio.docx";
 
 const SECOES = [
   { id: "antes", titulo: "Antes do início" },
-  { id: "video-400mb", titulo: "Vídeo com até 400 MB" },
+  { id: "gravacao", titulo: "Gravação do vídeo" },
   { id: "entrar", titulo: "Entrar na plataforma" },
   { id: "inicio", titulo: "O início da Fase 2" },
   { id: "enviar-video", titulo: "Enviar a videoaula" },
@@ -36,7 +36,7 @@ export default function TutorialFase2Page() {
         <p className="text-[var(--text-secondary)] mt-3 leading-relaxed text-lg">
           Depois da divulgação do sorteio da competência, você tem <Strong>24 horas</Strong> para
           enviar dois arquivos na plataforma da OLICMAT: a <Strong>videoaula de 20 minutos</Strong> (até
-          400 MB) e o <Strong>portfólio em PDF</Strong> (até 10 MB).
+          4 GB, do jeito que foi gravada) e o <Strong>portfólio em PDF</Strong> (até 10 MB).
         </p>
         <ol className="mt-6 flex flex-wrap gap-2" aria-label="Etapas">
           {["Sorteio da competência", "24 h para enviar", "Videoaula", "Portfólio", "Envio completo"].map((t, i) => (
@@ -95,7 +95,6 @@ export default function TutorialFase2Page() {
             <>Leia o <Link href={MANUAL}>Manual do Participante — 2ª Fase</Link>: ele traz as cinco competências específicas da BNCC, as habilidades de cada uma e os critérios de avaliação.</>,
             <>Baixe o <Link href={TEMPLATE}>Template do Portfólio</Link> e conheça as seções que você vai preencher.</>,
             <>Teste a gravação: microfone, iluminação, quadro ou tela compartilhada e a duração de cerca de 20 minutos.</>,
-            <>Instale e teste um programa para comprimir vídeo (veja o passo 2). Assim você já sabe quanto tempo a compressão leva no seu computador.</>,
             <>Confira se você consegue entrar na plataforma com seu e-mail e senha. Se esqueceu a senha, recupere agora, não no dia.</>,
           ]}
         />
@@ -105,39 +104,24 @@ export default function TutorialFase2Page() {
         </Aviso>
       </Secao>
 
-      <Secao n={2} id="video-400mb" titulo="Deixe a videoaula com até 400 MB">
+      <Secao n={2} id="gravacao" titulo="Grave e guarde o vídeo">
         <P>
-          Uma videoaula de 20 minutos com até 400 MB precisa de cerca de 2,5 Mbps. Gravações de
-          celular e de câmera costumam ficar bem maiores (1 a 3 GB), mesmo em 720p. Por isso, na
-          maioria dos casos, <Strong>será preciso comprimir o vídeo antes de enviar</Strong>. A
-          compressão reduz o tamanho sem prejudicar a leitura da aula.
+          Você <Strong>não precisa editar nem comprimir</Strong> o vídeo: envie o arquivo do jeito que
+          ele foi gravado. Depois do envio, a plataforma prepara automaticamente uma versão leve para a
+          banca assistir.
         </P>
-        <Sub>No computador: HandBrake (gratuito)</Sub>
-        <Passos
+        <Lista
           itens={[
-            <>Baixe o HandBrake no site oficial, <Link href="https://handbrake.fr">handbrake.fr</Link>, e abra o programa.</>,
-            <>Clique em <Strong>Abrir código-fonte / Open Source</Strong> e escolha o seu vídeo.</>,
-            <>Em <Strong>Predefinição / Preset</Strong>, escolha <Strong>General → Fast 720p30</Strong>.</>,
-            <>Na aba <Strong>Vídeo</Strong>, marque <Strong>Taxa de bits média (kbps) / Avg Bitrate</Strong> e digite <Strong>2000</Strong>. Para 20 minutos, o resultado fica em torno de 330 MB.</>,
-            <>Em <Strong>Salvar como</Strong>, escolha a pasta e o nome do arquivo (por exemplo, <em>Seu Nome - Videoaula.mp4</em>) e clique em <Strong>Iniciar codificação / Start Encode</Strong>.</>,
-            <>Assista a um trecho do arquivo comprimido para conferir imagem e som antes de enviar.</>,
+            <>Grave em <Strong>1080p ou 720p</Strong> (no celular, em <em>Câmera → Configurações → Gravar vídeo</em>). Evite 4K: o arquivo fica grande demais.</>,
+            <>O arquivo pode ter <Strong>até 4 GB</Strong>. Uma aula de 20 minutos em 1080p costuma ter entre 1 e 3 GB.</>,
+            <>Formatos aceitos: MP4, MOV, WEBM, MKV, M4V e AVI. É o formato que o celular, a câmera ou o programa de gravação de tela já gera.</>,
+            <>Assista ao arquivo antes de enviar e confira se a imagem e o som estão bons do início ao fim.</>,
           ]}
         />
-        <Sub>Gravando a tela (OBS Studio)</Sub>
-        <P>
-          Em <Strong>Configurações → Saída</Strong>, use taxa de bits de vídeo de <Strong>2000 Kbps</Strong>,
-          áudio de 128 Kbps e resolução de saída 1280×720 em <Strong>Configurações → Vídeo</Strong>. O
-          arquivo já sai dentro do limite.
-        </P>
-        <Sub>Só com o celular</Sub>
-        <P>
-          Use um aplicativo de compressão de vídeo da loja do seu celular e escolha 720p com qualidade
-          média. Confira o tamanho final (em <em>Detalhes</em> ou <em>Informações</em> do arquivo) antes
-          de enviar.
-        </P>
         <Aviso>
-          Formatos aceitos: MP4, MOV, WEBM, MKV, M4V e AVI. Prefira <Strong>MP4</Strong>, que abre
-          em qualquer navegador.
+          <Strong>Reserve tempo para o envio.</Strong> Um vídeo de 1 a 3 GB pode levar de 15 minutos a
+          mais de uma hora para subir, conforme a sua internet. Prefira uma conexão Wi-Fi estável e não
+          deixe para as últimas horas do prazo.
         </Aviso>
       </Secao>
 
@@ -180,7 +164,7 @@ export default function TutorialFase2Page() {
       <Secao n={5} id="enviar-video" titulo="Envie a videoaula">
         <Passos
           itens={[
-            <>No cartão <Strong>Videoaula (20 minutos)</Strong>, clique em <Strong>Escolher arquivo</Strong> e selecione o vídeo já comprimido.</>,
+            <>No cartão <Strong>Videoaula (20 minutos)</Strong>, clique em <Strong>Escolher arquivo</Strong> e selecione o vídeo.</>,
             <>Confira o nome e o tamanho que aparecem e clique em <Strong>Enviar arquivo</Strong>.</>,
           ]}
         />
@@ -200,13 +184,15 @@ export default function TutorialFase2Page() {
           legenda="Envio em andamento."
         />
         <P>
-          Ao terminar, o cartão mostra <Strong>Enviado</Strong>, com o nome e o tamanho do arquivo. Use{" "}
-          <Strong>Conferir</Strong> para abrir o vídeo que chegou à plataforma.
+          Ao terminar, o cartão mostra <Strong>Enviado</Strong>, com o nome e o tamanho do arquivo. Em
+          seguida, a plataforma prepara o vídeo para a banca (alguns minutos) e o aviso muda para{" "}
+          <Strong>Vídeo recebido e preparado para a banca</Strong>. Use <Strong>Conferir</Strong> para abrir
+          o vídeo.
         </P>
         <Figura
           src="/tutorial-fase2/06-video-enviado.webp"
           alt="Videoaula enviada, com o link Conferir destacado"
-          legenda="Videoaula enviada. “Conferir” abre o arquivo recebido."
+          legenda="Videoaula enviada e preparada para a banca. “Conferir” abre o vídeo."
         />
       </Secao>
 
@@ -253,7 +239,8 @@ export default function TutorialFase2Page() {
       <Secao n={8} id="problemas" titulo="Se algo der errado">
         <Faq
           itens={[
-            ["“Arquivo maior que o limite”", "Comprima o vídeo (passo 2) ou reduza o PDF. No Word, salve como PDF com a opção “Tamanho mínimo”; imagens muito grandes no portfólio aumentam o arquivo."],
+            ["“Arquivo maior que o limite”", "O vídeo passou de 4 GB, o que acontece ao gravar em 4K ou muito além de 20 minutos. Grave novamente em 1080p ou 720p. Para o portfólio, no Word salve como PDF com a opção “Tamanho mínimo”; imagens muito grandes aumentam o arquivo."],
+            ["Apareceu “Não conseguimos ler este vídeo”", "O arquivo pode estar corrompido ou incompleto. Confira se ele abre normalmente no seu computador ou celular e envie novamente."],
             ["O envio parou ou a internet caiu", "O sistema tenta de novo sozinho. Se aparecer uma mensagem de erro, clique em “Enviar arquivo” outra vez: o envio recomeça do início, e o arquivo anterior (se houver) continua valendo até o novo terminar."],
             ["Fechei a página durante o envio", "O envio é cancelado. Abra a página de novo e envie outra vez."],
             ["O prazo acabou durante o envio", "O envio só é aceito se terminar até o prazo final. Por isso, envie com antecedência e não deixe para os últimos minutos."],
@@ -295,10 +282,6 @@ function Secao({ n, id, titulo, children }: { n: number; id: string; titulo: str
       <div className="space-y-4">{children}</div>
     </section>
   );
-}
-
-function Sub({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-sm font-semibold text-[var(--text-primary)] uppercase tracking-[0.08em] pt-3">{children}</h3>;
 }
 
 function P({ children }: { children: React.ReactNode }) {

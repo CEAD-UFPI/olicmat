@@ -12,6 +12,8 @@ import {
   validarArquivo,
   planoDePartes,
   limitesMb,
+  chaveFinalDe,
+  nomeFinalDe,
 } from "./fase2.regras.js";
 
 describe("prazo e situação do envio", () => {
@@ -86,7 +88,7 @@ describe("totalCriterios (conceitos 0 a 5 → pontos 0 a 20)", () => {
 });
 
 describe("upload dos arquivos", () => {
-  const lim = { video: 400, portfolio: 10 };
+  const lim = { video: 4096, portfolio: 10 };
   const MB = 1024 * 1024;
 
   it("aceita vídeo e PDF dentro do limite", () => {
@@ -98,7 +100,7 @@ describe("upload dos arquivos", () => {
     expect(validarArquivo("video", "aula.pdf", MB, lim)).toMatch(/Formato/);
     expect(validarArquivo("portfolio", "portfolio.docx", MB, lim)).toMatch(/PDF/);
     expect(validarArquivo("portfolio", "p.pdf", 0, lim)).toMatch(/vazio/);
-    expect(validarArquivo("video", "a.mp4", 401 * MB, lim)).toMatch(/400 MB/);
+    expect(validarArquivo("video", "a.mp4", 4097 * MB, lim)).toMatch(/4 GB/);
     expect(validarArquivo("portfolio", "p.pdf", 11 * MB, lim)).toMatch(/10 MB/);
   });
 
@@ -110,7 +112,7 @@ describe("upload dos arquivos", () => {
   });
 
   it("limites vêm do ambiente, com padrão", () => {
-    expect(limitesMb({})).toEqual({ video: 400, portfolio: 10 });
+    expect(limitesMb({})).toEqual({ video: 4096, portfolio: 10 });
     expect(limitesMb({ FASE2_VIDEO_MAX_MB: "2048", FASE2_PORTFOLIO_MAX_MB: "x" })).toEqual({ video: 2048, portfolio: 10 });
   });
 });
@@ -179,5 +181,13 @@ describe("escolherTerceiro", () => {
     ];
     expect(escolherTerceiro(c, ["a"])).toBe("b");
     expect(escolherTerceiro(c, ["a", "b", "c"])).toBeNull();
+  });
+});
+
+describe("compressão", () => {
+  it("chave e nome da versão final", () => {
+    expect(chaveFinalDe("fase2/e/i/video-1-ab.MOV")).toBe("fase2/e/i/video-1-ab.final.mp4");
+    expect(chaveFinalDe("fase2/e.x/i/video-1")).toBe("fase2/e.x/i/video-1.final.mp4");
+    expect(nomeFinalDe("Minha aula.final.MOV")).toBe("Minha aula.final.mp4");
   });
 });

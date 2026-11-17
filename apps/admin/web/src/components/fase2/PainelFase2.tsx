@@ -30,7 +30,7 @@ interface Participante {
     enviadoEm: string;
     videoLink: string | null;
     portfolioLink: string | null;
-    video: { nome: string; bytes: number | null; url: string | null } | null;
+    video: { nome: string; bytes: number | null; url: string | null; processamento?: string } | null;
     portfolio: { nome: string; bytes: number | null; url: string | null } | null;
   } | null;
   envioCompleto: boolean;
@@ -50,6 +50,7 @@ interface Painel {
   situacao: "NAO_INICIADA" | "ABERTA" | "ENCERRADA";
   distribuida: boolean;
   alertaHoras: number;
+  videos?: { PENDENTE: number; PROCESSANDO: number; PRONTO: number; FALHA: number };
   totais: { classificados: number; enviaram: number; enviosCompletos: number; avaliados: number; terceiroAvaliador: number };
   emails: { enviados: number; falhas: number; pendentes: number };
   porInstituicao: Array<{ sigla: string; classificados: number; enviaram: number }>;
@@ -236,7 +237,7 @@ export default function PainelFase2() {
       {/* Números */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Metrica rotulo="Classificados" valor={totais.classificados} />
-        <Metrica rotulo="Enviaram" valor={totais.enviaram} detalhe={`${totais.enviosCompletos} completos · ${totais.classificados - totais.enviaram} sem envio`} />
+        <Metrica rotulo="Enviaram" valor={totais.enviaram} detalhe={`${totais.enviosCompletos} completos · ${totais.classificados - totais.enviaram} sem envio${painel.videos ? ` · vídeos: ${painel.videos.PRONTO} prontos, ${painel.videos.PENDENTE + painel.videos.PROCESSANDO} em preparo${painel.videos.FALHA ? `, ${painel.videos.FALHA} com falha` : ""}` : ""}`} />
         <Metrica rotulo="Avaliados" valor={totais.avaliados} detalhe={`${totais.terceiroAvaliador} com 3º avaliador`} />
         <div className={cartao}>
           <p className="text-xs uppercase tracking-widest text-[var(--text-tertiary)] flex items-center gap-1"><Mail size={12} /> E-mails de início</p>
@@ -355,6 +356,11 @@ export default function PainelFase2() {
                           {(p.ultimoEnvio.video?.url ?? p.ultimoEnvio.videoLink) ? (
                             <a className="text-xs text-[var(--color-blue-ink)] hover:underline mr-2" href={p.ultimoEnvio.video?.url ?? p.ultimoEnvio.videoLink ?? undefined} target="_blank" rel="noopener noreferrer">vídeo</a>
                           ) : <span className="text-xs text-amber-300 mr-2">sem vídeo</span>}
+                          {p.ultimoEnvio.video?.processamento && p.ultimoEnvio.video.processamento !== "PRONTO" && (
+                            <span className={`text-xs mr-2 ${p.ultimoEnvio.video.processamento === "FALHA" ? "text-red-300" : "text-[var(--text-tertiary)]"}`}>
+                              ({p.ultimoEnvio.video.processamento === "FALHA" ? "vídeo ilegível" : "preparando"})
+                            </span>
+                          )}
                           {(p.ultimoEnvio.portfolio?.url ?? p.ultimoEnvio.portfolioLink) ? (
                             <a className="text-xs text-[var(--color-blue-ink)] hover:underline" href={p.ultimoEnvio.portfolio?.url ?? p.ultimoEnvio.portfolioLink ?? undefined} target="_blank" rel="noopener noreferrer">portfólio</a>
                           ) : <span className="text-xs text-amber-300">sem portfólio</span>}

@@ -194,7 +194,7 @@ export function limitesMb(env: NodeJS.ProcessEnv = process.env): Record<TipoArqu
     return Number.isFinite(n) && n > 0 ? n : padrao;
   };
   return {
-    video: num(env.FASE2_VIDEO_MAX_MB, 400),
+    video: num(env.FASE2_VIDEO_MAX_MB, 4096),
     portfolio: num(env.FASE2_PORTFOLIO_MAX_MB, 10),
   };
 }
@@ -239,3 +239,16 @@ export function planoDePartes(bytes: number): { tamanhoParte: number; partes: nu
 
 /** Prefixo das chaves de um participante; a API só aceita chaves sob ele. */
 export const prefixoArquivos = (edicaoId: string, inscricaoId: string) => `fase2/${edicaoId}/${inscricaoId}/`;
+
+/**
+ * Compressão na VPS: o participante envia o vídeo original (até 4 GB) e o
+ * compressor gera a versão final em MP4 720p, gravada ao lado do original.
+ */
+export function chaveFinalDe(chaveOriginal: string): string {
+  return chaveOriginal.replace(/\.[^./]+$/, "") + ".final.mp4";
+}
+
+/** Nome de download da versão final: mesmo nome, extensão .mp4. */
+export function nomeFinalDe(nomeOriginal: string): string {
+  return nomeOriginal.replace(/\.[^.]+$/, "") + ".mp4";
+}

@@ -1,111 +1,62 @@
-# Fase 2 — Nuvem própria para videoaulas e portfólios
+# Fase 2 — Nuvem de arquivos e compressão de vídeos (VPS)
 
-**Data:** 17/11/2026
+**Data:** 17/11/2026. A infraestrutura já está **instalada e testada** na VPS Hostinger.
 
-A nuvem fica na VPS Hostinger (8 vCPU, 32 GB de RAM, 400 GB de disco, 32 TB de banda), com EasyPanel. Ela guarda a videoaula (até 400 MB) e o portfólio em PDF (até 10 MB) dos 182 classificados.
-
-## Como funciona
+## Visão geral
 
 ```
-Navegador do participante ──(1) pede autorização──▶ admin-api (UFPI)
-          │                                          só ASSINA URLs, sem rede
-          └──(2) envia o arquivo em partes de 8 MB──▶ Nuvem S3 na VPS (SeaweedFS)
-Navegador do avaliador ──(3) URL temporária (6 h)──▶ Nuvem S3 (assiste/baixa)
+Participante ──(1) pede autorização──────────▶ admin-api (UFPI)   só assina URLs
+     └──(2) envia o vídeo ORIGINAL (≤ 4 GB)──▶ Nuvem S3 na VPS (SeaweedFS)
+Compressor (VPS) ──(3) "próximo vídeo?"──────▶ admin-api (HTTPS público)
+     ├──(4) baixa o original (rede interna) ─▶ Nuvem
+     ├──(5) ffmpeg → MP4 720p (≈ 6× tempo real)
+     ├──(6) grava a versão final ────────────▶ Nuvem
+     └──(7) "pronto" e apaga o original ─────▶ admin-api / Nuvem
+Avaliador ──(8) URL temporária (6 h) da versão final ──▶ Nuvem
 ```
 
-O arquivo nunca passa pela UFPI. A API assina URLs localmente (AWS Signature V4, sem nenhuma chamada de rede). Isso importa porque a rede da UFPI já bloqueou a saída TLS do Node para o Cloudinary.
-
-A única chamada da API para a nuvem é a conferência (HEAD) ao final do upload, e ela é tolerante. Se a nuvem não responder a partir da UFPI, o envio é aceito e um aviso vai para o log.
-
-**Segurança dos arquivos:**
-- O bucket é privado: abrir um arquivo exige URL assinada, e quem não tem assinatura recebe 403.
-- O participante só envia arquivos para o próprio prefixo (`fase2/<edição>/<inscrição>/`) e só enquanto o prazo de 24 h estiver aberto.
-- O avaliador recebe URLs apenas dos participantes atribuídos a ele.
+**Divisão de papéis:**
+- O participante não precisa comprimir nada; ele envia o vídeo do jeito que gravou.
+- A API da UFPI nunca chama a nuvem para enviar arquivos, porque a rede da UFPI bloqueia TLS de saída. Ela só assina URLs.
+- O compressor é quem chama a API, pelo domínio público `olicmat.cead.ufpi.br`, que recebe conexões normalmente.
 
 **Robustez:**
-- **Envio:** o vídeo sobe em partes de 8 MB, 3 por vez, e cada parte é reenviada até 6 vezes se a conexão cair.
-- **Histórico:** vale o último envio. Cada substituição gera um novo registro em `EnvioFase2`.
-- **Alternativa:** sem as variáveis `FASE2_S3_*`, o sistema volta automaticamente ao envio por links.
+- A fila fica no banco, na tabela `VideoFase2`, que é a fonte da verdade.
+- Um vídeo que falha é tentado 3 vezes. Se continuar falhando, o participante vê "Não conseguimos ler este vídeo… envie novamente".
+- O compressor confere a duração da saída antes de apagar o original.
+- Vídeos substituídos pelo participante, e os originais já convertidos, são apagados automaticamente.
 
-## Por que SeaweedFS
+## O que está na VPS
 
-| Opção | Situação |
+| Item | Valor |
 |---|---|
-| MinIO | A edição comunitária deixou de ser distribuída: `minio/minio` e `quay.io/minio/minio` recusam o download. |
-| **SeaweedFS** (Apache 2.0) | Testado aqui. Funcionaram upload multipart assinado, CORS (libera a origem e expõe o `ETag`), HEAD, GET com nome de arquivo e recusa de assinatura errada ou expirada. Sobe com um único comando. |
-| Garage, RustFS | Funcionariam, mas pedem mais passos de configuração ou são menos maduros. |
+| Servidor | Ubuntu 24.04, 8 vCPU, 31 GB de RAM, 387 GB de disco, EasyPanel + Traefik 3.7 |
+| Pasta | `/opt/olicmat-fase2` (cópia de `infra/vps-fase2` do repositório) |
+| Nuvem | Contêiner `olicmat-nuvem`, imagem `chrislusf/seaweedfs:4.54`, bucket `olicmat-fase2`, volume `olicmat-fase2_nuvem` |
+| Compressor | Contêiner `olicmat-compressor`, Node 22 + ffmpeg, 2 vídeos em paralelo × 3 threads, limitado a 6 CPUs |
+| Endereço | `https://arquivos-olicmat.q7zbrj.easypanel.host`, pelo certificado curinga do EasyPanel; rota em `/etc/easypanel/traefik/config/olicmat-fase2.yaml` |
+| Segredos | `/opt/olicmat-fase2/.env` (chmod 600): chaves S3 e o token do compressor. Ficam fora do git. |
+| CORS | Só `https://admin.olicmat.cead.ufpi.br` |
+| Portas | Nenhuma publicada. O acesso é só pelo Traefik (HTTPS). |
 
-O código é compatível com qualquer serviço S3. Se um dia a nuvem mudar, troque apenas as variáveis `FASE2_S3_*`.
+O contêiner `olicmat-db`, do kit de standby, é independente e não foi alterado.
 
-## Instalação no EasyPanel (cerca de 15 minutos)
+**Desempenho medido na VPS:** 2 min de vídeo 1080p em 20 s. Uma aula de 20 min leva cerca de 3,5 min e fica com cerca de 150 a 250 MB. Mesmo que os 182 vídeos chegassem de uma vez, a fila terminaria em cerca de 5 h.
 
-**Pré-requisito:** um subdomínio apontando para o IP da VPS, por exemplo `arquivos.SEU-DOMINIO` (registro DNS do tipo A).
+## Configurar a Máquina 1 (UFPI)
 
-### 1. Gerar as chaves
-
-Rode em qualquer terminal:
-
-```bash
-echo "ACCESS_KEY=olicmat$(openssl rand -hex 6)"
-echo "SECRET_KEY=$(openssl rand -base64 36 | tr -d '/+=')"
-```
-
-Guarde as duas chaves; elas vão para o `s3.json` e para o `.env` da Máquina 1.
-
-### 2. Criar o serviço
-
-1. No EasyPanel, abra **Projeto → + Serviço → App** e dê o nome `nuvem-fase2`.
-2. Em **Source → Docker Image**, informe `chrislusf/seaweedfs:4.54`. Essa é a versão testada; não use `latest`.
-3. Em **Deploy → Command**, informe:
-   ```
-   weed server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json -volume.max=0 -volume.minFreeSpace=5 -s3.allowedOrigins=https://admin.olicmat.cead.ufpi.br
-   ```
-   - `-volume.max=0` libera o uso do disco inteiro. O padrão (8 volumes de 30 GB) limitaria a nuvem a 240 GB.
-   - `-volume.minFreeSpace=5` deixa a nuvem só para leitura quando restar menos de 5% de disco, em vez de corromper dados.
-4. Em **Mounts**, crie dois:
-   - **Volume:** nome `dados`, caminho `/data`. Aqui ficam os arquivos; não apague.
-   - **File:** caminho `/etc/seaweedfs/s3.json`, com o conteúdo abaixo e as chaves do passo 1:
-     ```json
-     {
-       "identities": [
-         {
-           "name": "olicmat",
-           "credentials": [{ "accessKey": "ACCESS_KEY_AQUI", "secretKey": "SECRET_KEY_AQUI" }],
-           "actions": ["Admin", "Read", "Write", "List", "Tagging"]
-         }
-       ]
-     }
-     ```
-5. Em **Domains**, adicione `arquivos.SEU-DOMINIO` com **HTTPS ativado** e porta interna **8333**.
-6. Clique em **Deploy**.
-
-### 3. Criar o bucket
-
-No **Console** do serviço, no EasyPanel:
-
-```bash
-echo "s3.bucket.create -name olicmat-fase2" | weed shell
-```
-
-### 4. Configurar a Máquina 1 (UFPI)
-
-Acrescente ao `/opt/olicmat/.env`:
+No `/opt/olicmat/.env`, use os valores de `/opt/olicmat-fase2/.env` da VPS:
 
 ```
-FASE2_S3_ENDPOINT=https://arquivos.SEU-DOMINIO
+FASE2_S3_ENDPOINT=https://arquivos-olicmat.q7zbrj.easypanel.host
 FASE2_S3_REGION=us-east-1
 FASE2_S3_BUCKET=olicmat-fase2
-FASE2_S3_ACCESS_KEY=<do passo 1>
-FASE2_S3_SECRET_KEY=<do passo 1>
+FASE2_S3_ACCESS_KEY=<S3_ACCESS_KEY da VPS>
+FASE2_S3_SECRET_KEY=<S3_SECRET_KEY da VPS>
+FASE2_COMPRESSOR_TOKEN=<FASE2_COMPRESSOR_TOKEN da VPS>
 ```
 
-Recrie a API:
-
-```bash
-cd /opt/olicmat && docker compose -f docker-compose.prod.yml up -d --no-deps admin-api
-```
-
-### 5. Conferir
+Depois do deploy, confira a partir da Máquina 1:
 
 ```bash
 docker exec olicmat-admin-api mkdir -p /app/scripts
@@ -113,29 +64,37 @@ docker cp apps/admin/api/scripts/verificar-nuvem-fase2.ts olicmat-admin-api:/app
 docker exec -w /app olicmat-admin-api npx tsx scripts/verificar-nuvem-fase2.ts
 ```
 
-Esperado: todas as linhas com `OK` e a mensagem "Nuvem pronta para a Fase 2".
+Na VPS, o log do compressor deve parar de mostrar `HTTP 404`:
 
-Uma falha **só** na conferência a partir da UFPI não impede os envios, porque os navegadores falam direto com a VPS. Mesmo assim, investigue antes do início.
+```bash
+docker logs --tail 20 olicmat-compressor
+```
 
-Também vale testar de fora da UFPI, pelo celular com 4G: entre como participante de teste no ambiente local ou de homologação e envie um vídeo.
+## Operação na VPS
 
-## Capacidade
+```bash
+cd /opt/olicmat-fase2
+docker compose ps                         # estado
+docker logs -f olicmat-compressor         # acompanhar as compressões
+docker exec olicmat-nuvem sh -c 'echo "s3.bucket.list" | weed shell'   # uso do bucket
+./instalar.sh                             # reinstalar/atualizar (mantém .env e dados)
+```
 
-- **Disco:** 182 participantes × (400 MB + 10 MB) ≈ 75 GB no pior caso, mais as substituições. Os 400 GB de disco sobram. Acompanhe o uso em **EasyPanel → Monitor**.
-- **Banda:** 32 TB/mês é muito acima do necessário. O envio de todos (~75 GB) e cada avaliador assistindo cada vídeo (~150 GB) somam bem menos de 1 TB.
-- **Simultaneidade:** 182 envios ao mesmo tempo são só I/O de disco e rede. O SeaweedFS absorve isso com folga em 8 vCPU e 32 GB de RAM.
+Para atualizar o compressor depois de mudanças no repositório:
+1. Copie `infra/vps-fase2/compressor/*` para `/opt/olicmat-fase2/compressor/`.
+2. Rode `docker compose up -d --build compressor`.
 
 ## Cópia de segurança
 
 - Ative os **snapshots** semanais da VPS no painel da Hostinger.
 - Faça um snapshot manual **logo após o fim do prazo de 24 h**.
-- Ao final da avaliação, se quiser guardar os arquivos fora da VPS, sincronize o bucket com qualquer ferramenta S3 (por exemplo, `rclone sync`).
 
 ## Problemas comuns
 
-| Sintoma | Causa provável | O que fazer |
-|---|---|---|
-| "A nuvem de arquivos não respondeu" para o participante | Serviço parado, domínio ou HTTPS errado | Veja o log do serviço no EasyPanel e rode o passo 5. |
-| Erro de CORS no navegador | `-s3.allowedOrigins` diferente do domínio do admin | Corrija o comando do passo 2.3 e faça o redeploy. |
-| Partes falhando em conexões lentas | Tempo-limite do proxy | As partes têm 8 MB, para caber nos 60 s padrão do Traefik. Se persistir, aumente o `readTimeout` do Traefik no EasyPanel. |
-| Envio recusado como "incompleto" | Upload interrompido | O participante envia de novo. |
+| Sintoma | O que fazer |
+|---|---|
+| O compressor mostra `HTTP 404` | A API ainda não tem as rotas (falta deploy) ou falta `FASE2_COMPRESSOR_TOKEN` na Máquina 1. |
+| O compressor mostra `HTTP 404` mesmo após o deploy | O token da Máquina 1 é diferente do token da VPS. |
+| "A nuvem de arquivos não respondeu" para o participante | Rode `docker compose ps` na VPS e o script de verificação. |
+| Vídeo com falha no painel | Veja `docker logs olicmat-compressor`. Se o arquivo estiver corrompido, o participante precisa reenviar. |
+| Disco enchendo | Confira se as remoções aparecem no log (`removidos:`). Com menos de 5% livre, a nuvem fica só para leitura. |

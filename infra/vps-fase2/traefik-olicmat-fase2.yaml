@@ -1,0 +1,21 @@
+# Rota HTTPS da nuvem da Fase 2 no Traefik do EasyPanel.
+# Copiar para /etc/easypanel/traefik/config/ (o Traefik recarrega sozinho).
+# O certificado curinga *.q7zbrj.easypanel.host já é do EasyPanel.
+http:
+  routers:
+    olicmat-nuvem-http:
+      rule: Host(`arquivos-olicmat.q7zbrj.easypanel.host`)
+      entryPoints: [http]
+      middlewares: [redirect-to-https]
+      service: olicmat-nuvem
+    olicmat-nuvem:
+      rule: Host(`arquivos-olicmat.q7zbrj.easypanel.host`)
+      entryPoints: [https]
+      tls: {}
+      service: olicmat-nuvem
+  services:
+    olicmat-nuvem:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://olicmat-nuvem:8333

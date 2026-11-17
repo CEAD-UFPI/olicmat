@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { enviarArquivo, formatarBytes, UploadCancelado, type Progresso, type TipoArquivo } from "@/lib/uploadFase2";
 
-interface Arquivo { nome: string; bytes: number | null; url: string | null }
+interface Arquivo { nome: string; bytes: number | null; url: string | null; processamento?: string; bytesOriginal?: number | null }
 interface StatusFase2 {
   classificado: boolean;
   agora: string;
@@ -149,13 +149,17 @@ function CartaoArquivo({
             </p>
             {video && (
               <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
-                Vídeos de 20 minutos costumam passar desse limite: comprima antes de enviar.{" "}
-                <a href={`${SITE}/tutorial-fase2#video-400mb`} target="_blank" rel="noopener noreferrer" className="underline">Veja como</a>.
+                Envie o vídeo como foi gravado (de preferência em 1080p ou 720p, não em 4K). A plataforma
+                prepara o vídeo para a banca automaticamente.
               </p>
             )}
           </div>
         </div>
-        {atual ? (
+        {atual?.processamento === "FALHA" ? (
+          <span className="flex items-center gap-1 text-xs font-semibold text-red-300 bg-red-500/10 rounded-full px-2.5 py-1 shrink-0">
+            <AlertTriangle size={14} /> Reenviar
+          </span>
+        ) : atual ? (
           <span className="flex items-center gap-1 text-xs font-semibold text-emerald-300 bg-emerald-500/10 rounded-full px-2.5 py-1 shrink-0">
             <CheckCircle2 size={14} /> Enviado
           </span>
@@ -167,7 +171,7 @@ function CartaoArquivo({
       {atual && (
         <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-3 text-sm flex flex-wrap items-center justify-between gap-2">
           <span className="text-[var(--text-primary)] break-all">
-            {atual.nome} <span className="text-[var(--text-tertiary)]">· {formatarBytes(atual.bytes)}</span>
+            {atual.nome} <span className="text-[var(--text-tertiary)]">· {formatarBytes(atual.bytesOriginal ?? atual.bytes)}</span>
           </span>
           {atual.url && (
             <a href={atual.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[var(--color-blue-ink)] hover:underline">
@@ -175,6 +179,25 @@ function CartaoArquivo({
             </a>
           )}
         </div>
+      )}
+
+      {atual?.processamento && atual.processamento !== "SUBSTITUIDO" && (
+        atual.processamento === "PRONTO" ? (
+          <p className="text-xs text-emerald-300 flex items-center gap-1.5">
+            <CheckCircle2 size={14} className="shrink-0" /> Vídeo recebido e preparado para a banca.
+          </p>
+        ) : atual.processamento === "FALHA" ? (
+          <p className="text-sm p-3 rounded-lg bg-red-500/10 text-red-300 flex items-start gap-2">
+            <AlertTriangle size={16} className="shrink-0 mt-0.5" />
+            Não conseguimos ler este vídeo. Confira se o arquivo abre normalmente no seu computador ou
+            celular e envie novamente.
+          </p>
+        ) : (
+          <p className="text-xs text-[var(--color-blue-ink)] flex items-center gap-1.5">
+            <Clock size={14} className="shrink-0" /> Vídeo recebido. Ele está sendo preparado para a banca
+            (alguns minutos); não é preciso fazer nada.
+          </p>
+        )
       )}
 
       {aberta && (
@@ -334,7 +357,7 @@ export default function EnvioFase2Page() {
   const enviado = status.ultimoEnvio;
   const modoUpload = status.modo === "upload";
   const completo = modoUpload
-    ? !!(enviado?.video && enviado?.portfolio)
+    ? !!(enviado?.video && enviado.video.processamento !== "FALHA" && enviado?.portfolio)
     : !!(enviado?.videoLink && enviado?.portfolioLink);
 
   return (

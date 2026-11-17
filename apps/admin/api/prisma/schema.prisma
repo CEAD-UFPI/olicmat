@@ -336,6 +336,7 @@ model Inscricao {
   historico       InscricaoHistorico[]
 
   @@unique([userId, edicaoId])
+  videosFase2        VideoFase2[]
 }
 
 model InscricaoHistorico {
@@ -491,6 +492,40 @@ model AvaliacaoFase2 {
   avaliador   User      @relation(fields: [avaliadorId], references: [id])
 
   @@unique([inscricaoId, avaliadorId])
+}
+
+/// Fila de compressão dos vídeos da Fase 2, executada pelo compressor na VPS.
+enum StatusVideoFase2 {
+  PENDENTE
+  PROCESSANDO
+  PRONTO
+  FALHA
+  SUBSTITUIDO
+}
+
+/// Um vídeo original enviado pelo participante e a sua versão comprimida.
+model VideoFase2 {
+  id               String           @id @default(uuid())
+  inscricaoId      String
+  chaveOriginal    String           @unique
+  bytesOriginal    BigInt
+  nomeOriginal     String
+  status           StatusVideoFase2 @default(PENDENTE)
+  chaveFinal       String?
+  bytesFinal       BigInt?
+  duracaoSeg       Int?
+  tentativas       Int              @default(0)
+  erro             String?
+  /// O original (e, se substituído, a versão final) já foi apagado da nuvem.
+  arquivosRemovidos Boolean         @default(false)
+  criadoEm         DateTime         @default(now())
+  iniciadoEm       DateTime?
+  concluidoEm      DateTime?
+
+  inscricao Inscricao @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+
+  @@index([status, criadoEm])
+  @@index([inscricaoId])
 }
 
 enum StatusAtribuicaoFase2 {
