@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import api from "@/lib/api";
+import { SITE_URL } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,8 +32,9 @@ interface StatusFase2 {
   totalEnvios?: number;
 }
 
-const SITE = "https://olicmat.cead.ufpi.br";
+const SITE = SITE_URL;
 const DOCUMENTOS = [
+  { href: `${SITE}/tutorial-fase2`, rotulo: "Tutorial da Fase 2" },
   { href: `${SITE}/arquivos/manual-participante-fase2-2026.pdf`, rotulo: "Manual do Participante — 2ª Fase (PDF)" },
   { href: `${SITE}/arquivos/OLICMAT_2026_Template_Portfolio.docx`, rotulo: "Template do Portfólio (Word)" },
 ];
@@ -147,7 +149,8 @@ function CartaoArquivo({
             </p>
             {video && (
               <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
-                Grave em 720p. Se o arquivo passar do limite, comprima antes de enviar (por exemplo, no HandBrake, predefinição “Fast 720p30”).
+                Vídeos de 20 minutos costumam passar desse limite: comprima antes de enviar.{" "}
+                <a href={`${SITE}/tutorial-fase2#video-400mb`} target="_blank" rel="noopener noreferrer" className="underline">Veja como</a>.
               </p>
             )}
           </div>

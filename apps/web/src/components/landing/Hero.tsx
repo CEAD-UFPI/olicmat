@@ -110,18 +110,18 @@ export function Hero() {
           <Button
             variant="outline"
             size="lg"
-            render={<a href="https://olicmat.cead.ufpi.br/tutorial-prova.html" target="_blank" rel="noopener noreferrer" />}
+            render={<a href="/tutorial-fase2" />}
             className="h-14 px-8 text-base font-semibold border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--surface)] border-glow"
           >
-            Tutorial Fase 1
+            Tutorial Fase 2
           </Button>
           <Button
             size="lg"
-            render={<a href="https://admin.olicmat.cead.ufpi.br/competidor" target="_blank" rel="noopener noreferrer" />}
+            render={<a href={`${process.env.NEXT_PUBLIC_ADMIN_URL || "https://admin.olicmat.cead.ufpi.br"}/competidor/envio`} />}
             className="h-14 px-8 text-base font-semibold"
             style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}
           >
-            Fazer a Prova
+            Enviar Arquivos
           </Button>
         </motion.div>
 
