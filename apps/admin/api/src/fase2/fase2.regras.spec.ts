@@ -86,11 +86,11 @@ describe("totalCriterios (conceitos 0 a 5 → pontos 0 a 20)", () => {
 });
 
 describe("upload dos arquivos", () => {
-  const lim = { video: 3072, portfolio: 50 };
+  const lim = { video: 400, portfolio: 10 };
   const MB = 1024 * 1024;
 
   it("aceita vídeo e PDF dentro do limite", () => {
-    expect(validarArquivo("video", "Aula Final.MP4", 900 * MB, lim)).toBeNull();
+    expect(validarArquivo("video", "Aula Final.MP4", 390 * MB, lim)).toBeNull();
     expect(validarArquivo("portfolio", "portfolio.pdf", 3 * MB, lim)).toBeNull();
   });
 
@@ -98,8 +98,8 @@ describe("upload dos arquivos", () => {
     expect(validarArquivo("video", "aula.pdf", MB, lim)).toMatch(/Formato/);
     expect(validarArquivo("portfolio", "portfolio.docx", MB, lim)).toMatch(/PDF/);
     expect(validarArquivo("portfolio", "p.pdf", 0, lim)).toMatch(/vazio/);
-    expect(validarArquivo("video", "a.mp4", 3073 * MB, lim)).toMatch(/3 GB/);
-    expect(validarArquivo("portfolio", "p.pdf", 51 * MB, lim)).toMatch(/50 MB/);
+    expect(validarArquivo("video", "a.mp4", 401 * MB, lim)).toMatch(/400 MB/);
+    expect(validarArquivo("portfolio", "p.pdf", 11 * MB, lim)).toMatch(/10 MB/);
   });
 
   it("partes de 8 MB, nunca mais de 10.000", () => {
@@ -110,8 +110,8 @@ describe("upload dos arquivos", () => {
   });
 
   it("limites vêm do ambiente, com padrão", () => {
-    expect(limitesMb({})).toEqual({ video: 3072, portfolio: 50 });
-    expect(limitesMb({ FASE2_VIDEO_MAX_MB: "2048", FASE2_PORTFOLIO_MAX_MB: "x" })).toEqual({ video: 2048, portfolio: 50 });
+    expect(limitesMb({})).toEqual({ video: 400, portfolio: 10 });
+    expect(limitesMb({ FASE2_VIDEO_MAX_MB: "2048", FASE2_PORTFOLIO_MAX_MB: "x" })).toEqual({ video: 2048, portfolio: 10 });
   });
 });
 

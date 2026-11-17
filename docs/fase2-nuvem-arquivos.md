@@ -2,7 +2,7 @@
 
 **Data:** 17/11/2026
 
-A nuvem fica na VPS Hostinger (8 vCPU, 32 GB de RAM, 400 GB de disco, 32 TB de banda), com EasyPanel. Ela guarda a videoaula (até 3 GB) e o portfólio em PDF (até 50 MB) dos 182 classificados.
+A nuvem fica na VPS Hostinger (8 vCPU, 32 GB de RAM, 400 GB de disco, 32 TB de banda), com EasyPanel. Ela guarda a videoaula (até 400 MB) e o portfólio em PDF (até 10 MB) dos 182 classificados.
 
 ## Como funciona
 
@@ -121,8 +121,8 @@ Também vale testar de fora da UFPI, pelo celular com 4G: entre como participant
 
 ## Capacidade
 
-- **Disco:** 182 participantes × ~1 GB (videoaula de 20 min em 720p/1080p) ≈ 180 GB, mais as substituições. O limite de 3 GB por vídeo e os 400 GB de disco comportam o pior caso realista. Acompanhe o uso em **EasyPanel → Monitor**.
-- **Banda:** 32 TB/mês é muito acima do necessário. O envio de todos (~200 GB) e cada avaliador assistindo cada vídeo (~400 GB) somam menos de 1 TB.
+- **Disco:** 182 participantes × (400 MB + 10 MB) ≈ 75 GB no pior caso, mais as substituições. Os 400 GB de disco sobram. Acompanhe o uso em **EasyPanel → Monitor**.
+- **Banda:** 32 TB/mês é muito acima do necessário. O envio de todos (~75 GB) e cada avaliador assistindo cada vídeo (~150 GB) somam bem menos de 1 TB.
 - **Simultaneidade:** 182 envios ao mesmo tempo são só I/O de disco e rede. O SeaweedFS absorve isso com folga em 8 vCPU e 32 GB de RAM.
 
 ## Cópia de segurança

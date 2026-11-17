@@ -194,8 +194,8 @@ export function limitesMb(env: NodeJS.ProcessEnv = process.env): Record<TipoArqu
     return Number.isFinite(n) && n > 0 ? n : padrao;
   };
   return {
-    video: num(env.FASE2_VIDEO_MAX_MB, 3072),
-    portfolio: num(env.FASE2_PORTFOLIO_MAX_MB, 50),
+    video: num(env.FASE2_VIDEO_MAX_MB, 400),
+    portfolio: num(env.FASE2_PORTFOLIO_MAX_MB, 10),
   };
 }
 

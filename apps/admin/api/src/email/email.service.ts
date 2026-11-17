@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { limitesMb } from "../fase2/fase2.regras.js";
 import * as nodemailer from "nodemailer";
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
@@ -248,6 +249,7 @@ export class EmailService {
     const esc = (t: string) =>
       t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const link = `${this.configService.get("FRONTEND_URL")}/competidor/envio`;
+    const lim = limitesMb();
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #E8B829;">OLICMAT — Início da Fase 2</h2>
@@ -258,8 +260,8 @@ export class EmailService {
            <strong>Prazo final para envio:</strong> ${fmt(prazo)} (horário de Brasília)</p>
         <p>Escolha uma ou mais habilidades da competência sorteada e, até o prazo final, envie pela plataforma da OLICMAT, com o seu login e senha:</p>
         <ul>
-          <li><strong>Videoaula autoral de 20 minutos</strong> (arquivo de vídeo, por exemplo MP4), desenvolvendo uma situação de ensino ligada à competência e às habilidades escolhidas;</li>
-          <li><strong>Portfólio digital em arquivo único PDF</strong>, preferencialmente no modelo oficial (Template do Portfólio), coerente com a videoaula.</li>
+          <li><strong>Videoaula autoral de 20 minutos</strong> (arquivo de vídeo, por exemplo MP4, com até ${lim.video} MB — grave em 720p ou comprima o vídeo se passar desse limite), desenvolvendo uma situação de ensino ligada à competência e às habilidades escolhidas;</li>
+          <li><strong>Portfólio digital em arquivo único PDF</strong> (até ${lim.portfolio} MB), preferencialmente no modelo oficial (Template do Portfólio), coerente com a videoaula.</li>
         </ul>
         <p>Comece o envio com antecedência: vídeos grandes podem levar tempo para subir. Você pode substituir os arquivos até o prazo final; vale o último envio. Após o prazo, o envio é encerrado automaticamente, sem prorrogação.</p>
         <p>O Manual do Participante e o Template do Portfólio estão em <a href="${process.env.SITE_URL || "https://olicmat.cead.ufpi.br"}/regulamento" style="color: #E8B829;">Regulamento, Edital e Documentos</a>.</p>

@@ -145,6 +145,11 @@ function CartaoArquivo({
             <p className="text-xs text-[var(--text-tertiary)]">
               {video ? `${formatos.map((x) => x.toUpperCase()).join(", ")} · até ${limite}` : `PDF · até ${limite}`}
             </p>
+            {video && (
+              <p className="text-xs text-[var(--text-tertiary)] mt-0.5">
+                Grave em 720p. Se o arquivo passar do limite, comprima antes de enviar (por exemplo, no HandBrake, predefinição “Fast 720p30”).
+              </p>
+            )}
           </div>
         </div>
         {atual ? (
@@ -401,13 +406,13 @@ export default function EnvioFase2Page() {
         <>
           <CartaoArquivo
             tipo="video" atual={enviado?.video ?? null} aberta={aberta}
-            limiteMb={status.limitesMb?.video ?? 3072} formatos={status.formatos?.video ?? ["mp4"]}
+            limiteMb={status.limitesMb?.video ?? 400} formatos={status.formatos?.video ?? ["mp4"]}
             ocupado={uploadAtivo} aoMudarOcupado={setUploadAtivo}
             aoConcluir={(m) => { setSucesso(m); carregar(); }}
           />
           <CartaoArquivo
             tipo="portfolio" atual={enviado?.portfolio ?? null} aberta={aberta}
-            limiteMb={status.limitesMb?.portfolio ?? 50} formatos={status.formatos?.portfolio ?? ["pdf"]}
+            limiteMb={status.limitesMb?.portfolio ?? 10} formatos={status.formatos?.portfolio ?? ["pdf"]}
             ocupado={uploadAtivo} aoMudarOcupado={setUploadAtivo}
             aoConcluir={(m) => { setSucesso(m); carregar(); }}
           />
