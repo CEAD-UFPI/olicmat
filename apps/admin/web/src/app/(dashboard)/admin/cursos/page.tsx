@@ -160,14 +160,14 @@ export default function AdminCursosPage() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             Cursos
           </h1>
-          <p className="text-[#9895a4] mt-1 text-sm">Gerenciar cursos de licenciatura em Matemática</p>
+          <p className="text-[var(--text-tertiary)] mt-1 text-sm">Gerenciar cursos de licenciatura em Matemática</p>
         </div>
         <Button
           onClick={abrirCriar}
-          className="bg-[#E8B829] text-black hover:bg-[#d4a720]"
+          className="bg-[var(--color-gold)] text-black hover:bg-[var(--color-gold-hover)]"
         >
           <Plus size={16} className="mr-2" />
           Novo Curso
@@ -176,18 +176,18 @@ export default function AdminCursosPage() {
 
       <div className="flex gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9895a4]" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
           <Input
             placeholder="Buscar curso..."
             value={filtro}
             onChange={(e) => { setFiltro(e.target.value); setPagina(1); }}
-            className="pl-10 border-[#2a2a3a] bg-[#12121a] text-[#f0ece4]"
+            className="pl-10 border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-primary)]"
           />
         </div>
         <select
           value={filtroInst}
           onChange={(e) => { setFiltroInst(e.target.value); setPagina(1); }}
-          className="rounded-lg border border-[#2a2a3a] bg-[#12121a] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]"
+          className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-primary)] px-3 text-sm focus:outline-none focus:border-[var(--color-gold)]"
         >
           <option value="">Todas instituições</option>
           {instituicoes.map((inst) => (
@@ -198,58 +198,58 @@ export default function AdminCursosPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <>
-          <div className="border border-[#2a2a3a] rounded-2xl overflow-hidden bg-[#12121a]">
+          <div className="border border-[var(--border-color)] rounded-2xl overflow-hidden bg-[var(--bg-secondary)]">
             <table className="w-full text-base">
               <thead>
-                <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
-                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Instituição</th>
-                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">ENADE</th>
-                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Alunos</th>
-                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Inscrições</th>
-                  <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
+                <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                  <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                  <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Instituição</th>
+                  <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">ENADE</th>
+                  <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Alunos</th>
+                  <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Inscrições</th>
+                  <th className="text-right py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {paginados.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-16 text-center text-[#b0adc0] text-base">
+                    <td colSpan={6} className="py-16 text-center text-[var(--text-secondary)] text-base">
                       Nenhum curso encontrado
                     </td>
                   </tr>
                 ) : (
                   paginados.map((curso) => (
-                    <tr key={curso.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#1a1a26] transition-colors">
-                      <td className="py-4 px-5 text-[#f0ece4] font-medium">{curso.nome}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{curso.instituicao.sigla}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">
+                    <tr key={curso.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--surface)] transition-colors">
+                      <td className="py-4 px-5 text-[var(--text-primary)] font-medium">{curso.nome}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{curso.instituicao.sigla}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">
                         {curso.notaEnade != null ? Number(curso.notaEnade).toFixed(2) : "—"}
                       </td>
-                      <td className="py-4 px-5 text-[#9895a4]">{curso._count?.usuarios ?? 0}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{curso._count?.inscricoes ?? 0}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{curso._count?.usuarios ?? 0}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{curso._count?.inscricoes ?? 0}</td>
                       <td className="py-4 px-5 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => setDetailTarget(curso)}
-                            className="p-1.5 text-[#9895a4] hover:text-[#3AAFE0] transition-colors"
+                            className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--color-blue-ink)] transition-colors"
                             title="Detalhes"
                           >
                             <Eye size={18} />
                           </button>
                           <button
                             onClick={() => abrirEditar(curso)}
-                            className="p-1.5 text-[#9895a4] hover:text-[#E8B829] transition-colors"
+                            className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--color-gold-ink)] transition-colors"
                             title="Editar"
                           >
                             <Pencil size={18} />
                           </button>
                           <button
                             onClick={() => setConfirmDelete(curso)}
-                            className="p-1.5 text-[#9895a4] hover:text-red-400 transition-colors"
+                            className="p-1.5 text-[var(--text-tertiary)] hover:text-red-400 transition-colors"
                             title="Excluir"
                           >
                             <Trash2 size={18} />
@@ -281,21 +281,21 @@ export default function AdminCursosPage() {
           )}
 
           <div className="space-y-2">
-            <Label className="text-[#b0adc0] text-sm">Nome do Curso *</Label>
+            <Label className="text-[var(--text-secondary)] text-sm">Nome do Curso *</Label>
             <Input
               value={form.nome}
               onChange={(e) => setForm({ ...form, nome: e.target.value })}
               placeholder="Ex: Licenciatura em Matemática"
-              className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+              className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
             />
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[#b0adc0] text-sm">Instituição *</Label>
+            <Label className="text-[var(--text-secondary)] text-sm">Instituição *</Label>
             <select
               value={form.instituicaoId}
               onChange={(e) => setForm({ ...form, instituicaoId: e.target.value })}
-              className="w-full h-10 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]"
+              className="w-full h-10 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] px-3 text-sm focus:outline-none focus:border-[var(--color-gold)]"
             >
               <option value="">Selecione</option>
               {instituicoes.map((inst) => (
@@ -305,28 +305,28 @@ export default function AdminCursosPage() {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-[#b0adc0] text-sm">Nota ENADE (0 a 100)</Label>
+            <Label className="text-[var(--text-secondary)] text-sm">Nota ENADE (0 a 100)</Label>
             <Input
               value={form.notaEnade}
               onChange={(e) => setForm({ ...form, notaEnade: e.target.value.replace(/[^\d.,]/g, "").replace(",", ".") })}
               placeholder="Ex: 75.50"
-              className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+              className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
               inputMode="decimal"
             />
-            <p className="text-xs text-[#9895a4]">Campo opcional. Nota contínua do Enade (Conceito Enade / 5 × 20).</p>
+            <p className="text-xs text-[var(--text-tertiary)]">Campo opcional. Nota contínua do Enade (Conceito Enade / 5 × 20).</p>
           </div>
 
           <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setModalAberto(false)}
-              className="flex-1 border-[#2a2a3a] text-[#9895a4]"
+              className="flex-1 border-[var(--border-color)] text-[var(--text-tertiary)]"
             >
               Cancelar
             </Button>
             <Button
               onClick={salvar}
-              className="flex-1 bg-[#E8B829] text-black hover:bg-[#d4a720]"
+              className="flex-1 bg-[var(--color-gold)] text-black hover:bg-[var(--color-gold-hover)]"
             >
               {editando ? "Salvar" : "Criar"}
             </Button>

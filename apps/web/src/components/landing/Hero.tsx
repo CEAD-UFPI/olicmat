@@ -22,7 +22,7 @@ const particles = [
 ].map((p, i) => ({
   left: p.left,
   top: p.top,
-  color: i % 3 === 0 ? "var(--color-gold)" : i % 3 === 1 ? "var(--color-green)" : "var(--color-blue)",
+  color: i % 3 === 0 ? "var(--color-gold-ink)" : i % 3 === 1 ? "var(--color-green-ink)" : "var(--color-blue-ink)",
   delay: (i * 0.2) % 4,
   duration: 4 + (i * 0.3) % 4,
   yOffset: -20 + Math.random() * 40,
@@ -44,8 +44,8 @@ export function Hero() {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 -right-20 w-[500px] h-[500px] lg:w-[700px] lg:h-[700px] gradient-orb-sigma rounded-full" />
         <div className="absolute bottom-1/4 -left-32 w-[400px] h-[400px] lg:w-[600px] lg:h-[600px] gradient-orb-gold rounded-full" />
-        <motion.div className="absolute top-1/4 right-1/4 w-64 h-64 lg:w-96 lg:h-96 border border-[#E8B829]/10 rounded-full animate-float-geometry" style={{ y }} />
-        <motion.div className="absolute top-1/3 right-1/3 w-48 h-48 lg:w-72 lg:h-72 border border-[#3AAFE0]/10 rounded-full animate-float-geometry" style={{ y: y2 }} />
+        <motion.div className="absolute top-1/4 right-1/4 w-64 h-64 lg:w-96 lg:h-96 border border-[var(--color-gold)]/10 rounded-full animate-float-geometry" style={{ y }} />
+        <motion.div className="absolute top-1/3 right-1/3 w-48 h-48 lg:w-72 lg:h-72 border border-[var(--color-blue)]/10 rounded-full animate-float-geometry" style={{ y: y2 }} />
         <div className="absolute inset-0">
           {particles.map((p, i) => (
             <motion.div
@@ -67,17 +67,25 @@ export function Hero() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
           <Image
+            src="/logo-semfundo-claro.png"
+            alt="OLICMAT"
+            width={524}
+            height={372}
+            className="h-[372px] w-auto object-contain mx-auto mb-8 so-tema-claro"
+            priority
+          />
+          <Image
             src="/logo-semfundo.png"
             alt="OLICMAT"
             width={524}
             height={372}
-            className="h-[372px] w-auto object-contain mx-auto mb-8"
+            className="h-[372px] w-auto object-contain mx-auto mb-8 so-tema-escuro"
             priority
           />
         </motion.div>
 
         <motion.p
-          className="text-lg lg:text-xl text-[#9895a4] max-w-2xl mx-auto leading-relaxed mb-10 font-[family-name:var(--font-outfit)]"
+          className="text-lg lg:text-xl text-[var(--text-tertiary)] max-w-2xl mx-auto leading-relaxed mb-10 font-[family-name:var(--font-outfit)]"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
@@ -95,7 +103,7 @@ export function Hero() {
             variant="outline"
             size="lg"
             render={<a href="https://olicmat.cead.ufpi.br/regulamento" target="_blank" rel="noopener noreferrer" />}
-            className="h-14 px-8 text-base font-semibold border-[#2a2a3a] text-[#f0ece4] hover:bg-[#1a1a26] border-glow"
+            className="h-14 px-8 text-base font-semibold border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--surface)] border-glow"
           >
             Regulamento
           </Button>
@@ -103,7 +111,7 @@ export function Hero() {
             variant="outline"
             size="lg"
             render={<a href="https://olicmat.cead.ufpi.br/tutorial-prova.html" target="_blank" rel="noopener noreferrer" />}
-            className="h-14 px-8 text-base font-semibold border-[#2a2a3a] text-[#f0ece4] hover:bg-[#1a1a26] border-glow"
+            className="h-14 px-8 text-base font-semibold border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--surface)] border-glow"
           >
             Tutorial Fase 1
           </Button>
@@ -111,7 +119,7 @@ export function Hero() {
             size="lg"
             render={<a href="https://admin.olicmat.cead.ufpi.br/competidor" target="_blank" rel="noopener noreferrer" />}
             className="h-14 px-8 text-base font-semibold"
-            style={{ backgroundColor: "var(--color-gold)", color: "#fff" }}
+            style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}
           >
             Fazer a Prova
           </Button>
@@ -119,22 +127,22 @@ export function Hero() {
 
         {/* Cronogram highlights bar */}
         <motion.div
-          className="border-t border-[#2a2a3a]/60 pt-8"
+          className="border-t border-[var(--border-color)]/60 pt-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="text-xs text-[#9895a4] uppercase tracking-widest mb-4 font-semibold">
+          <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-widest mb-4 font-semibold">
             Datas oficiais — 1ª OLICMAT
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {cronogramaDestaques.map((item) => (
               <div
                 key={item.data}
-                className="rounded-xl border border-[#2a2a3a] bg-[#12121a]/60 p-3 hover:border-[#E8B829]/30 hover:bg-[#E8B829]/5 transition-all duration-300"
+                className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)]/60 p-3 hover:border-[var(--color-gold)]/30 hover:bg-[var(--color-gold)]/5 transition-all duration-300"
               >
-                <span className="text-xs font-bold text-[#E8B829] block mb-1">{item.data}</span>
-                <span className="text-xs text-[#f0ece4] leading-tight block">{item.evento}</span>
+                <span className="text-xs font-bold text-[var(--color-gold-ink)] block mb-1">{item.data}</span>
+                <span className="text-xs text-[var(--text-primary)] leading-tight block">{item.evento}</span>
               </div>
             ))}
           </div>
@@ -142,7 +150,7 @@ export function Hero() {
       </motion.div>
 
       {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[#0a0a0f] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-[var(--bg-primary)] to-transparent pointer-events-none" />
     </section>
   );
 }

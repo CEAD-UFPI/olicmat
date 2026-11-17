@@ -69,14 +69,14 @@ const SITUACAO: Record<string, { rotulo: string; cor: string }> = {
   CONCLUIDA: { rotulo: "Avaliado", cor: "#4CAF50" },
 };
 
-const cartao = "border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a]";
+const cartao = "border border-[var(--border-color)] rounded-2xl p-5 bg-[var(--bg-secondary)]";
 
 function Metrica({ rotulo, valor, detalhe }: { rotulo: string; valor: string | number; detalhe?: string }) {
   return (
     <div className={cartao}>
-      <p className="text-xs uppercase tracking-widest text-[#9895a4]">{rotulo}</p>
-      <p className="text-3xl font-bold text-[#f0ece4] mt-1 tabular-nums">{valor}</p>
-      {detalhe && <p className="text-xs text-[#9895a4] mt-1">{detalhe}</p>}
+      <p className="text-xs uppercase tracking-widest text-[var(--text-tertiary)]">{rotulo}</p>
+      <p className="text-3xl font-bold text-[var(--text-primary)] mt-1 tabular-nums">{valor}</p>
+      {detalhe && <p className="text-xs text-[var(--text-tertiary)] mt-1">{detalhe}</p>}
     </div>
   );
 }
@@ -160,7 +160,7 @@ export default function PainelFase2() {
   if (!painel) {
     return (
       <div className="flex items-center justify-center h-64">
-        {erro ? <p className="text-red-300">{erro}</p> : <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />}
+        {erro ? <p className="text-red-300">{erro}</p> : <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />}
       </div>
     );
   }
@@ -172,8 +172,8 @@ export default function PainelFase2() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">Fase 2 — Envio e Avaliação</h1>
-          <p className="text-[#9895a4] text-sm mt-1">{painel.edicao.titulo}</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">Fase 2 — Envio e Avaliação</h1>
+          <p className="text-[var(--text-tertiary)] text-sm mt-1">{painel.edicao.titulo}</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={carregar}><RefreshCw size={14} className="mr-1" /> Atualizar</Button>
@@ -187,8 +187,8 @@ export default function PainelFase2() {
       {/* Início */}
       {painel.situacao === "NAO_INICIADA" ? (
         <div className={`${cartao} space-y-4`}>
-          <h2 className="text-lg font-bold text-[#f0ece4]">Iniciar a Fase 2</h2>
-          <p className="text-sm text-[#b0adc0]">
+          <h2 className="text-lg font-bold text-[var(--text-primary)]">Iniciar a Fase 2</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
             Informe o tema sorteado pela Comissão. Ao iniciar, o prazo de <strong>24 horas</strong> começa a contar
             para todos os {totais.classificados} classificados, o início é registrado na auditoria e cada
             classificado recebe um e-mail com o tema, a data e a hora do início e o prazo final.
@@ -198,26 +198,26 @@ export default function PainelFase2() {
             <p className="text-sm text-amber-300 flex items-center gap-2"><AlertTriangle size={16} /> A relação de classificados ainda não foi carregada no sistema.</p>
           )}
           <div>
-            <Label htmlFor="tema" className="text-[#f0ece4]">Tema da videoaula</Label>
+            <Label htmlFor="tema" className="text-[var(--text-primary)]">Tema da videoaula</Label>
             <Input id="tema" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Tema sorteado"
-              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]" />
+              className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]" />
           </div>
           <Button disabled={ocupado || tema.trim().length < 3 || totais.classificados === 0} onClick={() => setConfirmarInicio(true)}
-            style={{ backgroundColor: "#E8B829", color: "#0a0a0f" }}>
+            style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}>
             Iniciar Fase 2
           </Button>
         </div>
       ) : (
         <div className={`${cartao} grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-sm`}>
           <div className="sm:col-span-2 lg:col-span-4">
-            <p className="text-xs uppercase tracking-widest text-[#E8B829]">Tema</p>
-            <p className="text-lg font-semibold text-[#f0ece4]">{painel.tema}</p>
+            <p className="text-xs uppercase tracking-widest text-[var(--color-gold-ink)]">Tema</p>
+            <p className="text-lg font-semibold text-[var(--text-primary)]">{painel.tema}</p>
           </div>
-          <div><p className="text-[#9895a4]">Início</p><p className="text-[#f0ece4]">{dataHora(painel.inicioEm)}</p></div>
-          <div><p className="text-[#9895a4]">Prazo final</p><p className="text-[#f0ece4]">{dataHora(painel.prazoEm)}</p></div>
-          <div><p className="text-[#9895a4]">Iniciada por</p><p className="text-[#f0ece4]">{painel.iniciadaPor ?? "—"}</p></div>
+          <div><p className="text-[var(--text-tertiary)]">Início</p><p className="text-[var(--text-primary)]">{dataHora(painel.inicioEm)}</p></div>
+          <div><p className="text-[var(--text-tertiary)]">Prazo final</p><p className="text-[var(--text-primary)]">{dataHora(painel.prazoEm)}</p></div>
+          <div><p className="text-[var(--text-tertiary)]">Iniciada por</p><p className="text-[var(--text-primary)]">{painel.iniciadaPor ?? "—"}</p></div>
           <div>
-            <p className="text-[#9895a4]">Situação</p>
+            <p className="text-[var(--text-tertiary)]">Situação</p>
             <p className={painel.situacao === "ABERTA" ? "text-emerald-300 font-semibold" : "text-red-300 font-semibold"}>
               {painel.situacao === "ABERTA" ? `Envio aberto (${restanteH.toFixed(1)} h restantes)` : "Envio encerrado"}
             </p>
@@ -231,9 +231,9 @@ export default function PainelFase2() {
         <Metrica rotulo="Enviaram" valor={totais.enviaram} detalhe={`${totais.classificados - totais.enviaram} sem envio`} />
         <Metrica rotulo="Avaliados" valor={totais.avaliados} detalhe={`${totais.terceiroAvaliador} com 3º avaliador`} />
         <div className={cartao}>
-          <p className="text-xs uppercase tracking-widest text-[#9895a4] flex items-center gap-1"><Mail size={12} /> E-mails de início</p>
-          <p className="text-sm text-[#f0ece4] mt-2">{painel.emails.enviados} enviados · {painel.emails.pendentes} na fila</p>
-          <p className={`text-sm ${painel.emails.falhas ? "text-red-300" : "text-[#9895a4]"}`}>{painel.emails.falhas} com falha</p>
+          <p className="text-xs uppercase tracking-widest text-[var(--text-tertiary)] flex items-center gap-1"><Mail size={12} /> E-mails de início</p>
+          <p className="text-sm text-[var(--text-primary)] mt-2">{painel.emails.enviados} enviados · {painel.emails.pendentes} na fila</p>
+          <p className={`text-sm ${painel.emails.falhas ? "text-red-300" : "text-[var(--text-tertiary)]"}`}>{painel.emails.falhas} com falha</p>
           {painel.emails.falhas > 0 && (
             <Button size="sm" variant="outline" className="mt-2" disabled={ocupado}
               onClick={() => acao(async () => { await api.post("/admin/fase2/emails/reenviar"); return "Reenvio das falhas iniciado."; })}>
@@ -245,14 +245,14 @@ export default function PainelFase2() {
 
       {/* Por instituição */}
       <div className={cartao}>
-        <h2 className="text-base font-bold text-[#f0ece4] mb-3">Envios por instituição</h2>
+        <h2 className="text-base font-bold text-[var(--text-primary)] mb-3">Envios por instituição</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {painel.porInstituicao.map((i) => (
-            <div key={i.sigla} className="rounded-xl bg-[#0a0a0f] p-3">
-              <p className="text-sm font-semibold text-[#f0ece4]">{i.sigla}</p>
-              <p className="text-xs text-[#9895a4]">{i.enviaram} de {i.classificados} enviaram</p>
-              <div className="h-1.5 bg-[#2a2a3a] rounded mt-2">
-                <div className="h-1.5 bg-[#E8B829] rounded" style={{ width: `${i.classificados ? (100 * i.enviaram) / i.classificados : 0}%` }} />
+            <div key={i.sigla} className="rounded-xl bg-[var(--bg-primary)] p-3">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">{i.sigla}</p>
+              <p className="text-xs text-[var(--text-tertiary)]">{i.enviaram} de {i.classificados} enviaram</p>
+              <div className="h-1.5 bg-[var(--border-color)] rounded mt-2">
+                <div className="h-1.5 bg-[var(--color-gold)] rounded" style={{ width: `${i.classificados ? (100 * i.enviaram) / i.classificados : 0}%` }} />
               </div>
             </div>
           ))}
@@ -262,23 +262,23 @@ export default function PainelFase2() {
       {/* Distribuição */}
       {painel.situacao === "ENCERRADA" && !painel.distribuida && (
         <div className={`${cartao} space-y-3`}>
-          <h2 className="text-base font-bold text-[#f0ece4] flex items-center gap-2"><Users size={16} /> Distribuir aos avaliadores</h2>
-          <p className="text-sm text-[#b0adc0]">
+          <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Users size={16} /> Distribuir aos avaliadores</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
             Cada participante que enviou recebe 2 avaliadores diferentes, em partes iguais. Se as notas diferirem
             mais de 20 pontos, o sistema chama automaticamente um 3º avaliador. Selecione pelo menos 3 avaliadores.
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {avaliadores.map((a) => (
-              <label key={a.id} className="flex items-center gap-2 text-sm text-[#f0ece4] rounded-lg bg-[#0a0a0f] p-2 cursor-pointer">
+              <label key={a.id} className="flex items-center gap-2 text-sm text-[var(--text-primary)] rounded-lg bg-[var(--bg-primary)] p-2 cursor-pointer">
                 <input type="checkbox" checked={selecionados.includes(a.id)}
                   onChange={(e) => setSelecionados((s) => (e.target.checked ? [...s, a.id] : s.filter((x) => x !== a.id)))} />
-                {a.nome} <span className="text-[#9895a4] text-xs">{a.email}</span>
+                {a.nome} <span className="text-[var(--text-tertiary)] text-xs">{a.email}</span>
               </label>
             ))}
-            {!avaliadores.length && <p className="text-sm text-[#9895a4]">Nenhum usuário com perfil de avaliador.</p>}
+            {!avaliadores.length && <p className="text-sm text-[var(--text-tertiary)]">Nenhum usuário com perfil de avaliador.</p>}
           </div>
           <Button disabled={ocupado || selecionados.length < 3} onClick={() => setConfirmarDistribuicao(true)}
-            style={{ backgroundColor: "#E8B829", color: "#0a0a0f" }}>
+            style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}>
             Distribuir {totais.enviaram} participantes entre {selecionados.length} avaliadores
           </Button>
         </div>
@@ -287,15 +287,15 @@ export default function PainelFase2() {
       {/* Avaliadores */}
       {painel.avaliadores.length > 0 && (
         <div className={cartao}>
-          <h2 className="text-base font-bold text-[#f0ece4] mb-3">Avaliadores</h2>
+          <h2 className="text-base font-bold text-[var(--text-primary)] mb-3">Avaliadores</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="text-left text-[#9895a4]">
+              <thead className="text-left text-[var(--text-tertiary)]">
                 <tr><th className="py-2 pr-3">Avaliador</th><th className="pr-3">Recebidos</th><th className="pr-3">Concluídos</th><th className="pr-3">Pendentes</th><th className="pr-3">Pendentes &gt; {painel.alertaHoras} h</th><th>Tempo médio</th></tr>
               </thead>
-              <tbody className="text-[#f0ece4]">
+              <tbody className="text-[var(--text-primary)]">
                 {painel.avaliadores.map((a) => (
-                  <tr key={a.avaliadorId} className="border-t border-[#2a2a3a]">
+                  <tr key={a.avaliadorId} className="border-t border-[var(--border-color)]">
                     <td className="py-2 pr-3">{a.nome}</td>
                     <td className="pr-3">{a.total}</td>
                     <td className="pr-3">{a.concluidas}</td>
@@ -313,12 +313,12 @@ export default function PainelFase2() {
       {/* Participantes */}
       <div className={cartao}>
         <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-          <h2 className="text-base font-bold text-[#f0ece4]">Participantes ({lista.length})</h2>
+          <h2 className="text-base font-bold text-[var(--text-primary)]">Participantes ({lista.length})</h2>
           <div className="flex gap-2">
             <Input placeholder="Buscar nome, nº ou instituição" value={filtro} onChange={(e) => setFiltro(e.target.value)}
-              className="h-8 w-60 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]" />
+              className="h-8 w-60 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]" />
             <select value={filtroSituacao} onChange={(e) => setFiltroSituacao(e.target.value)}
-              className="h-8 rounded-md bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-2">
+              className="h-8 rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm px-2">
               <option value="">Todas as situações</option>
               {Object.entries(SITUACAO).map(([k, v]) => <option key={k} value={k}>{v.rotulo}</option>)}
             </select>
@@ -326,14 +326,14 @@ export default function PainelFase2() {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-left text-[#9895a4]">
+            <thead className="text-left text-[var(--text-tertiary)]">
               <tr><th className="py-2 pr-3">Nº</th><th className="pr-3">Participante</th><th className="pr-3">Inst.</th><th className="pr-3">Envio</th><th className="pr-3">Avaliações</th><th className="pr-3">Nota</th><th>Situação</th></tr>
             </thead>
-            <tbody className="text-[#f0ece4] align-top">
+            <tbody className="text-[var(--text-primary)] align-top">
               {lista.map((p) => {
                 const s = SITUACAO[p.situacaoAvaliacao] ?? { rotulo: p.situacaoAvaliacao, cor: "#9895a4" };
                 return (
-                  <tr key={p.inscricaoId} className="border-t border-[#2a2a3a]">
+                  <tr key={p.inscricaoId} className="border-t border-[var(--border-color)]">
                     <td className="py-2 pr-3 tabular-nums">{p.numero}</td>
                     <td className="pr-3">
                       {p.nome}
@@ -343,11 +343,11 @@ export default function PainelFase2() {
                     <td className="pr-3">
                       {p.ultimoEnvio ? (
                         <>
-                          <span className="block">{dataHora(p.ultimoEnvio.enviadoEm)}{p.totalEnvios > 1 && <span className="text-xs text-[#9895a4]"> ({p.totalEnvios} envios)</span>}</span>
-                          <a className="text-xs text-[#3AAFE0] hover:underline mr-2" href={p.ultimoEnvio.videoLink} target="_blank" rel="noopener noreferrer">vídeo</a>
-                          <a className="text-xs text-[#3AAFE0] hover:underline" href={p.ultimoEnvio.portfolioLink} target="_blank" rel="noopener noreferrer">portfólio</a>
+                          <span className="block">{dataHora(p.ultimoEnvio.enviadoEm)}{p.totalEnvios > 1 && <span className="text-xs text-[var(--text-tertiary)]"> ({p.totalEnvios} envios)</span>}</span>
+                          <a className="text-xs text-[var(--color-blue-ink)] hover:underline mr-2" href={p.ultimoEnvio.videoLink} target="_blank" rel="noopener noreferrer">vídeo</a>
+                          <a className="text-xs text-[var(--color-blue-ink)] hover:underline" href={p.ultimoEnvio.portfolioLink} target="_blank" rel="noopener noreferrer">portfólio</a>
                         </>
-                      ) : <span className="text-[#9895a4]">—</span>}
+                      ) : <span className="text-[var(--text-tertiary)]">—</span>}
                     </td>
                     <td className="pr-3 text-xs space-y-1">
                       {p.atribuicoes.map((a) => (
@@ -357,17 +357,17 @@ export default function PainelFase2() {
                             <span className="text-emerald-300">{a.nota} pts em {a.horasComAvaliador} h</span>
                           ) : (
                             <>
-                              <span className={a.horasComAvaliador > painel.alertaHoras ? "text-red-300 font-semibold" : "text-[#E8B829]"}>
+                              <span className={a.horasComAvaliador > painel.alertaHoras ? "text-red-300 font-semibold" : "text-[var(--color-gold-ink)]"}>
                                 pendente há {a.horasComAvaliador} h
                               </span>
-                              <button className="text-[#3AAFE0] hover:underline" onClick={() => { setRemanejando({ atribuicao: a, participante: p.nome }); setNovoAvaliador(""); }}>
+                              <button className="text-[var(--color-blue-ink)] hover:underline" onClick={() => { setRemanejando({ atribuicao: a, participante: p.nome }); setNovoAvaliador(""); }}>
                                 remanejar
                               </button>
                             </>
                           )}
                         </div>
                       ))}
-                      {!p.atribuicoes.length && <span className="text-[#9895a4]">—</span>}
+                      {!p.atribuicoes.length && <span className="text-[var(--text-tertiary)]">—</span>}
                     </td>
                     <td className="pr-3 font-semibold">{p.fase2Nota ?? "—"}</td>
                     <td><span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ color: s.cor, backgroundColor: `${s.cor}22` }}>{s.rotulo}</span></td>
@@ -401,18 +401,18 @@ export default function PainelFase2() {
       {remanejando && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setRemanejando(null)}>
           <div className={`${cartao} w-full max-w-md space-y-3`} onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-base font-bold text-[#f0ece4]">Remanejar avaliação</h3>
-            <p className="text-sm text-[#b0adc0]">
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Remanejar avaliação</h3>
+            <p className="text-sm text-[var(--text-secondary)]">
               {remanejando.participante}: {remanejando.atribuicao.ordem}º avaliador atual é {remanejando.atribuicao.avaliador}.
             </p>
             <select value={novoAvaliador} onChange={(e) => setNovoAvaliador(e.target.value)}
-              className="w-full h-9 rounded-md bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm px-2">
+              className="w-full h-9 rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm px-2">
               <option value="">Escolha o novo avaliador</option>
               {avaliadores.filter((a) => a.id !== remanejando.atribuicao.avaliadorId).map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
             </select>
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => setRemanejando(null)}>Cancelar</Button>
-              <Button size="sm" disabled={!novoAvaliador || ocupado} style={{ backgroundColor: "#E8B829", color: "#0a0a0f" }}
+              <Button size="sm" disabled={!novoAvaliador || ocupado} style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}
                 onClick={() => acao(async () => {
                   await api.post(`/admin/fase2/atribuicoes/${remanejando.atribuicao.id}/remanejar`, { avaliadorId: novoAvaliador });
                   setRemanejando(null);

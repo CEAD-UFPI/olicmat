@@ -97,10 +97,10 @@ export default function ComissaoInscricoesPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Inscrições
         </h1>
-        <p className="text-[#9895a4] mt-1">Consulta de inscrições dos competidores</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Consulta de inscrições dos competidores</p>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -108,12 +108,12 @@ export default function ComissaoInscricoesPage() {
           placeholder="Buscar por nome, email ou instituição..."
           value={filtro}
           onChange={(e) => { setFiltro(e.target.value); setPagina(1); }}
-          className="flex-1 min-w-[200px] bg-[#12121a] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+          className="flex-1 min-w-[200px] bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
         />
         <select
           value={statusFiltro}
           onChange={(e) => { setStatusFiltro(e.target.value); setPagina(1); }}
-          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
+          className="h-10 px-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] text-base cursor-pointer"
         >
           <option value="">Todos os status</option>
           <option value="PENDENTE">Pendente</option>
@@ -124,34 +124,34 @@ export default function ComissaoInscricoesPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#b0adc0]">Nenhuma inscrição encontrada.</p>
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+          <p className="text-[var(--text-secondary)]">Nenhuma inscrição encontrada.</p>
         </div>
       ) : (
         <>
-          <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
+          <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-base">
                 <thead>
-                  <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Estado</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Instituição</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
+                  <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Estado</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Instituição</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Status</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginados.map((insc) => (
-                    <tr key={insc.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                      <td className="py-4 px-5 text-[#f0ece4] font-medium">{insc.nome || "-"}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{insc.estado || "-"}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{insc.instituicao || "-"}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{insc.curso || "-"}</td>
+                    <tr key={insc.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-primary)]/50 transition-colors">
+                      <td className="py-4 px-5 text-[var(--text-primary)] font-medium">{insc.nome || "-"}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{insc.estado || "-"}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{insc.instituicao || "-"}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{insc.curso || "-"}</td>
                       <td className="py-4 px-5 text-center">
                         <span className="inline-flex">
                           <StatusBadge
@@ -164,7 +164,7 @@ export default function ComissaoInscricoesPage() {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => setDetailTarget(insc)}
-                            className="text-[#9895a4] hover:text-[#E8B829] transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-tertiary)] hover:text-[var(--color-gold-ink)] transition-colors p-1 cursor-pointer"
                             title="Detalhes"
                           >
                             <Eye size={18} />
@@ -174,7 +174,7 @@ export default function ComissaoInscricoesPage() {
                               href={insc.comprovanteUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#9895a4] hover:text-[#E8B829] transition-colors p-1 cursor-pointer"
+                              className="text-[var(--text-tertiary)] hover:text-[var(--color-gold-ink)] transition-colors p-1 cursor-pointer"
                               title="Ver comprovante"
                             >
                               <FileText size={18} />
@@ -241,7 +241,7 @@ export default function ComissaoInscricoesPage() {
                           href={detailTarget.comprovanteUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#E8B829] hover:underline"
+                          className="text-[var(--color-gold-ink)] hover:underline"
                         >
                           Ver comprovante →
                         </a>
@@ -289,9 +289,9 @@ export default function ComissaoInscricoesPage() {
                   children: (
                     <>
                       {detailTarget.createdAt && (
-                        <p className="text-sm text-[#9895a4]">
+                        <p className="text-sm text-[var(--text-tertiary)]">
                           Inscrição criada em{" "}
-                          <span className="text-[#f0ece4]">
+                          <span className="text-[var(--text-primary)]">
                             {new Date(detailTarget.createdAt).toLocaleDateString("pt-BR", {
                               day: "2-digit",
                               month: "2-digit",

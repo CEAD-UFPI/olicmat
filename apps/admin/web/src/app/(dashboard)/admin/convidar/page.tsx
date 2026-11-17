@@ -33,7 +33,7 @@ export default function ConvidarEquipePage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       }
     >
@@ -128,19 +128,19 @@ function ConvidarEquipeContent() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Convidar equipe
         </h1>
-        <p className="text-[#9895a4] mt-2">
+        <p className="text-[var(--text-tertiary)] mt-2">
           Comissão, coordenações de curso, avaliadores e administradores. Cada
           pessoa recebe um link e preenche o próprio cadastro — você precisa
           apenas do nome, do e-mail e do papel.
         </p>
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-5">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 lg:p-8 bg-[var(--bg-secondary)] space-y-5">
         <div className="space-y-2">
-          <label htmlFor="lista" className="block text-sm text-[#9895a4]">
+          <label htmlFor="lista" className="block text-sm text-[var(--text-tertiary)]">
             Lista — uma pessoa por linha
           </label>
           <textarea
@@ -152,22 +152,22 @@ function ConvidarEquipeContent() {
               "Livia Fernanda; livia@ufpi.edu.br; comissao\n" +
               "Ray Silva; ray.silva@ufpi.edu.br; UFPI; coordenador_curso"
             }
-            className="w-full rounded-lg bg-[#0f0f16] border border-[#2a2a3a] p-4 text-[#f0ece4] placeholder:text-[#57545f] focus:outline-none focus:border-[#3AAFE0] font-[family-name:var(--font-jetbrains-mono)] text-sm"
+            className="w-full rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] p-4 text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--color-blue)] font-[family-name:var(--font-jetbrains-mono)] text-sm"
           />
-          <div className="text-xs text-[#6f6c7a] space-y-1">
+          <div className="text-xs text-[var(--text-muted)] space-y-1">
             <p>
-              <code className="text-[#9895a4]">Nome; e-mail; papel</code> — ou,
+              <code className="text-[var(--text-tertiary)]">Nome; e-mail; papel</code> — ou,
               para coordenação,{" "}
-              <code className="text-[#9895a4]">
+              <code className="text-[var(--text-tertiary)]">
                 Nome; e-mail; instituição; papel
               </code>
               . Separe por ponto e vírgula, vírgula ou tabulação.
             </p>
             <p>
-              Papéis aceitos: <code className="text-[#9895a4]">comissao</code>,{" "}
-              <code className="text-[#9895a4]">coordenador_curso</code>,{" "}
-              <code className="text-[#9895a4]">avaliador</code>,{" "}
-              <code className="text-[#9895a4]">admin</code>. A instituição pode
+              Papéis aceitos: <code className="text-[var(--text-tertiary)]">comissao</code>,{" "}
+              <code className="text-[var(--text-tertiary)]">coordenador_curso</code>,{" "}
+              <code className="text-[var(--text-tertiary)]">avaliador</code>,{" "}
+              <code className="text-[var(--text-tertiary)]">admin</code>. A instituição pode
               ser a sigla (UFPI) ou o nome completo.
             </p>
             <p>
@@ -178,8 +178,8 @@ function ConvidarEquipeContent() {
         </div>
 
         {linhas.length > 0 && (
-          <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 space-y-3">
-            <p className="text-sm text-[#f0ece4]">
+          <div className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] p-4 space-y-3">
+            <p className="text-sm text-[var(--text-primary)]">
               {validas.length} convite(s) prontos
               {invalidas.length > 0 && (
                 <span className="text-red-400">
@@ -192,13 +192,13 @@ function ConvidarEquipeContent() {
             {validas.length > 0 && (
               <div className="space-y-1">
                 {validas.slice(0, 8).map((l, i) => (
-                  <p key={i} className="text-xs text-[#9895a4]">
+                  <p key={i} className="text-xs text-[var(--text-tertiary)]">
                     {l.nome} &lt;{l.email}&gt; —{" "}
-                    <span className="text-[#4ec98a]">
+                    <span className="text-[var(--color-mint-ink)]">
                       {ROTULO_PAPEL[l.role] ?? l.role}
                     </span>
                     {l.instituicaoRotulo && (
-                      <span className="text-[#3AAFE0]">
+                      <span className="text-[var(--color-blue-ink)]">
                         {" "}
                         · {l.instituicaoRotulo}
                       </span>
@@ -206,7 +206,7 @@ function ConvidarEquipeContent() {
                   </p>
                 ))}
                 {validas.length > 8 && (
-                  <p className="text-xs text-[#6f6c7a]">
+                  <p className="text-xs text-[var(--text-muted)]">
                     e mais {validas.length - 8}...
                   </p>
                 )}
@@ -231,14 +231,14 @@ function ConvidarEquipeContent() {
           onClick={enviar}
           disabled={enviando}
           className="h-12 px-6 text-base font-semibold"
-          style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+          style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
         >
           {enviando ? "Enviando..." : `Enviar ${validas.length || ""} convite(s)`}
         </Button>
 
         {resultado && (
-          <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 space-y-2 text-sm">
-            <p className="text-[#f0ece4]">
+          <div className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] p-4 space-y-2 text-sm">
+            <p className="text-[var(--text-primary)]">
               Enviados: {resultado.enviados.length}
             </p>
             {resultado.falhaEnvio.length > 0 && (
@@ -248,7 +248,7 @@ function ConvidarEquipeContent() {
                   {resultado.falhaEnvio.length}
                 </p>
                 {resultado.falhaEnvio.map((f) => (
-                  <p key={f.email} className="text-xs text-[#9895a4]">
+                  <p key={f.email} className="text-xs text-[var(--text-tertiary)]">
                     {f.email} — {f.motivo}
                   </p>
                 ))}
@@ -256,11 +256,11 @@ function ConvidarEquipeContent() {
             )}
             {resultado.ignorados.length > 0 && (
               <div>
-                <p className="text-[#9895a4]">
+                <p className="text-[var(--text-tertiary)]">
                   Ignorados: {resultado.ignorados.length}
                 </p>
                 {resultado.ignorados.map((f) => (
-                  <p key={f.email} className="text-xs text-[#6f6c7a]">
+                  <p key={f.email} className="text-xs text-[var(--text-muted)]">
                     {f.email} — {f.motivo}
                   </p>
                 ))}
@@ -270,9 +270,9 @@ function ConvidarEquipeContent() {
         )}
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 lg:p-8 bg-[var(--bg-secondary)]">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-          <h2 className="text-xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h2 className="text-xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             Convites enviados
           </h2>
           <div className="flex flex-wrap gap-3">
@@ -281,7 +281,7 @@ function ConvidarEquipeContent() {
               onChange={(e) =>
                 setFiltroSituacao(e.target.value as "" | "expirado")
               }
-              className="h-10 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#f0ece4]"
+              className="h-10 rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] px-3 text-sm text-[var(--text-primary)]"
             >
               <option value="">Todas as situações</option>
               <option value="expirado">Só expirados</option>
@@ -292,30 +292,30 @@ function ConvidarEquipeContent() {
                 value={busca}
                 onChange={(e) => setBusca(e.target.value)}
                 placeholder="Buscar por nome ou e-mail..."
-                className="h-10 w-full sm:w-72 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#f0ece4] placeholder:text-[#57545f] focus:outline-none focus:border-[#3AAFE0]"
+                className="h-10 w-full sm:w-72 rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--color-blue)]"
               />
             )}
           </div>
         </div>
 
         {!convites.length ? (
-          <p className="text-sm text-[#9895a4]">
+          <p className="text-sm text-[var(--text-tertiary)]">
             {filtroSituacao === "expirado"
               ? "Nenhum convite expirado."
               : "Nenhum convite enviado ainda."}
           </p>
         ) : !convitesFiltrados.length ? (
-          <p className="text-sm text-[#9895a4]">
+          <p className="text-sm text-[var(--text-tertiary)]">
             Nenhum convite encontrado para &quot;{busca}&quot;.
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <p className="text-xs text-[#6f6c7a] mb-2">
+            <p className="text-xs text-[var(--text-muted)] mb-2">
               {convitesFiltrados.length} de {convites.length} convite(s)
             </p>
             <table className="w-full text-sm min-w-[640px]">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-[0.08em] text-[#6f6c7a]">
+                <tr className="text-left text-xs uppercase tracking-[0.08em] text-[var(--text-muted)]">
                   <th className="py-2 pr-4">Nome</th>
                   <th className="py-2 pr-4">E-mail</th>
                   <th className="py-2 pr-4">Papel</th>
@@ -325,18 +325,18 @@ function ConvidarEquipeContent() {
               </thead>
               <tbody>
                 {convitesFiltrados.map((c) => (
-                  <tr key={c.id} className="border-t border-[#2a2a3a]">
-                    <td className="py-2 pr-4 text-[#f0ece4]">{c.nome}</td>
-                    <td className="py-2 pr-4 text-[#9895a4]">{c.email}</td>
-                    <td className="py-2 pr-4 text-[#9895a4]">
+                  <tr key={c.id} className="border-t border-[var(--border-color)]">
+                    <td className="py-2 pr-4 text-[var(--text-primary)]">{c.nome}</td>
+                    <td className="py-2 pr-4 text-[var(--text-tertiary)]">{c.email}</td>
+                    <td className="py-2 pr-4 text-[var(--text-tertiary)]">
                       {ROTULO_PAPEL[c.role] ?? c.role}
                     </td>
-                    <td className="py-2 pr-4 text-[#9895a4]">
+                    <td className="py-2 pr-4 text-[var(--text-tertiary)]">
                       {c.curso?.nome ?? c.instituicao?.sigla ?? "—"}
                     </td>
                     <td className="py-2">
                       {c.usadoEm ? (
-                        <span className="text-[#4ec98a]">cadastrado</span>
+                        <span className="text-[var(--color-mint-ink)]">cadastrado</span>
                       ) : new Date(c.expiraEm) < new Date() ? (
                         <span className="text-red-400">expirado</span>
                       ) : (

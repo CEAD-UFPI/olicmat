@@ -28,14 +28,14 @@ export function Pagination({ pagina, totalPaginas, onPageChange }: PaginationPro
         size="default"
         disabled={pagina <= 1}
         onClick={() => onPageChange(pagina - 1)}
-        className="text-[#b0adc0] hover:text-[#f0ece4] disabled:opacity-30 cursor-pointer"
+        className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 cursor-pointer"
       >
         <ChevronLeft size={18} />
       </Button>
 
       {pages.map((p, i) =>
         p === "..." ? (
-          <span key={`dots-${i}`} className="px-2 text-[#b0adc0] text-base">
+          <span key={`dots-${i}`} className="px-2 text-[var(--text-secondary)] text-base">
             ...
           </span>
         ) : (
@@ -46,7 +46,7 @@ export function Pagination({ pagina, totalPaginas, onPageChange }: PaginationPro
             onClick={() => onPageChange(p as number)}
             className="text-base cursor-pointer min-w-[36px]"
             style={{
-              color: p === pagina ? "#4CAF50" : "#b0adc0",
+              color: p === pagina ? "var(--color-green-ink)" : "var(--text-secondary)",
               backgroundColor: p === pagina ? "#4CAF5015" : "transparent",
               fontWeight: p === pagina ? 600 : 400,
             }}
@@ -61,7 +61,7 @@ export function Pagination({ pagina, totalPaginas, onPageChange }: PaginationPro
         size="default"
         disabled={pagina >= totalPaginas}
         onClick={() => onPageChange(pagina + 1)}
-        className="text-[#b0adc0] hover:text-[#f0ece4] disabled:opacity-30 cursor-pointer"
+        className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] disabled:opacity-30 cursor-pointer"
       >
         <ChevronRight size={18} />
       </Button>

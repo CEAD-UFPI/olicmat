@@ -11,6 +11,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 import { Plus, Pencil, Trash2, Eye } from "lucide-react";
 import { DetailPanel, EDICAO_STATUS } from "@/components/ui/detail-panel";
+import { tinta } from "@/lib/tema";
 
 interface EdicaoItem {
   id: string;
@@ -195,14 +196,14 @@ export default function AdminEdicoesPage() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             Edições
           </h1>
-          <p className="text-[#9895a4] mt-1 text-sm">Gerenciar edições da OLICMAT</p>
+          <p className="text-[var(--text-tertiary)] mt-1 text-sm">Gerenciar edições da OLICMAT</p>
         </div>
         <Button
           onClick={abrirCriar}
-          className="bg-[#E8B829] text-black hover:bg-[#d4a720]"
+          className="bg-[var(--color-gold)] text-black hover:bg-[var(--color-gold-hover)]"
         >
           <Plus size={16} className="mr-2" />
           Nova Edição
@@ -211,23 +212,23 @@ export default function AdminEdicoesPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <div className="border border-[#2a2a3a] rounded-2xl overflow-hidden bg-[#12121a]">
+        <div className="border border-[var(--border-color)] rounded-2xl overflow-hidden bg-[var(--bg-secondary)]">
           <table className="w-full text-base">
             <thead>
-              <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Edição</th>
-                <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Título</th>
-                <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
-                <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
+              <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Edição</th>
+                <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Título</th>
+                <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Status</th>
+                <th className="text-right py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ações</th>
               </tr>
             </thead>
             <tbody>
               {edicoes.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-16 text-center text-[#b0adc0] text-base">
+                  <td colSpan={4} className="py-16 text-center text-[var(--text-secondary)] text-base">
                     Nenhuma edição encontrada
                   </td>
                 </tr>
@@ -235,15 +236,15 @@ export default function AdminEdicoesPage() {
                 edicoes.map((ed) => {
                   const status = getStatusInfo(ed.status);
                   return (
-                    <tr key={ed.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#1a1a26] transition-colors">
-                      <td className="py-4 px-5 text-[#f0ece4] font-medium font-[family-name:var(--font-fraunces)]">
+                    <tr key={ed.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--surface)] transition-colors">
+                      <td className="py-4 px-5 text-[var(--text-primary)] font-medium font-[family-name:var(--font-fraunces)]">
                         {ed.ano}.{ed.semestre}
                       </td>
-                      <td className="py-4 px-5 text-[#f0ece4]">{ed.titulo}</td>
+                      <td className="py-4 px-5 text-[var(--text-primary)]">{ed.titulo}</td>
                       <td className="py-4 px-5">
                         <span
                           className="inline-flex items-center gap-1.5 text-sm font-medium"
-                          style={{ color: status.cor }}
+                          style={{ color: tinta(status.cor) }}
                         >
                           <span
                             className="w-2 h-2 rounded-full inline-block"
@@ -256,21 +257,21 @@ export default function AdminEdicoesPage() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => setDetailTarget(ed)}
-                            className="p-1.5 text-[#9895a4] hover:text-[#3AAFE0] transition-colors"
+                            className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--color-blue-ink)] transition-colors"
                             title="Detalhes"
                           >
                             <Eye size={18} />
                           </button>
                           <button
                             onClick={() => abrirEditar(ed)}
-                            className="p-1.5 text-[#9895a4] hover:text-[#E8B829] transition-colors"
+                            className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--color-gold-ink)] transition-colors"
                             title="Editar"
                           >
                             <Pencil size={18} />
                           </button>
                           <button
                             onClick={() => setConfirmDelete(ed)}
-                            className="p-1.5 text-[#9895a4] hover:text-red-400 transition-colors"
+                            className="p-1.5 text-[var(--text-tertiary)] hover:text-red-400 transition-colors"
                             title="Excluir"
                           >
                             <Trash2 size={18} />
@@ -296,26 +297,26 @@ export default function AdminEdicoesPage() {
           {editando ? (
             <>
               <div className="space-y-2">
-                <Label className="text-[#b0adc0] text-sm">Edição</Label>
-                <div className="h-10 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] flex items-center px-3 text-[#f0ece4] text-sm">
+                <Label className="text-[var(--text-secondary)] text-sm">Edição</Label>
+                <div className="h-10 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] flex items-center px-3 text-[var(--text-primary)] text-sm">
                   {editando.ano}.{editando.semestre}
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[#b0adc0] text-sm">Título</Label>
+                <Label className="text-[var(--text-secondary)] text-sm">Título</Label>
                 <Input
                   value={form.titulo}
                   onChange={(e) => setForm({ ...form, titulo: e.target.value })}
                   placeholder="Ex: OLICMAT 2026.1"
-                  className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[#b0adc0] text-sm">Status</Label>
+                <Label className="text-[var(--text-secondary)] text-sm">Status</Label>
                 <select
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
-                  className="w-full h-10 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]"
+                  className="w-full h-10 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] px-3 text-sm focus:outline-none focus:border-[var(--color-gold)]"
                 >
                   {STATUS_OPCOES.map((s) => (
                     <option key={s.value} value={s.value}>{s.label}</option>
@@ -324,39 +325,39 @@ export default function AdminEdicoesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-[#b0adc0] text-sm">Início das inscrições</Label>
+                  <Label className="text-[var(--text-secondary)] text-sm">Início das inscrições</Label>
                   <Input
                     type="datetime-local"
                     value={form.dataInicio}
                     onChange={(e) => setForm({ ...form, dataInicio: e.target.value })}
-                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                    className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[#b0adc0] text-sm">Fim das inscrições</Label>
+                  <Label className="text-[var(--text-secondary)] text-sm">Fim das inscrições</Label>
                   <Input
                     type="datetime-local"
                     value={form.dataFim}
                     onChange={(e) => setForm({ ...form, dataFim: e.target.value })}
-                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                    className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[#b0adc0] text-sm">Prazo de reenvio de inscrição</Label>
+                <Label className="text-[var(--text-secondary)] text-sm">Prazo de reenvio de inscrição</Label>
                 <Input
                   type="datetime-local"
                   value={form.prazoInscricao}
                   onChange={(e) => setForm({ ...form, prazoInscricao: e.target.value })}
-                  className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                 />
-                <p className="text-xs text-[#9895a4]">
+                <p className="text-xs text-[var(--text-tertiary)]">
                   Após esse prazo, alunos rejeitados não poderão mais reenviar a inscrição.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-[#b0adc0] text-sm">Peso Fase 1 (%)</Label>
+                  <Label className="text-[var(--text-secondary)] text-sm">Peso Fase 1 (%)</Label>
                   <Input
                     type="number"
                     min="0"
@@ -365,11 +366,11 @@ export default function AdminEdicoesPage() {
                     value={form.pesoFase1}
                     onChange={(e) => setForm({ ...form, pesoFase1: e.target.value })}
                     placeholder="50"
-                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                    className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[#b0adc0] text-sm">Peso Fase 2 (%)</Label>
+                  <Label className="text-[var(--text-secondary)] text-sm">Peso Fase 2 (%)</Label>
                   <Input
                     type="number"
                     min="0"
@@ -378,7 +379,7 @@ export default function AdminEdicoesPage() {
                     value={form.pesoFase2}
                     onChange={(e) => setForm({ ...form, pesoFase2: e.target.value })}
                     placeholder="50"
-                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                    className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                   />
                 </div>
               </div>
@@ -387,22 +388,22 @@ export default function AdminEdicoesPage() {
             <>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-[#b0adc0] text-sm">Ano</Label>
+                  <Label className="text-[var(--text-secondary)] text-sm">Ano</Label>
                   <Input
                     type="number"
                     value={form.ano}
                     onChange={(e) => setForm({ ...form, ano: e.target.value })}
                     placeholder="Ex: 2026"
                     min={2020}
-                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                    className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[#b0adc0] text-sm">Semestre</Label>
+                  <Label className="text-[var(--text-secondary)] text-sm">Semestre</Label>
                   <select
                     value={form.semestre}
                     onChange={(e) => setForm({ ...form, semestre: e.target.value })}
-                    className="w-full h-10 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]"
+                    className="w-full h-10 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] px-3 text-sm focus:outline-none focus:border-[var(--color-gold)]"
                   >
                     {SEMESTRES.map((s) => (
                       <option key={s.value} value={s.value}>{s.label}</option>
@@ -411,43 +412,43 @@ export default function AdminEdicoesPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[#b0adc0] text-sm">Título</Label>
+                <Label className="text-[var(--text-secondary)] text-sm">Título</Label>
                 <Input
                   value={form.titulo}
                   onChange={(e) => setForm({ ...form, titulo: e.target.value })}
                   placeholder="Ex: OLICMAT 2026.1"
-                  className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-[#b0adc0] text-sm">Início das inscrições</Label>
+                  <Label className="text-[var(--text-secondary)] text-sm">Início das inscrições</Label>
                   <Input
                     type="datetime-local"
                     value={form.dataInicio}
                     onChange={(e) => setForm({ ...form, dataInicio: e.target.value })}
-                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                    className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-[#b0adc0] text-sm">Fim das inscrições</Label>
+                  <Label className="text-[var(--text-secondary)] text-sm">Fim das inscrições</Label>
                   <Input
                     type="datetime-local"
                     value={form.dataFim}
                     onChange={(e) => setForm({ ...form, dataFim: e.target.value })}
-                    className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                    className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[#b0adc0] text-sm">Prazo de reenvio de inscrição</Label>
+                <Label className="text-[var(--text-secondary)] text-sm">Prazo de reenvio de inscrição</Label>
                 <Input
                   type="datetime-local"
                   value={form.prazoInscricao}
                   onChange={(e) => setForm({ ...form, prazoInscricao: e.target.value })}
-                  className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                  className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
                 />
-                <p className="text-xs text-[#9895a4]">
+                <p className="text-xs text-[var(--text-tertiary)]">
                   Após esse prazo, alunos rejeitados não poderão mais reenviar a inscrição.
                 </p>
               </div>
@@ -458,13 +459,13 @@ export default function AdminEdicoesPage() {
             <Button
               variant="outline"
               onClick={() => setModalAberto(false)}
-              className="flex-1 border-[#2a2a3a] text-[#9895a4]"
+              className="flex-1 border-[var(--border-color)] text-[var(--text-tertiary)]"
             >
               Cancelar
             </Button>
             <Button
               onClick={salvar}
-              className="flex-1 bg-[#E8B829] text-black hover:bg-[#d4a720]"
+              className="flex-1 bg-[var(--color-gold)] text-black hover:bg-[var(--color-gold-hover)]"
             >
               {editando ? "Salvar" : "Criar"}
             </Button>

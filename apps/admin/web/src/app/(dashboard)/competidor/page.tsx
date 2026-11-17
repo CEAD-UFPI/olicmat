@@ -8,6 +8,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { useLiberacaoProva } from "@/lib/useLiberacaoProva";
 import type { Inscricao } from "@/types";
+import { tinta } from "@/lib/tema";
 
 export default function CompetidorPage() {
   const { user } = useAuthStore();
@@ -26,7 +27,7 @@ export default function CompetidorPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -39,32 +40,32 @@ export default function CompetidorPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Olá, {user?.nome?.split(" ")[0]}
         </h1>
-        <p className="text-[#9895a4] mt-1">Bem-vindo ao seu painel OLICMAT</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Bem-vindo ao seu painel OLICMAT</p>
       </div>
 
       {!inscricao ? (
         <motion.div
-          className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center"
+          className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <div className="text-5xl mb-4 font-[family-name:var(--font-fraunces)]" style={{ color: "var(--pi-laranja)" }}>
+          <div className="text-5xl mb-4 font-[family-name:var(--font-fraunces)]" style={{ color: "var(--color-gold-ink)" }}>
             π
           </div>
-          <h2 className="text-xl font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
+          <h2 className="text-xl font-bold text-[var(--text-primary)] mb-2 font-[family-name:var(--font-fraunces)]">
             Você ainda não está inscrito
           </h2>
-          <p className="text-base text-[#b0adc0] mb-6 max-w-md mx-auto">
+          <p className="text-base text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
             Inscreva-se na OLICMAT para iniciar sua jornada na competição: resolva a prova online da Fase 1 e produza sua videoaula com portfólio digital na Fase 2.
           </p>
           <Button
             size="lg"
             render={<Link href="/competidor/inscricao" />}
-            style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+            style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
           >
             Fazer inscrição
           </Button>
@@ -101,18 +102,18 @@ export default function CompetidorPage() {
 
       {inscricao?.status === "CONFIRMADA" && !inscricao.fase1Fim && (
         <motion.div
-          className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a]"
+          className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <h3 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+              <h3 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
                 {liberada ? "Prova disponível" : "Prova da Fase 1"}
               </h3>
-              <p className="text-base text-[#b0adc0]">20 questões · 3 horas · das 08:30 às 11:30 (horário de Brasília) · termina às 11:30 para todos (Ambiente Isolado)</p>
-              <div className="mt-3 rounded-xl border border-[#E8B829]/40 bg-[#E8B829]/[0.08] p-3 text-sm text-[#f0ece4] space-y-1">
+              <p className="text-base text-[var(--text-secondary)]">20 questões · 3 horas · das 08:30 às 11:30 (horário de Brasília) · termina às 11:30 para todos (Ambiente Isolado)</p>
+              <div className="mt-3 rounded-xl border border-[var(--color-gold)]/40 bg-[var(--color-gold)]/[0.08] p-3 text-sm text-[var(--text-primary)] space-y-1">
                 <p className="font-semibold">Início até 09:00, sem exceção</p>
                 <p>
                   Depois das 09:00 ninguém inicia a prova, qualquer que seja o motivo, inclusive problemas de internet, aparelho ou acesso. Entre no sistema a partir de 08:15: o botão só é liberado às 08:30 de 08/11/2026. Quem iniciou antes das 09:00 e caiu pode voltar depois das 09:00, enquanto a prova estiver aberta. O tempo não para.
@@ -133,11 +134,11 @@ export default function CompetidorPage() {
                   alert(err?.response?.data?.message || "Erro ao redirecionar para o portal da prova");
                 }
               }}
-              style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+              style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
             >
               Acessar a aplicação de prova
             </Button>
-            {!liberada && <p className="text-sm text-[#E8B829] text-center">{aviso}</p>}
+            {!liberada && <p className="text-sm text-[var(--color-gold-ink)] text-center">{aviso}</p>}
             </div>
           </div>
         </motion.div>
@@ -160,15 +161,15 @@ function StatusCard({
   descricao: string;
 }) {
   return (
-    <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a] hover:border-[#3a3a4a] transition-colors">
+    <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)] hover:border-[var(--border-strong)] transition-colors">
       <div className="flex items-center justify-between mb-4">
-        <span className="text-sm text-[#b0adc0] uppercase tracking-widest">{titulo}</span>
-        <span className="text-xl font-[family-name:var(--font-fraunces)]" style={{ color: cor }}>
+        <span className="text-sm text-[var(--text-secondary)] uppercase tracking-widest">{titulo}</span>
+        <span className="text-xl font-[family-name:var(--font-fraunces)]" style={{ color: tinta(cor) }}>
           {simbolo}
         </span>
       </div>
-      <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{valor}</p>
-      <p className="text-base text-[#b0adc0] mt-1">{descricao}</p>
+      <p className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">{valor}</p>
+      <p className="text-base text-[var(--text-secondary)] mt-1">{descricao}</p>
     </div>
   );
 }

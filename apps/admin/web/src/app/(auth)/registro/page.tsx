@@ -18,18 +18,18 @@ export default function RegistroPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <span className="text-3xl font-bold font-[family-name:var(--font-fraunces)]">
-              <span style={{ color: "var(--pi-laranja)" }}>O</span>
-              <span style={{ color: "var(--integral-verde)" }}>L</span>
-              <span style={{ color: "var(--sigma-azul)" }}>I</span>
+              <span style={{ color: "var(--logo-gold)" }}>O</span>
+              <span style={{ color: "var(--logo-green)" }}>L</span>
+              <span style={{ color: "var(--logo-blue)" }}>I</span>
               <span style={{ color: "var(--text-primary)" }}>CMAT</span>
             </span>
           </Link>
         </div>
 
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a]/90 backdrop-blur-sm text-center">
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)]/90 backdrop-blur-sm text-center">
           <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-amber-500/20">
             <svg
-              className="w-8 h-8 text-[#E8B829]"
+              className="w-8 h-8 text-[var(--color-gold-ink)]"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -43,17 +43,17 @@ export default function RegistroPage() {
             </svg>
           </div>
 
-          <h1 className="text-2xl font-bold text-[#f0ece4] mb-4 font-[family-name:var(--font-fraunces)]">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-4 font-[family-name:var(--font-fraunces)]">
             Cadastro Restrito
           </h1>
           
-          <p className="text-sm text-[#9895a4] leading-relaxed mb-6">
+          <p className="text-sm text-[var(--text-tertiary)] leading-relaxed mb-6">
             O auto-cadastro está desativado na plataforma OLICMAT. 
             Os novos competidores e coordenadores devem ser cadastrados diretamente pelos 
             <strong> Coordenadores de Curso</strong> ou <strong>Administradores</strong> do sistema.
           </p>
 
-          <div className="bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl p-4 mb-8 text-left text-xs text-[#9895a4] space-y-2">
+          <div className="bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl p-4 mb-8 text-left text-xs text-[var(--text-tertiary)] space-y-2">
             <p>💡 <strong>Alunos:</strong> Entre em contato com o coordenador do seu curso de Licenciatura em Matemática para solicitar a sua inscrição.</p>
             <p>💡 <strong>Avaliadores/Coordenadores:</strong> Se você é docente ou membro da organização, contate a Comissão Organizadora.</p>
           </div>
@@ -62,7 +62,7 @@ export default function RegistroPage() {
             size="lg"
             render={<Link href="/login" />}
             className="w-full h-12 text-base font-semibold"
-            style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+            style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
           >
             Ir para o Login
           </Button>

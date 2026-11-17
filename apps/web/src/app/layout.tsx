@@ -4,6 +4,7 @@ import Script from "next/script";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
+import { TEMA_SCRIPT_INICIAL, COR_BARRA_TEMA } from "@/lib/tema";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -36,9 +37,8 @@ export const metadata: Metadata = {
     type: "website",
   },
   other: {
-    "theme-color": "#E8B829",
     "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "black-translucent",
+    "apple-mobile-web-app-status-bar-style": "default",
     "apple-mobile-web-app-title": "OLICMAT",
   },
 };
@@ -53,6 +53,9 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${fraunces.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
+        <meta name="theme-color" content={COR_BARRA_TEMA.light} />
+        {/* Aplica o tema salvo (claro por padrão) antes da primeira pintura. */}
+        <script dangerouslySetInnerHTML={{ __html: TEMA_SCRIPT_INICIAL }} />
         <link rel="manifest" href="/manifest.json" />
         {gaId && (
           <>
@@ -66,7 +69,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className="min-h-full flex flex-col bg-[#0a0a0f] text-[#f0ece4] dot-pattern noise-overlay" suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-[var(--bg-primary)] text-[var(--text-primary)] dot-pattern noise-overlay" suppressHydrationWarning>
         <Header />
         {children}
         <Footer />

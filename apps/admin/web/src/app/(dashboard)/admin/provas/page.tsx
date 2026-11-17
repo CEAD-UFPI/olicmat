@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Pagination } from "@/components/ui/pagination";
 import { EdicaoSelector } from "@/components/shared/edicao-selector";
 import { Plus, Copy, Trash2 } from "lucide-react";
+import { tinta } from "@/lib/tema";
 
 interface ProvaItem {
   id: string;
@@ -116,14 +117,14 @@ export default function AdminProvasPage() {
     >
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             Provas
           </h1>
-          <p className="text-[#9895a4] mt-1">Gerenciamento completo de provas</p>
+          <p className="text-[var(--text-tertiary)] mt-1">Gerenciamento completo de provas</p>
         </div>
         <Button
           render={<Link href="/admin/provas/nova" />}
-          style={{ backgroundColor: "#4CAF50", color: "#fff" }}
+          style={{ backgroundColor: "var(--color-green)", color: "#fff" }}
           className="gap-2"
         >
           <Plus size={16} />
@@ -141,43 +142,43 @@ export default function AdminProvasPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : provas.length === 0 ? (
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#b0adc0] mb-2">Nenhuma prova cadastrada.</p>
-          <p className="text-sm text-[#b0adc0]">Clique em Nova Prova para criar a primeira.</p>
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+          <p className="text-[var(--text-secondary)] mb-2">Nenhuma prova cadastrada.</p>
+          <p className="text-sm text-[var(--text-secondary)]">Clique em Nova Prova para criar a primeira.</p>
         </div>
       ) : (
         <>
-          <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
+          <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-base">
                 <thead>
-                  <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Título</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Edição</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Duração</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Questões</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
+                  <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Título</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Edição</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Duração</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Questões</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Status</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginados.map((prova) => (
-                    <tr key={prova.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
+                    <tr key={prova.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-primary)]/50 transition-colors">
                       <td className="py-4 px-5">
-                        <Link href={`/admin/provas/${prova.id}`} className="text-[#f0ece4] font-medium hover:text-[#4CAF50] transition-colors">
+                        <Link href={`/admin/provas/${prova.id}`} className="text-[var(--text-primary)] font-medium hover:text-[var(--color-green-ink)] transition-colors">
                           {prova.titulo || "Prova sem título"}
                         </Link>
                       </td>
-                      <td className="py-4 px-5 text-center text-[#9895a4]">
+                      <td className="py-4 px-5 text-center text-[var(--text-tertiary)]">
                         {prova.edicao?.ano || "-"}
                       </td>
-                      <td className="py-4 px-5 text-center text-[#9895a4]">
+                      <td className="py-4 px-5 text-center text-[var(--text-tertiary)]">
                         {prova.duracaoMinutos ? `${prova.duracaoMinutos} min` : "-"}
                       </td>
-                      <td className="py-4 px-5 text-center text-[#9895a4]">
+                      <td className="py-4 px-5 text-center text-[var(--text-tertiary)]">
                         {prova._count?.questoes ?? 0}
                       </td>
                       <td className="py-4 px-5 text-center">
@@ -185,7 +186,7 @@ export default function AdminProvasPage() {
                           className="text-sm font-medium px-3 py-1 rounded-full"
                           style={{
                             backgroundColor: `${statusColors[prova.status || "RASCUNHO"]}20`,
-                            color: statusColors[prova.status || "RASCUNHO"],
+                            color: tinta(statusColors[prova.status || "RASCUNHO"]),
                           }}
                         >
                           {statusLabels[prova.status || "RASCUNHO"] || prova.status}
@@ -199,7 +200,7 @@ export default function AdminProvasPage() {
                               variant="ghost"
                               disabled={processando[prova.id]}
                               onClick={() => alterarStatus(prova.id, "PUBLICADA")}
-                              className="text-[#4CAF50] hover:bg-[#4CAF50]/10 text-sm cursor-pointer"
+                              className="text-[var(--color-green-ink)] hover:bg-[var(--color-green)]/10 text-sm cursor-pointer"
                             >
                               Publicar
                             </Button>
@@ -218,14 +219,14 @@ export default function AdminProvasPage() {
                           <button
                             onClick={() => duplicar(prova.id)}
                             disabled={processando[`dup-${prova.id}`]}
-                            className="text-[#9895a4] hover:text-[#3AAFE0] transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-tertiary)] hover:text-[var(--color-blue-ink)] transition-colors p-1 cursor-pointer"
                             title="Duplicar"
                           >
                             <Copy size={18} />
                           </button>
                           <button
                             onClick={() => setDeleteTarget(prova)}
-                            className="text-[#9895a4] hover:text-red-400 transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-tertiary)] hover:text-red-400 transition-colors p-1 cursor-pointer"
                             title="Excluir"
                           >
                             <Trash2 size={18} />
