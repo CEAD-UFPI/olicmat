@@ -56,25 +56,25 @@ export default function AdminExportarPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Exportar Dados
         </h1>
-        <p className="text-[#9895a4] mt-1">Exporte dados da plataforma em formato CSV ou PDF</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Exporte dados da plataforma em formato CSV ou PDF</p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
         {opcoes.map((op) => (
-          <Card key={op.tipo} className="border-[#2a2a3a] bg-[#12121a]">
+          <Card key={op.tipo} className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
             <CardHeader>
-              <CardTitle className="text-[#f0ece4]">{op.label}</CardTitle>
+              <CardTitle className="text-[var(--text-primary)]">{op.label}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-base text-[#b0adc0] mb-4">{op.descricao}</p>
+              <p className="text-base text-[var(--text-secondary)] mb-4">{op.descricao}</p>
               <Button
                 variant="outline"
                 onClick={() => exportarCSV(op.tipo)}
                 disabled={exportando === op.tipo}
-                className="border-[#2a2a3a] text-[#f0ece4] gap-2 cursor-pointer"
+                className="border-[var(--border-color)] text-[var(--text-primary)] gap-2 cursor-pointer"
               >
                 <Download size={18} />
                 {exportando === op.tipo ? "Exportando..." : op.botao ?? `Exportar ${op.label}`}

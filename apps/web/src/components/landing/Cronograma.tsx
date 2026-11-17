@@ -17,16 +17,16 @@ export function Cronograma() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-fraunces)] text-[#f0ece4] mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-fraunces)] text-[var(--text-primary)] mb-4">
             Cronograma Oficial
           </h2>
-          <p className="text-[#9895a4] text-lg">
+          <p className="text-[var(--text-tertiary)] text-lg">
             1ª OLICMAT — Para Licenciandos em Matemática — Datas e prazos oficiais
           </p>
         </motion.div>
 
         <div className="relative">
-          <div className="absolute left-[18px] top-0 bottom-0 w-[2px] bg-[#2a2a3a]" />
+          <div className="absolute left-[18px] top-0 bottom-0 w-[2px] bg-[var(--border-color)]" />
           <div className="space-y-6">
             {etapas.map((etapa, i) => (
               <motion.div
@@ -40,24 +40,24 @@ export function Cronograma() {
                 <div
                   className={`absolute left-2 top-1 w-[33px] h-[33px] rounded-full border-2 flex items-center justify-center -translate-x-1/2 ${
                     etapa.destaque
-                      ? "border-[#E8B829] bg-[#E8B829]/10"
-                      : "border-[#3a3a4a] bg-[#12121a]"
+                      ? "border-[var(--color-gold)] bg-[var(--color-gold)]/10"
+                      : "border-[var(--border-strong)] bg-[var(--bg-secondary)]"
                   }`}
                 >
-                  <div className={`w-2 h-2 rounded-full ${etapa.destaque ? "bg-[#E8B829]" : "bg-[#3a3a4a]"}`} />
+                  <div className={`w-2 h-2 rounded-full ${etapa.destaque ? "bg-[var(--color-gold)]" : "bg-[var(--border-strong)]"}`} />
                 </div>
 
                 <div
                   className={`rounded-2xl p-5 ${
                     etapa.destaque
-                      ? "border border-[#E8B829]/30 bg-[#E8B829]/5"
-                      : "border border-[#2a2a3a] bg-[#12121a]"
+                      ? "border border-[var(--color-gold)]/30 bg-[var(--color-gold)]/5"
+                      : "border border-[var(--border-color)] bg-[var(--bg-secondary)]"
                   }`}
                 >
-                  <span className="text-xs font-semibold uppercase tracking-widest text-[#E8B829]">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-[var(--color-gold-ink)]">
                     {etapa.data}
                   </span>
-                  <p className="text-sm text-[#f0ece4] mt-1.5 leading-relaxed">
+                  <p className="text-sm text-[var(--text-primary)] mt-1.5 leading-relaxed">
                     {etapa.atividade}
                   </p>
                 </div>
@@ -67,14 +67,14 @@ export function Cronograma() {
         </div>
 
         <motion.div
-          className="mt-10 border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a]"
+          className="mt-10 border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)]"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <p className="text-xs text-[#9895a4] leading-relaxed">
-            <strong className="text-[#f0ece4]">Observações:</strong> As datas poderão sofrer ajustes, caso necessário, e serão comunicadas com antecedência. Todas as divulgações oficiais serão realizadas nos canais institucionais da OLICMAT.
+          <p className="text-xs text-[var(--text-tertiary)] leading-relaxed">
+            <strong className="text-[var(--text-primary)]">Observações:</strong> As datas poderão sofrer ajustes, caso necessário, e serão comunicadas com antecedência. Todas as divulgações oficiais serão realizadas nos canais institucionais da OLICMAT.
           </p>
         </motion.div>
 
@@ -87,7 +87,7 @@ export function Cronograma() {
         >
           <a
             href="/cronograma"
-            className="text-sm text-[#E8B829] hover:underline font-medium"
+            className="text-sm text-[var(--color-gold-ink)] hover:underline font-medium"
           >
             Ver página completa do cronograma →
           </a>

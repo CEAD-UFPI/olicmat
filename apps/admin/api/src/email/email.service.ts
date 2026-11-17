@@ -1,5 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { limitesMb } from "../fase2/fase2.regras.js";
 import * as nodemailer from "nodemailer";
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
@@ -231,7 +232,7 @@ export class EmailService {
     );
   }
 
-  /** E-mail de início da Fase 2 (tema, início e prazo de 24h). */
+  /** E-mail de início da Fase 2 (competência sorteada, início e prazo de 24h). */
   async enviarInicioFase2(
     email: string,
     nome: string,
@@ -248,20 +249,23 @@ export class EmailService {
     const esc = (t: string) =>
       t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     const link = `${this.configService.get("FRONTEND_URL")}/competidor/envio`;
+    const lim = limitesMb();
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #E8B829;">OLICMAT — Início da Fase 2</h2>
         <p>Olá, <strong>${esc(nome)}</strong>!</p>
         <p>A Fase 2 da 1ª Olimpíada de Licenciandos em Matemática (OLICMAT) foi iniciada.</p>
-        <p><strong>Tema da videoaula:</strong> ${esc(tema)}</p>
+        <p><strong>Competência sorteada:</strong> ${esc(tema)}</p>
         <p><strong>Início:</strong> ${fmt(inicio)}<br>
            <strong>Prazo final para envio:</strong> ${fmt(prazo)} (horário de Brasília)</p>
-        <p>Até o prazo final, envie no sistema da OLICMAT os dois links:</p>
+        <p>Escolha uma ou mais habilidades da competência sorteada e, até o prazo final, envie pela plataforma da OLICMAT, com o seu login e senha:</p>
         <ul>
-          <li><strong>Videoaula autoral</strong>: título no padrão "Nome do Participante - Tema da Videoaula"; deve apresentar o conteúdo, a situação-problema e as estratégias pedagógicas.</li>
-          <li><strong>Portfólio digital</strong>, em arquivo único PDF, com acesso público pelo link: plano de aula, objetivos, público-alvo, metodologia, recursos digitais, atividade ou situação-problema, avaliação, referências e reflexão crítica sobre a prática.</li>
+          <li><strong>Videoaula autoral de 20 minutos</strong> (arquivo de vídeo, por exemplo MP4, com até ${(lim.video / 1024).toLocaleString("pt-BR")} GB, enviado como foi gravado — a plataforma prepara o vídeo automaticamente), desenvolvendo uma situação de ensino ligada à competência e às habilidades escolhidas;</li>
+          <li><strong>Portfólio digital em arquivo único PDF</strong> (até ${lim.portfolio} MB), preferencialmente no modelo oficial (Template do Portfólio), coerente com a videoaula.</li>
         </ul>
-        <p>Você pode corrigir os links até o prazo final; vale o último envio. Após o prazo, o envio é encerrado automaticamente.</p>
+        <p>Comece o envio com antecedência: um vídeo de 1 a 3 GB pode levar de 15 minutos a mais de uma hora para subir, conforme a sua internet. Você pode substituir os arquivos até o prazo final; vale o último envio. Após o prazo, o envio é encerrado automaticamente, sem prorrogação.</p>
+        <p>Veja o passo a passo do envio no <a href="${process.env.SITE_URL || "https://olicmat.cead.ufpi.br"}/tutorial-fase2" style="color: #E8B829;">Tutorial da Fase 2</a>.</p>
+        <p>O Manual do Participante e o Template do Portfólio estão em <a href="${process.env.SITE_URL || "https://olicmat.cead.ufpi.br"}/regulamento" style="color: #E8B829;">Regulamento, Edital e Documentos</a>.</p>
         <p><a href="${link}" style="color: #E8B829;">Acessar o envio da Fase 2</a></p>
         <p>Comissão Organizadora da OLICMAT</p>
       </div>

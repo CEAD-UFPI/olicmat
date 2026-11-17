@@ -336,6 +336,7 @@ model Inscricao {
   historico       InscricaoHistorico[]
 
   @@unique([userId, edicaoId])
+  videosFase2        VideoFase2[]
 }
 
 model InscricaoHistorico {
@@ -455,6 +456,13 @@ model EnvioFase2 {
   arquivoUrl    String            @default("")
   videoLink     String?
   portfolioLink String?
+  /// Upload na nuvem própria (S3): chave do objeto, nome original e tamanho.
+  videoKey       String?
+  videoNome      String?
+  videoBytes     BigInt?
+  portfolioKey   String?
+  portfolioNome  String?
+  portfolioBytes BigInt?
   status        StatusEnvioFase2  @default(PENDENTE)
   enviadoEm     DateTime          @default(now())
 
@@ -470,11 +478,12 @@ model AvaliacaoFase2 {
   /// Total (soma dos critérios), 0 a 100.
   nota        Float
   parecer     String?
-  dominioConteudo     Float?
-  estrategiasEnsino   Float?
-  usoTdics            Float?
-  reflexaoCritica     Float?
-  coerenciaPedagogica Float?
+  /// Conceitos de 0 a 5 por critério do Manual da 2ª Fase (cada um vale até 20 pontos: conceito × 4).
+  criterio1   Int?
+  criterio2   Int?
+  criterio3   Int?
+  criterio4   Int?
+  criterio5   Int?
   /// false = rascunho; true = avaliação concluída (travada).
   concluida   Boolean   @default(false)
   avaliadoEm  DateTime  @default(now())
@@ -483,6 +492,40 @@ model AvaliacaoFase2 {
   avaliador   User      @relation(fields: [avaliadorId], references: [id])
 
   @@unique([inscricaoId, avaliadorId])
+}
+
+/// Fila de compressão dos vídeos da Fase 2, executada pelo compressor na VPS.
+enum StatusVideoFase2 {
+  PENDENTE
+  PROCESSANDO
+  PRONTO
+  FALHA
+  SUBSTITUIDO
+}
+
+/// Um vídeo original enviado pelo participante e a sua versão comprimida.
+model VideoFase2 {
+  id               String           @id @default(uuid())
+  inscricaoId      String
+  chaveOriginal    String           @unique
+  bytesOriginal    BigInt
+  nomeOriginal     String
+  status           StatusVideoFase2 @default(PENDENTE)
+  chaveFinal       String?
+  bytesFinal       BigInt?
+  duracaoSeg       Int?
+  tentativas       Int              @default(0)
+  erro             String?
+  /// O original (e, se substituído, a versão final) já foi apagado da nuvem.
+  arquivosRemovidos Boolean         @default(false)
+  criadoEm         DateTime         @default(now())
+  iniciadoEm       DateTime?
+  concluidoEm      DateTime?
+
+  inscricao Inscricao @relation(fields: [inscricaoId], references: [id], onDelete: Cascade)
+
+  @@index([status, criadoEm])
+  @@index([inscricaoId])
 }
 
 enum StatusAtribuicaoFase2 {

@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
+import { tinta } from "@/lib/tema";
 
 type StatusProva = "em_breve" | "em_andamento" | "realizada";
 type StatusAluno = "nao_iniciado" | "em_andamento" | "finalizado";
@@ -274,10 +275,10 @@ export function MonitoramentoPanel() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Monitoramento de Provas
         </h1>
-        <p className="text-[#9895a4] mt-1">
+        <p className="text-[var(--text-tertiary)] mt-1">
           Acompanhamento em tempo real das edições, provas e status dos alunos
         </p>
       </div>
@@ -286,8 +287,8 @@ export function MonitoramentoPanel() {
         <div
           className={`p-4 rounded-xl border text-sm font-medium ${
             feedback.tipo === "sucesso"
-              ? "border-[#2EC4B6]/40 bg-[#2EC4B6]/10 text-[#2EC4B6]"
-              : "border-[#e53e3e]/40 bg-[#e53e3e]/10 text-[#e53e3e]"
+              ? "border-[var(--color-teal)]/40 bg-[var(--color-teal)]/10 text-[var(--color-teal-ink)]"
+              : "border-[var(--color-red)]/40 bg-[var(--color-red)]/10 text-[var(--color-red-ink)]"
           }`}
         >
           {feedback.mensagem}
@@ -324,12 +325,12 @@ export function MonitoramentoPanel() {
           titulo="Destravar Participante"
           confirmarLabel={acaoLoading ? "Destravando..." : "Destravar"}
         >
-          <p className="text-sm text-[#9895a4]">
-            Devolve <strong className="text-[#f0ece4]">{modalDestravar.nome}</strong> à prova e zera as
+          <p className="text-sm text-[var(--text-tertiary)]">
+            Devolve <strong className="text-[var(--text-primary)]">{modalDestravar.nome}</strong> à prova e zera as
             advertências ({modalDestravar.advertencias}). As respostas salvas são mantidas, e o fim da prova não muda.
             Depois, peça para a pessoa recarregar a página (F5).
           </p>
-          <label htmlFor="justificativa" className="block text-xs text-[#9895a4] text-left">
+          <label htmlFor="justificativa" className="block text-xs text-[var(--text-tertiary)] text-left">
             Justificativa (fica na auditoria)
           </label>
           <textarea
@@ -337,7 +338,7 @@ export function MonitoramentoPanel() {
             rows={3}
             value={justificativa}
             onChange={(e) => setJustificativa(e.target.value)}
-            className="w-full px-4 py-3 bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl text-sm text-[#f0ece4] focus:outline-none focus:border-[#2EC4B6]"
+            className="w-full px-4 py-3 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-teal)]"
           />
         </Modal>
       )}
@@ -353,17 +354,17 @@ export function MonitoramentoPanel() {
         >
           {senhaGerada ? (
             <>
-              <p className="text-sm text-[#9895a4]">
-                Informe a <strong className="text-[#f0ece4]">{modalSenha.nome}</strong>. Ela não será mostrada de novo.
+              <p className="text-sm text-[var(--text-tertiary)]">
+                Informe a <strong className="text-[var(--text-primary)]">{modalSenha.nome}</strong>. Ela não será mostrada de novo.
               </p>
-              <p className="text-center text-2xl font-mono font-bold tracking-widest text-[#E8B829] select-all">
+              <p className="text-center text-2xl font-mono font-bold tracking-widest text-[var(--color-gold-ink)] select-all">
                 {senhaGerada}
               </p>
             </>
           ) : (
-            <p className="text-sm text-[#9895a4]">
-              Troca a senha de <strong className="text-[#f0ece4]">{modalSenha.nome}</strong> ({modalSenha.email}) por
-              uma provisória. <strong className="text-[#f0ece4]">Confirme a identidade antes</strong> (CPF e matrícula abaixo do nome).
+            <p className="text-sm text-[var(--text-tertiary)]">
+              Troca a senha de <strong className="text-[var(--text-primary)]">{modalSenha.nome}</strong> ({modalSenha.email}) por
+              uma provisória. <strong className="text-[var(--text-primary)]">Confirme a identidade antes</strong> (CPF e matrícula abaixo do nome).
             </p>
           )}
         </Modal>
@@ -378,11 +379,11 @@ export function MonitoramentoPanel() {
           titulo="Liberar Sessão"
           confirmarLabel={acaoLoading ? "Liberando..." : "Liberar"}
         >
-          <p className="text-sm text-[#9895a4]">
-            Permite que <strong className="text-[#f0ece4]">{modalSessao.nome}</strong> entre agora em outro aparelho.
+          <p className="text-sm text-[var(--text-tertiary)]">
+            Permite que <strong className="text-[var(--text-primary)]">{modalSessao.nome}</strong> entre agora em outro aparelho.
             O aparelho anterior será desconectado assim que o novo login acontecer. Respostas e tempo não mudam.
           </p>
-          <p className="text-sm text-[#9895a4]">
+          <p className="text-sm text-[var(--text-tertiary)]">
             Confirme a identidade antes: <span className="font-mono">CPF {modalSessao.cpf}</span>.
           </p>
         </Modal>
@@ -397,7 +398,7 @@ export function MonitoramentoPanel() {
           titulo="Encerrar Pendentes"
           confirmarLabel={acaoLoading ? "Encerrando..." : "Encerrar"}
         >
-          <p className="text-sm text-[#9895a4]">
+          <p className="text-sm text-[var(--text-tertiary)]">
             Encerra quem ficou com o tempo esgotado e não finalizou (fechou o navegador, caiu a
             internet). Quem ainda tem tempo não é afetado. Use depois do fechamento da prova.
           </p>
@@ -413,15 +414,15 @@ export function MonitoramentoPanel() {
           titulo="Resetar Tempo de Prova"
           confirmarLabel={acaoLoading ? "Resetando..." : "Confirmar Reset"}
         >
-          <p className="text-sm text-[#9895a4]">
-            Isso irá <strong className="text-[#f0ece4]">reiniciar o cronômetro</strong> de{" "}
-            <strong className="text-[#f0ece4]">{modalReset.nome}</strong>.
+          <p className="text-sm text-[var(--text-tertiary)]">
+            Isso irá <strong className="text-[var(--text-primary)]">reiniciar o cronômetro</strong> de{" "}
+            <strong className="text-[var(--text-primary)]">{modalReset.nome}</strong>.
           </p>
-          <p className="text-sm text-[#9895a4]">
+          <p className="text-sm text-[var(--text-tertiary)]">
             O aluno começará a prova do zero, com o tempo cheio. As respostas já salvas serão mantidas.
           </p>
           {modalReset.tempoExtraMinutos > 0 && (
-            <p className="text-sm text-[#E8B829]">
+            <p className="text-sm text-[var(--color-gold-ink)]">
               O tempo extra atual de +{modalReset.tempoExtraMinutos}min será zerado.
             </p>
           )}
@@ -443,15 +444,15 @@ function ListaEdicoes({
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (edicoes.length === 0) {
     return (
-      <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-        <p className="text-[#b0adc0]">Nenhuma edição cadastrada.</p>
+      <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+        <p className="text-[var(--text-secondary)]">Nenhuma edição cadastrada.</p>
       </div>
     );
   }
@@ -459,23 +460,23 @@ function ListaEdicoes({
   return (
     <div className="space-y-6">
       {edicoes.map((edicao) => (
-        <div key={edicao.id} className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#2a2a3a] bg-[#0a0a0f]">
+        <div key={edicao.id} className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
             <div>
-              <h2 className="text-lg font-bold text-[#f0ece4]">
+              <h2 className="text-lg font-bold text-[var(--text-primary)]">
                 Edição {edicao.ano}
               </h2>
-              <p className="text-xs text-[#9895a4]">{edicao.titulo}</p>
+              <p className="text-xs text-[var(--text-tertiary)]">{edicao.titulo}</p>
             </div>
-            <span className="text-xs text-[#9895a4] font-mono">
+            <span className="text-xs text-[var(--text-tertiary)] font-mono">
               {edicao.provas.length} prova(s)
             </span>
           </div>
 
           {edicao.provas.length === 0 ? (
-            <p className="px-6 py-4 text-sm text-[#9895a4]">Nenhuma prova cadastrada nesta edição.</p>
+            <p className="px-6 py-4 text-sm text-[var(--text-tertiary)]">Nenhuma prova cadastrada nesta edição.</p>
           ) : (
-            <div className="divide-y divide-[#2a2a3a]/50">
+            <div className="divide-y divide-[var(--border-color)]/50">
               {edicao.provas.map((prova) => {
                 const selecionavel = provaAcompanhavel(prova);
                 return (
@@ -486,17 +487,17 @@ function ListaEdicoes({
                     onClick={() => onSelecionar(prova)}
                     className={`w-full flex items-center justify-between gap-4 px-6 py-4 text-left transition-colors ${
                       selecionavel
-                        ? "hover:bg-[#0a0a0f]/60 cursor-pointer"
+                        ? "hover:bg-[var(--bg-primary)]/60 cursor-pointer"
                         : "cursor-not-allowed opacity-60"
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <span className="text-xs font-mono text-[#9895a4] w-16 shrink-0">
+                      <span className="text-xs font-mono text-[var(--text-tertiary)] w-16 shrink-0">
                         Fase {prova.fase}
                       </span>
                       <div>
-                        <p className="text-[#f0ece4] font-medium">{prova.titulo || "Prova sem título"}</p>
-                        <p className="text-xs text-[#9895a4]">
+                        <p className="text-[var(--text-primary)] font-medium">{prova.titulo || "Prova sem título"}</p>
+                        <p className="text-xs text-[var(--text-tertiary)]">
                           {prova.duracaoMinutos} min · {prova.totalQuestoes} questões
                         </p>
                       </div>
@@ -506,13 +507,13 @@ function ListaEdicoes({
                         className="text-xs font-medium px-3 py-1 rounded-full"
                         style={{
                           backgroundColor: `${STATUS_PROVA_COR[prova.statusMonitoramento]}20`,
-                          color: STATUS_PROVA_COR[prova.statusMonitoramento],
+                          color: tinta(STATUS_PROVA_COR[prova.statusMonitoramento]),
                         }}
                       >
                         {STATUS_PROVA_LABEL[prova.statusMonitoramento]}
                       </span>
                       {selecionavel && (
-                        <span className="text-xs text-[#E8B829] font-medium">Acompanhar →</span>
+                        <span className="text-xs text-[var(--color-gold-ink)] font-medium">Acompanhar →</span>
                       )}
                     </div>
                   </button>
@@ -590,17 +591,17 @@ function TabelaAlunos({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-[#f0ece4]">
+          <h2 className="text-xl font-bold text-[var(--text-primary)]">
             {prova.titulo || "Prova"} — Fase {prova.fase}
           </h2>
-          <p className="text-sm text-[#9895a4] mt-0.5">
+          <p className="text-sm text-[var(--text-tertiary)] mt-0.5">
             Status dos alunos em tempo real · {totalQuestoes} questões
           </p>
         </div>
         <button
           type="button"
           onClick={onVoltar}
-          className="px-4 py-2 bg-[#2a2a3a] text-[#f0ece4] rounded-xl text-sm font-semibold hover:bg-[#3a3a4a] transition-colors"
+          className="px-4 py-2 bg-[var(--border-color)] text-[var(--text-primary)] rounded-xl text-sm font-semibold hover:bg-[var(--border-strong)] transition-colors"
         >
           ← Voltar
         </button>
@@ -608,20 +609,20 @@ function TabelaAlunos({
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {contadores.map((c) => (
-          <div key={c.label} className="border border-[#2a2a3a] rounded-xl bg-[#12121a] px-4 py-3">
-            <p className="text-2xl font-bold" style={{ color: c.cor }}>{c.valor}</p>
-            <p className="text-xs text-[#9895a4]">{c.label}</p>
+          <div key={c.label} className="border border-[var(--border-color)] rounded-xl bg-[var(--bg-secondary)] px-4 py-3">
+            <p className="text-2xl font-bold" style={{ color: tinta(c.cor) }}>{c.valor}</p>
+            <p className="text-xs text-[var(--text-tertiary)]">{c.label}</p>
           </div>
         ))}
       </div>
 
       {pendentes > 0 && (
-        <div className="flex items-center justify-between gap-3 text-sm text-[#FAA307] bg-[#FAA307]/10 border border-[#FAA307]/20 rounded-xl p-3">
+        <div className="flex items-center justify-between gap-3 text-sm text-[var(--color-orange-ink)] bg-[var(--color-orange)]/10 border border-[var(--color-orange)]/20 rounded-xl p-3">
           <span>{pendentes} participante(s) com tempo esgotado e sem finalizar.</span>
           <button
             type="button"
             onClick={onEncerrarPendentes}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#FAA307]/40 hover:bg-[#FAA307]/10 shrink-0"
+            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--color-orange)]/40 hover:bg-[var(--color-orange)]/10 shrink-0"
           >
             Encerrar pendentes
           </button>
@@ -634,12 +635,12 @@ function TabelaAlunos({
           value={busca}
           onChange={(e) => setBusca(e.target.value)}
           placeholder="Buscar por nome, CPF, matrícula, e-mail ou curso…"
-          className="flex-1 px-4 py-2.5 bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl text-sm text-[#f0ece4] placeholder-[#9895a4] focus:outline-none focus:border-[#E8B829] transition-colors"
+          className="flex-1 px-4 py-2.5 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] focus:outline-none focus:border-[var(--color-gold)] transition-colors"
         />
         <select
           value={filtroStatus}
           onChange={(e) => setFiltroStatus(e.target.value as "todos" | StatusAluno)}
-          className="px-3 py-2.5 bg-[#0a0a0f] border border-[#2a2a3a] rounded-xl text-sm text-[#f0ece4] focus:outline-none focus:border-[#E8B829] transition-colors"
+          className="px-3 py-2.5 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-gold)] transition-colors"
         >
           <option value="todos">Todos os status</option>
           <option value="nao_iniciado">Não Iniciada</option>
@@ -648,61 +649,61 @@ function TabelaAlunos({
         </select>
       </div>
 
-      <p className="text-xs text-[#9895a4]">
+      <p className="text-xs text-[var(--text-tertiary)]">
         {filtradas.length} de {inscricoes.length} aluno(s)
         {termo ? ` — filtro: "${busca.trim()}"` : ""}
       </p>
 
       {!janelaAberta && (
-        <div className="text-sm text-[#FAA307] bg-[#FAA307]/10 border border-[#FAA307]/20 rounded-xl p-3">
+        <div className="text-sm text-[var(--color-orange-ink)] bg-[var(--color-orange)]/10 border border-[var(--color-orange)]/20 rounded-xl p-3">
           Fora do período da prova: resetar e destravar estão bloqueados.
         </div>
       )}
 
       {carregando ? (
         <div className="flex items-center justify-center h-48">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : inscricoes.length === 0 ? (
-        <div className="border border-[#2a2a3a] rounded-2xl p-10 text-center">
-          <p className="text-[#9895a4]">Nenhuma inscrição confirmada encontrada para esta prova.</p>
+        <div className="border border-[var(--border-color)] rounded-2xl p-10 text-center">
+          <p className="text-[var(--text-tertiary)]">Nenhuma inscrição confirmada encontrada para esta prova.</p>
         </div>
       ) : filtradas.length === 0 ? (
-        <div className="border border-[#2a2a3a] rounded-2xl p-10 text-center">
-          <p className="text-[#9895a4]">Nenhum aluno corresponde à busca/filtro.</p>
+        <div className="border border-[var(--border-color)] rounded-2xl p-10 text-center">
+          <p className="text-[var(--text-tertiary)]">Nenhum aluno corresponde à busca/filtro.</p>
           <button
             type="button"
             onClick={() => { setBusca(""); setFiltroStatus("todos"); }}
-            className="mt-3 text-sm text-[#E8B829] hover:underline font-medium"
+            className="mt-3 text-sm text-[var(--color-gold-ink)] hover:underline font-medium"
           >
             Limpar filtros
           </button>
         </div>
       ) : (
-        <div className="border border-[#2a2a3a] rounded-2xl overflow-hidden bg-[#12121a]">
+        <div className="border border-[var(--border-color)] rounded-2xl overflow-hidden bg-[var(--bg-secondary)]">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#0a0a0f] border-b border-[#2a2a3a]">
-                  <th className="text-left p-4 text-[#9895a4] font-medium text-xs uppercase tracking-wider">Aluno</th>
-                  <th className="text-left p-4 text-[#9895a4] font-medium text-xs uppercase tracking-wider hidden md:table-cell">Curso</th>
-                  <th className="text-center p-4 text-[#9895a4] font-medium text-xs uppercase tracking-wider">Status</th>
-                  <th className="text-center p-4 text-[#9895a4] font-medium text-xs uppercase tracking-wider hidden sm:table-cell">Q</th>
-                  <th className="text-center p-4 text-[#9895a4] font-medium text-xs uppercase tracking-wider hidden sm:table-cell">Extra</th>
-                  <th className="text-right p-4 text-[#9895a4] font-medium text-xs uppercase tracking-wider">Ações</th>
+                <tr className="bg-[var(--bg-primary)] border-b border-[var(--border-color)]">
+                  <th className="text-left p-4 text-[var(--text-tertiary)] font-medium text-xs uppercase tracking-wider">Aluno</th>
+                  <th className="text-left p-4 text-[var(--text-tertiary)] font-medium text-xs uppercase tracking-wider hidden md:table-cell">Curso</th>
+                  <th className="text-center p-4 text-[var(--text-tertiary)] font-medium text-xs uppercase tracking-wider">Status</th>
+                  <th className="text-center p-4 text-[var(--text-tertiary)] font-medium text-xs uppercase tracking-wider hidden sm:table-cell">Q</th>
+                  <th className="text-center p-4 text-[var(--text-tertiary)] font-medium text-xs uppercase tracking-wider hidden sm:table-cell">Extra</th>
+                  <th className="text-right p-4 text-[var(--text-tertiary)] font-medium text-xs uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#2a2a3a]/50">
+              <tbody className="divide-y divide-[var(--border-color)]/50">
                 {filtradas.map((insc) => (
-                  <tr key={insc.id} className="hover:bg-[#0a0a0f]/50 transition-colors">
+                  <tr key={insc.id} className="hover:bg-[var(--bg-primary)]/50 transition-colors">
                     <td className="p-4">
-                      <p className="font-medium text-[#f0ece4]">{insc.nome}</p>
-                      <p className="text-xs text-[#9895a4] mt-0.5">{insc.email}</p>
-                      <p className="text-xs text-[#9895a4] mt-0.5 font-mono">
+                      <p className="font-medium text-[var(--text-primary)]">{insc.nome}</p>
+                      <p className="text-xs text-[var(--text-tertiary)] mt-0.5">{insc.email}</p>
+                      <p className="text-xs text-[var(--text-tertiary)] mt-0.5 font-mono">
                         CPF {insc.cpf} · Mat. {insc.matricula}
                       </p>
                     </td>
-                    <td className="p-4 hidden md:table-cell text-[#9895a4] text-xs max-w-[160px] truncate" title={insc.curso}>
+                    <td className="p-4 hidden md:table-cell text-[var(--text-tertiary)] text-xs max-w-[160px] truncate" title={insc.curso}>
                       {insc.curso}
                     </td>
                     <td className="p-4 text-center">
@@ -710,34 +711,34 @@ function TabelaAlunos({
                       {insc.fase1FimMotivo && (
                         <p
                           className="text-xs mt-1"
-                          style={{ color: insc.fase1FimMotivo === "ADVERTENCIAS" ? "#e53e3e" : "#9895a4" }}
+                          style={{ color: insc.fase1FimMotivo === "ADVERTENCIAS" ? "var(--color-red-ink)" : "var(--text-tertiary)" }}
                         >
                           {MOTIVO_LABEL[insc.fase1FimMotivo] ?? insc.fase1FimMotivo}
                         </p>
                       )}
                       {insc.outroAparelho && (
-                        <p className="text-xs font-semibold text-[#e53e3e] mt-1">Tentativa em outro aparelho</p>
+                        <p className="text-xs font-semibold text-[var(--color-red-ink)] mt-1">Tentativa em outro aparelho</p>
                       )}
                       {insc.pendenteEncerramento && (
-                        <p className="text-xs text-[#FAA307] mt-1">Sem finalizar</p>
+                        <p className="text-xs text-[var(--color-orange-ink)] mt-1">Sem finalizar</p>
                       )}
                       {insc.advertencias > 0 && (
-                        <p className="text-xs text-[#e53e3e] mt-1">{insc.advertencias} advertência(s)</p>
+                        <p className="text-xs text-[var(--color-red-ink)] mt-1">{insc.advertencias} advertência(s)</p>
                       )}
                       {insc.status === "finalizado" && insc.fase1Nota != null && (
-                        <p className="text-xs text-[#9895a4] mt-1">{insc.fase1Nota.toFixed(1)} pts</p>
+                        <p className="text-xs text-[var(--text-tertiary)] mt-1">{insc.fase1Nota.toFixed(1)} pts</p>
                       )}
                     </td>
                     <td className="p-4 text-center hidden sm:table-cell">
-                      <span className="text-xs text-[#9895a4]">
+                      <span className="text-xs text-[var(--text-tertiary)]">
                         {insc.respondidas}/{insc.totalQuestoes || totalQuestoes}
                       </span>
                     </td>
                     <td className="p-4 text-center hidden sm:table-cell">
                       {insc.tempoExtraMinutos > 0 ? (
-                        <span className="text-xs text-[#FAA307] font-medium">+{insc.tempoExtraMinutos}min</span>
+                        <span className="text-xs text-[var(--color-orange-ink)] font-medium">+{insc.tempoExtraMinutos}min</span>
                       ) : (
-                        <span className="text-xs text-[#9895a4]">—</span>
+                        <span className="text-xs text-[var(--text-tertiary)]">—</span>
                       )}
                     </td>
                     <td className="p-4 text-right">
@@ -745,7 +746,7 @@ function TabelaAlunos({
                         <button
                           type="button"
                           onClick={() => onSenha(insc)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#9895a4]/40 text-[#9895a4] hover:bg-[#9895a4]/10 transition-colors"
+                          className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--text-tertiary)]/40 text-[var(--text-tertiary)] hover:bg-[var(--text-tertiary)]/10 transition-colors"
                         >
                           Senha
                         </button>
@@ -753,7 +754,7 @@ function TabelaAlunos({
                           <button
                             type="button"
                             onClick={() => onLiberarSessao(insc)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#3A86EF]/40 text-[#3A86EF] hover:bg-[#3A86EF]/10 transition-colors"
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--color-azure)]/40 text-[var(--color-azure-ink)] hover:bg-[var(--color-azure)]/10 transition-colors"
                           >
                             Liberar sessão
                           </button>
@@ -762,7 +763,7 @@ function TabelaAlunos({
                           <button
                             type="button"
                             onClick={() => onDestravar(insc)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#2EC4B6]/40 text-[#2EC4B6] hover:bg-[#2EC4B6]/10 transition-colors"
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--color-teal)]/40 text-[var(--color-teal-ink)] hover:bg-[var(--color-teal)]/10 transition-colors"
                           >
                             Destravar
                           </button>
@@ -773,7 +774,7 @@ function TabelaAlunos({
                               type="button"
                               disabled={!janelaAberta}
                               onClick={() => onReset(insc)}
-                              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[#E8B829]/40 text-[#E8B829] hover:bg-[#E8B829]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                              className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-[var(--color-gold)]/40 text-[var(--color-gold-ink)] hover:bg-[var(--color-gold)]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                             >
                               Resetar
                             </button>
@@ -796,19 +797,19 @@ function statusAlunoBadge(status: StatusAluno, tempoRestante: number | null) {
   switch (status) {
     case "nao_iniciado":
       return (
-        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#2a2a3a] text-[#9895a4]">
+        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--border-color)] text-[var(--text-tertiary)]">
           Não Iniciada
         </span>
       );
     case "em_andamento":
       return (
-        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#E8B829]/15 text-[#E8B829]">
+        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--color-gold)]/15 text-[var(--color-gold-ink)]">
           Iniciada — {tempoRestante != null ? `Faltam ${formatarTempo(tempoRestante)}` : "Em andamento"}
         </span>
       );
     case "finalizado":
       return (
-        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#2EC4B6]/15 text-[#2EC4B6]">
+        <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-[var(--color-teal)]/15 text-[var(--color-teal-ink)]">
           Encerrada
         </span>
       );
@@ -834,8 +835,8 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="max-w-md w-full border border-[#2a2a3a] bg-[#12121a] rounded-2xl p-8 space-y-6">
-        <h3 className="text-xl font-bold" style={{ color: cor }}>
+      <div className="max-w-md w-full border border-[var(--border-color)] bg-[var(--bg-secondary)] rounded-2xl p-8 space-y-6">
+        <h3 className="text-xl font-bold" style={{ color: tinta(cor) }}>
           {titulo}
         </h3>
         <div className="space-y-3">{children}</div>
@@ -844,7 +845,7 @@ function Modal({
             type="button"
             onClick={onClose}
             disabled={loading}
-            className="flex-1 py-3 border border-[#2a2a3a] rounded-xl text-sm font-medium hover:bg-[#1f1f2e] disabled:opacity-50 transition-colors"
+            className="flex-1 py-3 border border-[var(--border-color)] rounded-xl text-sm font-medium hover:bg-[var(--surface-4)] disabled:opacity-50 transition-colors"
           >
             Cancelar
           </button>

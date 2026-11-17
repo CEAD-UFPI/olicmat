@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { TopBar } from "@/components/layout/TopBar";
 import api from "@/lib/api";
 import type { Role } from "@/types";
 
@@ -97,7 +98,7 @@ export default function DashboardLayout({
   if (isLoading || verificandoInscricao) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -108,6 +109,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex">
+      <TopBar logoHref={roleHome[user.role]} />
       <Sidebar role={user.role} userName={user.nome} />
       <main className="flex-1 md:ml-64 pt-24 md:pt-28 px-4 sm:px-6 lg:px-8 pb-16 min-h-screen">
         {children}

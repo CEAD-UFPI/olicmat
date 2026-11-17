@@ -91,25 +91,25 @@ export default function LoginPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <span className="text-3xl font-bold font-[family-name:var(--font-fraunces)]">
-              <span style={{ color: "var(--pi-laranja)" }}>O</span>
-              <span style={{ color: "var(--integral-verde)" }}>L</span>
-              <span style={{ color: "var(--sigma-azul)" }}>I</span>
+              <span style={{ color: "var(--logo-gold)" }}>O</span>
+              <span style={{ color: "var(--logo-green)" }}>L</span>
+              <span style={{ color: "var(--logo-blue)" }}>I</span>
               <span style={{ color: "var(--text-primary)" }}>CMAT</span>
             </span>
           </Link>
         </div>
 
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a]/90 backdrop-blur-sm">
-          <h1 className="text-2xl font-bold text-[#f0ece4] mb-1 font-[family-name:var(--font-fraunces)]">
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)]/90 backdrop-blur-sm">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1 font-[family-name:var(--font-fraunces)]">
             Bem-vindo de volta
           </h1>
-          <p className="text-sm text-[#9895a4] mb-8">
+          <p className="text-sm text-[var(--text-tertiary)] mb-8">
             Entre com sua conta para acessar a plataforma
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div>
-              <Label htmlFor="email" className="text-[#f0ece4]">Email</Label>
+              <Label htmlFor="email" className="text-[var(--text-primary)]">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -117,7 +117,7 @@ export default function LoginPage() {
                 autoCorrect="off"
                 placeholder="seu@email.com"
                 {...register("email")}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
               />
               {errors.email && (
                 <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
@@ -125,7 +125,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <Label htmlFor="senha" className="text-[#f0ece4]">Senha</Label>
+              <Label htmlFor="senha" className="text-[var(--text-primary)]">Senha</Label>
               <PasswordField
                 id="senha"
                 name="senha"
@@ -138,7 +138,7 @@ export default function LoginPage() {
             </div>
 
             <div className="text-right">
-              <Link href="/recuperar-senha" className="text-xs text-[#3AAFE0] hover:underline">
+              <Link href="/recuperar-senha" className="text-xs text-[var(--color-blue-ink)] hover:underline">
                 Esqueci minha senha
               </Link>
             </div>
@@ -151,13 +151,13 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full h-12 text-base font-semibold"
-              style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+              style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
             >
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
 
-          <p className="text-xs text-[#9895a4] text-center mt-6 leading-relaxed">
+          <p className="text-xs text-[var(--text-tertiary)] text-center mt-6 leading-relaxed">
             O cadastro de novos usuários é gerenciado pelos Coordenadores de Curso ou Administradores do sistema.
           </p>
         </div>

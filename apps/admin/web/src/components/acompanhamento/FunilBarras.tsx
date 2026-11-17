@@ -27,18 +27,18 @@ export function FunilBarras({ funil }: { funil: FunilDados }) {
   const max = Math.max(funil.convidados, 1);
 
   return (
-    <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a] space-y-3">
-      <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+    <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)] space-y-3">
+      <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
         Funil de Conversão
       </h2>
       {estagios.map((e) => (
         <div key={e.label} className="flex items-center gap-3">
-          <span className="w-28 shrink-0 text-sm text-[#f0ece4]">
+          <span className="w-28 shrink-0 text-sm text-[var(--text-primary)]">
             {e.label}
           </span>
-          <div className="flex-1 h-6 rounded bg-[#0a0a0f] border border-[#2a2a3a] overflow-hidden">
+          <div className="flex-1 h-6 rounded bg-[var(--bg-primary)] border border-[var(--border-color)] overflow-hidden">
             <div
-              className="h-full bg-[#E8B829] flex items-center pl-2 text-xs font-semibold text-[#0a0a0f] whitespace-nowrap"
+              className="h-full bg-[var(--color-gold)] flex items-center pl-2 text-xs font-semibold text-[var(--on-accent)] whitespace-nowrap"
               style={{
                 width: `${Math.max((e.valor / max) * 100, e.valor > 0 ? 4 : 0)}%`,
               }}

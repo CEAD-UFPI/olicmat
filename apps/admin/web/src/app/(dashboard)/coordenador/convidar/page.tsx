@@ -175,21 +175,21 @@ export default function ConvidarAlunosPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Convidar alunos
         </h1>
-        <p className="text-[#9895a4] mt-2">
+        <p className="text-[var(--text-tertiary)] mt-2">
           Informe nome e e-mail. Cada aluno recebe um link e preenche o próprio
           cadastro — você não precisa dos dados pessoais deles.
         </p>
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-4">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 lg:p-8 bg-[var(--bg-secondary)] space-y-4">
         <div>
-          <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             Link de convite
           </h2>
-          <p className="text-sm text-[#9895a4] mt-1">
+          <p className="text-sm text-[var(--text-tertiary)] mt-1">
             Um link que não expira e pode ser usado por quantos alunos
             precisar — compartilhe por WhatsApp, Discord ou onde for mais
             fácil chegar até eles.
@@ -197,14 +197,14 @@ export default function ConvidarAlunosPage() {
         </div>
 
         {linkCarregando ? (
-          <p className="text-sm text-[#9895a4]">Carregando...</p>
+          <p className="text-sm text-[var(--text-tertiary)]">Carregando...</p>
         ) : linkToken ? (
           <div className="space-y-3">
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 readOnly
                 value={`${typeof window !== "undefined" ? window.location.origin : ""}/cadastro/${linkToken}`}
-                className="flex-1 h-11 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#9895a4]"
+                className="flex-1 h-11 rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] px-3 text-sm text-[var(--text-tertiary)]"
               />
               <Button
                 onClick={copiarLink}
@@ -215,13 +215,13 @@ export default function ConvidarAlunosPage() {
               </Button>
             </div>
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <p className="text-xs text-[#6f6c7a]">
+              <p className="text-xs text-[var(--text-muted)]">
                 {linkTotalCadastros} aluno(s) cadastrado(s) por este link
               </p>
               <button
                 onClick={gerarLink}
                 disabled={linkGerando}
-                className="text-xs text-[#9895a4] hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50"
+                className="text-xs text-[var(--text-tertiary)] hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50"
               >
                 {linkGerando ? "Gerando..." : "Gerar novo link (invalida o atual)"}
               </button>
@@ -232,23 +232,23 @@ export default function ConvidarAlunosPage() {
             onClick={gerarLink}
             disabled={linkGerando}
             className="h-11 px-6 text-sm font-semibold"
-            style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+            style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
           >
             {linkGerando ? "Gerando..." : "Gerar Convite"}
           </Button>
         )}
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-5">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 lg:p-8 bg-[var(--bg-secondary)] space-y-5">
         <div className="space-y-2">
-          <label htmlFor="curso" className="block text-sm text-[#9895a4]">
+          <label htmlFor="curso" className="block text-sm text-[var(--text-tertiary)]">
             Curso *
           </label>
           <select
             id="curso"
             value={cursoId}
             onChange={(e) => setCursoId(e.target.value)}
-            className="w-full h-12 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-4 text-[#f0ece4] focus:outline-none focus:border-[#3AAFE0]"
+            className="w-full h-12 rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] px-4 text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-blue)]"
           >
             <option value="">Selecione o curso</option>
             {cursos.map((c) => (
@@ -268,7 +268,7 @@ export default function ConvidarAlunosPage() {
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="lista" className="block text-sm text-[#9895a4]">
+          <label htmlFor="lista" className="block text-sm text-[var(--text-tertiary)]">
             Lista de alunos — um por linha
           </label>
           <textarea
@@ -277,9 +277,9 @@ export default function ConvidarAlunosPage() {
             value={texto}
             onChange={(e) => setTexto(e.target.value)}
             placeholder={"Maria Silva; maria@aluno.ufpi.edu.br\nJoão Souza; joao@aluno.ufpi.edu.br"}
-            className="w-full rounded-lg bg-[#0f0f16] border border-[#2a2a3a] p-4 text-[#f0ece4] placeholder:text-[#57545f] focus:outline-none focus:border-[#3AAFE0] font-[family-name:var(--font-jetbrains-mono)] text-sm"
+            className="w-full rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] p-4 text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--color-blue)] font-[family-name:var(--font-jetbrains-mono)] text-sm"
           />
-          <p className="text-xs text-[#6f6c7a]">
+          <p className="text-xs text-[var(--text-muted)]">
             Separe nome e e-mail por ponto e vírgula, vírgula ou tabulação.
             Também aceita o formato <code>Nome &lt;email&gt;</code>, útil para
             colar direto de uma planilha.
@@ -287,8 +287,8 @@ export default function ConvidarAlunosPage() {
         </div>
 
         {linhas.length > 0 && (
-          <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 space-y-2">
-            <p className="text-sm text-[#f0ece4]">
+          <div className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] p-4 space-y-2">
+            <p className="text-sm text-[var(--text-primary)]">
               {validas.length} aluno(s) prontos
               {invalidas.length > 0 && (
                 <span className="text-red-400">
@@ -316,14 +316,14 @@ export default function ConvidarAlunosPage() {
           onClick={enviar}
           disabled={enviando || !cursos.length}
           className="h-12 px-6 text-base font-semibold"
-          style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+          style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
         >
           {enviando ? "Enviando..." : `Enviar ${validas.length || ""} convite(s)`}
         </Button>
 
         {resultado && (
-          <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 space-y-2 text-sm">
-            <p className="text-[#f0ece4]">
+          <div className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] p-4 space-y-2 text-sm">
+            <p className="text-[var(--text-primary)]">
               Enviados: {resultado.enviados.length}
             </p>
             {resultado.falhaEnvio.length > 0 && (
@@ -333,7 +333,7 @@ export default function ConvidarAlunosPage() {
                   {resultado.falhaEnvio.length}
                 </p>
                 {resultado.falhaEnvio.map((f) => (
-                  <p key={f.email} className="text-xs text-[#9895a4]">
+                  <p key={f.email} className="text-xs text-[var(--text-tertiary)]">
                     {f.email} — {f.motivo}
                   </p>
                 ))}
@@ -341,11 +341,11 @@ export default function ConvidarAlunosPage() {
             )}
             {resultado.ignorados.length > 0 && (
               <div>
-                <p className="text-[#9895a4]">
+                <p className="text-[var(--text-tertiary)]">
                   Ignorados: {resultado.ignorados.length}
                 </p>
                 {resultado.ignorados.map((f) => (
-                  <p key={f.email} className="text-xs text-[#6f6c7a]">
+                  <p key={f.email} className="text-xs text-[var(--text-muted)]">
                     {f.email} — {f.motivo}
                   </p>
                 ))}
@@ -355,9 +355,9 @@ export default function ConvidarAlunosPage() {
         )}
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 lg:p-8 bg-[var(--bg-secondary)]">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-          <h2 className="text-xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h2 className="text-xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             Convites enviados
           </h2>
           {convites.length > 0 && (
@@ -366,27 +366,27 @@ export default function ConvidarAlunosPage() {
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
               placeholder="Buscar por nome ou e-mail..."
-              className="h-10 w-full sm:w-72 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-3 text-sm text-[#f0ece4] placeholder:text-[#57545f] focus:outline-none focus:border-[#3AAFE0]"
+              className="h-10 w-full sm:w-72 rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] px-3 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--color-blue)]"
             />
           )}
         </div>
 
         {!convites.length ? (
-          <p className="text-sm text-[#9895a4]">
+          <p className="text-sm text-[var(--text-tertiary)]">
             Nenhum convite enviado ainda.
           </p>
         ) : !convitesFiltrados.length ? (
-          <p className="text-sm text-[#9895a4]">
+          <p className="text-sm text-[var(--text-tertiary)]">
             Nenhum convite encontrado para &quot;{busca}&quot;.
           </p>
         ) : (
           <div className="overflow-x-auto">
-            <p className="text-xs text-[#6f6c7a] mb-2">
+            <p className="text-xs text-[var(--text-muted)] mb-2">
               {convitesFiltrados.length} de {convites.length} convite(s)
             </p>
             <table className="w-full text-sm min-w-[520px]">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-[0.08em] text-[#6f6c7a]">
+                <tr className="text-left text-xs uppercase tracking-[0.08em] text-[var(--text-muted)]">
                   <th className="py-2 pr-4">Nome</th>
                   <th className="py-2 pr-4">E-mail</th>
                   <th className="py-2">Situação</th>
@@ -394,12 +394,12 @@ export default function ConvidarAlunosPage() {
               </thead>
               <tbody>
                 {convitesFiltrados.map((c) => (
-                  <tr key={c.id} className="border-t border-[#2a2a3a]">
-                    <td className="py-2 pr-4 text-[#f0ece4]">{c.nome}</td>
-                    <td className="py-2 pr-4 text-[#9895a4]">{c.email}</td>
+                  <tr key={c.id} className="border-t border-[var(--border-color)]">
+                    <td className="py-2 pr-4 text-[var(--text-primary)]">{c.nome}</td>
+                    <td className="py-2 pr-4 text-[var(--text-tertiary)]">{c.email}</td>
                     <td className="py-2">
                       {c.usadoEm ? (
-                        <span className="text-[#4ec98a]">cadastrado</span>
+                        <span className="text-[var(--color-mint-ink)]">cadastrado</span>
                       ) : new Date(c.expiraEm) < new Date() ? (
                         <span className="text-red-400">expirado</span>
                       ) : (

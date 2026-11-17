@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import api from "@/lib/api";
+import { tinta } from "@/lib/tema";
 
 interface Competidor {
   inscricaoId: string;
@@ -75,10 +76,10 @@ export default function RankingPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h1 className="text-4xl font-bold text-[#f0ece4] mb-4 font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-4xl font-bold text-[var(--text-primary)] mb-4 font-[family-name:var(--font-fraunces)]">
           Ranking OLICMAT
         </h1>
-        <p className="text-[#9895a4] text-lg">Resultados por estado</p>
+        <p className="text-[var(--text-tertiary)] text-lg">Resultados por estado</p>
       </motion.div>
 
       <div className="flex justify-center mb-10">
@@ -88,7 +89,7 @@ export default function RankingPage() {
             setCarregando(true);
             setEstado(e.target.value);
           }}
-          className="h-12 px-4 rounded-xl bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base focus:outline-none focus:border-[#E8B829] min-w-[200px]"
+          className="h-12 px-4 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] text-base focus:outline-none focus:border-[var(--color-gold)] min-w-[200px]"
         >
           <option value="">Todos os estados</option>
           {ESTADOS.map((uf) => (
@@ -99,7 +100,7 @@ export default function RankingPage() {
 
       {carregando ? (
         <div className="flex justify-center">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <div className="space-y-12">
@@ -111,10 +112,10 @@ export default function RankingPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-xl font-bold text-[#f0ece4] mb-4 font-[family-name:var(--font-fraunces)] flex items-center gap-3">
-                <span className="text-sm px-3 py-1 rounded-full bg-[#1a1a26] text-[#9895a4]">{uf}</span>
+              <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4 font-[family-name:var(--font-fraunces)] flex items-center gap-3">
+                <span className="text-sm px-3 py-1 rounded-full bg-[var(--surface)] text-[var(--text-tertiary)]">{uf}</span>
                 {competidores.filter((c) => c.medalha).length > 0 && (
-                  <span className="text-sm font-normal text-[#9895a4]">
+                  <span className="text-sm font-normal text-[var(--text-tertiary)]">
                     {competidores.filter((c) => c.medalha).length} medalhistas
                   </span>
                 )}
@@ -123,30 +124,30 @@ export default function RankingPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-base">
                   <thead>
-                    <tr className="border-b border-[#2a2a3a]">
-                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">#</th>
-                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
-                      <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Fase 1</th>
-                      <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Fase 2</th>
-                      <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Final</th>
-                      <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Medalha</th>
+                    <tr className="border-b border-[var(--border-color)]">
+                      <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">#</th>
+                      <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                      <th className="text-right py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Fase 1</th>
+                      <th className="text-right py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Fase 2</th>
+                      <th className="text-right py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Final</th>
+                      <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Medalha</th>
                     </tr>
                   </thead>
                   <tbody>
                     {competidores.map((c, i) => (
-                      <tr key={c.inscricaoId} className="border-b border-[#2a2a3a]/50 hover:bg-[#1a1a26]/50 transition-colors">
-                        <td className="py-4 px-5 text-[#9895a4]">{i + 1}</td>
-                        <td className="py-4 px-5 text-[#f0ece4] font-medium">{c.nome}</td>
-                        <td className="py-4 px-5 text-right text-[#9895a4]">{c.fase1Nota}</td>
-                        <td className="py-4 px-5 text-right text-[#9895a4]">{c.fase2Nota || "-"}</td>
-                        <td className="py-4 px-5 text-right text-[#f0ece4] font-semibold">{c.notaFinal.toFixed(1)}</td>
+                      <tr key={c.inscricaoId} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--surface)]/50 transition-colors">
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">{i + 1}</td>
+                        <td className="py-4 px-5 text-[var(--text-primary)] font-medium">{c.nome}</td>
+                        <td className="py-4 px-5 text-right text-[var(--text-tertiary)]">{c.fase1Nota}</td>
+                        <td className="py-4 px-5 text-right text-[var(--text-tertiary)]">{c.fase2Nota || "-"}</td>
+                        <td className="py-4 px-5 text-right text-[var(--text-primary)] font-semibold">{c.notaFinal.toFixed(1)}</td>
                         <td className="py-4 px-5 text-center">
                           {c.medalha && (
                             <span
                               className="inline-flex items-center gap-1 text-sm font-bold px-3 py-1 rounded-full"
                               style={{
                                 backgroundColor: `${medalhaCores[c.medalha]}18`,
-                                color: medalhaCores[c.medalha],
+                                color: tinta(medalhaCores[c.medalha]),
                               }}
                             >
                               {medalhaEmoji[c.medalha]} {c.medalha}

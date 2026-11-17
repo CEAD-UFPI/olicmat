@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import api from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Pagination } from "@/components/ui/pagination";
+import { tinta } from "@/lib/tema";
 
 interface LogEntry {
   id: string;
@@ -78,10 +79,10 @@ export default function ComissaoAuditoriaPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Auditoria
         </h1>
-        <p className="text-[#9895a4] mt-1">Registro de ações do sistema</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Registro de ações do sistema</p>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -89,12 +90,12 @@ export default function ComissaoAuditoriaPage() {
           placeholder="Buscar por usuário, ação ou detalhes..."
           value={filtro}
           onChange={(e) => setFiltro(e.target.value)}
-          className="flex-1 min-w-[200px] bg-[#12121a] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+          className="flex-1 min-w-[200px] bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
         />
         <select
           value={entidadeFiltro}
           onChange={(e) => { setEntidadeFiltro(e.target.value); setPagina(1); }}
-          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
+          className="h-10 px-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] text-base cursor-pointer"
         >
           <option value="">Todas as entidades</option>
           {entidades.map((e) => (
@@ -105,38 +106,38 @@ export default function ComissaoAuditoriaPage() {
           type="date"
           value={dataInicio}
           onChange={(e) => { setDataInicio(e.target.value); setPagina(1); }}
-          className="w-[160px] bg-[#12121a] border-[#2a2a3a] text-[#f0ece4]"
+          className="w-[160px] bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)]"
           title="Data início"
         />
         <Input
           type="date"
           value={dataFim}
           onChange={(e) => { setDataFim(e.target.value); setPagina(1); }}
-          className="w-[160px] bg-[#12121a] border-[#2a2a3a] text-[#f0ece4]"
+          className="w-[160px] bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)]"
           title="Data fim"
         />
       </div>
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : logs.length === 0 ? (
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#b0adc0]">Nenhum registro de auditoria encontrado.</p>
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+          <p className="text-[var(--text-secondary)]">Nenhum registro de auditoria encontrado.</p>
         </div>
       ) : (
         <>
-          <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
+          <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-base">
                 <thead>
-                  <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Data</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Usuário</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Entidade</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ação</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Detalhes</th>
+                  <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Data</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Usuário</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Entidade</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ação</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Detalhes</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -151,24 +152,24 @@ export default function ComissaoAuditoriaPage() {
                       );
                     })
                     .map((log) => (
-                      <tr key={log.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                        <td className="py-4 px-5 text-[#9895a4] text-sm whitespace-nowrap">
+                      <tr key={log.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-primary)]/50 transition-colors">
+                        <td className="py-4 px-5 text-[var(--text-tertiary)] text-sm whitespace-nowrap">
                           {log.createdAt ? new Date(log.createdAt).toLocaleString("pt-BR") : "-"}
                         </td>
-                        <td className="py-4 px-5 text-[#f0ece4]">{log.usuarioNome || "-"}</td>
-                        <td className="py-4 px-5 text-[#9895a4]">{log.entidade}</td>
+                        <td className="py-4 px-5 text-[var(--text-primary)]">{log.usuarioNome || "-"}</td>
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">{log.entidade}</td>
                         <td className="py-4 px-5">
                           <span
                             className="text-sm font-medium px-3 py-1 rounded-full"
                             style={{
                               backgroundColor: `${acaoColors[log.acao] || "#9895a4"}20`,
-                              color: acaoColors[log.acao] || "#9895a4",
+                              color: tinta(acaoColors[log.acao] || "var(--text-tertiary)"),
                             }}
                           >
                             {log.acao}
                           </span>
                         </td>
-                        <td className="py-4 px-5 text-[#9895a4] text-sm max-w-xs truncate">
+                        <td className="py-4 px-5 text-[var(--text-tertiary)] text-sm max-w-xs truncate">
                           {log.detalhes || "-"}
                         </td>
                       </tr>

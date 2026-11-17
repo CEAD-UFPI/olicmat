@@ -176,7 +176,7 @@ function ConviteContent() {
   };
 
   if (carregando) {
-    return <p className="text-[#9895a4] text-center">Validando convite...</p>;
+    return <p className="text-[var(--text-tertiary)] text-center">Validando convite...</p>;
   }
 
   if (pronto) {
@@ -186,17 +186,17 @@ function ConviteContent() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <h1 className="text-2xl font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2 font-[family-name:var(--font-fraunces)]">
           Cadastro concluído
         </h1>
-        <p className="text-sm text-[#9895a4] mb-6">
+        <p className="text-sm text-[var(--text-tertiary)] mb-6">
           Sua conta foi criada. Use seu e-mail e a senha que você acabou de
           definir para entrar.
         </p>
         <Link href="/login">
           <Button
             className="w-full h-12 text-base font-semibold"
-            style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+            style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
           >
             Fazer login
           </Button>
@@ -208,13 +208,13 @@ function ConviteContent() {
   if (!convite) {
     return (
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2 font-[family-name:var(--font-fraunces)]">
           Convite indisponível
         </h1>
         <p className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3 mb-6">
           {erro}
         </p>
-        <p className="text-sm text-[#9895a4]">
+        <p className="text-sm text-[var(--text-tertiary)]">
           Peça um novo convite à organização da OLICMAT.
         </p>
       </div>
@@ -223,22 +223,22 @@ function ConviteContent() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-[#f0ece4] mb-1 font-[family-name:var(--font-fraunces)]">
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1 font-[family-name:var(--font-fraunces)]">
         Concluir cadastro
       </h1>
-      <p className="text-sm text-[#9895a4] mb-6">
-        Olá, <span className="text-[#f0ece4]">{convite.nome}</span>. Faltam
+      <p className="text-sm text-[var(--text-tertiary)] mb-6">
+        Olá, <span className="text-[var(--text-primary)]">{convite.nome}</span>. Faltam
         alguns dados para liberar seu acesso.
       </p>
 
-      <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 mb-6 space-y-1">
-        <p className="text-xs uppercase tracking-[0.08em] text-[#6f6c7a]">
+      <div className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] p-4 mb-6 space-y-1">
+        <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-muted)]">
           Convite para
         </p>
-        <p className="text-sm text-[#f0ece4]">
+        <p className="text-sm text-[var(--text-primary)]">
           {ROTULO_PAPEL[convite.role] ?? convite.role}
         </p>
-        <p className="text-sm text-[#9895a4]">{convite.email}</p>
+        <p className="text-sm text-[var(--text-tertiary)]">{convite.email}</p>
       </div>
 
       <div className="space-y-5">
@@ -258,23 +258,23 @@ function ConviteContent() {
           type="date"
         />
         {cursoPredefinido ? (
-          <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 space-y-1">
-            <p className="text-xs uppercase tracking-[0.08em] text-[#6f6c7a]">
+          <div className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] p-4 space-y-1">
+            <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-muted)]">
               Curso
             </p>
-            <p className="text-sm text-[#f0ece4]">{cursoPredefinido.nome}</p>
-            <p className="text-sm text-[#9895a4]">
+            <p className="text-sm text-[var(--text-primary)]">{cursoPredefinido.nome}</p>
+            <p className="text-sm text-[var(--text-tertiary)]">
               {cursoPredefinido.instituicao.sigla} —{" "}
               {cursoPredefinido.instituicao.nome}
             </p>
           </div>
         ) : instituicaoPredefinida ? (
           <>
-            <div className="rounded-xl border border-[#2a2a3a] bg-[#0f0f16] p-4 space-y-1">
-              <p className="text-xs uppercase tracking-[0.08em] text-[#6f6c7a]">
+            <div className="rounded-xl border border-[var(--border-color)] bg-[var(--surface-2)] p-4 space-y-1">
+              <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-muted)]">
                 Instituição
               </p>
-              <p className="text-sm text-[#f0ece4]">
+              <p className="text-sm text-[var(--text-primary)]">
                 {instituicaoPredefinida.sigla} — {instituicaoPredefinida.nome}
               </p>
             </div>
@@ -294,7 +294,7 @@ function ConviteContent() {
                 rotulo: c.nome,
               }))}
             />
-            <p className="text-xs text-[#6f6c7a] -mt-2">
+            <p className="text-xs text-[var(--text-muted)] -mt-2">
               A instituição foi definida pela organização da OLICMAT.
               {exigeCurso
                 ? " Escolha o curso que você coordena — é por ele que seu painel mostrará os alunos."
@@ -335,7 +335,7 @@ function ConviteContent() {
           }))}
         />
         {exigeCurso && (
-          <p className="text-xs text-[#6f6c7a] -mt-2">
+          <p className="text-xs text-[var(--text-muted)] -mt-2">
             Como coordenação de curso, seu painel mostra os alunos do curso
             selecionado aqui.
           </p>
@@ -396,7 +396,7 @@ function ConviteContent() {
           onClick={enviar}
           disabled={enviando}
           className="w-full h-12 text-base font-semibold"
-          style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+          style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
         >
           {enviando ? "Concluindo..." : "Concluir cadastro"}
         </Button>
@@ -424,7 +424,7 @@ function Selecao({
 }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-sm text-[#9895a4]">
+      <label htmlFor={id} className="block text-sm text-[var(--text-tertiary)]">
         {label}
       </label>
       <select
@@ -433,7 +433,7 @@ function Selecao({
         value={value}
         disabled={desabilitado}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-12 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-4 text-[#f0ece4] focus:outline-none focus:border-[#3AAFE0] disabled:opacity-50"
+        className="w-full h-12 rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] px-4 text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-blue)] disabled:opacity-50"
       >
         <option value="">{vazio}</option>
         {opcoes.map((o) => (
@@ -465,7 +465,7 @@ function Campo({
 }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-sm text-[#9895a4]">
+      <label htmlFor={id} className="block text-sm text-[var(--text-tertiary)]">
         {label}
       </label>
       <input
@@ -476,7 +476,7 @@ function Campo({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-12 rounded-lg bg-[#0f0f16] border border-[#2a2a3a] px-4 text-[#f0ece4] placeholder:text-[#57545f] focus:outline-none focus:border-[#3AAFE0]"
+        className="w-full h-12 rounded-lg bg-[var(--surface-2)] border border-[var(--border-color)] px-4 text-[var(--text-primary)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-[var(--color-blue)]"
       />
     </div>
   );
@@ -496,27 +496,27 @@ export default function ConvitePage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <span className="text-3xl font-bold font-[family-name:var(--font-fraunces)]">
-              <span style={{ color: "var(--pi-laranja)" }}>O</span>
-              <span style={{ color: "var(--integral-verde)" }}>L</span>
-              <span style={{ color: "var(--sigma-azul)" }}>I</span>
+              <span style={{ color: "var(--logo-gold)" }}>O</span>
+              <span style={{ color: "var(--logo-green)" }}>L</span>
+              <span style={{ color: "var(--logo-blue)" }}>I</span>
               <span style={{ color: "var(--text-primary)" }}>CMAT</span>
             </span>
           </Link>
         </div>
 
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a]/90 backdrop-blur-sm">
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)]/90 backdrop-blur-sm">
           <Suspense
             fallback={
-              <p className="text-[#9895a4] text-center">Carregando...</p>
+              <p className="text-[var(--text-tertiary)] text-center">Carregando...</p>
             }
           >
             <ConviteContent />
           </Suspense>
         </div>
 
-        <p className="text-sm text-[#9895a4] text-center mt-6">
+        <p className="text-sm text-[var(--text-tertiary)] text-center mt-6">
           Já tem acesso?{" "}
-          <Link href="/login" className="text-[#3AAFE0] hover:underline">
+          <Link href="/login" className="text-[var(--color-blue-ink)] hover:underline">
             Fazer login
           </Link>
         </p>

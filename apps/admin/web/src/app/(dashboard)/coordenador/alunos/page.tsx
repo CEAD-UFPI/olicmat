@@ -61,7 +61,7 @@ const ESTADOS = [
   "PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
 ];
 
-const selectClasses = "mt-1.5 w-full h-10 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-sm cursor-pointer";
+const selectClasses = "mt-1.5 w-full h-10 px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm cursor-pointer";
 
 export default function CoordenadorAlunosPage() {
   const [alunos, setAlunos] = useState<AlunoItem[]>([]);
@@ -361,14 +361,14 @@ export default function CoordenadorAlunosPage() {
     >
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             Alunos
           </h1>
-          <p className="text-[#9895a4] mt-1">Gerenciamento de alunos sob sua coordenação</p>
+          <p className="text-[var(--text-tertiary)] mt-1">Gerenciamento de alunos sob sua coordenação</p>
         </div>
         <Button
           onClick={abrirNovo}
-          style={{ backgroundColor: "#4CAF50", color: "#fff" }}
+          style={{ backgroundColor: "var(--color-green)", color: "#fff" }}
           className="gap-2 cursor-pointer"
           disabled={cursos.length === 0}
         >
@@ -385,7 +385,7 @@ export default function CoordenadorAlunosPage() {
             setFiltro(e.target.value);
             setPagina(1);
           }}
-          className="flex-1 min-w-[200px] bg-[#12121a] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+          className="flex-1 min-w-[200px] bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
         />
         {cursos.length > 1 && (
           <select
@@ -394,7 +394,7 @@ export default function CoordenadorAlunosPage() {
               setFiltroCurso(e.target.value);
               setPagina(1);
             }}
-            className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
+            className="h-10 px-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] text-base cursor-pointer"
           >
             <option value="">Todos os cursos</option>
             {cursos.map((c) => (
@@ -406,40 +406,40 @@ export default function CoordenadorAlunosPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#b0adc0]">Nenhum aluno encontrado.</p>
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+          <p className="text-[var(--text-secondary)]">Nenhum aluno encontrado.</p>
         </div>
       ) : (
         <>
-          <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
+          <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-base">
                 <thead>
-                  <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Email</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Matrícula</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Instituição</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
+                  <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Email</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Matrícula</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Instituição</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginados.map((aluno) => (
-                    <tr key={aluno.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                      <td className="py-4 px-5 text-[#f0ece4] font-medium">{aluno.nome}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{aluno.email}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{aluno.matricula || "-"}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{getCursoNome(aluno)}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{getInstituicaoNome(aluno)}</td>
+                    <tr key={aluno.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-primary)]/50 transition-colors">
+                      <td className="py-4 px-5 text-[var(--text-primary)] font-medium">{aluno.nome}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{aluno.email}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{aluno.matricula || "-"}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{getCursoNome(aluno)}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{getInstituicaoNome(aluno)}</td>
                       <td className="py-4 px-5 text-center">
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => abrirDetalhes(aluno)}
-                            className="text-[#9895a4] hover:text-[#3AAFE0] transition-colors p-1 cursor-pointer disabled:opacity-50"
+                            className="text-[var(--text-tertiary)] hover:text-[var(--color-blue-ink)] transition-colors p-1 cursor-pointer disabled:opacity-50"
                             title="Detalhes"
                             disabled={loadingDetalhes}
                           >
@@ -447,14 +447,14 @@ export default function CoordenadorAlunosPage() {
                           </button>
                           <button
                             onClick={() => abrirEditar(aluno)}
-                            className="text-[#9895a4] hover:text-[#4CAF50] transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-tertiary)] hover:text-[var(--color-green-ink)] transition-colors p-1 cursor-pointer"
                             title="Editar"
                           >
                             <Pencil size={18} />
                           </button>
                           <button
                             onClick={() => reenviarLink(aluno)}
-                            className="text-[#9895a4] hover:text-[#E8B829] transition-colors p-1 cursor-pointer disabled:opacity-50"
+                            className="text-[var(--text-tertiary)] hover:text-[var(--color-gold-ink)] transition-colors p-1 cursor-pointer disabled:opacity-50"
                             title="Reenviar link de criação de senha"
                             disabled={reenviando === aluno.id}
                           >
@@ -462,14 +462,14 @@ export default function CoordenadorAlunosPage() {
                           </button>
                           <button
                             onClick={() => setDeleteTarget(aluno)}
-                            className="text-[#9895a4] hover:text-red-400 transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-tertiary)] hover:text-red-400 transition-colors p-1 cursor-pointer"
                             title="Excluir"
                           >
                             <Trash2 size={18} />
                           </button>
                         </div>
                         {feedbackReenvio?.id === aluno.id && (
-                          <p className={`text-xs mt-1 ${feedbackReenvio.erro ? "text-red-400" : "text-[#4CAF50]"}`}>
+                          <p className={`text-xs mt-1 ${feedbackReenvio.erro ? "text-red-400" : "text-[var(--color-green-ink)]"}`}>
                             {feedbackReenvio.erro ? "Falha ao reenviar" : "Link reenviado"}
                           </p>
                         )}
@@ -602,31 +602,31 @@ export default function CoordenadorAlunosPage() {
           <SectionTitle title="Identificação" />
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-[#f0ece4]">Nome *</Label>
+              <Label className="text-[var(--text-primary)]">Nome *</Label>
               <Input
                 value={form.nome}
                 onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                 placeholder="Nome completo"
               />
             </div>
             <div>
-              <Label className="text-[#f0ece4]">Email *</Label>
+              <Label className="text-[var(--text-primary)]">Email *</Label>
               <Input
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                 placeholder="email@exemplo.com"
                 type="email"
               />
             </div>
           </div>
           <div className="mt-4">
-            <Label className="text-[#f0ece4]">Nome da Mãe *</Label>
+            <Label className="text-[var(--text-primary)]">Nome da Mãe *</Label>
             <Input
               value={form.nomeMae}
               onChange={(e) => setForm({ ...form, nomeMae: e.target.value })}
-              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+              className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
               placeholder="Nome completo da mãe"
             />
           </div>
@@ -634,20 +634,20 @@ export default function CoordenadorAlunosPage() {
           {!editandoId && (
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-[#f0ece4]">CPF *</Label>
+                <Label className="text-[var(--text-primary)]">CPF *</Label>
                 <Input
                   value={form.cpf}
                   onChange={(e) => setForm({ ...form, cpf: maskCPF(e.target.value) })}
-                  className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                  className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                   placeholder="000.000.000-00"
                 />
               </div>
               <div>
-                <Label className="text-[#f0ece4]">Data Nasc. *</Label>
+                <Label className="text-[var(--text-primary)]">Data Nasc. *</Label>
                 <Input
                   value={form.dataNascimento}
                   onChange={(e) => setForm({ ...form, dataNascimento: e.target.value })}
-                  className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                  className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                   type="date"
                 />
               </div>
@@ -656,7 +656,7 @@ export default function CoordenadorAlunosPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-[#f0ece4]">Curso *</Label>
+              <Label className="text-[var(--text-primary)]">Curso *</Label>
               <select
                 value={form.cursoId}
                 onChange={(e) => setForm({ ...form, cursoId: e.target.value })}
@@ -668,11 +668,11 @@ export default function CoordenadorAlunosPage() {
               </select>
             </div>
             <div>
-              <Label className="text-[#f0ece4]">Matrícula</Label>
+              <Label className="text-[var(--text-primary)]">Matrícula</Label>
               <Input
                 value={form.matricula}
                 onChange={(e) => setForm({ ...form, matricula: e.target.value })}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                 placeholder="Opcional"
               />
             </div>
@@ -682,36 +682,36 @@ export default function CoordenadorAlunosPage() {
           <SectionTitle title="Dados Pessoais" />
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label className="text-[#f0ece4]">Nome Social</Label>
+              <Label className="text-[var(--text-primary)]">Nome Social</Label>
               <Input
                 value={form.nomeSocial}
                 onChange={(e) => setForm({ ...form, nomeSocial: e.target.value })}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                 placeholder="Nome social"
               />
             </div>
             <div>
-              <Label className="text-[#f0ece4]">Telefone</Label>
+              <Label className="text-[var(--text-primary)]">Telefone</Label>
               <Input
                 value={form.telefone}
                 onChange={(e) => setForm({ ...form, telefone: maskPhone(e.target.value) })}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                 placeholder="(00) 00000-0000"
               />
             </div>
             <div>
-              <Label className="text-[#f0ece4]">Celular</Label>
+              <Label className="text-[var(--text-primary)]">Celular</Label>
               <Input
                 value={form.celular}
                 onChange={(e) => setForm({ ...form, celular: maskPhone(e.target.value) })}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                 placeholder="(00) 00000-0000"
               />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label className="text-[#f0ece4]">Gênero</Label>
+              <Label className="text-[var(--text-primary)]">Gênero</Label>
               <select value={form.genero} onChange={(e) => setForm({ ...form, genero: e.target.value })} className={selectClasses}>
                 <option value="">Selecione</option>
                 <option value="MASCULINO">Masculino</option>
@@ -721,7 +721,7 @@ export default function CoordenadorAlunosPage() {
               </select>
             </div>
             <div>
-              <Label className="text-[#f0ece4]">Raça/Cor</Label>
+              <Label className="text-[var(--text-primary)]">Raça/Cor</Label>
               <select value={form.racaCor} onChange={(e) => setForm({ ...form, racaCor: e.target.value })} className={selectClasses}>
                 <option value="">Selecione</option>
                 <option value="BRANCA">Branca</option>
@@ -734,7 +734,7 @@ export default function CoordenadorAlunosPage() {
               </select>
             </div>
             <div>
-              <Label className="text-[#f0ece4]">Deficiência</Label>
+              <Label className="text-[var(--text-primary)]">Deficiência</Label>
               <select value={form.possuiDeficiencia} onChange={(e) => setForm({ ...form, possuiDeficiencia: e.target.value })} className={selectClasses}>
                 <option value="">Selecione</option>
                 <option value="true">Sim</option>
@@ -744,7 +744,7 @@ export default function CoordenadorAlunosPage() {
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <Label className="text-[#f0ece4]">Cotista</Label>
+              <Label className="text-[var(--text-primary)]">Cotista</Label>
               <select value={form.cotista} onChange={(e) => setForm({ ...form, cotista: e.target.value })} className={selectClasses}>
                 <option value="">Selecione</option>
                 <option value="true">Sim</option>
@@ -752,7 +752,7 @@ export default function CoordenadorAlunosPage() {
               </select>
             </div>
             <div>
-              <Label className="text-[#f0ece4]">Bolsista</Label>
+              <Label className="text-[var(--text-primary)]">Bolsista</Label>
               <select value={form.bolsista} onChange={(e) => setForm({ ...form, bolsista: e.target.value })} className={selectClasses}>
                 <option value="">Selecione</option>
                 <option value="true">Sim</option>
@@ -761,7 +761,7 @@ export default function CoordenadorAlunosPage() {
             </div>
             {form.bolsista === "true" && (
               <div>
-                <Label className="text-[#f0ece4]">Tipo Bolsa</Label>
+                <Label className="text-[var(--text-primary)]">Tipo Bolsa</Label>
                 <select value={form.tipoBolsa} onChange={(e) => setForm({ ...form, tipoBolsa: e.target.value })} className={selectClasses}>
                   <option value="">Selecione</option>
                   <option value="PIBIC">PIBIC</option>
@@ -781,19 +781,19 @@ export default function CoordenadorAlunosPage() {
             <p className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3">{erroForm}</p>
           )}
 
-          <div className="flex justify-end gap-3 pt-2 border-t border-[#2a2a3a]">
+          <div className="flex justify-end gap-3 pt-2 border-t border-[var(--border-color)]">
             <Button
               variant="ghost"
               onClick={() => setModalAberto(false)}
               disabled={salvando}
-              className="text-[#9895a4] hover:text-[#f0ece4] cursor-pointer"
+              className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               Cancelar
             </Button>
             <Button
               onClick={salvar}
               disabled={salvando}
-              style={{ backgroundColor: "#4CAF50", color: "#fff" }}
+              style={{ backgroundColor: "var(--color-green)", color: "#fff" }}
               className="cursor-pointer"
             >
               {salvando ? "Salvando..." : editandoId ? "Atualizar" : "Criar Aluno"}
@@ -817,8 +817,8 @@ export default function CoordenadorAlunosPage() {
 function SectionTitle({ title }: { title: string }) {
   return (
     <div className="space-y-1">
-      <p className="text-sm text-[#E8B829] font-medium uppercase tracking-wider">{title}</p>
-      <div className="h-px bg-[#2a2a3a]" />
+      <p className="text-sm text-[var(--color-gold-ink)] font-medium uppercase tracking-wider">{title}</p>
+      <div className="h-px bg-[var(--border-color)]" />
     </div>
   );
 }

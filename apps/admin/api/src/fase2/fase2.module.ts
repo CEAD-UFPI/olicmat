@@ -3,6 +3,9 @@ import { EmailModule } from "../email/email.module.js";
 import { Fase2ParticipanteService } from "./fase2-participante.service.js";
 import { Fase2GestaoService } from "./fase2-gestao.service.js";
 import { Fase2AvaliadorService } from "./fase2-avaliador.service.js";
+import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
+import { Fase2VideosService } from "./fase2-videos.service.js";
+import { Fase2CompressorController } from "./fase2-compressor.controller.js";
 import {
   Fase2AvaliadorController,
   Fase2GestaoController,
@@ -11,7 +14,7 @@ import {
 
 @Module({
   imports: [EmailModule],
-  controllers: [Fase2ParticipanteController, Fase2GestaoController, Fase2AvaliadorController],
-  providers: [Fase2ParticipanteService, Fase2GestaoService, Fase2AvaliadorService],
+  controllers: [Fase2ParticipanteController, Fase2GestaoController, Fase2AvaliadorController, Fase2CompressorController],
+  providers: [Fase2ArmazenamentoService, Fase2VideosService, Fase2ParticipanteService, Fase2GestaoService, Fase2AvaliadorService],
 })
 export class Fase2Module {}

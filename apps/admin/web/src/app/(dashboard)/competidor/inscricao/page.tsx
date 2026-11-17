@@ -192,13 +192,13 @@ export default function InscricaoPage() {
       <div className="max-w-lg mx-auto text-center py-16">
         <div
           className="text-6xl mb-6 font-[family-name:var(--font-fraunces)]"
-          style={{ color: "var(--integral-verde)" }}>
+          style={{ color: "var(--color-green-ink)" }}>
           ∫
         </div>
-        <h1 className="text-2xl font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2 font-[family-name:var(--font-fraunces)]">
           Inscrição realizada
         </h1>
-        <p className="text-[#9895a4]">Redirecionando para o painel...</p>
+        <p className="text-[var(--text-tertiary)]">Redirecionando para o painel...</p>
       </div>
     );
   }
@@ -210,17 +210,17 @@ export default function InscricaoPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Inscrição OLICMAT
         </h1>
-        <p className="text-[#9895a4] text-sm mt-1">
+        <p className="text-[var(--text-tertiary)] text-sm mt-1">
           Preencha seus dados acadêmicos para participar da olimpíada
         </p>
       </div>
 
       {minhaInscricao && historico.length > 0 && (
-        <div className="mb-6 border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a]">
-          <h2 className="text-sm font-semibold text-[#f0ece4] mb-3">Histórico da inscrição</h2>
+        <div className="mb-6 border border-[var(--border-color)] rounded-2xl p-5 bg-[var(--bg-secondary)]">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)] mb-3">Histórico da inscrição</h2>
           <div className="space-y-3">
             {historico.map((h) => (
               <div key={h.id} className="flex items-start gap-3 text-sm">
@@ -229,12 +229,12 @@ export default function InscricaoPage() {
                   tone={INSCRICAO_STATUS[h.statusNovo]?.tone ?? "neutral"}
                 />
                 <div className="flex-1">
-                  <p className="text-[#b0adc0]">
+                  <p className="text-[var(--text-secondary)]">
                     {new Date(h.createdAt).toLocaleString("pt-BR")}
                     {h.actor?.nome ? ` — por ${h.actor.nome}` : ""}
                   </p>
                   {h.justificativa && (
-                    <p className="text-[#f0ece4] mt-1">Motivo: {h.justificativa}</p>
+                    <p className="text-[var(--text-primary)] mt-1">Motivo: {h.justificativa}</p>
                   )}
                 </div>
               </div>
@@ -242,15 +242,15 @@ export default function InscricaoPage() {
           </div>
 
           {minhaInscricao.status === "REJEITADA" && (
-            <div className="mt-5 pt-5 border-t border-[#2a2a3a]">
-              <p className="text-sm text-[#9895a4] mb-3">
+            <div className="mt-5 pt-5 border-t border-[var(--border-color)]">
+              <p className="text-sm text-[var(--text-tertiary)] mb-3">
                 Sua inscrição foi rejeitada. Se quiser, envie um novo comprovante de matrícula e reenvie.
               </p>
               <div
                 onClick={() => fileRef.current?.click()}
-                className="flex items-center gap-3 p-4 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] cursor-pointer hover:border-[#E8B829]/50 transition-colors">
-                <Upload className="w-5 h-5 text-[#9895a4]" />
-                <span className="text-sm text-[#9895a4]">
+                className="flex items-center gap-3 p-4 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] cursor-pointer hover:border-[var(--color-gold)]/50 transition-colors">
+                <Upload className="w-5 h-5 text-[var(--text-tertiary)]" />
+                <span className="text-sm text-[var(--text-tertiary)]">
                   {comprovante ? comprovante.name : "Clique para enviar novo comprovante"}
                 </span>
               </div>
@@ -262,7 +262,7 @@ export default function InscricaoPage() {
                 disabled={reenviando || uploading}
                 onClick={onReenviar}
                 className="mt-3 w-full"
-                style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}>
+                style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}>
                 {reenviando ? "Reenviando..." : "Reenviar inscrição"}
               </Button>
             </div>
@@ -273,23 +273,23 @@ export default function InscricaoPage() {
       {(!minhaInscricao || minhaInscricao.status !== "REJEITADA") && (
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a] space-y-5">
+        className="border border-[var(--border-color)] rounded-2xl p-6 lg:p-8 bg-[var(--bg-secondary)] space-y-5">
         {carregandoEdicoes ? (
-          <p className="text-sm text-[#9895a4]">Carregando edições...</p>
+          <p className="text-sm text-[var(--text-tertiary)]">Carregando edições...</p>
         ) : edicoesAbertas.length === 0 ? (
-          <div className="text-sm text-[#FAA307] bg-[#FAA307]/10 border border-[#FAA307]/20 rounded-lg p-3">
+          <div className="text-sm text-[var(--color-orange-ink)] bg-[var(--color-orange)]/10 border border-[var(--color-orange)]/20 rounded-lg p-3">
             Nenhuma edição aberta para inscrição no momento.
           </div>
         ) : edicoesAbertas.length > 1 ? (
           <div>
-            <Label htmlFor="edicao" className="text-[#f0ece4]">
+            <Label htmlFor="edicao" className="text-[var(--text-primary)]">
               Edição
             </Label>
             <select
               id="edicao"
               value={edicaoId}
               onChange={(e) => setEdicaoId(e.target.value)}
-              className="mt-1.5 w-full h-10 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]">
+              className="mt-1.5 w-full h-10 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] px-3 text-sm focus:outline-none focus:border-[var(--color-gold)]">
               {edicoesAbertas.map((ed) => (
                 <option key={ed.id} value={ed.id}>
                   {ed.ano}.{ed.semestre} — {ed.titulo}
@@ -300,13 +300,13 @@ export default function InscricaoPage() {
         ) : null}
 
         <div>
-          <Label htmlFor="municipio" className="text-[#f0ece4]">
+          <Label htmlFor="municipio" className="text-[var(--text-primary)]">
             Cidade (Piauí)
           </Label>
           <select
             id="municipio"
             {...register("municipio")}
-            className="mt-1.5 w-full h-10 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]">
+            className="mt-1.5 w-full h-10 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] px-3 text-sm focus:outline-none focus:border-[var(--color-gold)]">
             <option value="">Selecione sua cidade...</option>
             {MUNICIPIOS_PI.map((cidade) => (
               <option key={cidade} value={cidade}>
@@ -321,16 +321,16 @@ export default function InscricaoPage() {
 
         {cursoDoVinculo ? (
           <div>
-            <Label className="text-[#f0ece4]">Instituição e curso</Label>
-            <div className="mt-1.5 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] p-4">
-              <p className="text-sm text-[#f0ece4]">{cursoDoVinculo.nome}</p>
+            <Label className="text-[var(--text-primary)]">Instituição e curso</Label>
+            <div className="mt-1.5 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] p-4">
+              <p className="text-sm text-[var(--text-primary)]">{cursoDoVinculo.nome}</p>
               {vinculo?.instituicao && (
-                <p className="text-xs text-[#9895a4] mt-1">
+                <p className="text-xs text-[var(--text-tertiary)] mt-1">
                   {vinculo.instituicao.sigla} — {vinculo.instituicao.nome}
                 </p>
               )}
             </div>
-            <p className="text-xs text-[#9895a4] mt-2">
+            <p className="text-xs text-[var(--text-tertiary)] mt-2">
               Definidos pela coordenação do seu curso e não podem ser alterados.
               Se estiverem errados, fale com ela antes de se inscrever.
             </p>
@@ -338,14 +338,14 @@ export default function InscricaoPage() {
         ) : (
           <>
             <div>
-              <Label htmlFor="instituicao" className="text-[#f0ece4]">
+              <Label htmlFor="instituicao" className="text-[var(--text-primary)]">
                 Instituição de Ensino
               </Label>
               <Input
                 id="instituicao"
                 placeholder="Ex: UFRJ, UFMG, IFSP"
                 {...register("instituicao")}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
               />
               {errors.instituicao && (
                 <p className="text-xs text-red-400 mt-1">
@@ -355,14 +355,14 @@ export default function InscricaoPage() {
             </div>
 
             <div>
-              <Label htmlFor="curso" className="text-[#f0ece4]">
+              <Label htmlFor="curso" className="text-[var(--text-primary)]">
                 Curso
               </Label>
               <Input
                 id="curso"
                 placeholder="Licenciatura em Matemática"
                 {...register("curso")}
-                className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
               />
               {errors.curso && (
                 <p className="text-xs text-red-400 mt-1">
@@ -374,7 +374,7 @@ export default function InscricaoPage() {
         )}
 
         <div>
-          <Label htmlFor="periodo" className="text-[#f0ece4]">
+          <Label htmlFor="periodo" className="text-[var(--text-primary)]">
             Período/Semestre
           </Label>
           <Input
@@ -384,19 +384,19 @@ export default function InscricaoPage() {
             max="12"
             placeholder="Ex: 5"
             {...register("periodo")}
-            className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+            className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
           />
         </div>
 
         <div>
-          <Label htmlFor="comprovante" className="text-[#f0ece4]">
+          <Label htmlFor="comprovante" className="text-[var(--text-primary)]">
             Comprovante de Matrícula (opcional)
           </Label>
           <div
             onClick={() => fileRef.current?.click()}
-            className="mt-1.5 flex items-center gap-3 p-4 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] cursor-pointer hover:border-[#E8B829]/50 transition-colors">
-            <Upload className="w-5 h-5 text-[#9895a4]" />
-            <span className="text-sm text-[#9895a4]">
+            className="mt-1.5 flex items-center gap-3 p-4 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] cursor-pointer hover:border-[var(--color-gold)]/50 transition-colors">
+            <Upload className="w-5 h-5 text-[var(--text-tertiary)]" />
+            <span className="text-sm text-[var(--text-tertiary)]">
               {comprovante
                 ? comprovante.name
                 : "Clique para enviar comprovante (opcional — PNG, JPG, PDF)"}
@@ -422,7 +422,7 @@ export default function InscricaoPage() {
           <Button
             type="button"
             variant="outline"
-            className="flex-1 border-[#2a2a3a] text-[#f0ece4]"
+            className="flex-1 border-[var(--border-color)] text-[var(--text-primary)]"
             render={<div onClick={() => router.push("/competidor")} />}
             onClick={() => router.push("/competidor")}>
             Cancelar
@@ -436,7 +436,7 @@ export default function InscricaoPage() {
               edicoesAbertas.length === 0
             }
             className="flex-1"
-            style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}>
+            style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}>
             {uploading
               ? "Enviando comprovante..."
               : loading

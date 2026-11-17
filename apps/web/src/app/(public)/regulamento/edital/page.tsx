@@ -29,20 +29,20 @@ const DOCUMENTOS = [
 export default function EditalPage() {
   return (
     <article className="space-y-8">
-      <Link href="/regulamento" className="text-sm text-[#E8B829] hover:underline">
-        ← Regulamento
+      <Link href="/regulamento" className="text-sm text-[var(--color-gold-ink)] hover:underline">
+        ← Regulamento, Edital e Documentos
       </Link>
 
       <header>
-        <p className="text-xs tracking-[0.18em] uppercase text-[#E8B829] font-medium">
+        <p className="text-xs tracking-[0.18em] uppercase text-[var(--color-gold-ink)] font-medium">
           Documentos oficiais
         </p>
-        <h1 className="text-3xl lg:text-4xl font-bold text-[#f0ece4] mt-3 font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl lg:text-4xl font-bold text-[var(--text-primary)] mt-3 font-[family-name:var(--font-fraunces)]">
           Edital nº 01/2026
         </h1>
       </header>
 
-      <p className="text-base text-[#d6d2c8] leading-relaxed">
+      <p className="text-base text-[var(--text-emphasis)] leading-relaxed">
         A Universidade Federal do Piauí (UFPI), por meio do Centro de Educação Aberta e a Distância
         (CEAD), torna pública a abertura das inscrições para a 1ª Olimpíada de Licenciandos em
         Matemática (OLICMAT), primeira edição estadual, destinada a estudantes regularmente
@@ -58,14 +58,14 @@ export default function EditalPage() {
               href={d.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 rounded-2xl border border-[#E8B829]/30 bg-[#E8B829]/5 p-5 transition-colors hover:bg-[#E8B829]/10"
+              className="flex items-center gap-4 rounded-2xl border border-[var(--color-gold)]/30 bg-[var(--color-gold)]/5 p-5 transition-colors hover:bg-[var(--color-gold)]/10"
             >
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#E8B829]/40 text-sm font-semibold text-[#E8B829]">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[var(--color-gold)]/40 text-sm font-semibold text-[var(--color-gold-ink)]">
                 {i + 1}
               </span>
               <span className="flex flex-col">
-                <span className="font-semibold text-[#f0ece4]">{d.titulo}</span>
-                <span className="text-sm text-[#9895a4]">{d.detalhe}</span>
+                <span className="font-semibold text-[var(--text-primary)]">{d.titulo}</span>
+                <span className="text-sm text-[var(--text-tertiary)]">{d.detalhe}</span>
               </span>
             </a>
           </li>

@@ -6,6 +6,14 @@ import {
   prazoDe,
   situacaoEnvio,
   totalCriterios,
+  ESCALA,
+  CRITERIOS,
+  pontosDoConceito,
+  validarArquivo,
+  planoDePartes,
+  limitesMb,
+  chaveFinalDe,
+  nomeFinalDe,
 } from "./fase2.regras.js";
 
 describe("prazo e situação do envio", () => {
@@ -43,22 +51,69 @@ describe("linkValido", () => {
   );
 });
 
-describe("totalCriterios", () => {
-  const ok = { dominioConteudo: 25, estrategiasEnsino: 20, usoTdics: 15.5, reflexaoCritica: 10, coerenciaPedagogica: 15 };
+describe("totalCriterios (conceitos 0 a 5 → pontos 0 a 20)", () => {
+  const ok = { criterio1: 5, criterio2: 4, criterio3: 3, criterio4: 2, criterio5: 1 };
 
-  it("soma os critérios", () => {
+  it("converte proporcionalmente (conceito × 4) e soma", () => {
     const r = totalCriterios(ok);
-    expect(r.ok && r.total).toBe(85.5);
+    expect(r.ok && r.total).toBe(60);
   });
 
-  it("recusa nota acima do máximo do critério", () => {
-    const r = totalCriterios({ ...ok, usoTdics: 21 });
-    expect(r.ok).toBe(false);
+  it("nota máxima é 100 e mínima é 0", () => {
+    const max = totalCriterios({ criterio1: 5, criterio2: 5, criterio3: 5, criterio4: 5, criterio5: 5 });
+    const min = totalCriterios({ criterio1: 0, criterio2: 0, criterio3: 0, criterio4: 0, criterio5: 0 });
+    expect(max.ok && max.total).toBe(100);
+    expect(min.ok && min.total).toBe(0);
   });
 
-  it("recusa critério ausente ou negativo", () => {
-    expect(totalCriterios({ ...ok, reflexaoCritica: undefined }).ok).toBe(false);
-    expect(totalCriterios({ ...ok, reflexaoCritica: -1 }).ok).toBe(false);
+  it("devolve os conceitos como informados", () => {
+    const r = totalCriterios(ok);
+    expect(r.ok && r.notas).toEqual(ok);
+  });
+
+  it.each([6, -1, 2.5, "3", NaN])("recusa conceito %p", (v) => {
+    expect(totalCriterios({ ...ok, criterio3: v }).ok).toBe(false);
+  });
+
+  it("recusa critério ausente", () => {
+    expect(totalCriterios({ ...ok, criterio5: undefined }).ok).toBe(false);
+    expect(totalCriterios({ ...ok, criterio5: null }).ok).toBe(false);
+  });
+
+  it("a escala tem 6 conceitos que valem 0, 4, 8, 12, 16 e 20 pontos", () => {
+    expect(ESCALA.map((e) => pontosDoConceito(e.conceito))).toEqual([0, 4, 8, 12, 16, 20]);
+    expect(ESCALA.map((e) => e.pontos)).toEqual([0, 4, 8, 12, 16, 20]);
+    expect(CRITERIOS.reduce((s, c) => s + c.max, 0)).toBe(100);
+  });
+});
+
+describe("upload dos arquivos", () => {
+  const lim = { video: 4096, portfolio: 10 };
+  const MB = 1024 * 1024;
+
+  it("aceita vídeo e PDF dentro do limite", () => {
+    expect(validarArquivo("video", "Aula Final.MP4", 390 * MB, lim)).toBeNull();
+    expect(validarArquivo("portfolio", "portfolio.pdf", 3 * MB, lim)).toBeNull();
+  });
+
+  it("recusa formato errado, vazio e acima do limite", () => {
+    expect(validarArquivo("video", "aula.pdf", MB, lim)).toMatch(/Formato/);
+    expect(validarArquivo("portfolio", "portfolio.docx", MB, lim)).toMatch(/PDF/);
+    expect(validarArquivo("portfolio", "p.pdf", 0, lim)).toMatch(/vazio/);
+    expect(validarArquivo("video", "a.mp4", 4097 * MB, lim)).toMatch(/4 GB/);
+    expect(validarArquivo("portfolio", "p.pdf", 11 * MB, lim)).toMatch(/10 MB/);
+  });
+
+  it("partes de 8 MB, nunca mais de 10.000", () => {
+    expect(planoDePartes(1)).toEqual({ tamanhoParte: 8 * MB, partes: 1 });
+    expect(planoDePartes(3 * 1024 * MB).partes).toBe(384);
+    const grande = planoDePartes(200 * 1024 * MB);
+    expect(grande.partes).toBeLessThanOrEqual(10_000);
+  });
+
+  it("limites vêm do ambiente, com padrão", () => {
+    expect(limitesMb({})).toEqual({ video: 4096, portfolio: 10 });
+    expect(limitesMb({ FASE2_VIDEO_MAX_MB: "2048", FASE2_PORTFOLIO_MAX_MB: "x" })).toEqual({ video: 2048, portfolio: 10 });
   });
 });
 
@@ -126,5 +181,13 @@ describe("escolherTerceiro", () => {
     ];
     expect(escolherTerceiro(c, ["a"])).toBe("b");
     expect(escolherTerceiro(c, ["a", "b", "c"])).toBeNull();
+  });
+});
+
+describe("compressão", () => {
+  it("chave e nome da versão final", () => {
+    expect(chaveFinalDe("fase2/e/i/video-1-ab.MOV")).toBe("fase2/e/i/video-1-ab.final.mp4");
+    expect(chaveFinalDe("fase2/e.x/i/video-1")).toBe("fase2/e.x/i/video-1.final.mp4");
+    expect(nomeFinalDe("Minha aula.final.MOV")).toBe("Minha aula.final.mp4");
   });
 });

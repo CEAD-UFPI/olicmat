@@ -22,22 +22,39 @@ export const enviarLinksSchema = z.object({
   videoLink: z.string().min(1, "Informe o link da videoaula"),
   portfolioLink: z.string().min(1, "Informe o link do portfólio"),
 });
+const tipoArquivo = z.enum(["video", "portfolio"]);
+export const iniciarUploadSchema = z.object({
+  tipo: tipoArquivo,
+  nome: z.string().min(1).max(255),
+  bytes: z.number().int().positive(),
+});
+export const partesUploadSchema = z.object({
+  chave: z.string().min(1).max(500),
+  uploadId: z.string().min(1).max(1024),
+  partes: z.array(z.number().int().min(1).max(10_000)).min(1).max(500),
+});
+export const concluirUploadSchema = z.object({
+  tipo: tipoArquivo,
+  chave: z.string().min(1).max(500),
+  nome: z.string().min(1).max(255),
+  bytes: z.number().int().positive(),
+});
 export const iniciarSchema = z.object({ tema: z.string().min(3).max(300) });
 export const distribuirSchema = z.object({ avaliadorIds: z.array(z.string().uuid()).min(3) });
 export const remanejarSchema = z.object({ avaliadorId: z.string().uuid() });
-const nota = z.number().nullable().optional();
+const conceito = z.number().int().min(0).max(5).nullable().optional();
 export const fichaSchema = z.object({
   notas: z.object({
-    dominioConteudo: nota,
-    estrategiasEnsino: nota,
-    usoTdics: nota,
-    reflexaoCritica: nota,
-    coerenciaPedagogica: nota,
+    criterio1: conceito,
+    criterio2: conceito,
+    criterio3: conceito,
+    criterio4: conceito,
+    criterio5: conceito,
   }),
   parecer: z.string().max(5000).optional(),
 });
 
-/** Participante classificado: status e envio dos links. */
+/** Participante classificado: status e envio (upload na nuvem própria ou links). */
 @Controller("envio")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.ALUNO)
@@ -53,6 +70,24 @@ export class Fase2ParticipanteController {
   enviar(@Req() req: Req, @Body() body: unknown) {
     const d = validar(enviarLinksSchema, body);
     return this.service.enviar(req.user.id, d.videoLink, d.portfolioLink);
+  }
+
+  @Post("upload/iniciar")
+  iniciarUpload(@Req() req: Req, @Body() body: unknown) {
+    const d = validar(iniciarUploadSchema, body);
+    return this.service.iniciarUpload(req.user.id, d.tipo, d.nome, d.bytes);
+  }
+
+  @Post("upload/partes")
+  partes(@Req() req: Req, @Body() body: unknown) {
+    const d = validar(partesUploadSchema, body);
+    return this.service.urlsDasPartes(req.user.id, d.chave, d.uploadId, d.partes);
+  }
+
+  @Post("upload/concluir")
+  concluirUpload(@Req() req: Req, @Body() body: unknown) {
+    const d = validar(concluirUploadSchema, body);
+    return this.service.concluirUpload(req.user.id, d.tipo, d.chave, d.nome, d.bytes);
   }
 }
 

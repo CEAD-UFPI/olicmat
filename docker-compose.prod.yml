@@ -75,6 +75,16 @@ services:
       SMTP_PORT: ${SMTP_PORT:-465}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
+      # Fase 2 — nuvem própria (S3 na VPS). Sem estas variáveis, o envio volta a ser por links.
+      FASE2_S3_ENDPOINT: ${FASE2_S3_ENDPOINT:-}
+      FASE2_S3_REGION: ${FASE2_S3_REGION:-us-east-1}
+      FASE2_S3_BUCKET: ${FASE2_S3_BUCKET:-}
+      FASE2_S3_ACCESS_KEY: ${FASE2_S3_ACCESS_KEY:-}
+      FASE2_S3_SECRET_KEY: ${FASE2_S3_SECRET_KEY:-}
+      FASE2_VIDEO_MAX_MB: ${FASE2_VIDEO_MAX_MB:-4096}
+      # Token do compressor de vídeos da VPS (infra/vps-fase2); sem ele, as rotas internas não existem.
+      FASE2_COMPRESSOR_TOKEN: ${FASE2_COMPRESSOR_TOKEN:-}
+      FASE2_PORTFOLIO_MAX_MB: ${FASE2_PORTFOLIO_MAX_MB:-10}
     volumes:
       - uploads:/app/uploads
     healthcheck:

@@ -59,15 +59,15 @@ export function AcompanhamentoView({
   if (carregando && !dados) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!dados) {
     return (
-      <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-        <p className="text-[#b0adc0]">
+      <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+        <p className="text-[var(--text-secondary)]">
           Não foi possível carregar os dados de acompanhamento.
         </p>
       </div>
@@ -82,10 +82,10 @@ export function AcompanhamentoView({
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Acompanhamento
         </h1>
-        <p className="text-[#9895a4] mt-1">
+        <p className="text-[var(--text-tertiary)] mt-1">
           Convites, cadastros e inscrições da OLICMAT
         </p>
       </div>

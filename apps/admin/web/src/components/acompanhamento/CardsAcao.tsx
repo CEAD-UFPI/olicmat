@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Ban, UserX, Clock } from "lucide-react";
+import { tinta } from "@/lib/tema";
 
 interface AcoesDados {
   convitesExpirados: number;
@@ -44,20 +45,20 @@ export function CardsAcao({
       {cards.map((c) => {
         const conteudo = (
           <Card
-            className={`border-[#2a2a3a] bg-[#12121a] transition-colors ${
-              c.href ? "hover:border-[#3a3a4a] cursor-pointer" : ""
+            className={`border-[var(--border-color)] bg-[var(--bg-secondary)] transition-colors ${
+              c.href ? "hover:border-[var(--border-strong)] cursor-pointer" : ""
             }`}
           >
             <CardHeader>
-              <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
-                <c.icon size={18} style={{ color: c.cor }} />
+              <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest flex items-center gap-2">
+                <c.icon size={18} style={{ color: tinta(c.cor) }} />
                 {c.label}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p
                 className="text-3xl font-bold font-[family-name:var(--font-fraunces)]"
-                style={{ color: c.cor }}
+                style={{ color: tinta(c.cor) }}
               >
                 {c.valor}
               </p>

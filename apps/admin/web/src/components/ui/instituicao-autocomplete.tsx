@@ -88,7 +88,7 @@ export function InstituicaoAutocomplete({
   return (
     <div ref={wrapperRef} className="relative">
       {label && (
-        <label className="block text-sm text-[#9895a4] mb-1.5">{label}</label>
+        <label className="block text-sm text-[var(--text-tertiary)] mb-1.5">{label}</label>
       )}
       <input
         type="text"
@@ -96,15 +96,15 @@ export function InstituicaoAutocomplete({
         onChange={handleChange}
         onFocus={() => results.length > 0 && setShowDropdown(true)}
         placeholder={placeholder}
-        className={`w-full h-12 px-4 rounded-xl border bg-[#12121a] text-[#f0ece4] placeholder:text-[#5a5a6a] outline-none transition-colors ${
+        className={`w-full h-12 px-4 rounded-xl border bg-[var(--bg-secondary)] text-[var(--text-primary)] placeholder:text-[var(--text-faint)] outline-none transition-colors ${
           error
             ? "border-red-500/50 focus:border-red-500"
-            : "border-[#2a2a3a] focus:border-[#3AAFE0]"
+            : "border-[var(--border-color)] focus:border-[var(--color-blue)]"
         }`}
       />
       {loading && (
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <div className="w-4 h-4 border border-[#3AAFE0] border-t-transparent rounded-full animate-spin" />
+          <div className="w-4 h-4 border border-[var(--color-blue)] border-t-transparent rounded-full animate-spin" />
         </div>
       )}
       <AnimatePresence>
@@ -114,17 +114,17 @@ export function InstituicaoAutocomplete({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-1 border border-[#2a2a3a] rounded-xl bg-[#1a1a26] shadow-xl max-h-60 overflow-auto"
+            className="absolute z-50 w-full mt-1 border border-[var(--border-color)] rounded-xl bg-[var(--surface)] shadow-xl max-h-60 overflow-auto"
           >
             {results.map((inst) => (
               <button
                 key={inst.id}
                 type="button"
                 onClick={() => handleSelect(inst)}
-                className="w-full text-left px-4 py-3 hover:bg-[#2a2a3a] transition-colors border-b border-[#2a2a3a] last:border-b-0"
+                className="w-full text-left px-4 py-3 hover:bg-[var(--border-color)] transition-colors border-b border-[var(--border-color)] last:border-b-0"
               >
-                <span className="text-sm text-[#f0ece4] font-medium">{inst.nome}</span>
-                <span className="text-xs text-[#9895a4] ml-2">({inst.sigla})</span>
+                <span className="text-sm text-[var(--text-primary)] font-medium">{inst.nome}</span>
+                <span className="text-xs text-[var(--text-tertiary)] ml-2">({inst.sigla})</span>
               </button>
             ))}
           </motion.div>
