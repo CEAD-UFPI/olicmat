@@ -1,22 +1,41 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CheckCircle2, Clock, ExternalLink, AlertTriangle } from "lucide-react";
+import {
+  AlertTriangle, CheckCircle2, Clock, Download, ExternalLink, FileText, Film, UploadCloud, X,
+} from "lucide-react";
+import { enviarArquivo, formatarBytes, UploadCancelado, type Progresso, type TipoArquivo } from "@/lib/uploadFase2";
 
+interface Arquivo { nome: string; bytes: number | null; url: string | null }
 interface StatusFase2 {
   classificado: boolean;
   agora: string;
   situacao?: "NAO_INICIADA" | "ABERTA" | "ENCERRADA";
+  modo?: "upload" | "links";
+  limitesMb?: Record<TipoArquivo, number>;
+  formatos?: Record<TipoArquivo, string[]>;
   tema?: string | null;
   inicioEm?: string | null;
   prazoEm?: string | null;
-  ultimoEnvio?: { videoLink: string; portfolioLink: string; enviadoEm: string } | null;
+  ultimoEnvio?: {
+    enviadoEm: string;
+    videoLink: string | null;
+    portfolioLink: string | null;
+    video: Arquivo | null;
+    portfolio: Arquivo | null;
+  } | null;
   totalEnvios?: number;
 }
+
+const SITE = "https://olicmat.cead.ufpi.br";
+const DOCUMENTOS = [
+  { href: `${SITE}/arquivos/manual-participante-fase2-2026.pdf`, rotulo: "Manual do Participante — 2ª Fase (PDF)" },
+  { href: `${SITE}/arquivos/OLICMAT_2026_Template_Portfolio.docx`, rotulo: "Template do Portfólio (Word)" },
+];
 
 const dataHora = (iso: string) =>
   new Date(iso).toLocaleString("pt-BR", {
@@ -39,11 +58,183 @@ function mensagemErro(err: unknown, padrao: string) {
   if (Array.isArray(m)) return m.join(" ");
   if (typeof m === "string") return m;
   if (m && typeof m === "object") return Object.values(m).flat().join(" ");
+  if (err instanceof Error && err.message && !("response" in err)) return err.message;
   return padrao;
+}
+
+function duracao(s: number) {
+  if (!Number.isFinite(s) || s <= 0) return "";
+  if (s < 60) return `${Math.ceil(s)} s`;
+  if (s < 3600) return `${Math.ceil(s / 60)} min`;
+  return `${Math.floor(s / 3600)} h ${Math.ceil((s % 3600) / 60)} min`;
 }
 
 const cartao = "border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]";
 const titulo = "text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]";
+
+/** Cartão de upload de um arquivo (videoaula ou portfólio). */
+function CartaoArquivo({
+  tipo, atual, aberta, limiteMb, formatos, ocupado, aoMudarOcupado, aoConcluir,
+}: {
+  tipo: TipoArquivo;
+  atual: Arquivo | null;
+  aberta: boolean;
+  limiteMb: number;
+  formatos: string[];
+  ocupado: boolean;
+  aoMudarOcupado: (v: boolean) => void;
+  aoConcluir: (msg: string) => void;
+}) {
+  const [arquivo, setArquivo] = useState<File | null>(null);
+  const [progresso, setProgresso] = useState<Progresso | null>(null);
+  const [erro, setErro] = useState("");
+  const controle = useRef<AbortController | null>(null);
+  const entrada = useRef<HTMLInputElement>(null);
+  const video = tipo === "video";
+  const Icone = video ? Film : FileText;
+  const enviando = progresso !== null;
+  const limite = limiteMb >= 1024 ? `${(limiteMb / 1024).toLocaleString("pt-BR")} GB` : `${limiteMb} MB`;
+
+  const escolher = (f: File | null) => {
+    setErro("");
+    if (!f) return setArquivo(null);
+    const ext = f.name.split(".").pop()?.toLowerCase() ?? "";
+    if (!formatos.includes(ext)) {
+      setArquivo(null);
+      return setErro(video ? `Formato não aceito. Use ${formatos.map((x) => x.toUpperCase()).join(", ")}.` : "O portfólio deve ser um arquivo PDF.");
+    }
+    if (f.size > limiteMb * 1024 * 1024) {
+      setArquivo(null);
+      return setErro(`O arquivo tem ${formatarBytes(f.size)}; o limite é ${limite}.`);
+    }
+    setArquivo(f);
+  };
+
+  const enviar = async () => {
+    if (!arquivo) return;
+    setErro("");
+    controle.current = new AbortController();
+    aoMudarOcupado(true);
+    setProgresso({ enviados: 0, total: arquivo.size, velocidade: 0 });
+    try {
+      await enviarArquivo(tipo, arquivo, setProgresso, controle.current.signal);
+      setArquivo(null);
+      if (entrada.current) entrada.current.value = "";
+      aoConcluir(video ? "Videoaula enviada com sucesso!" : "Portfólio enviado com sucesso!");
+    } catch (e) {
+      setErro(e instanceof UploadCancelado ? "Envio cancelado." : mensagemErro(e, "Não foi possível enviar o arquivo. Tente novamente."));
+    } finally {
+      setProgresso(null);
+      aoMudarOcupado(false);
+      controle.current = null;
+    }
+  };
+
+  const pct = progresso ? Math.floor((progresso.enviados / progresso.total) * 100) : 0;
+  const eta = progresso && progresso.velocidade > 0 ? (progresso.total - progresso.enviados) / progresso.velocidade : NaN;
+
+  return (
+    <div className={`${cartao} space-y-4`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="rounded-xl bg-[#E8B829]/15 p-2.5"><Icone className="text-[#E8B829]" size={22} /></div>
+          <div>
+            <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+              {video ? "Videoaula (20 minutos)" : "Portfólio digital (PDF único)"}
+            </h2>
+            <p className="text-xs text-[#9895a4]">
+              {video ? `${formatos.map((x) => x.toUpperCase()).join(", ")} · até ${limite}` : `PDF · até ${limite}`}
+            </p>
+          </div>
+        </div>
+        {atual ? (
+          <span className="flex items-center gap-1 text-xs font-semibold text-emerald-300 bg-emerald-500/10 rounded-full px-2.5 py-1 shrink-0">
+            <CheckCircle2 size={14} /> Enviado
+          </span>
+        ) : (
+          <span className="text-xs font-semibold text-amber-300 bg-amber-500/10 rounded-full px-2.5 py-1 shrink-0">Pendente</span>
+        )}
+      </div>
+
+      {atual && (
+        <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3 text-sm flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[#f0ece4] break-all">
+            {atual.nome} <span className="text-[#9895a4]">· {formatarBytes(atual.bytes)}</span>
+          </span>
+          {atual.url && (
+            <a href={atual.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#3AAFE0] hover:underline">
+              <ExternalLink size={14} /> Conferir
+            </a>
+          )}
+        </div>
+      )}
+
+      {aberta && (
+        <>
+          <div>
+            <Label htmlFor={`arquivo-${tipo}`} className="text-[#f0ece4]">
+              {atual ? "Substituir por outro arquivo" : "Escolha o arquivo"}
+            </Label>
+            <input
+              ref={entrada}
+              id={`arquivo-${tipo}`}
+              type="file"
+              accept={video ? formatos.map((f) => `.${f}`).join(",") + ",video/*" : ".pdf,application/pdf"}
+              disabled={enviando}
+              onChange={(e) => escolher(e.target.files?.[0] ?? null)}
+              className="mt-1.5 block w-full text-sm text-[#b0adc0] file:mr-3 file:rounded-lg file:border-0 file:bg-[#E8B829] file:px-4 file:py-2 file:font-semibold file:text-[#0a0a0f] hover:file:brightness-110 file:cursor-pointer"
+            />
+            {arquivo && !enviando && (
+              <p className="text-xs text-[#9895a4] mt-1.5">{arquivo.name} · {formatarBytes(arquivo.size)}</p>
+            )}
+          </div>
+
+          {enviando && progresso && (
+            <div className="space-y-2" aria-live="polite">
+              <div className="h-3 w-full rounded-full bg-[#2a2a3a] overflow-hidden">
+                <div className="h-full bg-[#4CAF50] transition-[width] duration-300" style={{ width: `${pct}%` }} />
+              </div>
+              <div className="flex flex-wrap justify-between gap-2 text-xs text-[#b0adc0] tabular-nums">
+                <span>{pct}% · {formatarBytes(progresso.enviados)} de {formatarBytes(progresso.total)}</span>
+                <span>
+                  {progresso.velocidade > 0 && `${formatarBytes(progresso.velocidade)}/s`}
+                  {duracao(eta) && ` · faltam ~${duracao(eta)}`}
+                </span>
+              </div>
+              <p className="text-xs text-amber-300">Não feche nem recarregue esta página até o envio terminar.</p>
+            </div>
+          )}
+
+          <div className="flex gap-3">
+            <Button
+              onClick={enviar}
+              disabled={!arquivo || enviando || ocupado}
+              className="flex-1"
+              style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
+            >
+              <UploadCloud size={16} className="mr-2" />
+              {enviando ? "Enviando..." : atual ? "Enviar e substituir" : "Enviar arquivo"}
+            </Button>
+            {enviando && (
+              <Button variant="outline" onClick={() => controle.current?.abort()} className="border-[#2a2a3a] text-[#f0ece4]">
+                <X size={16} className="mr-1" /> Cancelar
+              </Button>
+            )}
+          </div>
+          {ocupado && !enviando && arquivo && (
+            <p className="text-xs text-[#9895a4]">Aguarde o término do outro envio.</p>
+          )}
+        </>
+      )}
+
+      {erro && (
+        <p className="text-sm p-3 rounded-lg bg-red-500/10 text-red-300 flex items-start gap-2">
+          <AlertTriangle size={16} className="shrink-0 mt-0.5" /> {erro}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default function EnvioFase2Page() {
   const [status, setStatus] = useState<StatusFase2 | null>(null);
@@ -53,6 +244,7 @@ export default function EnvioFase2Page() {
   const [videoLink, setVideoLink] = useState("");
   const [portfolioLink, setPortfolioLink] = useState("");
   const [enviando, setEnviando] = useState(false);
+  const [uploadAtivo, setUploadAtivo] = useState(false);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
 
@@ -62,8 +254,8 @@ export default function EnvioFase2Page() {
         setStatus(data);
         setDesvio(new Date(data.agora).getTime() - Date.now());
         if (data.ultimoEnvio) {
-          setVideoLink((v) => v || data.ultimoEnvio!.videoLink);
-          setPortfolioLink((p) => p || data.ultimoEnvio!.portfolioLink);
+          setVideoLink((v) => v || data.ultimoEnvio!.videoLink || "");
+          setPortfolioLink((p) => p || data.ultimoEnvio!.portfolioLink || "");
         }
       })
       .catch(() => setErro("Não foi possível carregar a Fase 2. Recarregue a página."))
@@ -76,16 +268,24 @@ export default function EnvioFase2Page() {
     return () => clearInterval(t);
   }, []);
 
+  // Avisa antes de sair da página no meio de um upload.
+  useEffect(() => {
+    if (!uploadAtivo) return;
+    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", h);
+    return () => window.removeEventListener("beforeunload", h);
+  }, [uploadAtivo]);
+
   const agoraServidor = agora + desvio;
   const prazoMs = status?.prazoEm ? new Date(status.prazoEm).getTime() : null;
   const aberta = status?.situacao === "ABERTA" && prazoMs != null && agoraServidor <= prazoMs;
 
   // Quando o prazo acaba com a página aberta, recarrega para mostrar o encerramento.
   useEffect(() => {
-    if (status?.situacao === "ABERTA" && prazoMs != null && agoraServidor > prazoMs + 1500) carregar();
-  }, [status?.situacao, prazoMs, agoraServidor, carregar]);
+    if (status?.situacao === "ABERTA" && prazoMs != null && agoraServidor > prazoMs + 1500 && !uploadAtivo) carregar();
+  }, [status?.situacao, prazoMs, agoraServidor, carregar, uploadAtivo]);
 
-  const enviar = async () => {
+  const enviarLinks = async () => {
     setErro("");
     setSucesso("");
     setEnviando(true);
@@ -124,6 +324,10 @@ export default function EnvioFase2Page() {
   }
 
   const enviado = status.ultimoEnvio;
+  const modoUpload = status.modo === "upload";
+  const completo = modoUpload
+    ? !!(enviado?.video && enviado?.portfolio)
+    : !!(enviado?.videoLink && enviado?.portfolioLink);
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -139,16 +343,17 @@ export default function EnvioFase2Page() {
             <p className="text-lg font-semibold text-[#f0ece4]">Aguardando o início da Fase 2</p>
           </div>
           <p className="text-[#b0adc0] leading-relaxed">
-            Você está classificado(a) para a Fase 2. A Comissão Organizadora divulgará o tema e
-            iniciará a fase; você receberá um e-mail com a data e a hora do início. A partir do
-            início, você terá <strong className="text-[#f0ece4]">24 horas</strong> para enviar os links.
+            Você está classificado(a) para a Fase 2. A Comissão Organizadora sorteará uma competência
+            específica da BNCC e iniciará a fase; você receberá um e-mail com a competência, a data e a
+            hora do início. A partir do início, você terá <strong className="text-[#f0ece4]">24 horas</strong> para
+            enviar a videoaula e o portfólio.
           </p>
         </div>
       )}
 
       {status.situacao !== "NAO_INICIADA" && (
         <div className={cartao}>
-          <span className="text-xs text-[#E8B829] uppercase tracking-widest">Tema da videoaula</span>
+          <span className="text-xs text-[#E8B829] uppercase tracking-widest">Competência sorteada</span>
           <p className="text-xl font-bold text-[#f0ece4] mt-1 font-[family-name:var(--font-fraunces)]">{status.tema}</p>
           <div className="grid sm:grid-cols-2 gap-4 mt-5 text-sm">
             <div>
@@ -173,25 +378,58 @@ export default function EnvioFase2Page() {
         </div>
       )}
 
-      {enviado && (
-        <div className="border border-emerald-500/40 rounded-2xl p-6 bg-emerald-500/10 space-y-3">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="text-emerald-400" size={20} />
-            <p className="font-semibold text-emerald-300">
-              Envio registrado em {dataHora(enviado.enviadoEm)}
+      {status.situacao !== "NAO_INICIADA" && (
+        completo ? (
+          <div className="border border-emerald-500/40 rounded-2xl p-4 bg-emerald-500/10 flex items-center gap-2">
+            <CheckCircle2 className="text-emerald-400 shrink-0" size={20} />
+            <p className="text-sm font-semibold text-emerald-300">
+              Envio completo — última atualização em {enviado && dataHora(enviado.enviadoEm)}.
+              {aberta && " Você ainda pode substituir os arquivos até o prazo final; vale o último envio."}
             </p>
           </div>
-          <a href={enviado.videoLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#3AAFE0] hover:underline break-all">
-            <ExternalLink size={14} className="shrink-0" /> Videoaula: {enviado.videoLink}
-          </a>
-          <a href={enviado.portfolioLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#3AAFE0] hover:underline break-all">
-            <ExternalLink size={14} className="shrink-0" /> Portfólio: {enviado.portfolioLink}
-          </a>
-          {aberta && <p className="text-xs text-[#9895a4]">Você ainda pode corrigir os links abaixo até o prazo final. Vale o último envio.</p>}
+        ) : aberta ? (
+          <div className="border border-amber-500/40 rounded-2xl p-4 bg-amber-500/10 flex items-center gap-2">
+            <AlertTriangle className="text-amber-400 shrink-0" size={20} />
+            <p className="text-sm font-semibold text-amber-300">
+              Envio incompleto: são obrigatórios a videoaula e o portfólio. Comece com antecedência — vídeos grandes podem levar tempo para subir.
+            </p>
+          </div>
+        ) : null
+      )}
+
+      {modoUpload && status.situacao !== "NAO_INICIADA" && (
+        <>
+          <CartaoArquivo
+            tipo="video" atual={enviado?.video ?? null} aberta={aberta}
+            limiteMb={status.limitesMb?.video ?? 3072} formatos={status.formatos?.video ?? ["mp4"]}
+            ocupado={uploadAtivo} aoMudarOcupado={setUploadAtivo}
+            aoConcluir={(m) => { setSucesso(m); carregar(); }}
+          />
+          <CartaoArquivo
+            tipo="portfolio" atual={enviado?.portfolio ?? null} aberta={aberta}
+            limiteMb={status.limitesMb?.portfolio ?? 50} formatos={status.formatos?.portfolio ?? ["pdf"]}
+            ocupado={uploadAtivo} aoMudarOcupado={setUploadAtivo}
+            aoConcluir={(m) => { setSucesso(m); carregar(); }}
+          />
+        </>
+      )}
+
+      {!modoUpload && enviado && (
+        <div className="border border-emerald-500/40 rounded-2xl p-6 bg-emerald-500/10 space-y-3">
+          {enviado.videoLink && (
+            <a href={enviado.videoLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#3AAFE0] hover:underline break-all">
+              <ExternalLink size={14} className="shrink-0" /> Videoaula: {enviado.videoLink}
+            </a>
+          )}
+          {enviado.portfolioLink && (
+            <a href={enviado.portfolioLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#3AAFE0] hover:underline break-all">
+              <ExternalLink size={14} className="shrink-0" /> Portfólio: {enviado.portfolioLink}
+            </a>
+          )}
         </div>
       )}
 
-      {aberta && (
+      {!modoUpload && aberta && (
         <div className={`${cartao} space-y-5`}>
           <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
             {enviado ? "Corrigir os links" : "Enviar os links"}
@@ -216,7 +454,7 @@ export default function EnvioFase2Page() {
             </p>
           </div>
           <Button
-            onClick={enviar}
+            onClick={enviarLinks}
             disabled={enviando || !videoLink.trim() || !portfolioLink.trim()}
             className="w-full"
             style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
@@ -236,23 +474,35 @@ export default function EnvioFase2Page() {
       <div className={`${cartao} space-y-4 text-sm text-[#b0adc0] leading-relaxed`}>
         <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">Materiais obrigatórios</h2>
         <div>
-          <p className="font-semibold text-[#f0ece4]">Videoaula autoral</p>
-          <ul className="list-disc pl-5 mt-1 space-y-1">
-            <li>Publicada em uma plataforma de vídeo, com acesso pelo link (no YouTube, use a opção &quot;Não listado&quot;).</li>
-            <li>Título no padrão: <em>Nome do Participante - Tema da Videoaula</em>.</li>
-            <li>Deve apresentar o conteúdo, a situação-problema e as estratégias pedagógicas.</li>
-          </ul>
+          <p className="font-semibold text-[#f0ece4]">Videoaula autoral de 20 minutos</p>
+          <p className="mt-1">
+            Desenvolva uma situação de ensino relacionada à competência sorteada e à(s) habilidade(s)
+            escolhida(s), para o público da Educação Básica definido no portfólio. Apresente uma aula, não
+            apenas o planejamento: introduza o tema, explore uma atividade ou problema, explique os
+            conceitos e estratégias e sistematize a aprendizagem.
+          </p>
         </div>
         <div>
           <p className="font-semibold text-[#f0ece4]">Portfólio digital — arquivo único em PDF</p>
           <p className="mt-1">
-            Deve conter plano de aula, objetivos, público-alvo, metodologia, recursos digitais,
-            atividade ou situação-problema, avaliação, referências e reflexão crítica sobre a prática.
+            Identificação; competência sorteada e habilidade(s); público-alvo e objetivos; plano de aula;
+            situação-problema ou atividade; desenvolvimento e justificativas matemáticas; metodologia e
+            recursos; avaliação da aprendizagem; reflexão crítica e referências. Use o modelo oficial e
+            salve em PDF antes de enviar. O uso de inteligência artificial, se houver, deve ser declarado.
           </p>
         </div>
+        <div className="flex flex-col sm:flex-row gap-2 pt-1">
+          {DOCUMENTOS.map((d) => (
+            <a
+              key={d.href} href={d.href} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-lg border border-[#2a2a3a] px-3 py-2 text-[#3AAFE0] hover:bg-[#1a1a26]"
+            >
+              <Download size={14} className="shrink-0" /> {d.rotulo}
+            </a>
+          ))}
+        </div>
         <p className="text-xs text-[#9895a4]">
-          O conteúdo dos links é de responsabilidade do participante. Após o prazo final, o envio é
-          encerrado automaticamente e não há prorrogação.
+          A produção deve ser autoral. Após o prazo final, o envio é encerrado automaticamente e não há prorrogação.
         </p>
       </div>
     </div>

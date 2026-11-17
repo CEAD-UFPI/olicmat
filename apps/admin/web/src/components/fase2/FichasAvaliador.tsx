@@ -4,9 +4,12 @@ import { useCallback, useEffect, useState } from "react";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ArrowLeft, CheckCircle2, ExternalLink } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Download, ExternalLink, FileText } from "lucide-react";
+import { formatarBytes } from "@/lib/uploadFase2";
 
 interface Criterio { chave: string; nome: string; descricao: string; max: number }
+interface NivelEscala { conceito: number; pontos: number; rotulo: string }
+interface Arquivo { nome: string; bytes: number | null; url: string | null }
 interface Ficha {
   id: string;
   status: "PENDENTE" | "CONCLUIDA";
@@ -16,6 +19,8 @@ interface Ficha {
   tema: string | null;
   videoLink: string | null;
   portfolioLink: string | null;
+  video: Arquivo | null;
+  portfolio: Arquivo | null;
   enviadoEm: string | null;
   avaliacao: { nota: number; parecer: string | null; concluida: boolean; notas: Record<string, number | null> } | null;
 }
@@ -35,6 +40,7 @@ const cartao = "border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a]";
 
 export default function FichasAvaliador() {
   const [criterios, setCriterios] = useState<Criterio[]>([]);
+  const [escala, setEscala] = useState<NivelEscala[]>([]);
   const [fichas, setFichas] = useState<Ficha[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [aberta, setAberta] = useState<Ficha | null>(null);
@@ -46,8 +52,8 @@ export default function FichasAvaliador() {
   const [confirmar, setConfirmar] = useState(false);
 
   const carregar = useCallback(() => {
-    api.get<{ criterios: Criterio[]; atribuicoes: Ficha[] }>("/avaliador/fase2/atribuicoes")
-      .then(({ data }) => { setCriterios(data.criterios); setFichas(data.atribuicoes); })
+    api.get<{ criterios: Criterio[]; escala: NivelEscala[]; atribuicoes: Ficha[] }>("/avaliador/fase2/atribuicoes")
+      .then(({ data }) => { setCriterios(data.criterios); setEscala(data.escala); setFichas(data.atribuicoes); })
       .catch((e) => setErro(mensagemErro(e, "Erro ao carregar suas avaliações.")))
       .finally(() => setCarregando(false));
   }, []);
@@ -61,22 +67,15 @@ export default function FichasAvaliador() {
     setNotas(Object.fromEntries(criterios.map((c) => [c.chave, f.avaliacao?.notas[c.chave]?.toString() ?? ""])));
   };
 
+  // O avaliador atribui um conceito inteiro de 0 a 5; cada critério vale até
+  // 20 pontos (conceito × 4), calculado pelo sistema.
+  const pesoDe = (c: Criterio) => c.max / (escala.length ? escala.length - 1 : 5);
   const corpo = () => ({
-    notas: Object.fromEntries(criterios.map((c) => [c.chave, notas[c.chave] === "" ? null : Number(notas[c.chave].replace(",", "."))])),
+    notas: Object.fromEntries(criterios.map((c) => [c.chave, notas[c.chave] === "" || notas[c.chave] == null ? null : Number(notas[c.chave])])),
     parecer,
   });
-
-  const total = criterios.reduce((s, c) => {
-    const v = Number((notas[c.chave] ?? "").replace(",", "."));
-    return s + (Number.isFinite(v) ? v : 0);
-  }, 0);
-  const foraDoLimite = criterios.filter((c) => {
-    const t = notas[c.chave];
-    if (!t) return false;
-    const v = Number(t.replace(",", "."));
-    return !Number.isFinite(v) || v < 0 || v > c.max;
-  });
-  const completo = criterios.every((c) => notas[c.chave]) && foraDoLimite.length === 0;
+  const total = criterios.reduce((s, c) => (notas[c.chave] ? s + Number(notas[c.chave]) * pesoDe(c) : s), 0);
+  const completo = criterios.every((c) => notas[c.chave] !== "" && notas[c.chave] != null);
 
   const salvar = async (concluir: boolean) => {
     if (!aberta) return;
@@ -113,48 +112,94 @@ export default function FichasAvaliador() {
           <p className="text-xs uppercase tracking-widest text-[#9895a4]">Participante nº {aberta.participante.numero}</p>
           <h1 className="text-xl font-bold text-[#f0ece4] mt-1">{aberta.participante.nome}</h1>
           <p className="text-sm text-[#9895a4]">{aberta.participante.instituicao} · {aberta.participante.curso}</p>
-          <p className="text-sm text-[#f0ece4] mt-3"><span className="text-[#E8B829]">Tema:</span> {aberta.tema}</p>
+          <p className="text-sm text-[#f0ece4] mt-3"><span className="text-[#E8B829]">Competência sorteada:</span> {aberta.tema}</p>
+          {aberta.video?.url && (
+            <div className="mt-4">
+              <video controls preload="metadata" src={aberta.video.url} className="w-full rounded-xl bg-black max-h-[480px]">
+                Seu navegador não reproduz este formato. Use o botão “Baixar vídeo”.
+              </video>
+            </div>
+          )}
           <div className="flex flex-wrap gap-3 mt-4">
+            {aberta.video?.url && (
+              <a href={aberta.video.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[#3AAFE0]/50 px-3 py-1.5 text-sm text-[#3AAFE0] hover:bg-[#3AAFE0]/10">
+                <Download size={14} /> Baixar vídeo <span className="text-xs text-[#9895a4]">({formatarBytes(aberta.video.bytes)})</span>
+              </a>
+            )}
+            {aberta.portfolio?.url && (
+              <a href={aberta.portfolio.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[#3AAFE0]/50 px-3 py-1.5 text-sm text-[#3AAFE0] hover:bg-[#3AAFE0]/10">
+                <FileText size={14} /> Abrir portfólio (PDF)
+              </a>
+            )}
             {aberta.videoLink && (
               <a href={aberta.videoLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[#3AAFE0]/50 px-3 py-1.5 text-sm text-[#3AAFE0] hover:bg-[#3AAFE0]/10">
-                <ExternalLink size={14} /> Abrir videoaula
+                <ExternalLink size={14} /> Abrir videoaula (link)
               </a>
             )}
             {aberta.portfolioLink && (
               <a href={aberta.portfolioLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[#3AAFE0]/50 px-3 py-1.5 text-sm text-[#3AAFE0] hover:bg-[#3AAFE0]/10">
-                <ExternalLink size={14} /> Abrir portfólio
+                <ExternalLink size={14} /> Abrir portfólio (link)
               </a>
             )}
+            {!aberta.video && !aberta.videoLink && <span className="text-sm text-amber-300">Videoaula não enviada.</span>}
+            {!aberta.portfolio && !aberta.portfolioLink && <span className="text-sm text-amber-300">Portfólio não enviado.</span>}
           </div>
+          <p className="text-xs text-[#9895a4] mt-2">Os links dos arquivos valem por algumas horas; se expirarem, recarregue a página.</p>
           <p className="text-xs text-[#9895a4] mt-3">Envio: {dataHora(aberta.enviadoEm)} · Recebido para avaliação: {dataHora(aberta.atribuidoEm)}</p>
         </div>
 
         <div className={`${cartao} space-y-4`}>
-          <h2 className="text-base font-bold text-[#f0ece4]">Critérios de avaliação</h2>
-          {criterios.map((c) => {
-            const invalido = foraDoLimite.some((x) => x.chave === c.chave);
+          <div>
+            <h2 className="text-base font-bold text-[#f0ece4]">Critérios de avaliação</h2>
+            <p className="text-sm text-[#9895a4] mt-1">
+              Avalie a videoaula e o portfólio em conjunto. Para cada critério, atribua um conceito de 0 a 5;
+              o sistema converte proporcionalmente para até 20 pontos (conceito × 4).
+            </p>
+          </div>
+          <details className="rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] p-3 text-sm">
+            <summary className="cursor-pointer text-[#E8B829] font-semibold">Escala orientadora</summary>
+            <ul className="mt-2 space-y-1 text-[#b0adc0]">
+              {escala.map((e) => (
+                <li key={e.conceito}><strong className="text-[#f0ece4]">{e.conceito}</strong> ({e.pontos} pts) — {e.rotulo}</li>
+              ))}
+            </ul>
+          </details>
+          {criterios.map((c, i) => {
+            const valor = notas[c.chave];
+            const nivel = escala.find((e) => String(e.conceito) === valor);
             return (
-              <div key={c.chave} className="flex items-start justify-between gap-4 border-t border-[#2a2a3a] pt-3 first:border-0 first:pt-0">
-                <div>
-                  <p className="font-semibold text-[#f0ece4]">{c.nome}</p>
-                  <p className="text-sm text-[#9895a4]">{c.descricao}</p>
-                  {invalido && <p className="text-xs text-red-300 mt-1">A nota deve estar entre 0 e {c.max}.</p>}
+              <div key={c.chave} className="border-t border-[#2a2a3a] pt-4 first:border-0">
+                <p className="font-semibold text-[#f0ece4]">Critério {i + 1} — {c.nome}</p>
+                <p className="text-sm text-[#9895a4]">{c.descricao}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-2" role="radiogroup" aria-label={`Conceito do critério ${i + 1}`}>
+                  {escala.map((e) => {
+                    const ativo = valor === String(e.conceito);
+                    return (
+                      <button
+                        key={e.conceito} type="button" role="radio" aria-checked={ativo} disabled={travada}
+                        title={`${e.conceito} — ${e.rotulo}`}
+                        onClick={() => setNotas((n) => ({ ...n, [c.chave]: String(e.conceito) }))}
+                        className={`w-11 h-11 rounded-lg border text-base font-bold tabular-nums transition-colors disabled:cursor-not-allowed ${
+                          ativo
+                            ? "bg-[#E8B829] border-[#E8B829] text-[#0a0a0f]"
+                            : "bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] hover:border-[#E8B829]/60"
+                        }`}
+                      >
+                        {e.conceito}
+                      </button>
+                    );
+                  })}
+                  <span className="ml-2 text-sm tabular-nums text-[#f0ece4]">
+                    {valor ? <><strong>{Number(valor) * pesoDe(c)}</strong> / {c.max} pts</> : <span className="text-[#9895a4]">sem conceito</span>}
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <input
-                    type="number" inputMode="decimal" min={0} max={c.max} step={0.5} disabled={travada}
-                    value={notas[c.chave] ?? ""}
-                    onChange={(e) => setNotas((n) => ({ ...n, [c.chave]: e.target.value }))}
-                    className={`w-20 h-9 rounded-md bg-[#0a0a0f] border ${invalido ? "border-red-400" : "border-[#2a2a3a]"} text-[#f0ece4] text-right px-2`}
-                  />
-                  <span className="text-sm text-[#9895a4] w-10">/ {c.max}</span>
-                </div>
+                {nivel && <p className="text-xs text-[#9895a4] mt-1.5">{nivel.rotulo}</p>}
               </div>
             );
           })}
           <div className="flex items-center justify-between border-t border-[#E8B829]/40 pt-3">
             <p className="font-bold text-[#f0ece4]">Total</p>
-            <p className="text-2xl font-bold text-[#E8B829] tabular-nums">{Math.round(total * 10) / 10} <span className="text-sm text-[#9895a4]">/ 100</span></p>
+            <p className="text-2xl font-bold text-[#E8B829] tabular-nums">{total} <span className="text-sm text-[#9895a4]">/ 100</span></p>
           </div>
           <div>
             <p className="font-semibold text-[#f0ece4] mb-1">Parecer</p>
@@ -167,7 +212,7 @@ export default function FichasAvaliador() {
             <p className="text-sm text-emerald-300 flex items-center gap-2"><CheckCircle2 size={16} /> Avaliação concluída em {dataHora(aberta.concluidoEm)}.</p>
           ) : (
             <div className="flex flex-wrap gap-2 justify-end">
-              <Button variant="outline" disabled={salvando || foraDoLimite.length > 0} onClick={() => salvar(false)}>Salvar rascunho</Button>
+              <Button variant="outline" disabled={salvando} onClick={() => salvar(false)}>Salvar rascunho</Button>
               <Button disabled={salvando || !completo} onClick={() => setConfirmar(true)} style={{ backgroundColor: "#4CAF50", color: "#fff" }}>Concluir avaliação</Button>
             </div>
           )}
@@ -175,7 +220,7 @@ export default function FichasAvaliador() {
 
         <ConfirmDialog aberto={confirmar} onClose={() => setConfirmar(false)} onConfirm={() => salvar(true)} confirmando={salvando} variante="warning"
           titulo="Concluir a avaliação?"
-          mensagem={`Total: ${Math.round(total * 10) / 10} pontos. Depois de concluída, a avaliação não pode mais ser alterada.`} />
+          mensagem={`Total: ${total} pontos. Depois de concluída, a avaliação não pode mais ser alterada.`} />
       </div>
     );
   }

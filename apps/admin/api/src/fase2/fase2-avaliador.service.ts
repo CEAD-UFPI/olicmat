@@ -1,7 +1,9 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
-import { CRITERIOS, consolidarNotas, escolherTerceiro, totalCriterios } from "./fase2.regras.js";
+import { CRITERIOS, ESCALA, ESCALA_MAX, conceitoValido, consolidarNotas, escolherTerceiro, pontosDoConceito, totalCriterios } from "./fase2.regras.js";
+import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
+import { formatarEnvio } from "./fase2-participante.service.js";
 
 type Notas = Partial<Record<string, unknown>>;
 
@@ -11,6 +13,7 @@ export class Fase2AvaliadorService {
   constructor(
     private prisma: PrismaService,
     private auditoria: AuditoriaService,
+    private armazenamento: Fase2ArmazenamentoService,
   ) {}
 
   private async minhaAtribuicao(atribuicaoId: string, avaliadorId: string) {
@@ -26,10 +29,13 @@ export class Fase2AvaliadorService {
             curso: { select: { nome: true } },
             edicao: { select: { fase2Tema: true } },
             enviosFase2: {
-              where: { tipo: "links" },
               orderBy: { enviadoEm: "desc" },
               take: 1,
-              select: { videoLink: true, portfolioLink: true, enviadoEm: true },
+              select: {
+                videoLink: true, portfolioLink: true, enviadoEm: true,
+                videoKey: true, videoNome: true, videoBytes: true,
+                portfolioKey: true, portfolioNome: true, portfolioBytes: true,
+              },
             },
           },
         },
@@ -45,7 +51,7 @@ export class Fase2AvaliadorService {
     a: Awaited<ReturnType<Fase2AvaliadorService["minhaAtribuicao"]>>,
     av: { nota: number; parecer: string | null; concluida: boolean; [k: string]: unknown } | null,
   ) {
-    const envio = a.inscricao.enviosFase2[0] ?? null;
+    const envio = formatarEnvio(a.inscricao.enviosFase2[0], this.armazenamento);
     return {
       id: a.id,
       status: a.status,
@@ -60,7 +66,9 @@ export class Fase2AvaliadorService {
       tema: a.inscricao.edicao.fase2Tema,
       videoLink: envio?.videoLink ?? null,
       portfolioLink: envio?.portfolioLink ?? null,
-      enviadoEm: envio?.enviadoEm.toISOString() ?? null,
+      video: envio?.video ?? null,
+      portfolio: envio?.portfolio ?? null,
+      enviadoEm: envio?.enviadoEm ?? null,
       avaliacao: av
         ? {
             nota: av.nota,
@@ -80,7 +88,7 @@ export class Fase2AvaliadorService {
     });
     const saida = [];
     for (const { id } of lista) saida.push(await this.ficha(id, avaliadorId));
-    return { criterios: CRITERIOS, atribuicoes: saida };
+    return { criterios: CRITERIOS, escala: ESCALA, escalaMax: ESCALA_MAX, atribuicoes: saida };
   }
 
   async ficha(atribuicaoId: string, avaliadorId: string) {
@@ -91,7 +99,7 @@ export class Fase2AvaliadorService {
     return this.formatar(a, av);
   }
 
-  /** Rascunho: aceita critérios em branco, mas não fora dos limites. */
+  /** Rascunho: aceita critérios em branco, mas não conceitos fora de 0 a 5. */
   async salvarRascunho(atribuicaoId: string, avaliadorId: string, notas: Notas, parecer?: string) {
     const a = await this.minhaAtribuicao(atribuicaoId, avaliadorId);
     if (a.status === "CONCLUIDA") throw new BadRequestException("Avaliação já concluída.");
@@ -103,11 +111,11 @@ export class Fase2AvaliadorService {
         dados[c.chave] = null;
         continue;
       }
-      if (typeof v !== "number" || !Number.isFinite(v) || v < 0 || v > c.max) {
-        throw new BadRequestException(`${c.nome}: a nota deve estar entre 0 e ${c.max}`);
+      if (!conceitoValido(v)) {
+        throw new BadRequestException(`${c.nome}: o conceito deve ser um número inteiro de 0 a ${ESCALA_MAX}`);
       }
       dados[c.chave] = v;
-      soma += v;
+      soma += pontosDoConceito(v);
     }
     const texto = parecer?.slice(0, 5000) ?? null;
     await this.prisma.avaliacaoFase2.upsert({

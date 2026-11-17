@@ -25,7 +25,14 @@ interface Participante {
   nome: string;
   email: string;
   instituicao: string;
-  ultimoEnvio: { videoLink: string; portfolioLink: string; enviadoEm: string } | null;
+  ultimoEnvio: {
+    enviadoEm: string;
+    videoLink: string | null;
+    portfolioLink: string | null;
+    video: { nome: string; bytes: number | null; url: string | null } | null;
+    portfolio: { nome: string; bytes: number | null; url: string | null } | null;
+  } | null;
+  envioCompleto: boolean;
   totalEnvios: number;
   emailInicio: { status: string; erro: string | null } | null;
   fase2Nota: number | null;
@@ -42,7 +49,7 @@ interface Painel {
   situacao: "NAO_INICIADA" | "ABERTA" | "ENCERRADA";
   distribuida: boolean;
   alertaHoras: number;
-  totais: { classificados: number; enviaram: number; avaliados: number; terceiroAvaliador: number };
+  totais: { classificados: number; enviaram: number; enviosCompletos: number; avaliados: number; terceiroAvaliador: number };
   emails: { enviados: number; falhas: number; pendentes: number };
   porInstituicao: Array<{ sigla: string; classificados: number; enviaram: number }>;
   avaliadores: Array<{ avaliadorId: string; nome: string; total: number; concluidas: number; pendentes: number; atrasadas: number; mediaHoras: number | null }>;
@@ -189,17 +196,17 @@ export default function PainelFase2() {
         <div className={`${cartao} space-y-4`}>
           <h2 className="text-lg font-bold text-[#f0ece4]">Iniciar a Fase 2</h2>
           <p className="text-sm text-[#b0adc0]">
-            Informe o tema sorteado pela Comissão. Ao iniciar, o prazo de <strong>24 horas</strong> começa a contar
+            Informe a competência específica da BNCC sorteada pela Comissão. Ao iniciar, o prazo de <strong>24 horas</strong> começa a contar
             para todos os {totais.classificados} classificados, o início é registrado na auditoria e cada
-            classificado recebe um e-mail com o tema, a data e a hora do início e o prazo final.
+            classificado recebe um e-mail com a competência, a data e a hora do início e o prazo final.
             <strong> O início não pode ser desfeito.</strong>
           </p>
           {totais.classificados === 0 && (
             <p className="text-sm text-amber-300 flex items-center gap-2"><AlertTriangle size={16} /> A relação de classificados ainda não foi carregada no sistema.</p>
           )}
           <div>
-            <Label htmlFor="tema" className="text-[#f0ece4]">Tema da videoaula</Label>
-            <Input id="tema" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Tema sorteado"
+            <Label htmlFor="tema" className="text-[#f0ece4]">Competência sorteada</Label>
+            <Input id="tema" value={tema} onChange={(e) => setTema(e.target.value)} placeholder="Ex.: Competência específica 3 — Modelar, resolver problemas e avaliar resultados"
               className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]" />
           </div>
           <Button disabled={ocupado || tema.trim().length < 3 || totais.classificados === 0} onClick={() => setConfirmarInicio(true)}
@@ -210,7 +217,7 @@ export default function PainelFase2() {
       ) : (
         <div className={`${cartao} grid gap-4 sm:grid-cols-2 lg:grid-cols-4 text-sm`}>
           <div className="sm:col-span-2 lg:col-span-4">
-            <p className="text-xs uppercase tracking-widest text-[#E8B829]">Tema</p>
+            <p className="text-xs uppercase tracking-widest text-[#E8B829]">Competência sorteada</p>
             <p className="text-lg font-semibold text-[#f0ece4]">{painel.tema}</p>
           </div>
           <div><p className="text-[#9895a4]">Início</p><p className="text-[#f0ece4]">{dataHora(painel.inicioEm)}</p></div>
@@ -228,7 +235,7 @@ export default function PainelFase2() {
       {/* Números */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Metrica rotulo="Classificados" valor={totais.classificados} />
-        <Metrica rotulo="Enviaram" valor={totais.enviaram} detalhe={`${totais.classificados - totais.enviaram} sem envio`} />
+        <Metrica rotulo="Enviaram" valor={totais.enviaram} detalhe={`${totais.enviosCompletos} completos · ${totais.classificados - totais.enviaram} sem envio`} />
         <Metrica rotulo="Avaliados" valor={totais.avaliados} detalhe={`${totais.terceiroAvaliador} com 3º avaliador`} />
         <div className={cartao}>
           <p className="text-xs uppercase tracking-widest text-[#9895a4] flex items-center gap-1"><Mail size={12} /> E-mails de início</p>
@@ -344,8 +351,12 @@ export default function PainelFase2() {
                       {p.ultimoEnvio ? (
                         <>
                           <span className="block">{dataHora(p.ultimoEnvio.enviadoEm)}{p.totalEnvios > 1 && <span className="text-xs text-[#9895a4]"> ({p.totalEnvios} envios)</span>}</span>
-                          <a className="text-xs text-[#3AAFE0] hover:underline mr-2" href={p.ultimoEnvio.videoLink} target="_blank" rel="noopener noreferrer">vídeo</a>
-                          <a className="text-xs text-[#3AAFE0] hover:underline" href={p.ultimoEnvio.portfolioLink} target="_blank" rel="noopener noreferrer">portfólio</a>
+                          {(p.ultimoEnvio.video?.url ?? p.ultimoEnvio.videoLink) ? (
+                            <a className="text-xs text-[#3AAFE0] hover:underline mr-2" href={p.ultimoEnvio.video?.url ?? p.ultimoEnvio.videoLink ?? undefined} target="_blank" rel="noopener noreferrer">vídeo</a>
+                          ) : <span className="text-xs text-amber-300 mr-2">sem vídeo</span>}
+                          {(p.ultimoEnvio.portfolio?.url ?? p.ultimoEnvio.portfolioLink) ? (
+                            <a className="text-xs text-[#3AAFE0] hover:underline" href={p.ultimoEnvio.portfolio?.url ?? p.ultimoEnvio.portfolioLink ?? undefined} target="_blank" rel="noopener noreferrer">portfólio</a>
+                          ) : <span className="text-xs text-amber-300">sem portfólio</span>}
                         </>
                       ) : <span className="text-[#9895a4]">—</span>}
                     </td>
@@ -386,7 +397,7 @@ export default function PainelFase2() {
         confirmando={ocupado}
         variante="warning"
         titulo="Iniciar a Fase 2?"
-        mensagem={`Tema: "${tema.trim()}". O prazo de 24 horas começa agora para os ${totais.classificados} classificados, e todos recebem o e-mail de início. Esta ação não pode ser desfeita.`}
+        mensagem={`Competência: "${tema.trim()}". O prazo de 24 horas começa agora para os ${totais.classificados} classificados, e todos recebem o e-mail de início. Esta ação não pode ser desfeita.`}
       />
       <ConfirmDialog
         aberto={confirmarDistribuicao}

@@ -5,6 +5,8 @@ import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { EmailService } from "../email/email.service.js";
 import { ALERTA_AVALIACAO_HORAS, distribuir, prazoDe, situacaoEnvio } from "./fase2.regras.js";
 import { edicaoAtual } from "./fase2.edicao.js";
+import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
+import { formatarEnvio } from "./fase2-participante.service.js";
 
 const HORA = 3600_000;
 
@@ -18,6 +20,7 @@ export class Fase2GestaoService {
     private prisma: PrismaService,
     private auditoria: AuditoriaService,
     private email: EmailService,
+    private armazenamento: Fase2ArmazenamentoService,
   ) {}
 
   private async edicaoOuErro() {
@@ -46,9 +49,12 @@ export class Fase2GestaoService {
         user: { select: { nome: true, email: true } },
         instituicao: { select: { sigla: true } },
         enviosFase2: {
-          where: { tipo: "links" },
           orderBy: { enviadoEm: "desc" },
-          select: { videoLink: true, portfolioLink: true, enviadoEm: true },
+          select: {
+            videoLink: true, portfolioLink: true, enviadoEm: true,
+            videoKey: true, videoNome: true, videoBytes: true,
+            portfolioKey: true, portfolioNome: true, portfolioBytes: true,
+          },
         },
         emailsFase2: { select: { status: true, erro: true } },
         atribuicoesFase2: {
@@ -72,7 +78,9 @@ export class Fase2GestaoService {
     });
 
     const participantes = inscricoes.map((i) => {
-      const ultimo = i.enviosFase2[0] ?? null;
+      const ultimo = formatarEnvio(i.enviosFase2[0], this.armazenamento);
+      const temVideo = !!(ultimo?.video || ultimo?.videoLink);
+      const temPortfolio = !!(ultimo?.portfolio || ultimo?.portfolioLink);
       const ativas = i.atribuicoesFase2.filter((a) => a.status !== "REMANEJADA");
       const notaDe = new Map(i.avaliacoes.map((a) => [a.avaliadorId, a.nota]));
       let situacaoAvaliacao: string;
@@ -87,9 +95,8 @@ export class Fase2GestaoService {
         nome: i.user.nome,
         email: i.user.email,
         instituicao: i.instituicao.sigla,
-        ultimoEnvio: ultimo
-          ? { ...ultimo, enviadoEm: ultimo.enviadoEm.toISOString() }
-          : null,
+        ultimoEnvio: ultimo,
+        envioCompleto: temVideo && temPortfolio,
         totalEnvios: i.enviosFase2.length,
         emailInicio: i.emailsFase2[0] ?? null,
         fase2Nota: i.fase2Nota,
@@ -160,6 +167,7 @@ export class Fase2GestaoService {
       totais: {
         classificados: participantes.length,
         enviaram: participantes.filter((p) => p.ultimoEnvio).length,
+        enviosCompletos: participantes.filter((p) => p.envioCompleto).length,
         avaliados: participantes.filter((p) => p.fase2Nota != null).length,
         terceiroAvaliador: participantes.filter((p) => p.situacaoAvaliacao === "TERCEIRO_AVALIADOR").length,
       },
@@ -178,7 +186,7 @@ export class Fase2GestaoService {
   async iniciar(temaBruto: string, actorId: string, agora = new Date()) {
     const tema = temaBruto.trim();
     if (tema.length < 3 || tema.length > 300) {
-      throw new BadRequestException("Informe o tema da videoaula (3 a 300 caracteres).");
+      throw new BadRequestException("Informe a competência sorteada (3 a 300 caracteres).");
     }
     const edicao = await this.edicaoOuErro();
     const classificados = await this.prisma.inscricao.count({
@@ -287,7 +295,7 @@ export class Fase2GestaoService {
     if (ja > 0) throw new BadRequestException("A distribuição já foi feita.");
 
     const comEnvio = await this.prisma.inscricao.findMany({
-      where: { edicaoId: edicao.id, fase2Classificado: true, enviosFase2: { some: { tipo: "links" } } },
+      where: { edicaoId: edicao.id, fase2Classificado: true, enviosFase2: { some: {} } },
       select: { id: true },
     });
     if (!comEnvio.length) throw new BadRequestException("Nenhum participante enviou os materiais.");
@@ -354,7 +362,7 @@ export class Fase2GestaoService {
       iso ? new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }) : "";
     const linhas = [
       [
-        "Inscrição", "Nome", "Instituição", "Enviou", "Último envio", "Link vídeo", "Link portfólio",
+        "Inscrição", "Nome", "Instituição", "Enviou", "Envio completo", "Último envio", "Arquivo vídeo", "Arquivo portfólio", "Link vídeo", "Link portfólio",
         "Avaliador 1", "Nota 1", "Avaliador 2", "Nota 2", "Avaliador 3", "Nota 3", "Nota Fase 2", "Situação",
       ].join(";"),
     ];
@@ -362,7 +370,8 @@ export class Fase2GestaoService {
       const por = (o: number) => x.atribuicoes.find((a) => a.ordem === o);
       linhas.push(
         [
-          x.numero, x.nome, x.instituicao, x.ultimoEnvio ? "Sim" : "Não", fmt(x.ultimoEnvio?.enviadoEm),
+          x.numero, x.nome, x.instituicao, x.ultimoEnvio ? "Sim" : "Não", x.envioCompleto ? "Sim" : "Não", fmt(x.ultimoEnvio?.enviadoEm),
+          x.ultimoEnvio?.video?.nome, x.ultimoEnvio?.portfolio?.nome,
           x.ultimoEnvio?.videoLink, x.ultimoEnvio?.portfolioLink,
           por(1)?.avaliador, por(1)?.nota, por(2)?.avaliador, por(2)?.nota, por(3)?.avaliador, por(3)?.nota,
           x.fase2Nota, x.situacaoAvaliacao,

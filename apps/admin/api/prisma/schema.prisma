@@ -455,6 +455,13 @@ model EnvioFase2 {
   arquivoUrl    String            @default("")
   videoLink     String?
   portfolioLink String?
+  /// Upload na nuvem própria (S3): chave do objeto, nome original e tamanho.
+  videoKey       String?
+  videoNome      String?
+  videoBytes     BigInt?
+  portfolioKey   String?
+  portfolioNome  String?
+  portfolioBytes BigInt?
   status        StatusEnvioFase2  @default(PENDENTE)
   enviadoEm     DateTime          @default(now())
 
@@ -470,11 +477,12 @@ model AvaliacaoFase2 {
   /// Total (soma dos critérios), 0 a 100.
   nota        Float
   parecer     String?
-  dominioConteudo     Float?
-  estrategiasEnsino   Float?
-  usoTdics            Float?
-  reflexaoCritica     Float?
-  coerenciaPedagogica Float?
+  /// Conceitos de 0 a 5 por critério do Manual da 2ª Fase (cada um vale até 20 pontos: conceito × 4).
+  criterio1   Int?
+  criterio2   Int?
+  criterio3   Int?
+  criterio4   Int?
+  criterio5   Int?
   /// false = rascunho; true = avaliação concluída (travada).
   concluida   Boolean   @default(false)
   avaliadoEm  DateTime  @default(now())
