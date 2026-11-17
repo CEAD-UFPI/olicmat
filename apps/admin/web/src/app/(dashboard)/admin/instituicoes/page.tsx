@@ -44,7 +44,7 @@ const ESTADOS = [
   "PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
 ];
 
-const selectClasses = "w-full h-10 rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]";
+const selectClasses = "w-full h-10 rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)] px-3 text-sm focus:outline-none focus:border-[var(--color-gold)]";
 
 export default function AdminInstituicoesPage() {
   const [instituicoes, setInstituicoes] = useState<Instituicao[]>([]);
@@ -185,14 +185,14 @@ export default function AdminInstituicoesPage() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             Instituições
           </h1>
-          <p className="text-[#9895a4] mt-1 text-sm">Gerenciar instituições de ensino</p>
+          <p className="text-[var(--text-tertiary)] mt-1 text-sm">Gerenciar instituições de ensino</p>
         </div>
         <Button
           onClick={abrirCriar}
-          className="bg-[#E8B829] text-black hover:bg-[#d4a720]"
+          className="bg-[var(--color-gold)] text-black hover:bg-[var(--color-gold-hover)]"
         >
           <Plus size={16} className="mr-2" />
           Nova Instituição
@@ -200,52 +200,52 @@ export default function AdminInstituicoesPage() {
       </div>
 
       <div className="relative max-w-md">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9895a4]" />
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)]" />
         <Input
           placeholder="Buscar por nome, sigla, INEP ou município..."
           value={filtro}
           onChange={(e) => { setFiltro(e.target.value); setPagina(1); }}
-          className="pl-10 border-[#2a2a3a] bg-[#12121a] text-[#f0ece4]"
+          className="pl-10 border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-primary)]"
         />
       </div>
 
       {carregando ? (
         <div className="flex items-center justify-center py-20">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <>
-          <div className="border border-[#2a2a3a] rounded-2xl overflow-hidden bg-[#12121a]">
+          <div className="border border-[var(--border-color)] rounded-2xl overflow-hidden bg-[var(--bg-secondary)]">
             <div className="overflow-x-auto">
               <table className="w-full text-base">
                 <thead>
-                  <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Sigla</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">INEP</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">UF</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Município</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Esfera</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
-                    <th className="text-right py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
+                  <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Sigla</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">INEP</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">UF</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Município</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Esfera</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Status</th>
+                    <th className="text-right py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginados.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="py-12 text-center text-[#b0adc0]">
+                      <td colSpan={8} className="py-12 text-center text-[var(--text-secondary)]">
                         Nenhuma instituição encontrada
                       </td>
                     </tr>
                   ) : (
                     paginados.map((inst) => (
-                      <tr key={inst.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#1a1a26] transition-colors">
-                        <td className="py-4 px-5 text-[#f0ece4] font-medium">{inst.nome}</td>
-                        <td className="py-4 px-5 text-[#9895a4]">{inst.sigla}</td>
-                        <td className="py-4 px-5 text-[#9895a4] font-mono text-sm">{inst.codigoInep || "-"}</td>
-                        <td className="py-4 px-5 text-[#9895a4]">{inst.uf || "-"}</td>
-                        <td className="py-4 px-5 text-[#9895a4]">{inst.municipio || "-"}</td>
-                        <td className="py-4 px-5 text-[#9895a4]">{inst.esferaAdministrativa ? traduzirEsfera(inst.esferaAdministrativa) : "-"}</td>
+                      <tr key={inst.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--surface)] transition-colors">
+                        <td className="py-4 px-5 text-[var(--text-primary)] font-medium">{inst.nome}</td>
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">{inst.sigla}</td>
+                        <td className="py-4 px-5 text-[var(--text-tertiary)] font-mono text-sm">{inst.codigoInep || "-"}</td>
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">{inst.uf || "-"}</td>
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">{inst.municipio || "-"}</td>
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">{inst.esferaAdministrativa ? traduzirEsfera(inst.esferaAdministrativa) : "-"}</td>
                         <td className="py-4 px-5 text-center">
                           <span className={`inline-block text-sm font-medium px-3 py-1 rounded-full ${
                             inst.status === "ATIVA" ? "bg-green-900/50 text-green-400" : "bg-red-900/50 text-red-400"
@@ -257,21 +257,21 @@ export default function AdminInstituicoesPage() {
                           <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={() => setDetailTarget(inst)}
-                              className="p-1.5 text-[#9895a4] hover:text-[#3AAFE0] transition-colors"
+                              className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--color-blue-ink)] transition-colors"
                               title="Detalhes"
                             >
                               <Eye size={18} />
                             </button>
                             <button
                               onClick={() => abrirEditar(inst)}
-                              className="p-1.5 text-[#9895a4] hover:text-[#E8B829] transition-colors"
+                              className="p-1.5 text-[var(--text-tertiary)] hover:text-[var(--color-gold-ink)] transition-colors"
                               title="Editar"
                             >
                               <Pencil size={18} />
                             </button>
                             <button
                               onClick={() => setConfirmDelete(inst)}
-                              className="p-1.5 text-[#9895a4] hover:text-red-400 transition-colors"
+                              className="p-1.5 text-[var(--text-tertiary)] hover:text-red-400 transition-colors"
                               title="Excluir"
                             >
                               <Trash2 size={18} />
@@ -422,32 +422,32 @@ export default function AdminInstituicoesPage() {
 
           <SectionTitle title="Identificação" />
           <div className="space-y-2">
-            <Label className="text-[#b0adc0] text-sm">Nome da Instituição *</Label>
+            <Label className="text-[var(--text-secondary)] text-sm">Nome da Instituição *</Label>
             <Input
               value={form.nome}
               onChange={(e) => setForm({ ...form, nome: e.target.value })}
               placeholder="Ex: Universidade Federal..."
-              className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+              className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Sigla *</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Sigla *</Label>
               <Input
                 value={form.sigla}
                 onChange={(e) => setForm({ ...form, sigla: e.target.value.toUpperCase() })}
                 placeholder="Ex: UFABC"
                 maxLength={10}
-                className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Código INEP *</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Código INEP *</Label>
               <Input
                 value={form.codigoInep}
                 onChange={(e) => setForm({ ...form, codigoInep: e.target.value.replace(/\D/g, "") })}
                 placeholder="00000000"
-                className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
               />
             </div>
           </div>
@@ -455,17 +455,17 @@ export default function AdminInstituicoesPage() {
           <SectionTitle title="Localização" />
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">CEP</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">CEP</Label>
               <Input
                 value={form.cep}
                 onChange={(e) => setForm({ ...form, cep: e.target.value.replace(/\D/g, "").slice(0, 8) })}
                 onBlur={handleCepBlur}
                 placeholder="00000000"
-                className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">UF *</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">UF *</Label>
               <select
                 value={form.uf}
                 onChange={(e) => setForm({ ...form, uf: e.target.value })}
@@ -478,38 +478,38 @@ export default function AdminInstituicoesPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Município</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Município</Label>
               <Input
                 value={form.municipio}
                 onChange={(e) => setForm({ ...form, municipio: e.target.value })}
                 placeholder="Município"
-                className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Complemento</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Complemento</Label>
               <Input
                 value={form.complemento}
                 onChange={(e) => setForm({ ...form, complemento: e.target.value })}
                 placeholder="Complemento"
-                className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Ponto de Referência</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Ponto de Referência</Label>
               <Input
                 value={form.pontoReferencia}
                 onChange={(e) => setForm({ ...form, pontoReferencia: e.target.value })}
                 placeholder="Ponto de referência"
-                className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Localização</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Localização</Label>
               <select
                 value={form.localizacao}
                 onChange={(e) => setForm({ ...form, localizacao: e.target.value })}
@@ -521,7 +521,7 @@ export default function AdminInstituicoesPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Área de Assentamento</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Área de Assentamento</Label>
               <select
                 value={form.areaAssentamento}
                 onChange={(e) => setForm({ ...form, areaAssentamento: e.target.value })}
@@ -540,7 +540,7 @@ export default function AdminInstituicoesPage() {
           <SectionTitle title="Detalhes" />
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Esfera Administrativa</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Esfera Administrativa</Label>
               <select
                 value={form.esferaAdministrativa}
                 onChange={(e) => setForm({ ...form, esferaAdministrativa: e.target.value })}
@@ -555,30 +555,30 @@ export default function AdminInstituicoesPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Telefone</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Telefone</Label>
               <Input
                 value={form.telefone}
                 onChange={(e) => setForm({ ...form, telefone: e.target.value })}
                 placeholder="(00) 0000-0000"
-                className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+                className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label className="text-[#b0adc0] text-sm">Email</Label>
+            <Label className="text-[var(--text-secondary)] text-sm">Email</Label>
             <Input
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="email@instituicao.edu.br"
               type="email"
-              className="border-[#2a2a3a] bg-[#0a0a0f] text-[#f0ece4]"
+              className="border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]"
             />
           </div>
 
           <SectionTitle title="Status" />
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Status</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Status</Label>
               <select
                 value={form.status}
                 onChange={(e) => setForm({ ...form, status: e.target.value })}
@@ -589,7 +589,7 @@ export default function AdminInstituicoesPage() {
               </select>
             </div>
             <div className="space-y-2">
-              <Label className="text-[#b0adc0] text-sm">Tipo</Label>
+              <Label className="text-[var(--text-secondary)] text-sm">Tipo</Label>
               <select
                 value={form.tipo}
                 onChange={(e) => setForm({ ...form, tipo: e.target.value })}
@@ -602,17 +602,17 @@ export default function AdminInstituicoesPage() {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4 border-t border-[#2a2a3a]">
+          <div className="flex gap-3 pt-4 border-t border-[var(--border-color)]">
             <Button
               variant="outline"
               onClick={() => setModalAberto(false)}
-              className="flex-1 border-[#2a2a3a] text-[#9895a4]"
+              className="flex-1 border-[var(--border-color)] text-[var(--text-tertiary)]"
             >
               Cancelar
             </Button>
             <Button
               onClick={salvar}
-              className="flex-1 bg-[#E8B829] text-black hover:bg-[#d4a720]"
+              className="flex-1 bg-[var(--color-gold)] text-black hover:bg-[var(--color-gold-hover)]"
             >
               {editando ? "Salvar" : "Criar"}
             </Button>
@@ -634,8 +634,8 @@ export default function AdminInstituicoesPage() {
 function SectionTitle({ title }: { title: string }) {
   return (
     <div className="space-y-1">
-      <p className="text-sm text-[#E8B829] font-medium uppercase tracking-wider">{title}</p>
-      <div className="h-px bg-[#2a2a3a]" />
+      <p className="text-sm text-[var(--color-gold-ink)] font-medium uppercase tracking-wider">{title}</p>
+      <div className="h-px bg-[var(--border-color)]" />
     </div>
   );
 }

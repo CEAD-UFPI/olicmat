@@ -186,25 +186,25 @@ export default function PerfilPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (erro && !perfil) {
     return (
-      <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-        <p className="text-[#b0adc0]">{erro}</p>
+      <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+        <p className="text-[var(--text-secondary)]">{erro}</p>
       </div>
     );
   }
 
   const isAluno = perfil?.role === "ALUNO";
-  const sectionClass = "border border-[#2a2a3a] rounded-2xl bg-[#12121a] p-6 space-y-4";
-  const fieldClass = "mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50";
+  const sectionClass = "border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] p-6 space-y-4";
+  const fieldClass = "mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50";
   const selectClass =
-    "mt-1.5 w-full h-10 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] px-3 text-sm focus:outline-none focus:border-[#E8B829]";
-  const sectionTitle = "flex items-center gap-2 text-sm font-semibold text-[#E8B829] uppercase tracking-widest";
+    "mt-1.5 w-full h-10 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] px-3 text-sm focus:outline-none focus:border-[var(--color-gold)]";
+  const sectionTitle = "flex items-center gap-2 text-sm font-semibold text-[var(--color-gold-ink)] uppercase tracking-widest";
 
   return (
     <motion.div
@@ -214,10 +214,10 @@ export default function PerfilPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Meu Perfil
         </h1>
-        <p className="text-[#9895a4] mt-1">Atualize seus dados pessoais e de contato</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Atualize seus dados pessoais e de contato</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -227,33 +227,33 @@ export default function PerfilPage() {
             <UserRound size={16} /> Dados Pessoais
           </h2>
           <div>
-            <Label htmlFor="nome" className="text-[#f0ece4]">Nome completo</Label>
+            <Label htmlFor="nome" className="text-[var(--text-primary)]">Nome completo</Label>
             <Input id="nome" {...register("nome")} className={fieldClass} />
             {errors.nome && <p className="text-xs text-red-400 mt-1">{errors.nome.message}</p>}
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="nomeMae" className="text-[#f0ece4]">Nome da mãe</Label>
+              <Label htmlFor="nomeMae" className="text-[var(--text-primary)]">Nome da mãe</Label>
               <Input id="nomeMae" {...register("nomeMae")} className={fieldClass} />
             </div>
             <div>
-              <Label htmlFor="nacionalidade" className="text-[#f0ece4]">Nacionalidade</Label>
+              <Label htmlFor="nacionalidade" className="text-[var(--text-primary)]">Nacionalidade</Label>
               <Input id="nacionalidade" {...register("nacionalidade")} className={fieldClass} />
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="telefone" className="text-[#f0ece4]">Telefone</Label>
+              <Label htmlFor="telefone" className="text-[var(--text-primary)]">Telefone</Label>
               <Input id="telefone" {...register("telefone")} className={fieldClass} placeholder="(00) 0000-0000" />
             </div>
             <div>
-              <Label htmlFor="celular" className="text-[#f0ece4]">Celular</Label>
+              <Label htmlFor="celular" className="text-[var(--text-primary)]">Celular</Label>
               <Input id="celular" {...register("celular")} className={fieldClass} placeholder="(00) 00000-0000" />
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="genero" className="text-[#f0ece4]">Gênero</Label>
+              <Label htmlFor="genero" className="text-[var(--text-primary)]">Gênero</Label>
               <select id="genero" {...register("genero")} className={selectClass}>
                 <option value="">Selecione...</option>
                 {GENEROS.map((g) => (
@@ -262,7 +262,7 @@ export default function PerfilPage() {
               </select>
             </div>
             <div>
-              <Label htmlFor="racaCor" className="text-[#f0ece4]">Raça/Cor</Label>
+              <Label htmlFor="racaCor" className="text-[var(--text-primary)]">Raça/Cor</Label>
               <select id="racaCor" {...register("racaCor")} className={selectClass}>
                 <option value="">Selecione...</option>
                 {RACAS.map((r) => (
@@ -277,7 +277,7 @@ export default function PerfilPage() {
         <section className={sectionClass}>
           <h2 className={sectionTitle}>Nome Social</h2>
           <div>
-            <Label htmlFor="nomeSocial" className="text-[#f0ece4]">Nome social (opcional)</Label>
+            <Label htmlFor="nomeSocial" className="text-[var(--text-primary)]">Nome social (opcional)</Label>
             <Input id="nomeSocial" {...register("nomeSocial")} className={fieldClass} />
           </div>
         </section>
@@ -287,13 +287,13 @@ export default function PerfilPage() {
           <h2 className={sectionTitle}>Documentos</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="documentoIdentificacao" className="text-[#f0ece4]">Documento de identificação (RG)</Label>
+              <Label htmlFor="documentoIdentificacao" className="text-[var(--text-primary)]">Documento de identificação (RG)</Label>
               <Input id="documentoIdentificacao" {...register("documentoIdentificacao")} className={fieldClass} />
             </div>
             <div>
-              <Label htmlFor="cpf" className="text-[#f0ece4]">CPF</Label>
+              <Label htmlFor="cpf" className="text-[var(--text-primary)]">CPF</Label>
               <Input id="cpf" value={perfil?.cpf ?? ""} disabled className={fieldClass} />
-              <p className="text-xs text-[#9895a4] mt-1">CPF não pode ser alterado</p>
+              <p className="text-xs text-[var(--text-tertiary)] mt-1">CPF não pode ser alterado</p>
             </div>
           </div>
         </section>
@@ -303,35 +303,35 @@ export default function PerfilPage() {
           <h2 className={sectionTitle}>Dados de Endereço</h2>
           <div className="grid sm:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="cep" className="text-[#f0ece4]">CEP</Label>
+              <Label htmlFor="cep" className="text-[var(--text-primary)]">CEP</Label>
               <Input id="cep" {...register("cep")} className={fieldClass} />
             </div>
             <div className="sm:col-span-2">
-              <Label htmlFor="enderecoCompleto" className="text-[#f0ece4]">Endereço</Label>
+              <Label htmlFor="enderecoCompleto" className="text-[var(--text-primary)]">Endereço</Label>
               <Input id="enderecoCompleto" {...register("enderecoCompleto")} className={fieldClass} placeholder="Rua, avenida, etc." />
             </div>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="numero" className="text-[#f0ece4]">Número</Label>
+              <Label htmlFor="numero" className="text-[var(--text-primary)]">Número</Label>
               <Input id="numero" {...register("numero")} className={fieldClass} />
             </div>
             <div>
-              <Label htmlFor="complemento" className="text-[#f0ece4]">Complemento</Label>
+              <Label htmlFor="complemento" className="text-[var(--text-primary)]">Complemento</Label>
               <Input id="complemento" {...register("complemento")} className={fieldClass} />
             </div>
             <div>
-              <Label htmlFor="bairro" className="text-[#f0ece4]">Bairro</Label>
+              <Label htmlFor="bairro" className="text-[var(--text-primary)]">Bairro</Label>
               <Input id="bairro" {...register("bairro")} className={fieldClass} />
             </div>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2">
-              <Label htmlFor="municipio" className="text-[#f0ece4]">Município</Label>
+              <Label htmlFor="municipio" className="text-[var(--text-primary)]">Município</Label>
               <Input id="municipio" {...register("municipio")} className={fieldClass} />
             </div>
             <div>
-              <Label htmlFor="uf" className="text-[#f0ece4]">UF</Label>
+              <Label htmlFor="uf" className="text-[var(--text-primary)]">UF</Label>
               <select id="uf" {...register("uf")} className={selectClass}>
                 <option value="">Selecione...</option>
                 {ESTADOS.map((uf) => (
@@ -341,7 +341,7 @@ export default function PerfilPage() {
             </div>
           </div>
           <div>
-            <Label htmlFor="pontoReferencia" className="text-[#f0ece4]">Ponto de referência</Label>
+            <Label htmlFor="pontoReferencia" className="text-[var(--text-primary)]">Ponto de referência</Label>
             <Input id="pontoReferencia" {...register("pontoReferencia")} className={fieldClass} />
           </div>
         </section>
@@ -351,20 +351,20 @@ export default function PerfilPage() {
           <h2 className={sectionTitle}>Vínculo</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-[#9895a4] uppercase tracking-widest">Instituição</p>
-              <p className="text-[#f0ece4] mt-1">
+              <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-widest">Instituição</p>
+              <p className="text-[var(--text-primary)] mt-1">
                 {perfil?.instituicao ? `${perfil.instituicao.nome} (${perfil.instituicao.sigla})` : "-"}
               </p>
             </div>
             <div>
-              <p className="text-xs text-[#9895a4] uppercase tracking-widest">Curso</p>
-              <p className="text-[#f0ece4] mt-1">{perfil?.curso?.nome ?? "-"}</p>
+              <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-widest">Curso</p>
+              <p className="text-[var(--text-primary)] mt-1">{perfil?.curso?.nome ?? "-"}</p>
             </div>
           </div>
           {/* Sem esta explicação, quem não é aluno via os dois campos travados
               e nenhum motivo — a dúvida chegava ao suporte como "não consigo
               editar meu curso". */}
-          <p className="text-xs text-[#9895a4]">
+          <p className="text-xs text-[var(--text-tertiary)]">
             {isAluno
               ? "Instituição e Curso foram herdados do seu Coordenador e não podem ser alterados."
               : "Instituição e Curso são definidos pela organização da OLICMAT. Para alterá-los, entre em contato com ela."}
@@ -372,7 +372,7 @@ export default function PerfilPage() {
         </section>
 
         {sucesso && (
-          <p className="text-sm text-[#4CAF50] bg-[#4CAF50]/10 rounded-lg p-3">{sucesso}</p>
+          <p className="text-sm text-[var(--color-green-ink)] bg-[var(--color-green)]/10 rounded-lg p-3">{sucesso}</p>
         )}
         {erro && <p className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3">{erro}</p>}
 
@@ -380,7 +380,7 @@ export default function PerfilPage() {
           <Button
             type="button"
             variant="outline"
-            className="flex-1 border-[#2a2a3a] text-[#f0ece4]"
+            className="flex-1 border-[var(--border-color)] text-[var(--text-primary)]"
             onClick={() => router.push(roleHome[perfil?.role ?? ""] ?? "/competidor")}
           >
             Cancelar
@@ -389,7 +389,7 @@ export default function PerfilPage() {
             type="submit"
             disabled={salvando}
             className="flex-1"
-            style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+            style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
           >
             {salvando ? "Salvando..." : "Salvar alterações"}
           </Button>

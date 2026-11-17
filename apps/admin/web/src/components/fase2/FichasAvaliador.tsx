@@ -36,7 +36,7 @@ function mensagemErro(err: unknown, padrao: string) {
   return padrao;
 }
 
-const cartao = "border border-[#2a2a3a] rounded-2xl p-5 bg-[#12121a]";
+const cartao = "border border-[var(--border-color)] rounded-2xl p-5 bg-[var(--bg-secondary)]";
 
 export default function FichasAvaliador() {
   const [criterios, setCriterios] = useState<Criterio[]>([]);
@@ -98,21 +98,21 @@ export default function FichasAvaliador() {
   };
 
   if (carregando) {
-    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" /></div>;
+    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" /></div>;
   }
 
   if (aberta) {
     const travada = aberta.status === "CONCLUIDA";
     return (
       <div className="max-w-3xl mx-auto space-y-5">
-        <button className="text-sm text-[#E8B829] hover:underline flex items-center gap-1" onClick={() => { setAberta(null); setAviso(""); setErro(""); }}>
+        <button className="text-sm text-[var(--color-gold-ink)] hover:underline flex items-center gap-1" onClick={() => { setAberta(null); setAviso(""); setErro(""); }}>
           <ArrowLeft size={14} /> Voltar à lista
         </button>
         <div className={cartao}>
-          <p className="text-xs uppercase tracking-widest text-[#9895a4]">Participante nº {aberta.participante.numero}</p>
-          <h1 className="text-xl font-bold text-[#f0ece4] mt-1">{aberta.participante.nome}</h1>
-          <p className="text-sm text-[#9895a4]">{aberta.participante.instituicao} · {aberta.participante.curso}</p>
-          <p className="text-sm text-[#f0ece4] mt-3"><span className="text-[#E8B829]">Competência sorteada:</span> {aberta.tema}</p>
+          <p className="text-xs uppercase tracking-widest text-[var(--text-tertiary)]">Participante nº {aberta.participante.numero}</p>
+          <h1 className="text-xl font-bold text-[var(--text-primary)] mt-1">{aberta.participante.nome}</h1>
+          <p className="text-sm text-[var(--text-tertiary)]">{aberta.participante.instituicao} · {aberta.participante.curso}</p>
+          <p className="text-sm text-[var(--text-primary)] mt-3"><span className="text-[var(--color-gold-ink)]">Competência sorteada:</span> {aberta.tema}</p>
           {aberta.video?.url && (
             <div className="mt-4">
               <video controls preload="metadata" src={aberta.video.url} className="w-full rounded-xl bg-black max-h-[480px]">
@@ -122,45 +122,45 @@ export default function FichasAvaliador() {
           )}
           <div className="flex flex-wrap gap-3 mt-4">
             {aberta.video?.url && (
-              <a href={aberta.video.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[#3AAFE0]/50 px-3 py-1.5 text-sm text-[#3AAFE0] hover:bg-[#3AAFE0]/10">
-                <Download size={14} /> Baixar vídeo <span className="text-xs text-[#9895a4]">({formatarBytes(aberta.video.bytes)})</span>
+              <a href={aberta.video.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[var(--color-blue)]/50 px-3 py-1.5 text-sm text-[var(--color-blue-ink)] hover:bg-[var(--color-blue)]/10">
+                <Download size={14} /> Baixar vídeo <span className="text-xs text-[var(--text-tertiary)]">({formatarBytes(aberta.video.bytes)})</span>
               </a>
             )}
             {aberta.portfolio?.url && (
-              <a href={aberta.portfolio.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[#3AAFE0]/50 px-3 py-1.5 text-sm text-[#3AAFE0] hover:bg-[#3AAFE0]/10">
+              <a href={aberta.portfolio.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[var(--color-blue)]/50 px-3 py-1.5 text-sm text-[var(--color-blue-ink)] hover:bg-[var(--color-blue)]/10">
                 <FileText size={14} /> Abrir portfólio (PDF)
               </a>
             )}
             {aberta.videoLink && (
-              <a href={aberta.videoLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[#3AAFE0]/50 px-3 py-1.5 text-sm text-[#3AAFE0] hover:bg-[#3AAFE0]/10">
+              <a href={aberta.videoLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[var(--color-blue)]/50 px-3 py-1.5 text-sm text-[var(--color-blue-ink)] hover:bg-[var(--color-blue)]/10">
                 <ExternalLink size={14} /> Abrir videoaula (link)
               </a>
             )}
             {aberta.portfolioLink && (
-              <a href={aberta.portfolioLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[#3AAFE0]/50 px-3 py-1.5 text-sm text-[#3AAFE0] hover:bg-[#3AAFE0]/10">
+              <a href={aberta.portfolioLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-[var(--color-blue)]/50 px-3 py-1.5 text-sm text-[var(--color-blue-ink)] hover:bg-[var(--color-blue)]/10">
                 <ExternalLink size={14} /> Abrir portfólio (link)
               </a>
             )}
             {!aberta.video && !aberta.videoLink && <span className="text-sm text-amber-300">Videoaula não enviada.</span>}
             {!aberta.portfolio && !aberta.portfolioLink && <span className="text-sm text-amber-300">Portfólio não enviado.</span>}
           </div>
-          <p className="text-xs text-[#9895a4] mt-2">Os links dos arquivos valem por algumas horas; se expirarem, recarregue a página.</p>
-          <p className="text-xs text-[#9895a4] mt-3">Envio: {dataHora(aberta.enviadoEm)} · Recebido para avaliação: {dataHora(aberta.atribuidoEm)}</p>
+          <p className="text-xs text-[var(--text-tertiary)] mt-2">Os links dos arquivos valem por algumas horas; se expirarem, recarregue a página.</p>
+          <p className="text-xs text-[var(--text-tertiary)] mt-3">Envio: {dataHora(aberta.enviadoEm)} · Recebido para avaliação: {dataHora(aberta.atribuidoEm)}</p>
         </div>
 
         <div className={`${cartao} space-y-4`}>
           <div>
-            <h2 className="text-base font-bold text-[#f0ece4]">Critérios de avaliação</h2>
-            <p className="text-sm text-[#9895a4] mt-1">
+            <h2 className="text-base font-bold text-[var(--text-primary)]">Critérios de avaliação</h2>
+            <p className="text-sm text-[var(--text-tertiary)] mt-1">
               Avalie a videoaula e o portfólio em conjunto. Para cada critério, atribua um conceito de 0 a 5;
               o sistema converte proporcionalmente para até 20 pontos (conceito × 4).
             </p>
           </div>
-          <details className="rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] p-3 text-sm">
-            <summary className="cursor-pointer text-[#E8B829] font-semibold">Escala orientadora</summary>
-            <ul className="mt-2 space-y-1 text-[#b0adc0]">
+          <details className="rounded-lg border border-[var(--border-color)] bg-[var(--bg-primary)] p-3 text-sm">
+            <summary className="cursor-pointer text-[var(--color-gold-ink)] font-semibold">Escala orientadora</summary>
+            <ul className="mt-2 space-y-1 text-[var(--text-secondary)]">
               {escala.map((e) => (
-                <li key={e.conceito}><strong className="text-[#f0ece4]">{e.conceito}</strong> ({e.pontos} pts) — {e.rotulo}</li>
+                <li key={e.conceito}><strong className="text-[var(--text-primary)]">{e.conceito}</strong> ({e.pontos} pts) — {e.rotulo}</li>
               ))}
             </ul>
           </details>
@@ -168,9 +168,9 @@ export default function FichasAvaliador() {
             const valor = notas[c.chave];
             const nivel = escala.find((e) => String(e.conceito) === valor);
             return (
-              <div key={c.chave} className="border-t border-[#2a2a3a] pt-4 first:border-0">
-                <p className="font-semibold text-[#f0ece4]">Critério {i + 1} — {c.nome}</p>
-                <p className="text-sm text-[#9895a4]">{c.descricao}</p>
+              <div key={c.chave} className="border-t border-[var(--border-color)] pt-4 first:border-0">
+                <p className="font-semibold text-[var(--text-primary)]">Critério {i + 1} — {c.nome}</p>
+                <p className="text-sm text-[var(--text-tertiary)]">{c.descricao}</p>
                 <div className="mt-3 flex flex-wrap items-center gap-2" role="radiogroup" aria-label={`Conceito do critério ${i + 1}`}>
                   {escala.map((e) => {
                     const ativo = valor === String(e.conceito);
@@ -181,30 +181,30 @@ export default function FichasAvaliador() {
                         onClick={() => setNotas((n) => ({ ...n, [c.chave]: String(e.conceito) }))}
                         className={`w-11 h-11 rounded-lg border text-base font-bold tabular-nums transition-colors disabled:cursor-not-allowed ${
                           ativo
-                            ? "bg-[#E8B829] border-[#E8B829] text-[#0a0a0f]"
-                            : "bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] hover:border-[#E8B829]/60"
+                            ? "bg-[var(--color-gold)] border-[var(--color-gold)] text-[var(--on-accent)]"
+                            : "bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--color-gold)]/60"
                         }`}
                       >
                         {e.conceito}
                       </button>
                     );
                   })}
-                  <span className="ml-2 text-sm tabular-nums text-[#f0ece4]">
-                    {valor ? <><strong>{Number(valor) * pesoDe(c)}</strong> / {c.max} pts</> : <span className="text-[#9895a4]">sem conceito</span>}
+                  <span className="ml-2 text-sm tabular-nums text-[var(--text-primary)]">
+                    {valor ? <><strong>{Number(valor) * pesoDe(c)}</strong> / {c.max} pts</> : <span className="text-[var(--text-tertiary)]">sem conceito</span>}
                   </span>
                 </div>
-                {nivel && <p className="text-xs text-[#9895a4] mt-1.5">{nivel.rotulo}</p>}
+                {nivel && <p className="text-xs text-[var(--text-tertiary)] mt-1.5">{nivel.rotulo}</p>}
               </div>
             );
           })}
-          <div className="flex items-center justify-between border-t border-[#E8B829]/40 pt-3">
-            <p className="font-bold text-[#f0ece4]">Total</p>
-            <p className="text-2xl font-bold text-[#E8B829] tabular-nums">{total} <span className="text-sm text-[#9895a4]">/ 100</span></p>
+          <div className="flex items-center justify-between border-t border-[var(--color-gold)]/40 pt-3">
+            <p className="font-bold text-[var(--text-primary)]">Total</p>
+            <p className="text-2xl font-bold text-[var(--color-gold-ink)] tabular-nums">{total} <span className="text-sm text-[var(--text-tertiary)]">/ 100</span></p>
           </div>
           <div>
-            <p className="font-semibold text-[#f0ece4] mb-1">Parecer</p>
+            <p className="font-semibold text-[var(--text-primary)] mb-1">Parecer</p>
             <textarea value={parecer} onChange={(e) => setParecer(e.target.value)} disabled={travada} rows={5} maxLength={5000}
-              className="w-full rounded-md bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] p-3 text-sm" placeholder="Comentários sobre a videoaula e o portfólio" />
+              className="w-full rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] p-3 text-sm" placeholder="Comentários sobre a videoaula e o portfólio" />
           </div>
           {aviso && <p className="text-sm p-2 rounded bg-emerald-500/10 text-emerald-300">{aviso}</p>}
           {erro && <p className="text-sm p-2 rounded bg-red-500/10 text-red-300">{erro}</p>}
@@ -213,7 +213,7 @@ export default function FichasAvaliador() {
           ) : (
             <div className="flex flex-wrap gap-2 justify-end">
               <Button variant="outline" disabled={salvando} onClick={() => salvar(false)}>Salvar rascunho</Button>
-              <Button disabled={salvando || !completo} onClick={() => setConfirmar(true)} style={{ backgroundColor: "#4CAF50", color: "#fff" }}>Concluir avaliação</Button>
+              <Button disabled={salvando || !completo} onClick={() => setConfirmar(true)} style={{ backgroundColor: "var(--color-green)", color: "#fff" }}>Concluir avaliação</Button>
             </div>
           )}
         </div>
@@ -231,21 +231,21 @@ export default function FichasAvaliador() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">Avaliação — Fase 2</h1>
-        <p className="text-[#9895a4] text-sm mt-1">{pendentes.length} pendentes · {concluidas.length} concluídas</p>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">Avaliação — Fase 2</h1>
+        <p className="text-[var(--text-tertiary)] text-sm mt-1">{pendentes.length} pendentes · {concluidas.length} concluídas</p>
       </div>
       {erro && <p className="text-sm p-3 rounded-lg bg-red-500/10 text-red-300">{erro}</p>}
-      {!fichas.length && <div className={cartao}><p className="text-[#9895a4]">Nenhum participante foi atribuído a você ainda.</p></div>}
+      {!fichas.length && <div className={cartao}><p className="text-[var(--text-tertiary)]">Nenhum participante foi atribuído a você ainda.</p></div>}
       {[{ t: "Pendentes", l: pendentes }, { t: "Concluídas", l: concluidas }].map(({ t, l }) =>
         l.length ? (
           <div key={t} className={cartao}>
-            <h2 className="text-base font-bold text-[#f0ece4] mb-3">{t}</h2>
-            <ul className="divide-y divide-[#2a2a3a]">
+            <h2 className="text-base font-bold text-[var(--text-primary)] mb-3">{t}</h2>
+            <ul className="divide-y divide-[var(--border-color)]">
               {l.map((f) => (
                 <li key={f.id} className="py-3 flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-[#f0ece4]">{f.participante.nome} <span className="text-xs text-[#9895a4]">nº {f.participante.numero} · {f.participante.instituicao}</span></p>
-                    <p className="text-xs text-[#9895a4]">
+                    <p className="text-[var(--text-primary)]">{f.participante.nome} <span className="text-xs text-[var(--text-tertiary)]">nº {f.participante.numero} · {f.participante.instituicao}</span></p>
+                    <p className="text-xs text-[var(--text-tertiary)]">
                       Recebido em {dataHora(f.atribuidoEm)}
                       {f.status === "CONCLUIDA" ? ` · concluído em ${dataHora(f.concluidoEm)} · ${f.avaliacao?.nota} pts` : f.avaliacao ? " · rascunho salvo" : ""}
                     </p>

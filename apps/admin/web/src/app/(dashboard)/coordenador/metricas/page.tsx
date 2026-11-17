@@ -38,15 +38,15 @@ export default function CoordenadorMetricasPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (erro || !metricas) {
     return (
-      <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-        <p className="text-[#b0adc0]">{erro || "Nenhuma metrica disponivel."}</p>
+      <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+        <p className="text-[var(--text-secondary)]">{erro || "Nenhuma metrica disponivel."}</p>
       </div>
     );
   }
@@ -62,73 +62,73 @@ export default function CoordenadorMetricasPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Metricas
         </h1>
-        <p className="text-[#9895a4] mt-1">Estatisticas de inscricao por curso</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Estatisticas de inscricao por curso</p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest">Total</CardTitle>
+            <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest">Total</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{metricas.totalAlunos}</p>
+            <p className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">{metricas.totalAlunos}</p>
           </CardContent>
         </Card>
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest">Inscritos</CardTitle>
+            <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest">Inscritos</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{metricas.totalInscricoes}</p>
+            <p className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">{metricas.totalInscricoes}</p>
           </CardContent>
         </Card>
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest">Confirmadas</CardTitle>
+            <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest">Confirmadas</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-[#4CAF50] font-[family-name:var(--font-fraunces)]">{metricas.confirmadas}</p>
+            <p className="text-3xl font-bold text-[var(--color-green-ink)] font-[family-name:var(--font-fraunces)]">{metricas.confirmadas}</p>
           </CardContent>
         </Card>
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest">Taxa</CardTitle>
+            <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest">Taxa</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">{taxaConfirmacao}%</p>
+            <p className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">{taxaConfirmacao}%</p>
           </CardContent>
         </Card>
       </div>
 
       {metricas.porCurso && metricas.porCurso.length > 0 && (
-        <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
-          <div className="p-6 border-b border-[#2a2a3a]">
-            <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
+          <div className="p-6 border-b border-[var(--border-color)]">
+            <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
               Por Curso
             </h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-base">
               <thead>
-                <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                  <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
-                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Total</th>
-                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Confirmadas</th>
-                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Pendentes</th>
-                  <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Rejeitadas</th>
+                <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                  <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                  <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Total</th>
+                  <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Confirmadas</th>
+                  <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Pendentes</th>
+                  <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Rejeitadas</th>
                 </tr>
               </thead>
               <tbody>
                 {metricas.porCurso.map((c, i) => (
-                  <tr key={i} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                    <td className="py-4 px-5 text-[#f0ece4] font-medium">{c.curso}</td>
-                    <td className="py-4 px-5 text-center text-[#f0ece4]">{c.total}</td>
-                    <td className="py-4 px-5 text-center text-[#4CAF50]">{c.confirmadas}</td>
-                    <td className="py-4 px-5 text-center text-[#f59e0b]">{c.pendentes}</td>
-                    <td className="py-4 px-5 text-center text-[#e53e3e]">{c.rejeitadas}</td>
+                  <tr key={i} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-primary)]/50 transition-colors">
+                    <td className="py-4 px-5 text-[var(--text-primary)] font-medium">{c.curso}</td>
+                    <td className="py-4 px-5 text-center text-[var(--text-primary)]">{c.total}</td>
+                    <td className="py-4 px-5 text-center text-[var(--color-green-ink)]">{c.confirmadas}</td>
+                    <td className="py-4 px-5 text-center text-[var(--color-amber-ink)]">{c.pendentes}</td>
+                    <td className="py-4 px-5 text-center text-[var(--color-red-ink)]">{c.rejeitadas}</td>
                   </tr>
                 ))}
               </tbody>
@@ -137,46 +137,46 @@ export default function CoordenadorMetricasPage() {
         </div>
       )}
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a]">
-        <h3 className="text-base font-semibold text-[#f0ece4] mb-3">Resumo</h3>
-        <div className="h-4 bg-[#0a0a0f] rounded-full overflow-hidden flex">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)]">
+        <h3 className="text-base font-semibold text-[var(--text-primary)] mb-3">Resumo</h3>
+        <div className="h-4 bg-[var(--bg-primary)] rounded-full overflow-hidden flex">
           {total > 0 && (
             <>
               <div
                 className="h-full"
                 style={{
                   width: `${total > 0 ? (metricas.confirmadas / total) * 100 : 0}%`,
-                  backgroundColor: "#4CAF50",
+                  backgroundColor: "var(--color-green)",
                 }}
               />
               <div
                 className="h-full"
                 style={{
                   width: `${total > 0 ? (metricas.pendentes / total) * 100 : 0}%`,
-                  backgroundColor: "#f59e0b",
+                  backgroundColor: "var(--color-amber)",
                 }}
               />
               <div
                 className="h-full"
                 style={{
                   width: `${total > 0 ? (metricas.rejeitadas / total) * 100 : 0}%`,
-                  backgroundColor: "#e53e3e",
+                  backgroundColor: "var(--color-red)",
                 }}
               />
             </>
           )}
         </div>
-        <div className="flex gap-6 mt-3 text-sm text-[#b0adc0]">
+        <div className="flex gap-6 mt-3 text-sm text-[var(--text-secondary)]">
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#4CAF50" }} />
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "var(--color-green)" }} />
             Confirmadas
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#f59e0b" }} />
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "var(--color-amber)" }} />
             Pendentes
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "#e53e3e" }} />
+            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: "var(--color-red)" }} />
             Rejeitadas
           </span>
         </div>

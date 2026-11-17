@@ -36,7 +36,7 @@ export default function AvaliadorPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -49,80 +49,80 @@ export default function AvaliadorPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Ola, {user?.nome?.split(" ")[0]}
         </h1>
-        <p className="text-[#9895a4] mt-1">Painel do avaliador</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Painel do avaliador</p>
       </div>
 
       <div className="grid sm:grid-cols-3 gap-4">
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
-              <BookOpen size={18} className="text-[#3AAFE0]" />
+            <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest flex items-center gap-2">
+              <BookOpen size={18} className="text-[var(--color-blue-ink)]" />
               Provas
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            <p className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
               {resumo.totalProvas ?? "-"}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
-              <Clock size={18} className="text-[#f59e0b]" />
+            <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest flex items-center gap-2">
+              <Clock size={18} className="text-[var(--color-amber-ink)]" />
               Pendentes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#f59e0b" }}>
+            <p className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]" style={{ color: "var(--color-amber-ink)" }}>
               {resumo.totalPendentes ?? "-"}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#b0adc0] text-sm uppercase tracking-widest flex items-center gap-2">
-              <CheckSquare size={18} className="text-[#4CAF50]" />
+            <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest flex items-center gap-2">
+              <CheckSquare size={18} className="text-[var(--color-green-ink)]" />
               Avaliadas
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#4CAF50" }}>
+            <p className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]" style={{ color: "var(--color-green-ink)" }}>
               {resumo.totalAvaliadas ?? "-"}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a]">
-        <h2 className="text-lg font-bold text-[#f0ece4] mb-1 font-[family-name:var(--font-fraunces)]">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)]">
+        <h2 className="text-lg font-bold text-[var(--text-primary)] mb-1 font-[family-name:var(--font-fraunces)]">
           Acoes Rapidas
         </h2>
-        <p className="text-sm text-[#9895a4] mb-4">Acesse as ferramentas de avaliacao</p>
+        <p className="text-sm text-[var(--text-tertiary)] mb-4">Acesse as ferramentas de avaliacao</p>
         <div className="grid sm:grid-cols-2 gap-3">
           <a
             href="/avaliador/provas"
-            className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
+            className="flex items-center gap-3 p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] hover:border-[var(--border-strong)] transition-colors"
           >
-            <BookOpen size={20} className="text-[#3AAFE0]" />
+            <BookOpen size={20} className="text-[var(--color-blue-ink)]" />
             <div>
-              <p className="text-base font-medium text-[#f0ece4]">Gerenciar Provas</p>
-              <p className="text-sm text-[#b0adc0]">Criar e editar provas da Fase 1</p>
+              <p className="text-base font-medium text-[var(--text-primary)]">Gerenciar Provas</p>
+              <p className="text-sm text-[var(--text-secondary)]">Criar e editar provas da Fase 1</p>
             </div>
           </a>
           <a
             href="/avaliador/fase2"
-            className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
+            className="flex items-center gap-3 p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] hover:border-[var(--border-strong)] transition-colors"
           >
-            <CheckSquare size={20} className="text-[#4CAF50]" />
+            <CheckSquare size={20} className="text-[var(--color-green-ink)]" />
             <div>
-              <p className="text-base font-medium text-[#f0ece4]">Avaliar Fase 2</p>
-              <p className="text-sm text-[#b0adc0]">Avaliar videoaulas e portfolios</p>
+              <p className="text-base font-medium text-[var(--text-primary)]">Avaliar Fase 2</p>
+              <p className="text-sm text-[var(--text-secondary)]">Avaliar videoaulas e portfolios</p>
             </div>
           </a>
         </div>

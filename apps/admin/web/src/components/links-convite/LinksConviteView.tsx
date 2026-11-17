@@ -118,17 +118,17 @@ export function LinksConviteView({
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Links de Convite
         </h1>
-        <p className="text-[#9895a4] mt-1">
+        <p className="text-[var(--text-tertiary)] mt-1">
           Links reutilizáveis para cadastro sem depender de e-mail —
           compartilhe por WhatsApp, Discord etc.
         </p>
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a] space-y-4">
-        <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)] space-y-4">
+        <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Novo link
         </h2>
         <div className="grid sm:grid-cols-3 gap-3">
@@ -139,7 +139,7 @@ export function LinksConviteView({
               setInstituicaoId("");
               setCursoId("");
             }}
-            className="h-11 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-sm text-[#f0ece4]"
+            className="h-11 px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-sm text-[var(--text-primary)]"
           >
             <option value="COORDENADOR_CURSO">Coordenador de Curso</option>
             <option value="AVALIADOR">Avaliador</option>
@@ -153,7 +153,7 @@ export function LinksConviteView({
                   setInstituicaoId(e.target.value);
                   setCursoId("");
                 }}
-                className="h-11 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-sm text-[#f0ece4]"
+                className="h-11 px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-sm text-[var(--text-primary)]"
               >
                 <option value="">Selecione a instituição</option>
                 {instituicoes.map((i) => (
@@ -166,7 +166,7 @@ export function LinksConviteView({
                 value={cursoId}
                 onChange={(e) => setCursoId(e.target.value)}
                 disabled={!instituicaoId}
-                className="h-11 px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-sm text-[#f0ece4] disabled:opacity-50"
+                className="h-11 px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-sm text-[var(--text-primary)] disabled:opacity-50"
               >
                 <option value="">
                   {instituicaoId
@@ -191,24 +191,24 @@ export function LinksConviteView({
           onClick={criar}
           disabled={criando}
           className="h-11 px-6 text-sm font-semibold"
-          style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+          style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
         >
           {criando ? "Criando..." : "Criar link"}
         </Button>
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
+      <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
         {carregando ? (
           <div className="flex items-center justify-center h-32">
-            <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : !links.length ? (
-          <p className="text-sm text-[#9895a4] p-6">Nenhum link criado ainda.</p>
+          <p className="text-sm text-[var(--text-tertiary)] p-6">Nenhum link criado ainda.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-xs uppercase tracking-[0.08em] text-[#6f6c7a] border-b border-[#2a2a3a]">
+                <tr className="text-left text-xs uppercase tracking-[0.08em] text-[var(--text-muted)] border-b border-[var(--border-color)]">
                   <th className="py-3 px-5">Papel</th>
                   <th className="py-3 px-5">Curso/Instituição</th>
                   <th className="py-3 px-5">Criado por</th>
@@ -218,27 +218,27 @@ export function LinksConviteView({
               </thead>
               <tbody>
                 {links.map((l) => (
-                  <tr key={l.id} className="border-t border-[#2a2a3a]">
-                    <td className="py-3 px-5 text-[#f0ece4]">
+                  <tr key={l.id} className="border-t border-[var(--border-color)]">
+                    <td className="py-3 px-5 text-[var(--text-primary)]">
                       {ROTULO_PAPEL[l.role] ?? l.role}
                     </td>
-                    <td className="py-3 px-5 text-[#9895a4]">
+                    <td className="py-3 px-5 text-[var(--text-tertiary)]">
                       {l.curso ? l.curso.nome : l.instituicao ? l.instituicao.sigla : "—"}
                     </td>
-                    <td className="py-3 px-5 text-[#9895a4]">{l.criadoPor.nome}</td>
-                    <td className="py-3 px-5 text-[#9895a4]">{l.totalCadastros}</td>
+                    <td className="py-3 px-5 text-[var(--text-tertiary)]">{l.criadoPor.nome}</td>
+                    <td className="py-3 px-5 text-[var(--text-tertiary)]">{l.totalCadastros}</td>
                     <td className="py-3 px-5">
                       <div className="flex items-center justify-center gap-3">
                         <button
                           onClick={() => copiar(l)}
-                          className="text-xs font-medium text-[#3AAFE0] hover:underline cursor-pointer"
+                          className="text-xs font-medium text-[var(--color-blue-ink)] hover:underline cursor-pointer"
                         >
                           {copiadoId === l.id ? "Copiado!" : "Copiar link"}
                         </button>
                         <button
                           onClick={() => regenerar(l.id)}
                           disabled={regenerandoId === l.id}
-                          className="text-[#9895a4] hover:text-red-400 transition-colors p-1 cursor-pointer disabled:opacity-50"
+                          className="text-[var(--text-tertiary)] hover:text-red-400 transition-colors p-1 cursor-pointer disabled:opacity-50"
                           title="Gerar novo link (invalida o atual)"
                         >
                           <RefreshCw size={16} />

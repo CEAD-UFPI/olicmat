@@ -5,6 +5,7 @@ import { Button } from "./button";
 import { Modal } from "./modal";
 import { Pencil } from "lucide-react";
 import type { ReactNode } from "react";
+import { tinta } from "@/lib/tema";
 
 /* ──────────────────────────────────────────────────────────────────────────
  * Unified DetailPanel — reusable entity viewer
@@ -84,7 +85,7 @@ function Field({ field }: { field: DetailFieldT }) {
     <div className={field.full ? "sm:col-span-2" : ""}>
       <p className="detail-label">{field.label}</p>
       <p
-        className={`mt-0.5 text-[#f0ece4] ${empty ? "text-[#9895a4]" : ""}`}
+        className={`mt-0.5 text-[var(--text-primary)] ${empty ? "text-[var(--text-tertiary)]" : ""}`}
         style={{ wordBreak: "break-word" }}
       >
         {display}
@@ -100,23 +101,23 @@ function HeroMetric({ hero }: { hero: HeroMetricT }) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="rounded-xl border border-[#2a2a3a] p-4 mb-4"
+      className="rounded-xl border border-[var(--border-color)] p-4 mb-4"
       style={{
         backgroundColor: `${hex}10`,
         borderColor: `${hex}40`,
       }}
     >
-      <p className="text-xs font-medium uppercase tracking-widest text-[#9895a4]">
+      <p className="text-xs font-medium uppercase tracking-widest text-[var(--text-tertiary)]">
         {hero.label}
       </p>
       <p
         className="mt-1 metric-value"
-        style={{ color: hex }}
+        style={{ color: tinta(hex) }}
       >
         {hero.value}
       </p>
       {hero.hint && (
-        <p className="mt-1 text-sm text-[#b0adc0]">{hero.hint}</p>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">{hero.hint}</p>
       )}
     </motion.div>
   );
@@ -135,7 +136,7 @@ function Section({ section, index }: { section: DetailSectionT; index: number })
     >
       <div className="space-y-1">
         <p className="section-title">{section.title}</p>
-        <div className="h-px bg-[#2a2a3a]" />
+        <div className="h-px bg-[var(--border-color)]" />
       </div>
       {section.children ? (
         section.children
@@ -165,7 +166,7 @@ export function DetailPanel({
       variant="outline"
       size="sm"
       onClick={onEdit}
-      className="border-[#2a2a3a] text-[#f0ece4] hover:bg-[#0a0a0f] gap-1.5 cursor-pointer"
+      className="border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-primary)] gap-1.5 cursor-pointer"
     >
       <Pencil size={14} />
       {editLabel}
@@ -186,7 +187,7 @@ export function DetailPanel({
           <Section key={index} section={section} index={index} />
         ))}
         {footer && (
-          <div className="pt-3 border-t border-[#2a2a3a]">{footer}</div>
+          <div className="pt-3 border-t border-[var(--border-color)]">{footer}</div>
         )}
       </div>
     </Modal>
@@ -211,7 +212,7 @@ export function StatusBadge({ label, tone, dot = true }: StatusBadgeT) {
       className="inline-flex items-center gap-1.5 text-sm font-medium px-2.5 py-0.5 rounded-full"
       style={{
         backgroundColor: `${hex}1A`,
-        color: hex,
+        color: tinta(hex),
       }}
     >
       {dot && (
@@ -231,8 +232,8 @@ export function StatusBadge({ label, tone, dot = true }: StatusBadgeT) {
 
 export function EmptyState({ message }: { message: string }) {
   return (
-    <div className="rounded-lg border border-dashed border-[#2a2a3a] p-4 text-center">
-      <p className="text-sm text-[#9895a4] italic">{message}</p>
+    <div className="rounded-lg border border-dashed border-[var(--border-color)] p-4 text-center">
+      <p className="text-sm text-[var(--text-tertiary)] italic">{message}</p>
     </div>
   );
 }
@@ -250,9 +251,9 @@ export function InlineList({ items, empty }: { items: { id: string; label: strin
       {items.map((item) => (
         <li
           key={item.id}
-          className="flex items-center gap-2 text-[#f0ece4]"
+          className="flex items-center gap-2 text-[var(--text-primary)]"
         >
-          <span className="w-1 h-1 rounded-full bg-[#E8B829] flex-shrink-0" />
+          <span className="w-1 h-1 rounded-full bg-[var(--color-gold)] flex-shrink-0" />
           {item.label}
         </li>
       ))}

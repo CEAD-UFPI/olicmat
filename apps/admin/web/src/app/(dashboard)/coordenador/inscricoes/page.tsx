@@ -108,15 +108,15 @@ export default function CoordenadorInscricoesPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (erro || !dados) {
     return (
-      <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-        <p className="text-[#b0adc0]">{erro || "Nenhuma inscrição disponível."}</p>
+      <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+        <p className="text-[var(--text-secondary)]">{erro || "Nenhuma inscrição disponível."}</p>
       </div>
     );
   }
@@ -159,10 +159,10 @@ export default function CoordenadorInscricoesPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Inscrições
         </h1>
-        <p className="text-[#9895a4] mt-1">
+        <p className="text-[var(--text-tertiary)] mt-1">
           Acompanhe quem já se inscreveu e aprove as inscrições dos seus participantes
         </p>
       </div>
@@ -185,21 +185,21 @@ export default function CoordenadorInscricoesPage() {
       )}
 
       <div className="grid sm:grid-cols-3 gap-4">
-        <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] p-5">
-          <p className="text-xs text-[#9895a4] uppercase tracking-widest">Participantes</p>
-          <p className="text-3xl font-bold text-[#f0ece4] mt-1 font-[family-name:var(--font-fraunces)]">
+        <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] p-5">
+          <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-widest">Participantes</p>
+          <p className="text-3xl font-bold text-[var(--text-primary)] mt-1 font-[family-name:var(--font-fraunces)]">
             {dados.totalAlunos}
           </p>
         </div>
-        <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] p-5">
-          <p className="text-xs text-[#9895a4] uppercase tracking-widest">Inscritos</p>
-          <p className="text-3xl font-bold text-[#4CAF50] mt-1 font-[family-name:var(--font-fraunces)]">
+        <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] p-5">
+          <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-widest">Inscritos</p>
+          <p className="text-3xl font-bold text-[var(--color-green-ink)] mt-1 font-[family-name:var(--font-fraunces)]">
             {dados.totalInscritos}
           </p>
         </div>
-        <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] p-5">
-          <p className="text-xs text-[#9895a4] uppercase tracking-widest">Não inscritos</p>
-          <p className="text-3xl font-bold text-[#f59e0b] mt-1 font-[family-name:var(--font-fraunces)]">
+        <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] p-5">
+          <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-widest">Não inscritos</p>
+          <p className="text-3xl font-bold text-[var(--color-amber-ink)] mt-1 font-[family-name:var(--font-fraunces)]">
             {dados.totalNaoInscritos}
           </p>
         </div>
@@ -214,7 +214,7 @@ export default function CoordenadorInscricoesPage() {
             setPaginaInscritos(1);
             setPaginaNaoInscritos(1);
           }}
-          className="flex-1 min-w-[200px] bg-[#12121a] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+          className="flex-1 min-w-[200px] bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
         />
         <select
           value={statusFiltro}
@@ -222,7 +222,7 @@ export default function CoordenadorInscricoesPage() {
             setStatusFiltro(e.target.value);
             setPaginaInscritos(1);
           }}
-          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
+          className="h-10 px-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] text-base cursor-pointer"
         >
           <option value="">Todos os status</option>
           <option value="PENDENTE">Pendente</option>
@@ -233,34 +233,34 @@ export default function CoordenadorInscricoesPage() {
 
       {/* Inscritos */}
       <section>
-        <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)] mb-3">
+        <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)] mb-3">
           Inscritos ({inscritosFiltrados.length})
         </h2>
         {inscritosFiltrados.length === 0 ? (
-          <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a] text-center text-[#b0adc0]">
+          <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)] text-center text-[var(--text-secondary)]">
             Nenhuma inscrição encontrada.
           </div>
         ) : (
           <>
-            <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
+            <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-base">
                   <thead>
-                    <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
-                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Edição</th>
-                      <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
-                      <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
+                    <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                      <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                      <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Edição</th>
+                      <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Status</th>
+                      <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {inscritosPagina.map((aluno) => (
-                      <tr key={aluno.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
+                      <tr key={aluno.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-primary)]/50 transition-colors">
                         <td className="py-4 px-5">
-                          <p className="text-[#f0ece4] font-medium">{aluno.nome}</p>
-                          <p className="text-[#9895a4] text-sm">{aluno.email}</p>
+                          <p className="text-[var(--text-primary)] font-medium">{aluno.nome}</p>
+                          <p className="text-[var(--text-tertiary)] text-sm">{aluno.email}</p>
                         </td>
-                        <td className="py-4 px-5 text-[#9895a4]">
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">
                           {aluno.inscricao.edicao ? `${aluno.inscricao.edicao.ano}` : "-"}
                         </td>
                         <td className="py-4 px-5 text-center">
@@ -276,7 +276,7 @@ export default function CoordenadorInscricoesPage() {
                                 <button
                                   disabled={processando[aluno.inscricao.id]}
                                   onClick={() => atualizarStatus(aluno.inscricao.id, "CONFIRMADA")}
-                                  className="text-[#4CAF50] hover:bg-[#4CAF50]/10 transition-colors p-1 rounded cursor-pointer disabled:opacity-50"
+                                  className="text-[var(--color-green-ink)] hover:bg-[var(--color-green)]/10 transition-colors p-1 rounded cursor-pointer disabled:opacity-50"
                                   title="Confirmar"
                                 >
                                   <Check size={18} />
@@ -308,34 +308,34 @@ export default function CoordenadorInscricoesPage() {
 
       {/* Não inscritos */}
       <section>
-        <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)] mb-3">
+        <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)] mb-3">
           Ainda não inscritos ({naoInscritosFiltrados.length})
         </h2>
         {naoInscritosFiltrados.length === 0 ? (
-          <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a] text-center text-[#b0adc0]">
+          <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)] text-center text-[var(--text-secondary)]">
             Todos os participantes já se inscreveram.
           </div>
         ) : (
           <>
-            <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
+            <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-base">
                   <thead>
-                    <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
-                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Matrícula</th>
-                      <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                    <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                      <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                      <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Matrícula</th>
+                      <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Curso</th>
                     </tr>
                   </thead>
                   <tbody>
                     {naoInscritosPagina.map((aluno) => (
-                      <tr key={aluno.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
+                      <tr key={aluno.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-primary)]/50 transition-colors">
                         <td className="py-4 px-5">
-                          <p className="text-[#f0ece4] font-medium">{aluno.nome}</p>
-                          <p className="text-[#9895a4] text-sm">{aluno.email}</p>
+                          <p className="text-[var(--text-primary)] font-medium">{aluno.nome}</p>
+                          <p className="text-[var(--text-tertiary)] text-sm">{aluno.email}</p>
                         </td>
-                        <td className="py-4 px-5 text-[#9895a4]">{aluno.matricula || "-"}</td>
-                        <td className="py-4 px-5 text-[#9895a4]">{aluno.curso?.nome || "-"}</td>
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">{aluno.matricula || "-"}</td>
+                        <td className="py-4 px-5 text-[var(--text-tertiary)]">{aluno.curso?.nome || "-"}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -351,11 +351,11 @@ export default function CoordenadorInscricoesPage() {
 
       {modalRejeicao && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#12121a] border border-[#2a2a3a] rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
+          <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2 font-[family-name:var(--font-fraunces)]">
               Justificar rejeição
             </h3>
-            <p className="text-sm text-[#9895a4] mb-4">
+            <p className="text-sm text-[var(--text-tertiary)] mb-4">
               A justificativa será enviada por e-mail e notificação ao participante.
             </p>
             <textarea
@@ -363,7 +363,7 @@ export default function CoordenadorInscricoesPage() {
               onChange={(e) => setJustificativa(e.target.value)}
               placeholder="Explique o motivo da rejeição (mínimo 10 caracteres)"
               rows={4}
-              className="w-full rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] p-3 text-sm focus:outline-none focus:border-[#E8B829]"
+              className="w-full rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] p-3 text-sm focus:outline-none focus:border-[var(--color-gold)]"
             />
             <div className="flex gap-3 mt-4">
               <button
@@ -372,7 +372,7 @@ export default function CoordenadorInscricoesPage() {
                   setModalRejeicao(null);
                   setJustificativa("");
                 }}
-                className="flex-1 border border-[#2a2a3a] text-[#f0ece4] rounded-lg py-2 text-sm cursor-pointer hover:bg-[#0a0a0f] transition-colors"
+                className="flex-1 border border-[var(--border-color)] text-[var(--text-primary)] rounded-lg py-2 text-sm cursor-pointer hover:bg-[var(--bg-primary)] transition-colors"
               >
                 Cancelar
               </button>

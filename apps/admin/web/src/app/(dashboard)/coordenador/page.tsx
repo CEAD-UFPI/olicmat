@@ -30,7 +30,7 @@ export default function CoordenadorPage() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -43,94 +43,94 @@ export default function CoordenadorPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Ola, {user?.nome?.split(" ")[0]}
         </h1>
-        <p className="text-[#9895a4] mt-1">Painel de coordenacao de curso</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Painel de coordenacao de curso</p>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <Users size={14} className="text-[#3AAFE0]" />
+            <CardTitle className="text-[var(--text-tertiary)] text-xs uppercase tracking-widest flex items-center gap-2">
+              <Users size={14} className="text-[var(--color-blue-ink)]" />
               Total de Alunos
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            <p className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
               {metricas?.totalAlunos ?? "-"}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <BookOpen size={14} className="text-[#E8B829]" />
+            <CardTitle className="text-[var(--text-tertiary)] text-xs uppercase tracking-widest flex items-center gap-2">
+              <BookOpen size={14} className="text-[var(--color-gold-ink)]" />
               Inscritos
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            <p className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
               {metricas?.totalInscricoes ?? "-"}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <UserCheck size={14} className="text-[#4CAF50]" />
+            <CardTitle className="text-[var(--text-tertiary)] text-xs uppercase tracking-widest flex items-center gap-2">
+              <UserCheck size={14} className="text-[var(--color-green-ink)]" />
               Confirmadas
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#4CAF50" }}>
+            <p className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]" style={{ color: "var(--color-green-ink)" }}>
               {metricas?.confirmadas ?? "-"}
             </p>
           </CardContent>
         </Card>
 
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#9895a4] text-xs uppercase tracking-widest flex items-center gap-2">
-              <Clock size={14} className="text-[#f59e0b]" />
+            <CardTitle className="text-[var(--text-tertiary)] text-xs uppercase tracking-widest flex items-center gap-2">
+              <Clock size={14} className="text-[var(--color-amber-ink)]" />
               Pendentes
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]" style={{ color: "#f59e0b" }}>
+            <p className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]" style={{ color: "var(--color-amber-ink)" }}>
               {metricas?.pendentes ?? "-"}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="border border-[#2a2a3a] rounded-2xl p-6 bg-[#12121a]">
-        <h2 className="text-lg font-bold text-[#f0ece4] mb-1 font-[family-name:var(--font-fraunces)]">
+      <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)]">
+        <h2 className="text-lg font-bold text-[var(--text-primary)] mb-1 font-[family-name:var(--font-fraunces)]">
           Acoes Rapidas
         </h2>
-        <p className="text-sm text-[#9895a4] mb-4">Gerencie seus alunos e acompanhe o desempenho</p>
+        <p className="text-sm text-[var(--text-tertiary)] mb-4">Gerencie seus alunos e acompanhe o desempenho</p>
         <div className="grid sm:grid-cols-2 gap-3">
           <a
             href="/coordenador/alunos"
-            className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
+            className="flex items-center gap-3 p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] hover:border-[var(--border-strong)] transition-colors"
           >
-            <Users size={18} className="text-[#3AAFE0]" />
+            <Users size={18} className="text-[var(--color-blue-ink)]" />
             <div>
-              <p className="text-sm font-medium text-[#f0ece4]">Ver Alunos</p>
-              <p className="text-xs text-[#9895a4]">Lista completa de alunos do curso</p>
+              <p className="text-sm font-medium text-[var(--text-primary)]">Ver Alunos</p>
+              <p className="text-xs text-[var(--text-tertiary)]">Lista completa de alunos do curso</p>
             </div>
           </a>
           <a
             href="/coordenador/metricas"
-            className="flex items-center gap-3 p-4 rounded-xl bg-[#0a0a0f] border border-[#2a2a3a] hover:border-[#3a3a4a] transition-colors"
+            className="flex items-center gap-3 p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] hover:border-[var(--border-strong)] transition-colors"
           >
-            <BookOpen size={18} className="text-[#E8B829]" />
+            <BookOpen size={18} className="text-[var(--color-gold-ink)]" />
             <div>
-              <p className="text-sm font-medium text-[#f0ece4]">Ver Metricas</p>
-              <p className="text-xs text-[#9895a4]">Estatisticas e graficos de desempenho</p>
+              <p className="text-sm font-medium text-[var(--text-primary)]">Ver Metricas</p>
+              <p className="text-xs text-[var(--text-tertiary)]">Estatisticas e graficos de desempenho</p>
             </div>
           </a>
         </div>

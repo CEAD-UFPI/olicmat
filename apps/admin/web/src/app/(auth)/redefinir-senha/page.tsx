@@ -61,14 +61,14 @@ function RedefinirSenhaContent() {
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
         <div className="text-5xl mb-4">✅</div>
-        <h1 className="text-2xl font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2 font-[family-name:var(--font-fraunces)]">
           Senha redefinida
         </h1>
-        <p className="text-sm text-[#9895a4] mb-6">
+        <p className="text-sm text-[var(--text-tertiary)] mb-6">
           Sua senha foi atualizada com sucesso.
         </p>
         <Link href="/login">
-          <Button className="w-full h-12 text-base font-semibold" style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}>
+          <Button className="w-full h-12 text-base font-semibold" style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}>
             Fazer login
           </Button>
         </Link>
@@ -78,10 +78,10 @@ function RedefinirSenhaContent() {
 
   return (
     <>
-      <h1 className="text-2xl font-bold text-[#f0ece4] mb-1 font-[family-name:var(--font-fraunces)]">
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1 font-[family-name:var(--font-fraunces)]">
         Nova senha
       </h1>
-      <p className="text-sm text-[#9895a4] mb-8">
+      <p className="text-sm text-[var(--text-tertiary)] mb-8">
         Crie uma nova senha para sua conta
       </p>
 
@@ -113,7 +113,7 @@ function RedefinirSenhaContent() {
           onClick={onSubmit}
           disabled={loading || !token}
           className="w-full h-12 text-base font-semibold"
-          style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+          style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
         >
           {loading ? "Redefinindo..." : "Redefinir senha"}
         </Button>
@@ -136,23 +136,23 @@ export default function RedefinirSenhaPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <span className="text-3xl font-bold font-[family-name:var(--font-fraunces)]">
-              <span style={{ color: "var(--pi-laranja)" }}>O</span>
-              <span style={{ color: "var(--integral-verde)" }}>L</span>
-              <span style={{ color: "var(--sigma-azul)" }}>I</span>
+              <span style={{ color: "var(--logo-gold)" }}>O</span>
+              <span style={{ color: "var(--logo-green)" }}>L</span>
+              <span style={{ color: "var(--logo-blue)" }}>I</span>
               <span style={{ color: "var(--text-primary)" }}>CMAT</span>
             </span>
           </Link>
         </div>
 
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a]/90 backdrop-blur-sm">
-          <Suspense fallback={<p className="text-[#9895a4] text-center">Carregando...</p>}>
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)]/90 backdrop-blur-sm">
+          <Suspense fallback={<p className="text-[var(--text-tertiary)] text-center">Carregando...</p>}>
             <RedefinirSenhaContent />
           </Suspense>
         </div>
 
-        <p className="text-sm text-[#9895a4] text-center mt-6">
+        <p className="text-sm text-[var(--text-tertiary)] text-center mt-6">
           Lembrou a senha?{" "}
-          <Link href="/login" className="text-[#3AAFE0] hover:underline">
+          <Link href="/login" className="text-[var(--color-blue-ink)] hover:underline">
             Voltar ao login
           </Link>
         </p>

@@ -52,15 +52,15 @@ export default function RecuperarSenhaPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
             <span className="text-3xl font-bold font-[family-name:var(--font-fraunces)]">
-              <span style={{ color: "var(--pi-laranja)" }}>O</span>
-              <span style={{ color: "var(--integral-verde)" }}>L</span>
-              <span style={{ color: "var(--sigma-azul)" }}>I</span>
+              <span style={{ color: "var(--logo-gold)" }}>O</span>
+              <span style={{ color: "var(--logo-green)" }}>L</span>
+              <span style={{ color: "var(--logo-blue)" }}>I</span>
               <span style={{ color: "var(--text-primary)" }}>CMAT</span>
             </span>
           </Link>
         </div>
 
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a]/90 backdrop-blur-sm">
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)]/90 backdrop-blur-sm">
           {success ? (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -68,30 +68,30 @@ export default function RecuperarSenhaPage() {
               className="text-center"
             >
               <div className="text-5xl mb-4">📧</div>
-              <h1 className="text-2xl font-bold text-[#f0ece4] mb-2 font-[family-name:var(--font-fraunces)]">
+              <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2 font-[family-name:var(--font-fraunces)]">
                 Email enviado
               </h1>
-              <p className="text-sm text-[#9895a4] mb-6">
+              <p className="text-sm text-[var(--text-tertiary)] mb-6">
                 Se o email existir, você receberá um link para redefinir sua senha. O link expira em 2 horas.
               </p>
               <Link href="/login">
-                <Button className="w-full h-12 text-base font-semibold" style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}>
+                <Button className="w-full h-12 text-base font-semibold" style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}>
                   Voltar ao login
                 </Button>
               </Link>
             </motion.div>
           ) : (
             <>
-              <h1 className="text-2xl font-bold text-[#f0ece4] mb-1 font-[family-name:var(--font-fraunces)]">
+              <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-1 font-[family-name:var(--font-fraunces)]">
                 Recuperar senha
               </h1>
-              <p className="text-sm text-[#9895a4] mb-8">
+              <p className="text-sm text-[var(--text-tertiary)] mb-8">
                 Informe seu email para receber o link de redefinição
               </p>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
-                  <label htmlFor="email" className="block text-sm text-[#9895a4] mb-1.5">
+                  <label htmlFor="email" className="block text-sm text-[var(--text-tertiary)] mb-1.5">
                     Email
                   </label>
                   <input
@@ -99,7 +99,7 @@ export default function RecuperarSenhaPage() {
                     type="email"
                     placeholder="seu@email.com"
                     {...register("email")}
-                    className="w-full h-12 px-4 rounded-xl border bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50 outline-none transition-colors focus:border-[#3AAFE0]"
+                    className="w-full h-12 px-4 rounded-xl border bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50 outline-none transition-colors focus:border-[var(--color-blue)]"
                   />
                   {errors.email && (
                     <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
@@ -114,7 +114,7 @@ export default function RecuperarSenhaPage() {
                   type="submit"
                   disabled={loading}
                   className="w-full h-12 text-base font-semibold"
-                  style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+                  style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
                 >
                   {loading ? "Enviando..." : "Enviar link de recuperação"}
                 </Button>
@@ -122,9 +122,9 @@ export default function RecuperarSenhaPage() {
             </>
           )}
 
-          <p className="text-sm text-[#9895a4] text-center mt-6">
+          <p className="text-sm text-[var(--text-tertiary)] text-center mt-6">
             Lembrou a senha?{" "}
-            <Link href="/login" className="text-[#3AAFE0] hover:underline">
+            <Link href="/login" className="text-[var(--color-blue-ink)] hover:underline">
               Voltar ao login
             </Link>
           </p>

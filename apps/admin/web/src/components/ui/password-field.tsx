@@ -30,7 +30,7 @@ export function PasswordField({
   return (
     <div>
       {label && (
-        <label htmlFor={id} className="block text-sm text-[#9895a4] mb-1.5">
+        <label htmlFor={id} className="block text-sm text-[var(--text-tertiary)] mb-1.5">
           {label}
         </label>
       )}
@@ -43,16 +43,16 @@ export function PasswordField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           required={required}
-          className={`w-full h-12 px-4 pr-12 rounded-xl border bg-[#0a0a0f] text-[#f0ece4] placeholder:text-[#9895a4]/50 outline-none transition-colors ${
+          className={`w-full h-12 px-4 pr-12 rounded-xl border bg-[var(--bg-primary)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50 outline-none transition-colors ${
             error
               ? "border-red-500/50 focus:border-red-500"
-              : "border-[#2a2a3a] focus:border-[#3AAFE0]"
+              : "border-[var(--border-color)] focus:border-[var(--color-blue)]"
           } ${className}`}
         />
         <button
           type="button"
           onClick={() => setShow(!show)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9895a4] hover:text-[#f0ece4] transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-primary)] transition-colors"
           aria-label={show ? "Esconder senha" : "Mostrar senha"}
         >
           {show ? (

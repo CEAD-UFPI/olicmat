@@ -22,24 +22,24 @@ export function Suporte() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-fraunces)] text-[#f0ece4] mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-fraunces)] text-[var(--text-primary)] mb-4">
             Suporte ao Participante
           </h2>
-          <p className="text-[#9895a4] max-w-2xl mx-auto text-lg">
+          <p className="text-[var(--text-tertiary)] max-w-2xl mx-auto text-lg">
             Estamos à disposição para tirar suas dúvidas em todas as etapas da olimpíada
           </p>
         </motion.div>
 
         {/* Aviso do dia da prova */}
         <motion.div
-          className="mb-10 rounded-2xl border border-[#E8B829]/40 bg-[#E8B829]/10 px-6 py-6 text-center"
+          className="mb-10 rounded-2xl border border-[var(--color-gold)]/40 bg-[var(--color-gold)]/10 px-6 py-6 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="text-base lg:text-lg text-[#f0ece4] leading-relaxed">
-            <span className="font-bold text-[#E8B829]">
+          <p className="text-base lg:text-lg text-[var(--text-primary)] leading-relaxed">
+            <span className="font-bold text-[var(--color-gold-ink)]">
               No dia da prova, nossa equipe fica online
             </span>{" "}
             para sanar dúvidas e ajudar todos os participantes.
@@ -52,7 +52,7 @@ export function Suporte() {
             href={INSTAGRAM_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative rounded-2xl border border-[#2a2a3a] bg-[#12121a]/80 p-8 lg:p-10 backdrop-blur-sm hover:bg-[#1a1a26] hover:border-[#3a3a4a] transition-colors duration-300"
+            className="group relative rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)]/80 p-8 lg:p-10 backdrop-blur-sm hover:bg-[var(--surface)] hover:border-[var(--border-strong)] transition-colors duration-300"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -69,16 +69,16 @@ export function Suporte() {
                 <InstagramIcon className="h-7 w-7" />
               </div>
               <div>
-                <h3 className="text-xl lg:text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+                <h3 className="text-xl lg:text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
                   Instagram
                 </h3>
-                <p className="text-sm text-[#9895a4]">{INSTAGRAM_HANDLE}</p>
+                <p className="text-sm text-[var(--text-tertiary)]">{INSTAGRAM_HANDLE}</p>
               </div>
             </div>
-            <p className="text-sm text-[#b0adc0] leading-relaxed mb-6">
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
               Envie uma mensagem direta (DM) e nossa equipe responde.
             </p>
-            <span className="inline-flex items-center gap-2 text-sm font-semibold text-[#E8B829] group-hover:underline">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--color-gold-ink)] group-hover:underline">
               Chamar no Instagram →
             </span>
           </motion.a>
@@ -87,7 +87,7 @@ export function Suporte() {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative rounded-2xl border border-[#2a2a3a] bg-[#12121a]/80 p-8 lg:p-10 backdrop-blur-sm hover:bg-[#1a1a26] hover:border-[#3a3a4a] transition-colors duration-300"
+            className="group relative rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)]/80 p-8 lg:p-10 backdrop-blur-sm hover:bg-[var(--surface)] hover:border-[var(--border-strong)] transition-colors duration-300"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
@@ -98,13 +98,13 @@ export function Suporte() {
                 <WhatsAppIcon className="h-7 w-7" />
               </div>
               <div>
-                <h3 className="text-xl lg:text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+                <h3 className="text-xl lg:text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
                   WhatsApp
                 </h3>
-                <p className="text-sm text-[#9895a4]">{WHATSAPP_NUMERO_DISPLAY}</p>
+                <p className="text-sm text-[var(--text-tertiary)]">{WHATSAPP_NUMERO_DISPLAY}</p>
               </div>
             </div>
-            <p className="text-sm text-[#b0adc0] leading-relaxed mb-6">
+            <p className="text-sm text-[var(--text-secondary)] leading-relaxed mb-6">
               Atendimento rápido e direto por mensagem.
             </p>
             <span className="inline-flex items-center gap-2 text-sm font-semibold text-[#25D366] group-hover:underline">

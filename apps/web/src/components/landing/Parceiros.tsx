@@ -24,10 +24,10 @@ export function Parceiros() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-fraunces)] text-[#f0ece4] mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-fraunces)] text-[var(--text-primary)] mb-4">
             Realização e Apoio
           </h2>
-          <p className="text-[#9895a4] text-lg max-w-2xl mx-auto">
+          <p className="text-[var(--text-tertiary)] text-lg max-w-2xl mx-auto">
             Instituições e organizações que tornam a OLICMAT possível
           </p>
         </motion.div>
@@ -36,7 +36,7 @@ export function Parceiros() {
           {parceiros.map((p, i) => (
             <motion.div
               key={p.nome}
-              className="flex flex-col items-center justify-center p-6 rounded-xl border border-[#2a2a3a] bg-[#12121a]/60 hover:bg-[#1a1a26] hover:border-[#3a3a4a] transition-all duration-300 group"
+              className="flex flex-col items-center justify-center p-6 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)]/60 hover:bg-[var(--surface)] hover:border-[var(--border-strong)] transition-all duration-300 group"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
@@ -46,10 +46,10 @@ export function Parceiros() {
                 ease: [0.16, 1, 0.3, 1],
               }}
             >
-              <span className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)] group-hover:text-[var(--pi-laranja)] transition-colors">
+              <span className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)] group-hover:text-[var(--color-gold-ink)] transition-colors">
                 {p.nome}
               </span>
-              <span className="text-[10px] text-[#9895a4] mt-1 text-center leading-tight">
+              <span className="text-[10px] text-[var(--text-tertiary)] mt-1 text-center leading-tight">
                 {p.sigla}
               </span>
             </motion.div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { tinta } from "@/lib/tema";
 
 const destaques = [
   {
@@ -42,10 +43,10 @@ export function Sobre() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-fraunces)] text-[#f0ece4] mb-4">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-[family-name:var(--font-fraunces)] text-[var(--text-primary)] mb-4">
             Sobre a Olimpíada
           </h2>
-          <p className="text-[#9895a4] max-w-2xl mx-auto text-lg">
+          <p className="text-[var(--text-tertiary)] max-w-2xl mx-auto text-lg">
             Uma competição em duas fases que avalia e valoriza o conhecimento dos licenciandos em matemática
           </p>
         </motion.div>
@@ -54,7 +55,7 @@ export function Sobre() {
           {destaques.map((item, i) => (
             <motion.div
               key={item.titulo}
-              className="relative group rounded-2xl p-8 lg:p-10 border border-[#2a2a3a] bg-[#12121a]/80 backdrop-blur-sm hover:bg-[#1a1a26] transition-colors duration-300"
+              className="relative group rounded-2xl p-8 lg:p-10 border border-[var(--border-color)] bg-[var(--bg-secondary)]/80 backdrop-blur-sm hover:bg-[var(--surface)] transition-colors duration-300"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
@@ -66,20 +67,20 @@ export function Sobre() {
             >
               <div
                 className="text-5xl lg:text-6xl font-bold font-[family-name:var(--font-fraunces)] mb-5"
-                style={{ color: item.cor }}
+                style={{ color: tinta(item.cor) }}
               >
                 {item.simbolo}
               </div>
-              <h3 className="text-xl lg:text-2xl font-bold text-[#f0ece4] mb-1 font-[family-name:var(--font-fraunces)]">
+              <h3 className="text-xl lg:text-2xl font-bold text-[var(--text-primary)] mb-1 font-[family-name:var(--font-fraunces)]">
                 {item.titulo}
               </h3>
               <p
                 className="text-xs uppercase tracking-widest mb-5 font-[family-name:var(--font-outfit)]"
-                style={{ color: item.cor }}
+                style={{ color: tinta(item.cor) }}
               >
                 OLICMAT
               </p>
-              <p className="text-[#9895a4] text-sm leading-relaxed mb-6">
+              <p className="text-[var(--text-tertiary)] text-sm leading-relaxed mb-6">
                 {item.descricao}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -89,7 +90,7 @@ export function Sobre() {
                     className="text-xs px-3 py-1.5 rounded-full"
                     style={{
                       backgroundColor: `${item.cor}15`,
-                      color: item.cor,
+                      color: tinta(item.cor),
                       border: `1px solid ${item.cor}30`,
                     }}
                   >

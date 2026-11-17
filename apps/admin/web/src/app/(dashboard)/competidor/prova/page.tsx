@@ -58,24 +58,24 @@ export default function ProvaPage() {
     >
       <div
         className="text-6xl font-[family-name:var(--font-fraunces)]"
-        style={{ color: "var(--pi-laranja)" }}
+        style={{ color: "var(--color-gold-ink)" }}
       >
         π
       </div>
 
-      <h1 className="text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
         Prova — Fase 1
       </h1>
 
-      <p className="text-[#9895a4] text-sm leading-relaxed">
+      <p className="text-[var(--text-tertiary)] text-sm leading-relaxed">
         A prova é executada em uma aplicação isolada, separada deste painel,
         para garantir estabilidade durante a realização. Ao continuar, você
         será levado até ela já autenticado — não precisa entrar de novo.
       </p>
 
-      <div className="text-left text-sm text-[#9895a4] bg-[#12121a] border border-[#2a2a3a] rounded-xl p-4 space-y-2">
-        <p className="text-[#f0ece4] font-medium">Antes de continuar</p>
-        <div className="rounded-lg border border-[#E8B829]/40 bg-[#E8B829]/[0.08] p-3 text-[#f0ece4] space-y-1">
+      <div className="text-left text-sm text-[var(--text-tertiary)] bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-4 space-y-2">
+        <p className="text-[var(--text-primary)] font-medium">Antes de continuar</p>
+        <div className="rounded-lg border border-[var(--color-gold)]/40 bg-[var(--color-gold)]/[0.08] p-3 text-[var(--text-primary)] space-y-1">
           <p className="font-semibold">Início até 09:00, sem exceção</p>
           <p>
             Depois das 09:00 ninguém inicia a prova, qualquer que seja o motivo,
@@ -130,13 +130,13 @@ export default function ProvaPage() {
         size="lg"
         onClick={irParaProva}
         disabled={indo || !liberada}
-        style={{ backgroundColor: "var(--pi-laranja)", color: "#fff" }}
+        style={{ backgroundColor: "var(--pi-laranja)", color: "var(--on-accent)" }}
         className="w-full"
       >
         {indo ? "Abrindo a prova..." : "Acessar a aplicação de prova"}
       </Button>
 
-      {!liberada && <p className="text-sm text-[#E8B829]">{aviso}</p>}
+      {!liberada && <p className="text-sm text-[var(--color-gold-ink)]">{aviso}</p>}
     </motion.div>
   );
 }

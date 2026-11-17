@@ -99,10 +99,10 @@ export default function AdminRankingPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Ranking
         </h1>
-        <p className="text-[#9895a4] mt-1">
+        <p className="text-[var(--text-tertiary)] mt-1">
           Calcule as medalhas e publique o resultado para o site.
         </p>
       </div>
@@ -111,8 +111,8 @@ export default function AdminRankingPage() {
         <div
           className={`rounded-xl p-4 text-sm border ${
             erro
-              ? "bg-[#2a1016] border-[#5c1a24] text-[#f0a0b0]"
-              : "bg-[#101d16] border-[#1d4a2c] text-[#9fd9b0]"
+              ? "bg-red-500/10 border-red-500/30 text-red-300"
+              : "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
           }`}
         >
           {erro ?? mensagem}
@@ -120,15 +120,15 @@ export default function AdminRankingPage() {
       )}
 
       <div className="grid sm:grid-cols-2 gap-4">
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#f0ece4] flex items-center gap-2">
-              <Medal size={18} className="text-[#E8B829]" />
+            <CardTitle className="text-[var(--text-primary)] flex items-center gap-2">
+              <Medal size={18} className="text-[var(--color-gold-ink)]" />
               Atualizar medalhas
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-[#b0adc0]">
+            <p className="text-sm text-[var(--text-secondary)]">
               Calcula a nota final e grava a medalha (Ouro/Prata/Bronze) de cada
               inscrição confirmada na edição atual. Faça isso antes de publicar.
             </p>
@@ -146,15 +146,15 @@ export default function AdminRankingPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-[#2a2a3a] bg-[#12121a]">
+        <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
           <CardHeader>
-            <CardTitle className="text-[#f0ece4] flex items-center gap-2">
-              <Upload size={18} className="text-[#4CAF50]" />
+            <CardTitle className="text-[var(--text-primary)] flex items-center gap-2">
+              <Upload size={18} className="text-[var(--color-green-ink)]" />
               Publicar ranking
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-[#b0adc0]">
+            <p className="text-sm text-[var(--text-secondary)]">
               Gera um snapshot do ranking e o torna visível no site público.
               O site passa a exibir este resultado até a próxima publicação.
             </p>
@@ -171,20 +171,20 @@ export default function AdminRankingPage() {
         </Card>
       </div>
 
-      <Card className="border-[#2a2a3a] bg-[#12121a]">
+      <Card className="border-[var(--border-color)] bg-[var(--bg-secondary)]">
         <CardHeader>
-          <CardTitle className="text-[#f0ece4] flex items-center gap-2">
-            <Trophy size={18} className="text-[#f59e0b]" />
+          <CardTitle className="text-[var(--text-primary)] flex items-center gap-2">
+            <Trophy size={18} className="text-[var(--color-amber-ink)]" />
             Prévia (medalhistas por estado)
           </CardTitle>
         </CardHeader>
         <CardContent>
           {carregando ? (
             <div className="flex justify-center py-6">
-              <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
             </div>
           ) : resumo.length === 0 ? (
-            <p className="text-sm text-[#b0adc0]">
+            <p className="text-sm text-[var(--text-secondary)]">
               Nenhuma inscrição confirmada com nota de Fase 1 na edição atual.
             </p>
           ) : (
@@ -192,10 +192,10 @@ export default function AdminRankingPage() {
               {resumo.map(({ uf, total }) => (
                 <div
                   key={uf}
-                  className="flex items-center justify-between p-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a]"
+                  className="flex items-center justify-between p-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]"
                 >
-                  <span className="text-sm font-medium text-[#f0ece4]">{uf}</span>
-                  <span className="text-sm text-[#b0adc0]">{total} medalhistas</span>
+                  <span className="text-sm font-medium text-[var(--text-primary)]">{uf}</span>
+                  <span className="text-sm text-[var(--text-secondary)]">{total} medalhistas</span>
                 </div>
               ))}
             </div>

@@ -242,10 +242,10 @@ export default function AdminInscricoesPage() {
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
     >
       <div>
-        <h1 className="text-3xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
           Inscrições
         </h1>
-        <p className="text-[#9895a4] mt-1">Validação de inscrições dos competidores</p>
+        <p className="text-[var(--text-tertiary)] mt-1">Validação de inscrições dos competidores</p>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -256,7 +256,7 @@ export default function AdminInscricoesPage() {
             setFiltro(e.target.value);
             setPagina(1);
           }}
-          className="flex-1 min-w-[200px] bg-[#12121a] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+          className="flex-1 min-w-[200px] bg-[var(--bg-secondary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
         />
         <select
           value={statusFiltro}
@@ -264,7 +264,7 @@ export default function AdminInscricoesPage() {
             setStatusFiltro(e.target.value);
             setPagina(1);
           }}
-          className="h-10 px-3 rounded-lg bg-[#12121a] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
+          className="h-10 px-3 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] text-base cursor-pointer"
         >
           <option value="">Todos os status</option>
           <option value="PENDENTE">Pendente</option>
@@ -274,7 +274,7 @@ export default function AdminInscricoesPage() {
         <Button
           onClick={abrirLote}
           variant="outline"
-          className="cursor-pointer border-[#2a2a3a] bg-[#12121a] text-[#f0ece4] hover:bg-[#0a0a0f]"
+          className="cursor-pointer border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-primary)] hover:bg-[var(--bg-primary)]"
         >
           <UserPlus size={16} />
           Inscrever em lote
@@ -283,34 +283,34 @@ export default function AdminInscricoesPage() {
 
       {carregando ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="border border-[#2a2a3a] rounded-2xl p-8 bg-[#12121a] text-center">
-          <p className="text-[#b0adc0]">Nenhuma inscrição encontrada.</p>
+        <div className="border border-[var(--border-color)] rounded-2xl p-8 bg-[var(--bg-secondary)] text-center">
+          <p className="text-[var(--text-secondary)]">Nenhuma inscrição encontrada.</p>
         </div>
       ) : (
         <>
-          <div className="border border-[#2a2a3a] rounded-2xl bg-[#12121a] overflow-hidden">
+          <div className="border border-[var(--border-color)] rounded-2xl bg-[var(--bg-secondary)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-base">
                 <thead>
-                  <tr className="border-b border-[#2a2a3a] bg-[#0a0a0f]">
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Nome</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Estado</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Instituição</th>
-                    <th className="text-left py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Curso</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Status</th>
-                    <th className="text-center py-4 px-5 text-[#b0adc0] font-semibold text-sm uppercase tracking-wider">Ações</th>
+                  <tr className="border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Nome</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Estado</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Instituição</th>
+                    <th className="text-left py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Curso</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Status</th>
+                    <th className="text-center py-4 px-5 text-[var(--text-secondary)] font-semibold text-sm uppercase tracking-wider">Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginados.map((insc) => (
-                    <tr key={insc.id} className="border-b border-[#2a2a3a]/50 hover:bg-[#0a0a0f]/50 transition-colors">
-                      <td className="py-4 px-5 text-[#f0ece4] font-medium">{insc.nome || "-"}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{insc.estado || "-"}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{insc.instituicao || "-"}</td>
-                      <td className="py-4 px-5 text-[#9895a4]">{insc.curso || "-"}</td>
+                    <tr key={insc.id} className="border-b border-[var(--border-color)]/50 hover:bg-[var(--bg-primary)]/50 transition-colors">
+                      <td className="py-4 px-5 text-[var(--text-primary)] font-medium">{insc.nome || "-"}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{insc.estado || "-"}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{insc.instituicao || "-"}</td>
+                      <td className="py-4 px-5 text-[var(--text-tertiary)]">{insc.curso || "-"}</td>
                       <td className="py-4 px-5 text-center">
 <span className="inline-flex">
                           <StatusBadge
@@ -323,7 +323,7 @@ export default function AdminInscricoesPage() {
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => setDetailTarget(insc)}
-                            className="text-[#9895a4] hover:text-[#4CAF50] transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-tertiary)] hover:text-[var(--color-green-ink)] transition-colors p-1 cursor-pointer"
                             title="Detalhes"
                           >
                             <Eye size={18} />
@@ -333,7 +333,7 @@ export default function AdminInscricoesPage() {
                               href={insc.comprovanteUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-[#9895a4] hover:text-[#E8B829] transition-colors p-1 cursor-pointer"
+                              className="text-[var(--text-tertiary)] hover:text-[var(--color-gold-ink)] transition-colors p-1 cursor-pointer"
                               title="Ver comprovante"
                             >
                                <FileText size={18} />
@@ -341,7 +341,7 @@ export default function AdminInscricoesPage() {
                           )}
                           <button
                             onClick={() => abrirEditar(insc)}
-                            className="text-[#9895a4] hover:text-[#4CAF50] transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-tertiary)] hover:text-[var(--color-green-ink)] transition-colors p-1 cursor-pointer"
                             title="Editar"
                           >
                             <Pencil size={18} />
@@ -351,7 +351,7 @@ export default function AdminInscricoesPage() {
                               <button
                                 disabled={processando[insc.id]}
                                 onClick={() => atualizarStatus(insc.id, "CONFIRMADA")}
-                                className="text-[#4CAF50] hover:bg-[#4CAF50]/10 transition-colors p-1 cursor-pointer"
+                                className="text-[var(--color-green-ink)] hover:bg-[var(--color-green)]/10 transition-colors p-1 cursor-pointer"
                                 title="Confirmar"
                               >
                                  <Check size={18} />
@@ -368,7 +368,7 @@ export default function AdminInscricoesPage() {
                           )}
                           <button
                             onClick={() => setDeleteTarget(insc)}
-                            className="text-[#9895a4] hover:text-red-400 transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-tertiary)] hover:text-red-400 transition-colors p-1 cursor-pointer"
                             title="Excluir"
                           >
                             <Trash2 size={18} />
@@ -443,7 +443,7 @@ export default function AdminInscricoesPage() {
                           href={detailTarget.comprovanteUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-[#4CAF50] hover:underline"
+                          className="text-[var(--color-green-ink)] hover:underline"
                         >
                           Ver comprovante →
                         </a>
@@ -493,9 +493,9 @@ export default function AdminInscricoesPage() {
                   children: (
                     <>
                       {detailTarget.createdAt && (
-                        <p className="text-sm text-[#9895a4]">
+                        <p className="text-sm text-[var(--text-tertiary)]">
                           Inscrição criada em{" "}
-                          <span className="text-[#f0ece4]">
+                          <span className="text-[var(--text-primary)]">
                             {new Date(detailTarget.createdAt).toLocaleDateString("pt-BR", {
                               day: "2-digit",
                               month: "2-digit",
@@ -522,38 +522,38 @@ export default function AdminInscricoesPage() {
       >
         <div className="space-y-4">
           <div>
-            <Label className="text-[#f0ece4]">Estado (UF)</Label>
+            <Label className="text-[var(--text-primary)]">Estado (UF)</Label>
             <Input
               value={form.estado}
               onChange={(e) => setForm({ ...form, estado: e.target.value.slice(0, 2).toUpperCase() })}
-              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+              className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
               placeholder="SP"
             />
           </div>
           <div>
-            <Label className="text-[#f0ece4]">Município</Label>
+            <Label className="text-[var(--text-primary)]">Município</Label>
             <Input
               value={form.municipio}
               onChange={(e) => setForm({ ...form, municipio: e.target.value })}
-              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+              className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
               placeholder="Nome do município"
             />
           </div>
           <div>
-            <Label className="text-[#f0ece4]">Período</Label>
+            <Label className="text-[var(--text-primary)]">Período</Label>
             <Input
               value={form.periodo}
               onChange={(e) => setForm({ ...form, periodo: e.target.value.replace(/\D/g, "") })}
-              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+              className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
               placeholder="1 a 12"
             />
           </div>
           <div>
-            <Label className="text-[#f0ece4]">URL do Comprovante</Label>
+            <Label className="text-[var(--text-primary)]">URL do Comprovante</Label>
             <Input
               value={form.comprovanteUrl}
               onChange={(e) => setForm({ ...form, comprovanteUrl: e.target.value })}
-              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+              className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
               placeholder="https://..."
             />
           </div>
@@ -567,14 +567,14 @@ export default function AdminInscricoesPage() {
               variant="ghost"
               onClick={() => setEditTarget(null)}
               disabled={salvandoEdicao}
-              className="text-[#9895a4] hover:text-[#f0ece4] cursor-pointer"
+              className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               Cancelar
             </Button>
             <Button
               onClick={salvarEdicao}
               disabled={salvandoEdicao}
-              style={{ backgroundColor: "#4CAF50", color: "#fff" }}
+              style={{ backgroundColor: "var(--color-green)", color: "#fff" }}
               className="cursor-pointer"
             >
               {salvandoEdicao ? "Salvando..." : "Salvar"}
@@ -593,20 +593,20 @@ export default function AdminInscricoesPage() {
         <div className="space-y-4">
           {loteResultado ? (
             <div className="space-y-3">
-              <p className="text-sm text-[#b0adc0]">
-                <span className="text-[#f0ece4] font-semibold">{loteResultado.inscritos}</span>{" "}
+              <p className="text-sm text-[var(--text-secondary)]">
+                <span className="text-[var(--text-primary)] font-semibold">{loteResultado.inscritos}</span>{" "}
                 de {loteResultado.totalCandidatos} alunos sem inscrição foram inscritos na edição
                 ativa.
               </p>
               {loteResultado.pulados.length > 0 && (
-                <div className="border border-[#2a2a3a] rounded-lg p-3 bg-[#0a0a0f] max-h-56 overflow-y-auto">
-                  <p className="text-sm font-semibold text-[#f59e0b] mb-2">
+                <div className="border border-[var(--border-color)] rounded-lg p-3 bg-[var(--bg-primary)] max-h-56 overflow-y-auto">
+                  <p className="text-sm font-semibold text-[var(--color-amber-ink)] mb-2">
                     {loteResultado.pulados.length} pulados
                   </p>
                   <ul className="space-y-1.5">
                     {loteResultado.pulados.map((p) => (
-                      <li key={p.id} className="text-sm text-[#9895a4]">
-                        <span className="text-[#f0ece4]">{p.nome}</span> ({p.email}) — {p.motivo}
+                      <li key={p.id} className="text-sm text-[var(--text-tertiary)]">
+                        <span className="text-[var(--text-primary)]">{p.nome}</span> ({p.email}) — {p.motivo}
                       </li>
                     ))}
                   </ul>
@@ -616,7 +616,7 @@ export default function AdminInscricoesPage() {
                 <Button
                   onClick={() => setLoteAberto(false)}
                   className="cursor-pointer"
-                  style={{ backgroundColor: "#4CAF50", color: "#fff" }}
+                  style={{ backgroundColor: "var(--color-green)", color: "#fff" }}
                 >
                   Concluir
                 </Button>
@@ -624,18 +624,18 @@ export default function AdminInscricoesPage() {
             </div>
           ) : (
             <>
-              <p className="text-sm text-[#9895a4]">
+              <p className="text-sm text-[var(--text-tertiary)]">
                 Todos os alunos cadastrados que ainda não possuem nenhuma inscrição serão
                 inscritos na edição ativa (status{" "}
-                <span className="text-[#f59e0b]">Pendente</span>) com o mesmo município e período
+                <span className="text-[var(--color-amber-ink)]">Pendente</span>) com o mesmo município e período
                 abaixo.
               </p>
               <div>
-                <Label className="text-[#f0ece4]">Município</Label>
+                <Label className="text-[var(--text-primary)]">Município</Label>
                 <select
                   value={loteMunicipio}
                   onChange={(e) => setLoteMunicipio(e.target.value)}
-                  className="mt-1.5 h-10 w-full px-3 rounded-lg bg-[#0a0a0f] border border-[#2a2a3a] text-[#f0ece4] text-base cursor-pointer"
+                  className="mt-1.5 h-10 w-full px-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] text-base cursor-pointer"
                 >
                   <option value="">Selecione a cidade...</option>
                   {MUNICIPIOS_PI.map((cidade) => (
@@ -646,11 +646,11 @@ export default function AdminInscricoesPage() {
                 </select>
               </div>
               <div>
-                <Label className="text-[#f0ece4]">Período</Label>
+                <Label className="text-[var(--text-primary)]">Período</Label>
                 <Input
                   value={lotePeriodo}
                   onChange={(e) => setLotePeriodo(e.target.value.replace(/\D/g, ""))}
-                  className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4]"
+                  className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]"
                   placeholder="1 a 12"
                 />
               </div>
@@ -664,14 +664,14 @@ export default function AdminInscricoesPage() {
                   variant="ghost"
                   onClick={() => setLoteAberto(false)}
                   disabled={loteProcessando}
-                  className="text-[#9895a4] hover:text-[#f0ece4] cursor-pointer"
+                  className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer"
                 >
                   Cancelar
                 </Button>
                 <Button
                   onClick={executarLote}
                   disabled={loteProcessando || !loteMunicipio}
-                  style={{ backgroundColor: "#E8B829", color: "#0a0a0f" }}
+                  style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}
                   className="cursor-pointer"
                 >
                   {loteProcessando ? "Inscrevendo..." : "Inscrever todos"}

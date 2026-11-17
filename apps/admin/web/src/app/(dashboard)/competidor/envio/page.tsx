@@ -69,8 +69,8 @@ function duracao(s: number) {
   return `${Math.floor(s / 3600)} h ${Math.ceil((s % 3600) / 60)} min`;
 }
 
-const cartao = "border border-[#2a2a3a] rounded-2xl p-6 lg:p-8 bg-[#12121a]";
-const titulo = "text-2xl font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]";
+const cartao = "border border-[var(--border-color)] rounded-2xl p-6 lg:p-8 bg-[var(--bg-secondary)]";
+const titulo = "text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]";
 
 /** Cartão de upload de um arquivo (videoaula ou portfólio). */
 function CartaoArquivo({
@@ -137,12 +137,12 @@ function CartaoArquivo({
     <div className={`${cartao} space-y-4`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-[#E8B829]/15 p-2.5"><Icone className="text-[#E8B829]" size={22} /></div>
+          <div className="rounded-xl bg-[var(--color-gold)]/15 p-2.5"><Icone className="text-[var(--color-gold-ink)]" size={22} /></div>
           <div>
-            <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+            <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
               {video ? "Videoaula (20 minutos)" : "Portfólio digital (PDF único)"}
             </h2>
-            <p className="text-xs text-[#9895a4]">
+            <p className="text-xs text-[var(--text-tertiary)]">
               {video ? `${formatos.map((x) => x.toUpperCase()).join(", ")} · até ${limite}` : `PDF · até ${limite}`}
             </p>
           </div>
@@ -157,12 +157,12 @@ function CartaoArquivo({
       </div>
 
       {atual && (
-        <div className="rounded-xl border border-[#2a2a3a] bg-[#0a0a0f] p-3 text-sm flex flex-wrap items-center justify-between gap-2">
-          <span className="text-[#f0ece4] break-all">
-            {atual.nome} <span className="text-[#9895a4]">· {formatarBytes(atual.bytes)}</span>
+        <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-3 text-sm flex flex-wrap items-center justify-between gap-2">
+          <span className="text-[var(--text-primary)] break-all">
+            {atual.nome} <span className="text-[var(--text-tertiary)]">· {formatarBytes(atual.bytes)}</span>
           </span>
           {atual.url && (
-            <a href={atual.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[#3AAFE0] hover:underline">
+            <a href={atual.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[var(--color-blue-ink)] hover:underline">
               <ExternalLink size={14} /> Conferir
             </a>
           )}
@@ -172,7 +172,7 @@ function CartaoArquivo({
       {aberta && (
         <>
           <div>
-            <Label htmlFor={`arquivo-${tipo}`} className="text-[#f0ece4]">
+            <Label htmlFor={`arquivo-${tipo}`} className="text-[var(--text-primary)]">
               {atual ? "Substituir por outro arquivo" : "Escolha o arquivo"}
             </Label>
             <input
@@ -182,19 +182,19 @@ function CartaoArquivo({
               accept={video ? formatos.map((f) => `.${f}`).join(",") + ",video/*" : ".pdf,application/pdf"}
               disabled={enviando}
               onChange={(e) => escolher(e.target.files?.[0] ?? null)}
-              className="mt-1.5 block w-full text-sm text-[#b0adc0] file:mr-3 file:rounded-lg file:border-0 file:bg-[#E8B829] file:px-4 file:py-2 file:font-semibold file:text-[#0a0a0f] hover:file:brightness-110 file:cursor-pointer"
+              className="mt-1.5 block w-full text-sm text-[var(--text-secondary)] file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--color-gold)] file:px-4 file:py-2 file:font-semibold file:text-[var(--on-accent)] hover:file:brightness-110 file:cursor-pointer"
             />
             {arquivo && !enviando && (
-              <p className="text-xs text-[#9895a4] mt-1.5">{arquivo.name} · {formatarBytes(arquivo.size)}</p>
+              <p className="text-xs text-[var(--text-tertiary)] mt-1.5">{arquivo.name} · {formatarBytes(arquivo.size)}</p>
             )}
           </div>
 
           {enviando && progresso && (
             <div className="space-y-2" aria-live="polite">
-              <div className="h-3 w-full rounded-full bg-[#2a2a3a] overflow-hidden">
-                <div className="h-full bg-[#4CAF50] transition-[width] duration-300" style={{ width: `${pct}%` }} />
+              <div className="h-3 w-full rounded-full bg-[var(--border-color)] overflow-hidden">
+                <div className="h-full bg-[var(--color-green)] transition-[width] duration-300" style={{ width: `${pct}%` }} />
               </div>
-              <div className="flex flex-wrap justify-between gap-2 text-xs text-[#b0adc0] tabular-nums">
+              <div className="flex flex-wrap justify-between gap-2 text-xs text-[var(--text-secondary)] tabular-nums">
                 <span>{pct}% · {formatarBytes(progresso.enviados)} de {formatarBytes(progresso.total)}</span>
                 <span>
                   {progresso.velocidade > 0 && `${formatarBytes(progresso.velocidade)}/s`}
@@ -216,13 +216,13 @@ function CartaoArquivo({
               {enviando ? "Enviando..." : atual ? "Enviar e substituir" : "Enviar arquivo"}
             </Button>
             {enviando && (
-              <Button variant="outline" onClick={() => controle.current?.abort()} className="border-[#2a2a3a] text-[#f0ece4]">
+              <Button variant="outline" onClick={() => controle.current?.abort()} className="border-[var(--border-color)] text-[var(--text-primary)]">
                 <X size={16} className="mr-1" /> Cancelar
               </Button>
             )}
           </div>
           {ocupado && !enviando && arquivo && (
-            <p className="text-xs text-[#9895a4]">Aguarde o término do outro envio.</p>
+            <p className="text-xs text-[var(--text-tertiary)]">Aguarde o término do outro envio.</p>
           )}
         </>
       )}
@@ -303,7 +303,7 @@ export default function EnvioFase2Page() {
   if (carregando) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#E8B829] border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-gold)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -313,7 +313,7 @@ export default function EnvioFase2Page() {
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className={titulo}>Envio — Fase 2</h1>
         <div className={cartao}>
-          <p className="text-[#b0adc0] leading-relaxed">
+          <p className="text-[var(--text-secondary)] leading-relaxed">
             O envio da Fase 2 está disponível apenas para os participantes da relação oficial de
             classificados, divulgada no site da OLICMAT.
           </p>
@@ -333,19 +333,19 @@ export default function EnvioFase2Page() {
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className={titulo}>Envio — Fase 2</h1>
-        <p className="text-[#9895a4] text-sm mt-1">Desafio Didático-Tecnológico: videoaula autoral e portfólio digital</p>
+        <p className="text-[var(--text-tertiary)] text-sm mt-1">Desafio Didático-Tecnológico: videoaula autoral e portfólio digital</p>
       </div>
 
       {status.situacao === "NAO_INICIADA" && (
         <div className={cartao}>
           <div className="flex items-center gap-3 mb-2">
-            <Clock className="text-[#E8B829]" size={20} />
-            <p className="text-lg font-semibold text-[#f0ece4]">Aguardando o início da Fase 2</p>
+            <Clock className="text-[var(--color-gold-ink)]" size={20} />
+            <p className="text-lg font-semibold text-[var(--text-primary)]">Aguardando o início da Fase 2</p>
           </div>
-          <p className="text-[#b0adc0] leading-relaxed">
+          <p className="text-[var(--text-secondary)] leading-relaxed">
             Você está classificado(a) para a Fase 2. A Comissão Organizadora sorteará uma competência
             específica da BNCC e iniciará a fase; você receberá um e-mail com a competência, a data e a
-            hora do início. A partir do início, você terá <strong className="text-[#f0ece4]">24 horas</strong> para
+            hora do início. A partir do início, você terá <strong className="text-[var(--text-primary)]">24 horas</strong> para
             enviar a videoaula e o portfólio.
           </p>
         </div>
@@ -353,22 +353,22 @@ export default function EnvioFase2Page() {
 
       {status.situacao !== "NAO_INICIADA" && (
         <div className={cartao}>
-          <span className="text-xs text-[#E8B829] uppercase tracking-widest">Competência sorteada</span>
-          <p className="text-xl font-bold text-[#f0ece4] mt-1 font-[family-name:var(--font-fraunces)]">{status.tema}</p>
+          <span className="text-xs text-[var(--color-gold-ink)] uppercase tracking-widest">Competência sorteada</span>
+          <p className="text-xl font-bold text-[var(--text-primary)] mt-1 font-[family-name:var(--font-fraunces)]">{status.tema}</p>
           <div className="grid sm:grid-cols-2 gap-4 mt-5 text-sm">
             <div>
-              <p className="text-[#9895a4]">Início</p>
-              <p className="text-[#f0ece4] font-medium">{status.inicioEm && dataHora(status.inicioEm)}</p>
+              <p className="text-[var(--text-tertiary)]">Início</p>
+              <p className="text-[var(--text-primary)] font-medium">{status.inicioEm && dataHora(status.inicioEm)}</p>
             </div>
             <div>
-              <p className="text-[#9895a4]">Prazo final (horário de Brasília)</p>
-              <p className="text-[#f0ece4] font-medium">{status.prazoEm && dataHora(status.prazoEm)}</p>
+              <p className="text-[var(--text-tertiary)]">Prazo final (horário de Brasília)</p>
+              <p className="text-[var(--text-primary)] font-medium">{status.prazoEm && dataHora(status.prazoEm)}</p>
             </div>
           </div>
           {aberta && prazoMs != null ? (
-            <div className="mt-5 rounded-xl border border-[#E8B829]/40 bg-[#E8B829]/10 p-4 text-center">
-              <p className="text-xs text-[#E8B829] uppercase tracking-widest">Tempo restante</p>
-              <p className="text-3xl font-bold text-[#f0ece4] tabular-nums mt-1">{restante(prazoMs - agoraServidor)}</p>
+            <div className="mt-5 rounded-xl border border-[var(--color-gold)]/40 bg-[var(--color-gold)]/10 p-4 text-center">
+              <p className="text-xs text-[var(--color-gold-ink)] uppercase tracking-widest">Tempo restante</p>
+              <p className="text-3xl font-bold text-[var(--text-primary)] tabular-nums mt-1">{restante(prazoMs - agoraServidor)}</p>
             </div>
           ) : (
             <div className="mt-5 rounded-xl border border-red-500/40 bg-red-500/10 p-4 text-center">
@@ -417,12 +417,12 @@ export default function EnvioFase2Page() {
       {!modoUpload && enviado && (
         <div className="border border-emerald-500/40 rounded-2xl p-6 bg-emerald-500/10 space-y-3">
           {enviado.videoLink && (
-            <a href={enviado.videoLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#3AAFE0] hover:underline break-all">
+            <a href={enviado.videoLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[var(--color-blue-ink)] hover:underline break-all">
               <ExternalLink size={14} className="shrink-0" /> Videoaula: {enviado.videoLink}
             </a>
           )}
           {enviado.portfolioLink && (
-            <a href={enviado.portfolioLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[#3AAFE0] hover:underline break-all">
+            <a href={enviado.portfolioLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-[var(--color-blue-ink)] hover:underline break-all">
               <ExternalLink size={14} className="shrink-0" /> Portfólio: {enviado.portfolioLink}
             </a>
           )}
@@ -431,25 +431,25 @@ export default function EnvioFase2Page() {
 
       {!modoUpload && aberta && (
         <div className={`${cartao} space-y-5`}>
-          <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">
+          <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
             {enviado ? "Corrigir os links" : "Enviar os links"}
           </h2>
           <div>
-            <Label htmlFor="videoLink" className="text-[#f0ece4]">Link da videoaula</Label>
+            <Label htmlFor="videoLink" className="text-[var(--text-primary)]">Link da videoaula</Label>
             <Input
               id="videoLink" type="url" inputMode="url" placeholder="https://..."
               value={videoLink} onChange={(e) => setVideoLink(e.target.value)}
-              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+              className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
             />
           </div>
           <div>
-            <Label htmlFor="portfolioLink" className="text-[#f0ece4]">Link do portfólio (PDF)</Label>
+            <Label htmlFor="portfolioLink" className="text-[var(--text-primary)]">Link do portfólio (PDF)</Label>
             <Input
               id="portfolioLink" type="url" inputMode="url" placeholder="https://..."
               value={portfolioLink} onChange={(e) => setPortfolioLink(e.target.value)}
-              className="mt-1.5 bg-[#0a0a0f] border-[#2a2a3a] text-[#f0ece4] placeholder:text-[#9895a4]/50"
+              className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]/50"
             />
-            <p className="text-xs text-[#9895a4] mt-1.5">
+            <p className="text-xs text-[var(--text-tertiary)] mt-1.5">
               Confira se o link está com acesso liberado para qualquer pessoa com o link (por exemplo, no Google Drive).
             </p>
           </div>
@@ -471,10 +471,10 @@ export default function EnvioFase2Page() {
         </p>
       )}
 
-      <div className={`${cartao} space-y-4 text-sm text-[#b0adc0] leading-relaxed`}>
-        <h2 className="text-lg font-bold text-[#f0ece4] font-[family-name:var(--font-fraunces)]">Materiais obrigatórios</h2>
+      <div className={`${cartao} space-y-4 text-sm text-[var(--text-secondary)] leading-relaxed`}>
+        <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">Materiais obrigatórios</h2>
         <div>
-          <p className="font-semibold text-[#f0ece4]">Videoaula autoral de 20 minutos</p>
+          <p className="font-semibold text-[var(--text-primary)]">Videoaula autoral de 20 minutos</p>
           <p className="mt-1">
             Desenvolva uma situação de ensino relacionada à competência sorteada e à(s) habilidade(s)
             escolhida(s), para o público da Educação Básica definido no portfólio. Apresente uma aula, não
@@ -483,7 +483,7 @@ export default function EnvioFase2Page() {
           </p>
         </div>
         <div>
-          <p className="font-semibold text-[#f0ece4]">Portfólio digital — arquivo único em PDF</p>
+          <p className="font-semibold text-[var(--text-primary)]">Portfólio digital — arquivo único em PDF</p>
           <p className="mt-1">
             Identificação; competência sorteada e habilidade(s); público-alvo e objetivos; plano de aula;
             situação-problema ou atividade; desenvolvimento e justificativas matemáticas; metodologia e
@@ -495,13 +495,13 @@ export default function EnvioFase2Page() {
           {DOCUMENTOS.map((d) => (
             <a
               key={d.href} href={d.href} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-[#2a2a3a] px-3 py-2 text-[#3AAFE0] hover:bg-[#1a1a26]"
+              className="flex items-center gap-2 rounded-lg border border-[var(--border-color)] px-3 py-2 text-[var(--color-blue-ink)] hover:bg-[var(--surface)]"
             >
               <Download size={14} className="shrink-0" /> {d.rotulo}
             </a>
           ))}
         </div>
-        <p className="text-xs text-[#9895a4]">
+        <p className="text-xs text-[var(--text-tertiary)]">
           A produção deve ser autoral. Após o prazo final, o envio é encerrado automaticamente e não há prorrogação.
         </p>
       </div>
