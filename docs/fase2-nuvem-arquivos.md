@@ -25,6 +25,10 @@ Avaliador ──(8) URL temporária (6 h) da versão final ──▶ Nuvem
 - Um vídeo que falha é tentado 3 vezes. Se continuar falhando, o participante vê "Não conseguimos ler este vídeo… envie novamente".
 - O compressor confere a duração da saída antes de apagar o original.
 - **Envio único:** cada arquivo (videoaula e portfólio) só pode ser enviado uma vez. A exceção é o vídeo que o compressor não conseguiu ler nas 3 tentativas, que pode ser reenviado. A regra é aplicada na API, com trava da inscrição para impedir que duas abas enviem ao mesmo tempo.
+- **Liberar reenvio (exceção):** no painel *Fase 2: Envio e Avaliação*, a Comissão clica em "liberar reenvio", escolhe o arquivo e informa o motivo.
+  - O participante pode enviar aquele arquivo mais uma vez, até o prazo, e recebe um e-mail avisando.
+  - O arquivo atual continua valendo até o novo terminar, e a liberação é consumida pelo envio.
+  - Fica registrado na auditoria (`LIBERAR_REENVIO_FASE2` / `REVOGAR_REENVIO_FASE2`) e pode ser revogado.
 - Os originais já convertidos e os arquivos descartados são apagados automaticamente. Descartados são, por exemplo, o vídeo ilegível que foi reenviado ou o arquivo da aba que perdeu a disputa.
 - Uploads interrompidos (aba fechada, internet caída) deixam partes na nuvem. O compressor as apaga a cada 30 min, quando têm mais de 8 h (`INCOMPLETOS_HORAS`).
 

@@ -42,6 +42,11 @@ export const concluirUploadSchema = z.object({
 export const iniciarSchema = z.object({ tema: z.string().min(3).max(300) });
 export const distribuirSchema = z.object({ avaliadorIds: z.array(z.string().uuid()).min(3) });
 export const remanejarSchema = z.object({ avaliadorId: z.string().uuid() });
+export const liberarReenvioSchema = z.object({
+  tipo: z.enum(["video", "portfolio"]),
+  liberar: z.boolean(),
+  motivo: z.string().trim().max(500).optional(),
+}).refine((d) => !d.liberar || (d.motivo ?? "").length >= 5, { message: "Informe o motivo da liberação (mínimo 5 caracteres).", path: ["motivo"] });
 const conceito = z.number().int().min(0).max(5).nullable().optional();
 export const fichaSchema = z.object({
   notas: z.object({
@@ -126,6 +131,12 @@ export class Fase2GestaoController {
   @Post("atribuicoes/:id/remanejar")
   remanejar(@Req() req: Req, @Param("id") id: string, @Body() body: unknown) {
     return this.service.remanejar(id, validar(remanejarSchema, body).avaliadorId, req.user.id);
+  }
+
+  @Post("participantes/:inscricaoId/reenvio")
+  liberarReenvio(@Req() req: Req, @Param("inscricaoId") inscricaoId: string, @Body() body: unknown) {
+    const d = validar(liberarReenvioSchema, body);
+    return this.service.liberarReenvio(inscricaoId, d.tipo, d.liberar, d.motivo ?? "", req.user.id);
   }
 
   @Get("exportar")

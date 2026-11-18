@@ -257,7 +257,8 @@ export function nomeFinalDe(nomeOriginal: string): string {
  * Envio único: para economizar espaço na nuvem, cada arquivo (videoaula e
  * portfólio) só pode ser enviado uma vez. A única exceção é o vídeo que o
  * compressor não conseguiu ler depois de todas as tentativas (arquivo
- * corrompido): aí o participante precisa reenviar.
+ * corrompido): aí o participante precisa reenviar. A Comissão também pode
+ * liberar, excepcionalmente, um novo envio (reenvioLiberado).
  *
  * Devolve a mensagem de bloqueio, ou null quando o envio é permitido.
  */
@@ -265,7 +266,9 @@ export function bloqueioDeEnvio(
   tipo: TipoArquivo,
   atual: { videoKey: string | null; portfolioKey: string | null } | null | undefined,
   videoComFalhaDefinitiva = false,
+  reenvioLiberado = false,
 ): string | null {
+  if (reenvioLiberado) return null;
   if (tipo === "video") {
     if (!atual?.videoKey || videoComFalhaDefinitiva) return null;
     return "Você já enviou a videoaula. O envio é único e não pode ser substituído.";

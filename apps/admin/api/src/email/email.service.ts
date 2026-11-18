@@ -232,6 +232,27 @@ export class EmailService {
     );
   }
 
+  /** Aviso de que a Comissão liberou um novo envio (exceção ao envio único). */
+  async enviarReenvioLiberado(email: string, nome: string, tipo: "video" | "portfolio", prazo: Date) {
+    const esc = (t: string) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const fmt = prazo.toLocaleString("pt-BR", {
+      timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+    });
+    const arquivo = tipo === "video" ? "da videoaula" : "do portfólio";
+    const link = `${this.configService.get("FRONTEND_URL")}/competidor/envio`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #E8B829;">OLICMAT — Novo envio liberado</h2>
+        <p>Olá, <strong>${esc(nome)}</strong>!</p>
+        <p>A Comissão Organizadora liberou <strong>um novo envio ${arquivo}</strong> da Fase 2.</p>
+        <p>O arquivo atual continua valendo até o novo envio terminar. A liberação vale para <strong>um único envio</strong>, até o prazo final: <strong>${fmt}</strong> (horário de Brasília).</p>
+        <p><a href="${link}" style="color: #E8B829;">Acessar o envio da Fase 2</a></p>
+        <p>Comissão Organizadora da OLICMAT</p>
+      </div>
+    `;
+    await this.sendMail(email, "Novo envio liberado — Fase 2 — OLICMAT", html);
+  }
+
   /** E-mail de início da Fase 2 (competência sorteada, início e prazo de 24h). */
   async enviarInicioFase2(
     email: string,
