@@ -1,6 +1,6 @@
-import { situacaoVideo } from "./fase2-coordenacao.service.js";
+import { situacaoVideo } from "./fase2.regras.js";
 
-const info = (status: string, tentativas = 1) => ({ status, tentativas } as never);
+const info = (status: string, tentativas = 1) => ({ status, tentativas });
 
 describe("situação do vídeo para o coordenador", () => {
   it("sem envio é pendente; link é pronto", () => {

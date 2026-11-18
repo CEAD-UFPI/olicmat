@@ -276,3 +276,22 @@ export function bloqueioDeEnvio(
   if (!atual?.portfolioKey) return null;
   return "Você já enviou o portfólio. O envio é único e não pode ser substituído.";
 }
+
+export type SituacaoVideo = "PENDENTE" | "PREPARANDO" | "PRONTO" | "FALHA";
+
+/**
+ * Situação do vídeo para acompanhamento (coordenador), sem expor o arquivo.
+ * A falha só é definitiva depois de esgotadas as tentativas do compressor.
+ */
+export function situacaoVideo(
+  videoKey: string | null | undefined,
+  videoLink: string | null | undefined,
+  info?: { status: string; tentativas: number },
+  maxTentativas = 3,
+): SituacaoVideo {
+  if (!videoKey) return videoLink ? "PRONTO" : "PENDENTE";
+  if (!info) return "PREPARANDO";
+  if (info.status === "PRONTO") return "PRONTO";
+  if (info.status === "FALHA" && info.tentativas >= maxTentativas) return "FALHA";
+  return "PREPARANDO";
+}

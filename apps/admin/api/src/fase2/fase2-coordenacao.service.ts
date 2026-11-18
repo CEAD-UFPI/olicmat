@@ -4,20 +4,9 @@ import { JwtAuthGuard } from "../common/guards/jwt-auth.guard.js";
 import { RolesGuard } from "../common/guards/roles.guard.js";
 import { Roles } from "../common/decorators/roles.decorator.js";
 import { Role } from "../../generated/prisma/client.js";
-import { situacaoEnvio } from "./fase2.regras.js";
+import { situacaoEnvio, situacaoVideo } from "./fase2.regras.js";
 import { edicaoAtual } from "./fase2.edicao.js";
-import { Fase2VideosService, MAX_TENTATIVAS, type VideoInfo } from "./fase2-videos.service.js";
-
-export type SituacaoVideo = "PENDENTE" | "PREPARANDO" | "PRONTO" | "FALHA";
-
-/** Situação do vídeo para acompanhamento (sem expor o arquivo). */
-export function situacaoVideo(videoKey: string | null | undefined, videoLink: string | null | undefined, info?: VideoInfo): SituacaoVideo {
-  if (!videoKey) return videoLink ? "PRONTO" : "PENDENTE";
-  if (!info) return "PREPARANDO";
-  if (info.status === "PRONTO") return "PRONTO";
-  if (info.status === "FALHA" && info.tentativas >= MAX_TENTATIVAS) return "FALHA";
-  return "PREPARANDO";
-}
+import { Fase2VideosService, MAX_TENTATIVAS } from "./fase2-videos.service.js";
 
 /**
  * Coordenador de curso: acompanha o envio da Fase 2 dos classificados da(s)
@@ -70,7 +59,7 @@ export class Fase2CoordenacaoService {
 
     const participantes = inscricoes.map((i) => {
       const e = i.enviosFase2[0];
-      const video = situacaoVideo(e?.videoKey, e?.videoLink, e?.videoKey ? mapa.get(e.videoKey) : undefined);
+      const video = situacaoVideo(e?.videoKey, e?.videoLink, e?.videoKey ? mapa.get(e.videoKey) : undefined, MAX_TENTATIVAS);
       const portfolio = !!(e?.portfolioKey || e?.portfolioLink);
       const videoEnviado = video !== "PENDENTE" && video !== "FALHA";
       return {
