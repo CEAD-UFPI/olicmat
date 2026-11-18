@@ -32,6 +32,7 @@ interface StatusFase2 {
   totalEnvios?: number;
   envioUnico?: boolean;
   podeEnviar?: Record<TipoArquivo, boolean>;
+  reenvioLiberado?: Record<TipoArquivo, boolean>;
 }
 
 const SITE = SITE_URL;
@@ -78,12 +79,13 @@ const titulo = "text-2xl font-bold text-[var(--text-primary)] font-[family-name:
 
 /** Cartão de upload de um arquivo (videoaula ou portfólio). */
 function CartaoArquivo({
-  tipo, atual, aberta, podeEnviar, limiteMb, formatos, ocupado, aoMudarOcupado, aoConcluir,
+  tipo, atual, aberta, podeEnviar, reenvioLiberado = false, limiteMb, formatos, ocupado, aoMudarOcupado, aoConcluir,
 }: {
   tipo: TipoArquivo;
   atual: Arquivo | null;
   aberta: boolean;
   podeEnviar: boolean;
+  reenvioLiberado?: boolean;
   limiteMb: number;
   formatos: string[];
   ocupado: boolean;
@@ -209,6 +211,14 @@ function CartaoArquivo({
       {aberta && !podeEnviar && atual && (
         <p className="text-xs text-[var(--text-tertiary)] flex items-center gap-1.5">
           <Lock size={14} className="shrink-0" /> Envio único: este arquivo já foi recebido e não pode ser substituído.
+        </p>
+      )}
+
+      {aberta && podeEnviar && reenvioLiberado && atual && (
+        <p className="text-sm p-3 rounded-lg bg-[var(--color-blue-ink)]/10 text-[var(--text-primary)] flex items-start gap-2">
+          <AlertTriangle size={16} className="shrink-0 mt-0.5 text-[var(--color-blue-ink)]" />
+          A Comissão liberou um novo envio deste arquivo. O arquivo atual continua valendo até o novo
+          envio terminar. A liberação vale para um único envio.
         </p>
       )}
 
@@ -460,6 +470,7 @@ export default function EnvioFase2Page() {
           <CartaoArquivo
             tipo="video" atual={enviado?.video ?? null} aberta={aberta}
             podeEnviar={status.podeEnviar?.video ?? (!enviado?.video || enviado.video.processamento === "FALHA")}
+            reenvioLiberado={status.reenvioLiberado?.video}
             limiteMb={status.limitesMb?.video ?? 400} formatos={status.formatos?.video ?? ["mp4"]}
             ocupado={uploadAtivo} aoMudarOcupado={setUploadAtivo}
             aoConcluir={(m) => { setSucesso(m); carregar(); }}
@@ -467,6 +478,7 @@ export default function EnvioFase2Page() {
           <CartaoArquivo
             tipo="portfolio" atual={enviado?.portfolio ?? null} aberta={aberta}
             podeEnviar={status.podeEnviar?.portfolio ?? !enviado?.portfolio}
+            reenvioLiberado={status.reenvioLiberado?.portfolio}
             limiteMb={status.limitesMb?.portfolio ?? 10} formatos={status.formatos?.portfolio ?? ["pdf"]}
             ocupado={uploadAtivo} aoMudarOcupado={setUploadAtivo}
             aoConcluir={(m) => { setSucesso(m); carregar(); }}

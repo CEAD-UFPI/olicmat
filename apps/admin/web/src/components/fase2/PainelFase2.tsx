@@ -35,6 +35,7 @@ interface Participante {
   } | null;
   envioCompleto: boolean;
   totalEnvios: number;
+  reenvioLiberado?: { video: boolean; portfolio: boolean };
   emailInicio: { status: string; erro: string | null } | null;
   fase2Nota: number | null;
   situacaoAvaliacao: string;
@@ -104,6 +105,20 @@ export default function PainelFase2() {
   const [filtroSituacao, setFiltroSituacao] = useState("");
   const [remanejando, setRemanejando] = useState<{ atribuicao: Atribuicao; participante: string } | null>(null);
   const [novoAvaliador, setNovoAvaliador] = useState("");
+  const [liberando, setLiberando] = useState<Participante | null>(null);
+  const [tipoReenvio, setTipoReenvio] = useState<"video" | "portfolio">("video");
+  const [motivo, setMotivo] = useState("");
+
+  const abrirLiberacao = (p: Participante) => {
+    setLiberando(p);
+    setTipoReenvio(p.ultimoEnvio?.video ? "video" : "portfolio");
+    setMotivo("");
+  };
+  const revogar = (p: Participante, tipo: "video" | "portfolio") =>
+    acao(async () => {
+      await api.post(`/admin/fase2/participantes/${p.inscricaoId}/reenvio`, { tipo, liberar: false });
+      return `Liberação revogada: ${p.nome} (${tipo === "video" ? "vídeo" : "portfólio"}).`;
+    });
 
   const carregar = useCallback(() => {
     api.get<Painel>("/admin/fase2/painel")
@@ -364,6 +379,17 @@ export default function PainelFase2() {
                           {(p.ultimoEnvio.portfolio?.url ?? p.ultimoEnvio.portfolioLink) ? (
                             <a className="text-xs text-[var(--color-blue-ink)] hover:underline" href={p.ultimoEnvio.portfolio?.url ?? p.ultimoEnvio.portfolioLink ?? undefined} target="_blank" rel="noopener noreferrer">portfólio</a>
                           ) : <span className="text-xs text-amber-300">sem portfólio</span>}
+                          {(["video", "portfolio"] as const).filter((t) => p.reenvioLiberado?.[t]).map((t) => (
+                            <span key={t} className="block text-xs text-[var(--color-blue-ink)]">
+                              Reenvio liberado: {t === "video" ? "vídeo" : "portfólio"}{" "}
+                              <button className="underline" disabled={ocupado} onClick={() => revogar(p, t)}>revogar</button>
+                            </span>
+                          ))}
+                          {painel.situacao === "ABERTA" && (p.ultimoEnvio.video || p.ultimoEnvio.portfolio) && (
+                            <button className="block text-xs text-[var(--color-gold-ink)] hover:underline mt-0.5" onClick={() => abrirLiberacao(p)}>
+                              liberar reenvio
+                            </button>
+                          )}
                         </>
                       ) : <span className="text-[var(--text-tertiary)]">—</span>}
                     </td>
@@ -415,6 +441,44 @@ export default function PainelFase2() {
         titulo="Distribuir aos avaliadores?"
         mensagem={`${totais.enviaram} participantes serão distribuídos entre ${selecionados.length} avaliadores, 2 avaliadores por participante. A distribuição é feita uma única vez.`}
       />
+
+      {liberando && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setLiberando(null)}>
+          <div className={`${cartao} w-full max-w-md space-y-3`} onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Liberar novo envio</h3>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {liberando.nome} poderá enviar <strong>mais uma vez</strong> o arquivo escolhido, até o prazo final. O arquivo
+              atual continua valendo até o novo envio terminar. A liberação fica registrada na auditoria e o participante é
+              avisado por e-mail.
+            </p>
+            <div className="flex gap-2">
+              {(["video", "portfolio"] as const).filter((t) => (t === "video" ? liberando.ultimoEnvio?.video : liberando.ultimoEnvio?.portfolio)).map((t) => (
+                <label key={t} className="flex items-center gap-2 text-sm text-[var(--text-primary)] rounded-lg bg-[var(--bg-primary)] px-3 py-2 cursor-pointer">
+                  <input type="radio" name="tipoReenvio" checked={tipoReenvio === t} onChange={() => setTipoReenvio(t)} />
+                  {t === "video" ? "Videoaula" : "Portfólio"}
+                </label>
+              ))}
+            </div>
+            <div>
+              <Label htmlFor="motivoReenvio" className="text-[var(--text-primary)]">Motivo (obrigatório)</Label>
+              <Input id="motivoReenvio" value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ex.: enviou o arquivo errado por engano (pedido pelo WhatsApp)"
+                className="mt-1.5 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]" />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setLiberando(null)}>Cancelar</Button>
+              <Button size="sm" disabled={motivo.trim().length < 5 || ocupado} style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}
+                onClick={() => acao(async () => {
+                  await api.post(`/admin/fase2/participantes/${liberando.inscricaoId}/reenvio`, { tipo: tipoReenvio, liberar: true, motivo: motivo.trim() });
+                  const nome = liberando.nome;
+                  setLiberando(null);
+                  return `Novo envio liberado para ${nome} (${tipoReenvio === "video" ? "videoaula" : "portfólio"}).`;
+                })}>
+                Liberar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {remanejando && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setRemanejando(null)}>

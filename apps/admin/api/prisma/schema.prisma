@@ -321,6 +321,10 @@ model Inscricao {
   fase2Classificado Boolean   @default(false)
   /// Nota consolidada da Fase 2 (média das avaliações, regra do 3º avaliador).
   fase2Nota       Float?
+  /// Envio único: a Comissão pode liberar, excepcionalmente, um novo envio de
+  /// cada arquivo. A liberação vale para um envio e é consumida por ele.
+  fase2ReenvioVideo     Boolean @default(false)
+  fase2ReenvioPortfolio Boolean @default(false)
   notaFinal       Float?
   medalha         Medalha?
   createdAt       DateTime    @default(now())
