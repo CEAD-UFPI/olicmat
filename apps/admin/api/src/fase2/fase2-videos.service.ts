@@ -45,6 +45,15 @@ export class Fase2VideosService {
     ]);
   }
 
+  /** Arquivo recusado (envio único): já entra como substituído, para ser apagado. */
+  async registrarDescartado(inscricaoId: string, chaveOriginal: string, nomeOriginal: string, bytes: number) {
+    await this.prisma.videoFase2.upsert({
+      where: { chaveOriginal },
+      create: { inscricaoId, chaveOriginal, nomeOriginal, bytesOriginal: BigInt(bytes), status: "SUBSTITUIDO" },
+      update: {},
+    });
+  }
+
   async mapaPorChaves(chaves: Array<string | null | undefined>): Promise<Map<string, VideoInfo>> {
     const lista = chaves.filter((c): c is string => !!c);
     if (!lista.length) return new Map();

@@ -154,7 +154,7 @@ export async function enviarArquivo(
   }
   if (!concluido) throw new Error("Não foi possível finalizar o arquivo na nuvem. Envie novamente.");
 
-  // 6. Registra o envio na OLICMAT (vale o último).
+  // 6. Registra o envio na OLICMAT (envio único).
   const { data } = await api.post("/envio/upload/concluir", {
     tipo,
     chave: ini.chave,

@@ -14,6 +14,7 @@ import {
   limitesMb,
   chaveFinalDe,
   nomeFinalDe,
+  bloqueioDeEnvio,
 } from "./fase2.regras.js";
 
 describe("prazo e situação do envio", () => {
@@ -189,5 +190,23 @@ describe("compressão", () => {
     expect(chaveFinalDe("fase2/e/i/video-1-ab.MOV")).toBe("fase2/e/i/video-1-ab.final.mp4");
     expect(chaveFinalDe("fase2/e.x/i/video-1")).toBe("fase2/e.x/i/video-1.final.mp4");
     expect(nomeFinalDe("Minha aula.final.MOV")).toBe("Minha aula.final.mp4");
+  });
+});
+
+describe("envio único", () => {
+  const nada = { videoKey: null, portfolioKey: null };
+  it("permite o primeiro envio de cada arquivo", () => {
+    expect(bloqueioDeEnvio("video", null)).toBeNull();
+    expect(bloqueioDeEnvio("portfolio", nada)).toBeNull();
+    expect(bloqueioDeEnvio("video", { videoKey: null, portfolioKey: "p" })).toBeNull();
+    expect(bloqueioDeEnvio("portfolio", { videoKey: "v", portfolioKey: null })).toBeNull();
+  });
+  it("bloqueia o segundo envio do mesmo arquivo", () => {
+    expect(bloqueioDeEnvio("video", { videoKey: "v", portfolioKey: null })).toMatch(/videoaula/);
+    expect(bloqueioDeEnvio("portfolio", { videoKey: null, portfolioKey: "p" })).toMatch(/portfólio/);
+  });
+  it("libera o reenvio do vídeo que falhou definitivamente (só o vídeo)", () => {
+    expect(bloqueioDeEnvio("video", { videoKey: "v", portfolioKey: "p" }, true)).toBeNull();
+    expect(bloqueioDeEnvio("portfolio", { videoKey: "v", portfolioKey: "p" }, true)).not.toBeNull();
   });
 });

@@ -165,7 +165,7 @@ export default function TutorialFase2Page() {
         <Passos
           itens={[
             <>No cartão <Strong>Videoaula (20 minutos)</Strong>, clique em <Strong>Escolher arquivo</Strong> e selecione o vídeo.</>,
-            <>Confira o nome e o tamanho que aparecem e clique em <Strong>Enviar arquivo</Strong>.</>,
+            <>Confira o nome e o tamanho que aparecem, marque a caixa de confirmação do <Strong>envio único</Strong> e clique em <Strong>Enviar arquivo</Strong>.</>,
           ]}
         />
         <Figura
@@ -200,7 +200,7 @@ export default function TutorialFase2Page() {
         <Passos
           itens={[
             <>Preencha o Template do Portfólio e salve em PDF: no Word, <Strong>Arquivo → Salvar como → PDF</Strong>; no Google Docs, <Strong>Arquivo → Fazer download → PDF</Strong>.</>,
-            <>No cartão <Strong>Portfólio digital (PDF único)</Strong>, escolha o PDF (até 10 MB) e clique em <Strong>Enviar arquivo</Strong>.</>,
+            <>No cartão <Strong>Portfólio digital (PDF único)</Strong>, escolha o PDF (até 10 MB), marque a confirmação e clique em <Strong>Enviar arquivo</Strong>.</>,
             <>Quando os dois arquivos forem enviados, aparece a faixa verde <Strong>Envio completo</Strong>.</>,
           ]}
         />
@@ -209,10 +209,11 @@ export default function TutorialFase2Page() {
           alt="Faixa verde de envio completo"
           legenda="Envio completo: videoaula e portfólio recebidos."
         />
-        <P>
-          Até o prazo final, você pode substituir qualquer um dos arquivos: escolha o novo e clique em{" "}
-          <Strong>Enviar e substituir</Strong>. <Strong>Vale o último envio.</Strong>
-        </P>
+        <Aviso>
+          <Strong>Envio único:</Strong> cada arquivo (videoaula e portfólio) só pode ser enviado{" "}
+          <Strong>uma vez</Strong> e não pode ser substituído depois. Antes de enviar, assista ao vídeo
+          até o fim e confira o PDF.
+        </Aviso>
         <div className="grid sm:grid-cols-[1fr_220px] gap-6 items-start">
           <P>
             Também é possível enviar pelo celular, com a mesma página. Para vídeos, prefira uma rede
@@ -241,12 +242,12 @@ export default function TutorialFase2Page() {
           itens={[
             ["“Arquivo maior que o limite”", "O vídeo passou de 4 GB, o que acontece ao gravar em 4K ou muito além de 20 minutos. Grave novamente em 1080p ou 720p. Para o portfólio, no Word salve como PDF com a opção “Tamanho mínimo”; imagens muito grandes aumentam o arquivo."],
             ["Apareceu “Não conseguimos ler este vídeo”", "O arquivo pode estar corrompido ou incompleto. Confira se ele abre normalmente no seu computador ou celular e envie novamente."],
-            ["O envio parou ou a internet caiu", "O sistema tenta de novo sozinho. Se aparecer uma mensagem de erro, clique em “Enviar arquivo” outra vez: o envio recomeça do início, e o arquivo anterior (se houver) continua valendo até o novo terminar."],
+            ["O envio parou ou a internet caiu", "O sistema tenta de novo sozinho. Se aparecer uma mensagem de erro, clique em “Enviar arquivo” outra vez: o envio recomeça do início. Um envio interrompido não conta como enviado."],
             ["Fechei a página durante o envio", "O envio é cancelado. Abra a página de novo e envie outra vez."],
             ["O prazo acabou durante o envio", "O envio só é aceito se terminar até o prazo final. Por isso, envie com antecedência e não deixe para os últimos minutos."],
             ["Não recebi o e-mail de início", "A competência sorteada aparece na própria plataforma, em “Envio - Fase 2”. Verifique também a caixa de spam."],
             ["A página diz que o envio é só para classificados", "Confira se entrou com o e-mail da sua inscrição. Se estiver na relação de classificados e o problema continuar, fale com o suporte."],
-            ["Quero trocar um arquivo", "Até o prazo final, escolha o novo arquivo e clique em “Enviar e substituir”. Vale o último envio."],
+            ["Quero trocar um arquivo", "Não é possível: o envio é único. Por isso, confira bem o vídeo e o PDF antes de enviar. A única exceção é o vídeo com o aviso “Não conseguimos ler este vídeo”, que pode ser enviado de novo."],
           ]}
         />
         <Aviso>

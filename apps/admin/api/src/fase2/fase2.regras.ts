@@ -252,3 +252,24 @@ export function chaveFinalDe(chaveOriginal: string): string {
 export function nomeFinalDe(nomeOriginal: string): string {
   return nomeOriginal.replace(/\.[^.]+$/, "") + ".mp4";
 }
+
+/**
+ * Envio único: para economizar espaço na nuvem, cada arquivo (videoaula e
+ * portfólio) só pode ser enviado uma vez. A única exceção é o vídeo que o
+ * compressor não conseguiu ler depois de todas as tentativas (arquivo
+ * corrompido): aí o participante precisa reenviar.
+ *
+ * Devolve a mensagem de bloqueio, ou null quando o envio é permitido.
+ */
+export function bloqueioDeEnvio(
+  tipo: TipoArquivo,
+  atual: { videoKey: string | null; portfolioKey: string | null } | null | undefined,
+  videoComFalhaDefinitiva = false,
+): string | null {
+  if (tipo === "video") {
+    if (!atual?.videoKey || videoComFalhaDefinitiva) return null;
+    return "Você já enviou a videoaula. O envio é único e não pode ser substituído.";
+  }
+  if (!atual?.portfolioKey) return null;
+  return "Você já enviou o portfólio. O envio é único e não pode ser substituído.";
+}
