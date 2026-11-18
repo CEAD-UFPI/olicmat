@@ -10,6 +10,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { EdicaoSelector } from "@/components/shared/edicao-selector";
 import { Plus, Copy, Trash2 } from "lucide-react";
 import { tinta } from "@/lib/tema";
+import { PublicarRevisaoFase1 } from "@/components/fase1/PublicarRevisaoFase1";
 
 interface ProvaItem {
   id: string;
@@ -131,6 +132,8 @@ export default function AdminProvasPage() {
           Nova Prova
         </Button>
       </div>
+
+      <PublicarRevisaoFase1 />
 
       {erro && (
         <p role="alert" className="text-sm text-red-400 bg-red-400/10 rounded-lg p-3">{erro}</p>
