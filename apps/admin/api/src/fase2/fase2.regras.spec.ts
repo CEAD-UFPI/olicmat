@@ -205,6 +205,10 @@ describe("envio único", () => {
     expect(bloqueioDeEnvio("video", { videoKey: "v", portfolioKey: null })).toMatch(/videoaula/);
     expect(bloqueioDeEnvio("portfolio", { videoKey: null, portfolioKey: "p" })).toMatch(/portfólio/);
   });
+  it("reenvio liberado pela Comissão", () => {
+    expect(bloqueioDeEnvio("portfolio", { videoKey: "v", portfolioKey: "p" }, false, true)).toBeNull();
+    expect(bloqueioDeEnvio("video", { videoKey: "v", portfolioKey: "p" }, false, true)).toBeNull();
+  });
   it("libera o reenvio do vídeo que falhou definitivamente (só o vídeo)", () => {
     expect(bloqueioDeEnvio("video", { videoKey: "v", portfolioKey: "p" }, true)).toBeNull();
     expect(bloqueioDeEnvio("portfolio", { videoKey: "v", portfolioKey: "p" }, true)).not.toBeNull();

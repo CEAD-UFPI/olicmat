@@ -3,7 +3,7 @@ import { randomInt } from "node:crypto";
 import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { EmailService } from "../email/email.service.js";
-import { ALERTA_AVALIACAO_HORAS, distribuir, prazoDe, situacaoEnvio } from "./fase2.regras.js";
+import { ALERTA_AVALIACAO_HORAS, distribuir, prazoDe, situacaoEnvio, type TipoArquivo } from "./fase2.regras.js";
 import { edicaoAtual } from "./fase2.edicao.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
 import { formatarEnvio } from "./fase2-participante.service.js";
@@ -48,6 +48,8 @@ export class Fase2GestaoService {
         id: true,
         numero: true,
         fase2Nota: true,
+        fase2ReenvioVideo: true,
+        fase2ReenvioPortfolio: true,
         user: { select: { nome: true, email: true } },
         instituicao: { select: { sigla: true } },
         enviosFase2: {
@@ -101,6 +103,7 @@ export class Fase2GestaoService {
         ultimoEnvio: ultimo,
         envioCompleto: temVideo && temPortfolio,
         totalEnvios: i.enviosFase2.length,
+        reenvioLiberado: { video: i.fase2ReenvioVideo, portfolio: i.fase2ReenvioPortfolio },
         emailInicio: i.emailsFase2[0] ?? null,
         fase2Nota: i.fase2Nota,
         situacaoAvaliacao,
@@ -272,6 +275,33 @@ export class Fase2GestaoService {
     } finally {
       this.enviandoEmails = false;
     }
+  }
+
+  // ─── Liberação de reenvio (exceção ao envio único) ─────────────────────
+
+  async liberarReenvio(inscricaoId: string, tipo: TipoArquivo, liberar: boolean, motivo: string, actorId: string, agora = new Date()) {
+    const edicao = await this.edicaoOuErro();
+    const inscricao = await this.prisma.inscricao.findFirst({
+      where: { id: inscricaoId, edicaoId: edicao.id, fase2Classificado: true },
+      select: { id: true, user: { select: { email: true, nome: true, nomeSocial: true } } },
+    });
+    if (!inscricao) throw new NotFoundException("Participante não encontrado entre os classificados.");
+    if (liberar && situacaoEnvio(edicao.fase2InicioEm, edicao.fase2PrazoEm, agora) !== "ABERTA") {
+      throw new BadRequestException("Só é possível liberar um novo envio enquanto o prazo da Fase 2 estiver aberto.");
+    }
+    const campo = tipo === "video" ? "fase2ReenvioVideo" : "fase2ReenvioPortfolio";
+    await this.prisma.inscricao.update({ where: { id: inscricao.id }, data: { [campo]: liberar } });
+    await this.auditoria.log(actorId, liberar ? "LIBERAR_REENVIO_FASE2" : "REVOGAR_REENVIO_FASE2", "Inscricao", inscricao.id, {
+      tipo,
+      motivo,
+    });
+    if (liberar && edicao.fase2PrazoEm) {
+      const nome = inscricao.user.nomeSocial || inscricao.user.nome;
+      // Aviso por e-mail é cortesia: a liberação vale mesmo se o envio falhar.
+      void this.email.enviarReenvioLiberado(inscricao.user.email, nome, tipo, edicao.fase2PrazoEm)
+        .catch((e) => this.logger.warn(`Aviso de reenvio não enviado: ${(e as Error).message}`));
+    }
+    return { ok: true, tipo, liberado: liberar };
   }
 
   // ─── Distribuição ──────────────────────────────────────────────────────

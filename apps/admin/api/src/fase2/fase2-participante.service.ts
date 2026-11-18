@@ -87,6 +87,8 @@ export function formatarEnvio(
   };
 }
 
+type Liberacao = { fase2ReenvioVideo: boolean; fase2ReenvioPortfolio: boolean };
+
 /** Envio da Fase 2 pelo participante classificado (upload ou links). */
 @Injectable()
 export class Fase2ParticipanteService {
@@ -105,7 +107,7 @@ export class Fase2ParticipanteService {
     if (!edicao) return { edicao: null, inscricao: null };
     const inscricao = await this.prisma.inscricao.findFirst({
       where: { userId, edicaoId: edicao.id, fase2Classificado: true },
-      select: { id: true },
+      select: { id: true, fase2ReenvioVideo: true, fase2ReenvioPortfolio: true },
     });
     return { edicao, inscricao };
   }
@@ -131,7 +133,9 @@ export class Fase2ParticipanteService {
   }
 
   /** Envio único: mensagem de bloqueio do arquivo, ou null se ainda pode enviar. */
-  private async bloqueio(tipo: TipoArquivo, ultimo: EnvioBruto | null | undefined) {
+  private async bloqueio(tipo: TipoArquivo, ultimo: EnvioBruto | null | undefined, liberacao: Liberacao) {
+    const liberado = tipo === "video" ? liberacao.fase2ReenvioVideo : liberacao.fase2ReenvioPortfolio;
+    if (liberado) return null;
     let falhaDefinitiva = false;
     if (tipo === "video" && ultimo?.videoKey) {
       const info = (await this.videos.mapaPorChaves([ultimo.videoKey])).get(ultimo.videoKey);
@@ -164,8 +168,12 @@ export class Fase2ParticipanteService {
       totalEnvios,
       envioUnico: true,
       podeEnviar: {
-        video: (await this.bloqueio("video", ultimo)) === null,
-        portfolio: (await this.bloqueio("portfolio", ultimo)) === null,
+        video: (await this.bloqueio("video", ultimo, inscricao)) === null,
+        portfolio: (await this.bloqueio("portfolio", ultimo, inscricao)) === null,
+      },
+      reenvioLiberado: {
+        video: !!(inscricao.fase2ReenvioVideo && ultimo?.videoKey),
+        portfolio: !!(inscricao.fase2ReenvioPortfolio && ultimo?.portfolioKey),
       },
     };
   }
@@ -211,7 +219,7 @@ export class Fase2ParticipanteService {
     const { edicao, inscricao } = await this.exigirAberta(userId, agora);
     const erro = validarArquivo(tipo, nome, bytes);
     if (erro) throw new BadRequestException(erro);
-    const bloqueado = await this.bloqueio(tipo, await this.ultimoEnvio(inscricao.id));
+    const bloqueado = await this.bloqueio(tipo, await this.ultimoEnvio(inscricao.id), inscricao);
     if (bloqueado) throw new BadRequestException(bloqueado);
     const chave = `${prefixoArquivos(edicao.id, inscricao.id)}${tipo}-${agora.getTime()}-${randomUUID().slice(0, 8)}.${extensao(nome)}`;
     return {
@@ -230,7 +238,7 @@ export class Fase2ParticipanteService {
     }
     // Um envio paralelo (outra aba) que já terminou encerra este: não sobe à toa.
     const tipo: TipoArquivo = chave.slice(chave.lastIndexOf("/") + 1).startsWith("video-") ? "video" : "portfolio";
-    const bloqueado = await this.bloqueio(tipo, await this.ultimoEnvio(inscricao.id));
+    const bloqueado = await this.bloqueio(tipo, await this.ultimoEnvio(inscricao.id), inscricao);
     if (bloqueado) throw new BadRequestException(bloqueado);
     return this.armazenamento.urlsDasPartes(chave, uploadId, partes);
   }
@@ -256,9 +264,10 @@ export class Fase2ParticipanteService {
     // Trava a inscrição durante a conferência: dois envios simultâneos (duas
     // abas) não podem passar ambos pela regra do envio único.
     const resultado = await this.prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`SELECT id FROM "Inscricao" WHERE id = ${inscricao.id} FOR UPDATE`;
+      const [liberacao] = await tx.$queryRaw<Liberacao[]>`
+        SELECT "fase2ReenvioVideo", "fase2ReenvioPortfolio" FROM "Inscricao" WHERE id = ${inscricao.id} FOR UPDATE`;
       const anterior = await this.ultimoEnvio(inscricao.id, tx);
-      const bloqueado = await this.bloqueio(tipo, anterior);
+      const bloqueado = await this.bloqueio(tipo, anterior, liberacao);
       if (bloqueado) return { bloqueado };
       const dados =
         tipo === "video"
@@ -280,6 +289,11 @@ export class Fase2ParticipanteService {
           ...dados,
         },
         select: camposEnvio,
+      });
+      // A liberação da Comissão vale para um único envio.
+      await tx.inscricao.update({
+        where: { id: inscricao.id },
+        data: tipo === "video" ? { fase2ReenvioVideo: false } : { fase2ReenvioPortfolio: false },
       });
       return { envio };
     });
