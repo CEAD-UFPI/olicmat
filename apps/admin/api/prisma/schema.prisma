@@ -282,6 +282,8 @@ model Edicao {
   fase2InicioEm      DateTime?
   fase2PrazoEm       DateTime?
   fase2IniciadaPorId String?
+  /// Revisão da Fase 1 (respostas × gabarito) liberada aos participantes por um Admin.
+  revisaoFase1PublicadaEm DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 

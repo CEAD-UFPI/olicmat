@@ -11,7 +11,7 @@ import {
   LayoutDashboard, ClipboardList, FileText, Upload, Trophy, Users,
   BarChart3, BookOpen, CheckSquare, Download, ShieldCheck,
   Eye, Building2, GraduationCap, Calendar, Settings, Sliders, Activity,
-  UserPlus, Bell, HelpCircle, Link2,
+  UserPlus, Bell, HelpCircle, Link2, ListChecks,
 } from "lucide-react";
 
 interface NavLink { href: string; label: string; icon: React.ReactNode; }
@@ -161,6 +161,7 @@ export function Sidebar({ role, userName }: SidebarProps) {
           { href: "/competidor/inscricao", label: "Inscrição", icon: <ClipboardList size={18} /> },
           { href: "/competidor/envio", label: "Envio - Fase 2", icon: <Upload size={18} /> },
           { href: "/competidor/resultado", label: "Resultado", icon: <Trophy size={18} /> },
+          { href: "/competidor/revisao-fase1", label: "Revisão Fase 1", icon: <ListChecks size={18} /> },
           { href: "/competidor/guia", label: "Guia", icon: <HelpCircle size={18} /> },
         ];
       default:
