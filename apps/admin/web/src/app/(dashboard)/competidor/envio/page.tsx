@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  AlertTriangle, CheckCircle2, Clock, Download, ExternalLink, FileText, Film, UploadCloud, X,
+  AlertTriangle, CheckCircle2, Clock, Download, ExternalLink, FileText, Film, Lock, UploadCloud, X,
 } from "lucide-react";
 import { enviarArquivo, formatarBytes, UploadCancelado, type Progresso, type TipoArquivo } from "@/lib/uploadFase2";
 
@@ -30,6 +30,8 @@ interface StatusFase2 {
     portfolio: Arquivo | null;
   } | null;
   totalEnvios?: number;
+  envioUnico?: boolean;
+  podeEnviar?: Record<TipoArquivo, boolean>;
 }
 
 const SITE = SITE_URL;
@@ -76,11 +78,12 @@ const titulo = "text-2xl font-bold text-[var(--text-primary)] font-[family-name:
 
 /** Cartão de upload de um arquivo (videoaula ou portfólio). */
 function CartaoArquivo({
-  tipo, atual, aberta, limiteMb, formatos, ocupado, aoMudarOcupado, aoConcluir,
+  tipo, atual, aberta, podeEnviar, limiteMb, formatos, ocupado, aoMudarOcupado, aoConcluir,
 }: {
   tipo: TipoArquivo;
   atual: Arquivo | null;
   aberta: boolean;
+  podeEnviar: boolean;
   limiteMb: number;
   formatos: string[];
   ocupado: boolean;
@@ -90,6 +93,7 @@ function CartaoArquivo({
   const [arquivo, setArquivo] = useState<File | null>(null);
   const [progresso, setProgresso] = useState<Progresso | null>(null);
   const [erro, setErro] = useState("");
+  const [confirmado, setConfirmado] = useState(false);
   const controle = useRef<AbortController | null>(null);
   const entrada = useRef<HTMLInputElement>(null);
   const video = tipo === "video";
@@ -99,6 +103,7 @@ function CartaoArquivo({
 
   const escolher = (f: File | null) => {
     setErro("");
+    setConfirmado(false);
     if (!f) return setArquivo(null);
     const ext = f.name.split(".").pop()?.toLowerCase() ?? "";
     if (!formatos.includes(ext)) {
@@ -113,7 +118,7 @@ function CartaoArquivo({
   };
 
   const enviar = async () => {
-    if (!arquivo) return;
+    if (!arquivo || !confirmado) return;
     setErro("");
     controle.current = new AbortController();
     aoMudarOcupado(true);
@@ -121,6 +126,7 @@ function CartaoArquivo({
     try {
       await enviarArquivo(tipo, arquivo, setProgresso, controle.current.signal);
       setArquivo(null);
+      setConfirmado(false);
       if (entrada.current) entrada.current.value = "";
       aoConcluir(video ? "Videoaula enviada com sucesso!" : "Portfólio enviado com sucesso!");
     } catch (e) {
@@ -200,11 +206,17 @@ function CartaoArquivo({
         )
       )}
 
-      {aberta && (
+      {aberta && !podeEnviar && atual && (
+        <p className="text-xs text-[var(--text-tertiary)] flex items-center gap-1.5">
+          <Lock size={14} className="shrink-0" /> Envio único: este arquivo já foi recebido e não pode ser substituído.
+        </p>
+      )}
+
+      {aberta && podeEnviar && (
         <>
           <div>
             <Label htmlFor={`arquivo-${tipo}`} className="text-[var(--text-primary)]">
-              {atual ? "Substituir por outro arquivo" : "Escolha o arquivo"}
+              {atual ? "Escolha o novo arquivo" : "Escolha o arquivo"}
             </Label>
             <input
               ref={entrada}
@@ -236,15 +248,30 @@ function CartaoArquivo({
             </div>
           )}
 
+          {arquivo && !enviando && (
+            <label className="flex items-start gap-2.5 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-[var(--text-primary)] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={confirmado}
+                onChange={(e) => setConfirmado(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--color-gold)]"
+              />
+              <span>
+                <strong>Envio único.</strong> Conferi que este é o arquivo final {video ? "da minha videoaula" : "do meu portfólio"}.
+                Sei que, depois de enviado, ele <strong>não poderá ser substituído</strong>.
+              </span>
+            </label>
+          )}
+
           <div className="flex gap-3">
             <Button
               onClick={enviar}
-              disabled={!arquivo || enviando || ocupado}
+              disabled={!arquivo || !confirmado || enviando || ocupado}
               className="flex-1"
               style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
             >
               <UploadCloud size={16} className="mr-2" />
-              {enviando ? "Enviando..." : atual ? "Enviar e substituir" : "Enviar arquivo"}
+              {enviando ? "Enviando..." : "Enviar arquivo"}
             </Button>
             {enviando && (
               <Button variant="outline" onClick={() => controle.current?.abort()} className="border-[var(--border-color)] text-[var(--text-primary)]">
@@ -322,7 +349,7 @@ export default function EnvioFase2Page() {
     setEnviando(true);
     try {
       await api.post("/envio/links", { videoLink: videoLink.trim(), portfolioLink: portfolioLink.trim() });
-      setSucesso("Links enviados com sucesso! Você pode corrigi-los até o prazo final; vale o último envio.");
+      setSucesso("Links enviados com sucesso!");
       carregar();
     } catch (err) {
       setErro(mensagemErro(err, "Não foi possível enviar os links. Tente novamente."));
@@ -414,8 +441,7 @@ export default function EnvioFase2Page() {
           <div className="border border-emerald-500/40 rounded-2xl p-4 bg-emerald-500/10 flex items-center gap-2">
             <CheckCircle2 className="text-emerald-400 shrink-0" size={20} />
             <p className="text-sm font-semibold text-emerald-300">
-              Envio completo — última atualização em {enviado && dataHora(enviado.enviadoEm)}.
-              {aberta && " Você ainda pode substituir os arquivos até o prazo final; vale o último envio."}
+              Envio completo — recebido em {enviado && dataHora(enviado.enviadoEm)}. Não é preciso fazer mais nada.
             </p>
           </div>
         ) : aberta ? (
@@ -423,6 +449,7 @@ export default function EnvioFase2Page() {
             <AlertTriangle className="text-amber-400 shrink-0" size={20} />
             <p className="text-sm font-semibold text-amber-300">
               Envio incompleto: são obrigatórios a videoaula e o portfólio. Comece com antecedência — vídeos grandes podem levar tempo para subir.
+              Atenção: cada arquivo só pode ser enviado uma vez; confira antes de enviar.
             </p>
           </div>
         ) : null
@@ -432,12 +459,14 @@ export default function EnvioFase2Page() {
         <>
           <CartaoArquivo
             tipo="video" atual={enviado?.video ?? null} aberta={aberta}
+            podeEnviar={status.podeEnviar?.video ?? (!enviado?.video || enviado.video.processamento === "FALHA")}
             limiteMb={status.limitesMb?.video ?? 400} formatos={status.formatos?.video ?? ["mp4"]}
             ocupado={uploadAtivo} aoMudarOcupado={setUploadAtivo}
             aoConcluir={(m) => { setSucesso(m); carregar(); }}
           />
           <CartaoArquivo
             tipo="portfolio" atual={enviado?.portfolio ?? null} aberta={aberta}
+            podeEnviar={status.podeEnviar?.portfolio ?? !enviado?.portfolio}
             limiteMb={status.limitesMb?.portfolio ?? 10} formatos={status.formatos?.portfolio ?? ["pdf"]}
             ocupado={uploadAtivo} aoMudarOcupado={setUploadAtivo}
             aoConcluir={(m) => { setSucesso(m); carregar(); }}
@@ -460,10 +489,10 @@ export default function EnvioFase2Page() {
         </div>
       )}
 
-      {!modoUpload && aberta && (
+      {!modoUpload && aberta && !enviado && (
         <div className={`${cartao} space-y-5`}>
           <h2 className="text-lg font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
-            {enviado ? "Corrigir os links" : "Enviar os links"}
+            Enviar os links
           </h2>
           <div>
             <Label htmlFor="videoLink" className="text-[var(--text-primary)]">Link da videoaula</Label>
@@ -490,7 +519,7 @@ export default function EnvioFase2Page() {
             className="w-full"
             style={{ backgroundColor: "var(--integral-verde)", color: "#fff" }}
           >
-            {enviando ? "Enviando..." : enviado ? "Atualizar envio" : "Enviar links"}
+            {enviando ? "Enviando..." : "Enviar links"}
           </Button>
         </div>
       )}

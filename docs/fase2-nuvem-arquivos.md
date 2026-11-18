@@ -24,7 +24,9 @@ Avaliador ──(8) URL temporária (6 h) da versão final ──▶ Nuvem
 - A fila fica no banco, na tabela `VideoFase2`, que é a fonte da verdade.
 - Um vídeo que falha é tentado 3 vezes. Se continuar falhando, o participante vê "Não conseguimos ler este vídeo… envie novamente".
 - O compressor confere a duração da saída antes de apagar o original.
-- Vídeos substituídos pelo participante, e os originais já convertidos, são apagados automaticamente.
+- **Envio único:** cada arquivo (videoaula e portfólio) só pode ser enviado uma vez. A exceção é o vídeo que o compressor não conseguiu ler nas 3 tentativas, que pode ser reenviado. A regra é aplicada na API, com trava da inscrição para impedir que duas abas enviem ao mesmo tempo.
+- Os originais já convertidos e os arquivos descartados são apagados automaticamente. Descartados são, por exemplo, o vídeo ilegível que foi reenviado ou o arquivo da aba que perdeu a disputa.
+- Uploads interrompidos (aba fechada, internet caída) deixam partes na nuvem. O compressor as apaga a cada 30 min, quando têm mais de 8 h (`INCOMPLETOS_HORAS`).
 
 ## O que está na VPS
 

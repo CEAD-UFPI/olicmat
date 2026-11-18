@@ -7,7 +7,7 @@
 //
 // Variáveis: OLICMAT_API_URL, FASE2_COMPRESSOR_TOKEN, S3_ENDPOINT, S3_BUCKET,
 // S3_ACCESS_KEY, S3_SECRET_KEY, [S3_REGION], [CONCORRENCIA=2], [THREADS=4],
-// [PASTA_TRABALHO=/trabalho], [INTERVALO_S=20].
+// [PASTA_TRABALHO=/trabalho], [INTERVALO_S=20], [INCOMPLETOS_HORAS=8].
 import { spawn } from "node:child_process";
 import { createReadStream, createWriteStream } from "node:fs";
 import { mkdir, rm, stat } from "node:fs/promises";
@@ -30,6 +30,9 @@ const CONCORRENCIA = Number(env.CONCORRENCIA || 2);
 const THREADS = String(env.THREADS || 4);
 const PASTA = env.PASTA_TRABALHO || "/trabalho";
 const INTERVALO = Number(env.INTERVALO_S || 20) * 1000;
+// Uploads interrompidos (aba fechada, internet caída) deixam partes na nuvem.
+// As URLs das partes valem 6 h; depois disso o upload não tem mais como terminar.
+const INCOMPLETOS_HORAS = Number(env.INCOMPLETOS_HORAS || 8);
 
 const log = (...a) => console.log(new Date().toISOString(), ...a);
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -146,10 +149,37 @@ async function limpar() {
   }
 }
 
+const xml = (texto, tag) => [...texto.matchAll(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, "g"))].map((m) => m[1]);
+const desescapar = (t) => t.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, "&");
+
+/** Apaga as partes dos uploads abandonados há mais de INCOMPLETOS_HORAS. */
+async function limparIncompletos() {
+  const r = await fetch(presign(S3, "GET", "", { query: { uploads: "" } }));
+  if (!r.ok) throw new Error(`listagem de uploads incompletos: HTTP ${r.status}`);
+  const limite = Date.now() - INCOMPLETOS_HORAS * 3600_000;
+  for (const bloco of xml(await r.text(), "Upload")) {
+    const chave = desescapar(xml(bloco, "Key")[0] ?? "");
+    const uploadId = desescapar(xml(bloco, "UploadId")[0] ?? "");
+    const iniciado = Date.parse(xml(bloco, "Initiated")[0] ?? "");
+    if (!chave || !uploadId || !(iniciado < limite)) continue;
+    const d = await fetch(presign(S3, "DELETE", chave, { query: { uploadId } }), { method: "DELETE" });
+    if (d.ok || d.status === 404) log(`upload incompleto descartado: ${chave}`);
+    else log(`não foi possível descartar o upload incompleto ${chave}: HTTP ${d.status}`);
+  }
+}
+
+let ultimaLimpezaIncompletos = 0;
+
 async function trabalhador(n) {
   for (;;) {
     try {
-      if (n === 0) await limpar();
+      if (n === 0) {
+        await limpar();
+        if (Date.now() - ultimaLimpezaIncompletos > 30 * 60_000) {
+          ultimaLimpezaIncompletos = Date.now();
+          await limparIncompletos().catch((e) => log(e.message));
+        }
+      }
       const { video } = await api("POST", "/interno/fase2/videos/proximo");
       if (video) await comprimir(video);
       else await dormir(INTERVALO);

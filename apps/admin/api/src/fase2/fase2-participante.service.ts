@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma.service.js";
 import {
+  bloqueioDeEnvio,
   extensao,
   FORMATOS,
   limitesMb,
@@ -121,12 +122,22 @@ export class Fase2ParticipanteService {
     return { edicao, inscricao };
   }
 
-  private ultimoEnvio(inscricaoId: string) {
-    return this.prisma.envioFase2.findFirst({
+  private ultimoEnvio(inscricaoId: string, db: Pick<PrismaService, "envioFase2"> = this.prisma) {
+    return db.envioFase2.findFirst({
       where: { inscricaoId },
       orderBy: { enviadoEm: "desc" },
       select: camposEnvio,
     });
+  }
+
+  /** Envio único: mensagem de bloqueio do arquivo, ou null se ainda pode enviar. */
+  private async bloqueio(tipo: TipoArquivo, ultimo: EnvioBruto | null | undefined) {
+    let falhaDefinitiva = false;
+    if (tipo === "video" && ultimo?.videoKey) {
+      const info = (await this.videos.mapaPorChaves([ultimo.videoKey])).get(ultimo.videoKey);
+      falhaDefinitiva = info?.status === "FALHA" && info.tentativas >= MAX_TENTATIVAS;
+    }
+    return bloqueioDeEnvio(tipo, ultimo, falhaDefinitiva);
   }
 
   async status(userId: string, agora = new Date()) {
@@ -151,6 +162,11 @@ export class Fase2ParticipanteService {
       prazoEm: edicao.fase2PrazoEm?.toISOString() ?? null,
       ultimoEnvio: await this.formatar(ultimo),
       totalEnvios,
+      envioUnico: true,
+      podeEnviar: {
+        video: (await this.bloqueio("video", ultimo)) === null,
+        portfolio: (await this.bloqueio("portfolio", ultimo)) === null,
+      },
     };
   }
 
@@ -163,6 +179,9 @@ export class Fase2ParticipanteService {
     if (!linkValido(video)) erros.push("Link da videoaula inválido: use um endereço completo, começando com https://");
     if (!linkValido(portfolio)) erros.push("Link do portfólio inválido: use um endereço completo, começando com https://");
     if (erros.length) throw new BadRequestException(erros);
+    if (await this.ultimoEnvio(inscricao.id)) {
+      throw new BadRequestException("Você já enviou os links. O envio é único e não pode ser substituído.");
+    }
 
     const envio = await this.prisma.envioFase2.create({
       data: {
@@ -192,6 +211,8 @@ export class Fase2ParticipanteService {
     const { edicao, inscricao } = await this.exigirAberta(userId, agora);
     const erro = validarArquivo(tipo, nome, bytes);
     if (erro) throw new BadRequestException(erro);
+    const bloqueado = await this.bloqueio(tipo, await this.ultimoEnvio(inscricao.id));
+    if (bloqueado) throw new BadRequestException(bloqueado);
     const chave = `${prefixoArquivos(edicao.id, inscricao.id)}${tipo}-${agora.getTime()}-${randomUUID().slice(0, 8)}.${extensao(nome)}`;
     return {
       chave,
@@ -207,10 +228,14 @@ export class Fase2ParticipanteService {
     if (!chave.startsWith(prefixoArquivos(edicao.id, inscricao.id))) {
       throw new ForbiddenException("Arquivo de outro participante.");
     }
+    // Um envio paralelo (outra aba) que já terminou encerra este: não sobe à toa.
+    const tipo: TipoArquivo = chave.slice(chave.lastIndexOf("/") + 1).startsWith("video-") ? "video" : "portfolio";
+    const bloqueado = await this.bloqueio(tipo, await this.ultimoEnvio(inscricao.id));
+    if (bloqueado) throw new BadRequestException(bloqueado);
     return this.armazenamento.urlsDasPartes(chave, uploadId, partes);
   }
 
-  /** 3º passo: o navegador concluiu o upload; registra o envio (vale o último). */
+  /** 3º passo: o navegador concluiu o upload; registra o envio (envio único). */
   async concluirUpload(userId: string, tipo: TipoArquivo, chave: string, nome: string, bytes: number, agora = new Date()) {
     this.exigirArmazenamento();
     const { edicao, inscricao } = await this.exigirAberta(userId, agora);
@@ -228,28 +253,43 @@ export class Fase2ParticipanteService {
       throw new BadRequestException("O arquivo chegou incompleto à nuvem. Envie novamente.");
     }
 
-    const anterior = await this.ultimoEnvio(inscricao.id);
-    const dados =
-      tipo === "video"
-        ? { videoKey: chave, videoNome: nome, videoBytes: BigInt(bytes) }
-        : { portfolioKey: chave, portfolioNome: nome, portfolioBytes: BigInt(bytes) };
-    const envio = await this.prisma.envioFase2.create({
-      data: {
-        inscricaoId: inscricao.id,
-        tipo: "upload",
-        status: "ENVIADO",
-        enviadoEm: agora,
-        // Mantém o outro arquivo do envio anterior: cada registro é o estado completo.
-        videoKey: anterior?.videoKey ?? null,
-        videoNome: anterior?.videoNome ?? null,
-        videoBytes: anterior?.videoBytes ?? null,
-        portfolioKey: anterior?.portfolioKey ?? null,
-        portfolioNome: anterior?.portfolioNome ?? null,
-        portfolioBytes: anterior?.portfolioBytes ?? null,
-        ...dados,
-      },
-      select: camposEnvio,
+    // Trava a inscrição durante a conferência: dois envios simultâneos (duas
+    // abas) não podem passar ambos pela regra do envio único.
+    const resultado = await this.prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "Inscricao" WHERE id = ${inscricao.id} FOR UPDATE`;
+      const anterior = await this.ultimoEnvio(inscricao.id, tx);
+      const bloqueado = await this.bloqueio(tipo, anterior);
+      if (bloqueado) return { bloqueado };
+      const dados =
+        tipo === "video"
+          ? { videoKey: chave, videoNome: nome, videoBytes: BigInt(bytes) }
+          : { portfolioKey: chave, portfolioNome: nome, portfolioBytes: BigInt(bytes) };
+      const envio = await tx.envioFase2.create({
+        data: {
+          inscricaoId: inscricao.id,
+          tipo: "upload",
+          status: "ENVIADO",
+          enviadoEm: agora,
+          // Mantém o outro arquivo do envio anterior: cada registro é o estado completo.
+          videoKey: anterior?.videoKey ?? null,
+          videoNome: anterior?.videoNome ?? null,
+          videoBytes: anterior?.videoBytes ?? null,
+          portfolioKey: anterior?.portfolioKey ?? null,
+          portfolioNome: anterior?.portfolioNome ?? null,
+          portfolioBytes: anterior?.portfolioBytes ?? null,
+          ...dados,
+        },
+        select: camposEnvio,
+      });
+      return { envio };
     });
+    if (resultado.bloqueado || !resultado.envio) {
+      // O arquivo recusado já está na nuvem: o vídeo vai para a remoção
+      // automática feita pelo compressor (a API não alcança a nuvem).
+      if (tipo === "video") await this.videos.registrarDescartado(inscricao.id, chave, nome, bytes);
+      throw new BadRequestException(resultado.bloqueado);
+    }
+    const envio = resultado.envio;
     if (tipo === "video") await this.videos.registrar(inscricao.id, chave, nome, bytes);
     return { ...(await this.formatar(envio)), conferencia };
   }
