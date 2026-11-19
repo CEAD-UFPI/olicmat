@@ -88,10 +88,10 @@ export default function RevisaoFase1Page() {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {(["todas", "acertos", "erros"] as const).map((f) => (
               <button key={f} onClick={() => setFiltro(f)}
-                className={`text-sm rounded-full px-3 py-1 border ${filtro === f ? "border-[var(--color-gold)] bg-[var(--color-gold)]/15 text-[var(--text-primary)]" : "border-[var(--border-color)] text-[var(--text-secondary)]"}`}>
+                className={`text-sm whitespace-nowrap rounded-full px-3 py-1 border ${filtro === f ? "border-[var(--color-gold)] bg-[var(--color-gold)]/15 text-[var(--text-primary)]" : "border-[var(--border-color)] text-[var(--text-secondary)]"}`}>
                 {f === "todas" ? `Todas (${r.total})` : f === "acertos" ? `Acertos (${r.acertos})` : `Erros e em branco (${r.total - r.acertos})`}
               </button>
             ))}

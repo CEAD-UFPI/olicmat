@@ -43,7 +43,13 @@ const correctionLinks: NavLink[] = [
   { href: "/admin/avaliacao", label: "Fase 2: Envio e Avaliação", icon: <CheckSquare size={18} /> },
 ];
 
-interface SidebarProps { role: Role; userName?: string; }
+interface SidebarProps {
+  role: Role;
+  userName?: string;
+  /** Celular: a barra vira uma gaveta, aberta pelo botão de menu da TopBar. */
+  aberto?: boolean;
+  aoFechar?: () => void;
+}
 
 
 interface NotificacaoItem {
@@ -55,7 +61,7 @@ interface NotificacaoItem {
   createdAt: string;
 }
 
-export function Sidebar({ role, userName }: SidebarProps) {
+export function Sidebar({ role, userName, aberto = false, aoFechar }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuthStore();
   const displayName = userName || user?.nome || "Usuário";
@@ -89,6 +95,20 @@ export function Sidebar({ role, userName }: SidebarProps) {
     setNotificacoes((prev) => prev.map((n) => (n.id === id ? { ...n, lida: true } : n)));
     setNaoLidas((prev) => Math.max(0, prev - 1));
   };
+
+  // Fecha a gaveta do celular ao trocar de página.
+  useEffect(() => {
+    aoFechar?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Esc fecha a gaveta.
+  useEffect(() => {
+    if (!aberto) return;
+    const h = (e: KeyboardEvent) => e.key === "Escape" && aoFechar?.();
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [aberto, aoFechar]);
 
   const isActive = (href: string) => pathname.startsWith(href);
 
@@ -188,7 +208,16 @@ export function Sidebar({ role, userName }: SidebarProps) {
   };
 
   return (
-    <aside className="fixed left-0 top-16 lg:top-20 bottom-0 w-64 border-r border-[var(--border-color)] bg-[var(--bg-primary)] hidden md:flex flex-col z-40">
+    <>
+    {aberto && (
+      <div className="md:hidden fixed inset-0 top-16 z-40 bg-black/40" onClick={aoFechar} aria-hidden />
+    )}
+    <aside
+      id="menu-painel"
+      className={`fixed left-0 top-16 lg:top-20 bottom-0 w-72 md:w-64 border-r border-[var(--border-color)] bg-[var(--bg-primary)] flex flex-col z-40 transition-transform duration-200 md:translate-x-0 ${
+        aberto ? "translate-x-0 shadow-2xl" : "-translate-x-full"
+      }`}
+    >
       <div className="p-6 border-b border-[var(--border-color)]">
         <p className="text-xs text-[var(--text-tertiary)] uppercase tracking-widest mb-1">
           {role === "ALUNO" && "Competidor"}
@@ -265,5 +294,6 @@ export function Sidebar({ role, userName }: SidebarProps) {
         </button>
       </div>
     </aside>
+    </>
   );
 }

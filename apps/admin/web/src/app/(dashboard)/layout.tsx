@@ -35,6 +35,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [verificandoInscricao, setVerificandoInscricao] = useState(true);
+  const [menuAberto, setMenuAberto] = useState(false);
 
   useEffect(() => {
     loadUser();
@@ -109,8 +110,8 @@ export default function DashboardLayout({
 
   return (
     <div className="flex">
-      <TopBar logoHref={roleHome[user.role]} />
-      <Sidebar role={user.role} userName={user.nome} />
+      <TopBar logoHref={roleHome[user.role]} menuAberto={menuAberto} aoAlternarMenu={() => setMenuAberto((v) => !v)} />
+      <Sidebar role={user.role} userName={user.nome} aberto={menuAberto} aoFechar={() => setMenuAberto(false)} />
       <main className="flex-1 md:ml-64 pt-24 md:pt-28 px-4 sm:px-6 lg:px-8 pb-16 min-h-screen">
         {children}
       </main>

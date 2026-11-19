@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { House } from "lucide-react";
+import { House, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SITE_URL } from "@/lib/site";
 
@@ -26,14 +26,29 @@ export function BotaoPaginaInicial({ comRotulo = false }: { comRotulo?: boolean 
 interface TopBarProps {
   /** Destino do logotipo (ex.: a visão geral do painel do papel). */
   logoHref: string;
+  /** Celular: abre/fecha o menu do painel (a barra lateral some em telas pequenas). */
+  menuAberto?: boolean;
+  aoAlternarMenu?: () => void;
 }
 
 /** Barra superior fixa do painel: logo + página inicial + alternador de tema. */
-export function TopBar({ logoHref }: TopBarProps) {
+export function TopBar({ logoHref, menuAberto = false, aoAlternarMenu }: TopBarProps) {
   return (
     <header className="fixed top-0 inset-x-0 z-50 h-16 lg:h-20 border-b border-[var(--border-color)] bg-[var(--bg-primary)]/90 backdrop-blur-xl">
       <div className="flex h-full items-center justify-between gap-3 px-4 sm:px-6">
         <div className="flex min-w-0 items-center gap-2">
+          {aoAlternarMenu && (
+            <button
+              type="button"
+              onClick={aoAlternarMenu}
+              aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={menuAberto}
+              aria-controls="menu-painel"
+              className="md:hidden flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--text-primary)]"
+            >
+              {menuAberto ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          )}
           <Link href={logoHref} className="flex min-w-0 items-center gap-2" aria-label="OLICMAT — painel">
             <Image
               src="/logo-semfundo-claro.png"
