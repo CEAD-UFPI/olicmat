@@ -413,8 +413,8 @@ export default function EnvioFase2Page() {
           <p className="text-[var(--text-secondary)] leading-relaxed">
             Você está classificado(a) para a Fase 2. A Comissão Organizadora sorteará uma competência
             específica da BNCC e iniciará a fase; você receberá um e-mail com a competência, a data e a
-            hora do início. A partir do início, você terá <strong className="text-[var(--text-primary)]">24 horas</strong> para
-            enviar a videoaula e o portfólio.
+            hora do início. O envio vai até as <strong className="text-[var(--text-primary)]">23h59 de 20/11/2026</strong>{" "}
+            (horário de Brasília).
           </p>
         </div>
       )}
@@ -574,7 +574,7 @@ export default function EnvioFase2Page() {
           ))}
         </div>
         <p className="text-xs text-[var(--text-tertiary)]">
-          A produção deve ser autoral. Após o prazo final, o envio é encerrado automaticamente e não há prorrogação.
+          A produção deve ser autoral. Após o prazo final, o envio é encerrado automaticamente.
         </p>
       </div>
     </div>
