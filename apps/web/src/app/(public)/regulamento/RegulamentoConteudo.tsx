@@ -173,7 +173,7 @@ export function RegulamentoConteudo() {
           items={[
             `Período de realização: ${dataDe("envio-fase2")}.`,
             "Formato: a Comissão Organizadora sorteia uma única competência específica de Matemática e suas Tecnologias da BNCC; o sorteio é gravado e divulgado. Cada participante escolhe uma ou mais habilidades da competência sorteada e produz uma videoaula autoral e um portfólio digital.",
-            "Prazo: até 24 (vinte e quatro) horas, contadas da divulgação do sorteio, para enviar os arquivos na plataforma da OLICMAT, com login e senha do participante. Não há prorrogação.",
+            "Prazo: até as 23h59 (horário de Brasília) de 20/11/2026, último dia da Fase 2, para enviar os arquivos na plataforma da OLICMAT, com login e senha do participante, conforme a retificação do edital. Encerrado o prazo, o envio é bloqueado automaticamente.",
             "Orientações completas no Manual do Participante — 2ª Fase (seção Documentos, no início desta página).",
           ]}
         />

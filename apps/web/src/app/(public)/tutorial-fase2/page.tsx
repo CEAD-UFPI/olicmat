@@ -34,12 +34,12 @@ export default function TutorialFase2Page() {
           Como enviar a videoaula e o portfólio
         </h1>
         <p className="text-[var(--text-secondary)] mt-3 leading-relaxed text-lg">
-          Depois da divulgação do sorteio da competência, você tem <Strong>24 horas</Strong> para
-          enviar dois arquivos na plataforma da OLICMAT: a <Strong>videoaula de 20 minutos</Strong> (até
+          Depois da divulgação do sorteio da competência, você tem até as <Strong>23h59 de 20/11/2026</Strong>{" "}
+          (horário de Brasília) para enviar dois arquivos na plataforma da OLICMAT: a <Strong>videoaula de 20 minutos</Strong> (até
           4 GB, do jeito que foi gravada) e o <Strong>portfólio em PDF</Strong> (até 10 MB).
         </p>
         <ol className="mt-6 flex flex-wrap gap-2" aria-label="Etapas">
-          {["Sorteio da competência", "24 h para enviar", "Videoaula", "Portfólio", "Envio completo"].map((t, i) => (
+          {["Sorteio da competência", "Envio até 20/11, 23h59", "Videoaula", "Portfólio", "Envio completo"].map((t, i) => (
             <li
               key={t}
               className="text-xs uppercase tracking-[0.08em] rounded-full border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-1.5 text-[var(--text-secondary)] font-[family-name:var(--font-jetbrains-mono)]"
@@ -87,8 +87,8 @@ export default function TutorialFase2Page() {
 
       <Secao n={1} id="antes" titulo="Antes do início">
         <P>
-          Prepare tudo com antecedência. O que pode ser feito antes do sorteio não deve ficar para as
-          24 horas.
+          Prepare tudo com antecedência. O que pode ser feito antes do sorteio não deve ficar para o
+          período de envio.
         </P>
         <Lista
           itens={[
@@ -157,7 +157,8 @@ export default function TutorialFase2Page() {
         />
         <P>
           Escolha uma ou mais habilidades da competência sorteada, planeje e grave a aula e preencha o
-          portfólio. O prazo de 24 horas é o mesmo para todos e <Strong>não há prorrogação</Strong>.
+          portfólio. O prazo final é o mesmo para todos: <Strong>23h59 de 20/11/2026</Strong> (horário de
+          Brasília). Depois dele, o envio é encerrado automaticamente.
         </P>
       </Secao>
 
@@ -231,7 +232,7 @@ export default function TutorialFase2Page() {
             <>A videoaula apresenta uma aula autoral de 20 minutos.</>,
             <>O portfólio está em um único PDF e identifica os objetivos de ensino, o público-alvo e as etapas da aula.</>,
             <>As fontes dos materiais e o eventual uso de inteligência artificial foram declarados no portfólio.</>,
-            <>Os dois arquivos foram enviados na plataforma, com seu login e senha, dentro das 24 horas, e a página mostra <Strong>Envio completo</Strong>.</>,
+            <>Os dois arquivos foram enviados na plataforma, com seu login e senha, até as 23h59 de 20/11/2026, e a página mostra <Strong>Envio completo</Strong>.</>,
           ]}
           marcador="✓"
         />
@@ -247,7 +248,7 @@ export default function TutorialFase2Page() {
             ["O prazo acabou durante o envio", "O envio só é aceito se terminar até o prazo final. Por isso, envie com antecedência e não deixe para os últimos minutos."],
             ["Não recebi o e-mail de início", "A competência sorteada aparece na própria plataforma, em “Envio - Fase 2”. Verifique também a caixa de spam."],
             ["A página diz que o envio é só para classificados", "Confira se entrou com o e-mail da sua inscrição. Se estiver na relação de classificados e o problema continuar, fale com o suporte."],
-            ["Quero trocar um arquivo", "Não é possível: o envio é único. Por isso, confira bem o vídeo e o PDF antes de enviar. A única exceção é o vídeo com o aviso “Não conseguimos ler este vídeo”, que pode ser enviado de novo."],
+            ["Quero trocar um arquivo", "Cada arquivo pode ser enviado uma vez. Se a Comissão liberar um novo envio (por exemplo, na prorrogação do prazo), a página mostra um aviso e você pode enviar o arquivo mais uma vez; o atual continua valendo até o novo terminar. O vídeo com o aviso “Não conseguimos ler este vídeo” sempre pode ser enviado de novo."],
           ]}
         />
         <Aviso>

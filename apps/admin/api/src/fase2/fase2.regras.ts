@@ -2,7 +2,9 @@
  * Regras puras da Fase 2 (sem banco), testadas em fase2.regras.spec.ts.
  *
  * - A competência é sorteada fora do sistema; a Comissão a informa e dá o início.
- * - Prazo de envio: início + 24 horas, igual para todos, sem prorrogação.
+ * - Prazo de envio: Edicao.fase2PrazoEm, igual para todos. O início grava
+ *   início + 24 h; a Comissão pode prorrogar (scripts/prorrogar-fase2.ts) —
+ *   em 2026, até 23h59 de 20/11 (retificação do edital).
  * - Cada participante que enviou recebe 2 avaliadores distintos. Se as notas
  *   diferirem mais de 20 pontos, um 3º avaliador avalia, e a nota da Fase 2 é
  *   a média das duas notas mais próximas.
