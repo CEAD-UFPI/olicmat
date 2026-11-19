@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { useAuthStore } from "@/stores/authStore";
 import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, CheckSquare, Clock } from "lucide-react";
+import { BookOpen, CheckSquare, Clock, HelpCircle } from "lucide-react";
+import { SITE_URL } from "@/lib/site";
 
 interface Resumo {
   totalProvas?: number;
@@ -21,13 +22,13 @@ export default function AvaliadorPage() {
   useEffect(() => {
     Promise.all([
       api.get("/admin/provas").then(({ data }) => data).catch(() => []),
-      api.get("/admin/avaliacao/pendentes").then(({ data }) => data).catch(() => []),
+      api.get<{ atribuicoes: Array<{ status: string }> }>("/avaliador/fase2/atribuicoes").then(({ data }) => data.atribuicoes).catch(() => []),
     ])
-      .then(([provas, pendentes]) => {
+      .then(([provas, fichas]) => {
         setResumo({
           totalProvas: Array.isArray(provas) ? provas.length : 0,
-          totalPendentes: Array.isArray(pendentes) ? pendentes.length : 0,
-          totalAvaliadas: 0,
+          totalPendentes: fichas.filter((f) => f.status === "PENDENTE").length,
+          totalAvaliadas: fichas.filter((f) => f.status === "CONCLUIDA").length,
         });
       })
       .finally(() => setCarregando(false));
@@ -50,7 +51,7 @@ export default function AvaliadorPage() {
     >
       <div>
         <h1 className="text-3xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">
-          Ola, {user?.nome?.split(" ")[0]}
+          Olá, {user?.nome?.split(" ")[0]}
         </h1>
         <p className="text-[var(--text-tertiary)] mt-1">Painel do avaliador</p>
       </div>
@@ -74,7 +75,7 @@ export default function AvaliadorPage() {
           <CardHeader>
             <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest flex items-center gap-2">
               <Clock size={18} className="text-[var(--color-amber-ink)]" />
-              Pendentes
+              Pendentes (Fase 2)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -88,7 +89,7 @@ export default function AvaliadorPage() {
           <CardHeader>
             <CardTitle className="text-[var(--text-secondary)] text-sm uppercase tracking-widest flex items-center gap-2">
               <CheckSquare size={18} className="text-[var(--color-green-ink)]" />
-              Avaliadas
+              Avaliadas (Fase 2)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -101,9 +102,9 @@ export default function AvaliadorPage() {
 
       <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-secondary)]">
         <h2 className="text-lg font-bold text-[var(--text-primary)] mb-1 font-[family-name:var(--font-fraunces)]">
-          Acoes Rapidas
+          Ações rápidas
         </h2>
-        <p className="text-sm text-[var(--text-tertiary)] mb-4">Acesse as ferramentas de avaliacao</p>
+        <p className="text-sm text-[var(--text-tertiary)] mb-4">Acesse as ferramentas de avaliação</p>
         <div className="grid sm:grid-cols-2 gap-3">
           <a
             href="/avaliador/provas"
@@ -122,7 +123,19 @@ export default function AvaliadorPage() {
             <CheckSquare size={20} className="text-[var(--color-green-ink)]" />
             <div>
               <p className="text-base font-medium text-[var(--text-primary)]">Avaliar Fase 2</p>
-              <p className="text-sm text-[var(--text-secondary)]">Avaliar videoaulas e portfolios</p>
+              <p className="text-sm text-[var(--text-secondary)]">Avaliar videoaulas e portfólios</p>
+            </div>
+          </a>
+          <a
+            href={`${SITE_URL}/tutorial-avaliador`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="sm:col-span-2 flex items-center gap-3 p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--color-gold)]/40 hover:border-[var(--color-gold)] transition-colors"
+          >
+            <HelpCircle size={20} className="text-[var(--color-gold-ink)]" />
+            <div>
+              <p className="text-base font-medium text-[var(--text-primary)]">Tutorial do avaliador</p>
+              <p className="text-sm text-[var(--text-secondary)]">Passo a passo da avaliação da Fase 2: critérios, conceitos de 0 a 5 e conclusão</p>
             </div>
           </a>
         </div>
