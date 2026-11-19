@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { ArrowLeft, CheckCircle2, Download, ExternalLink, FileText } from "lucide-react";
+import { ArrowLeft, BookOpen, CheckCircle2, Download, ExternalLink, FileText } from "lucide-react";
+import { SITE_URL } from "@/lib/site";
 import { formatarBytes } from "@/lib/uploadFase2";
 
 interface Criterio { chave: string; nome: string; descricao: string; max: number }
@@ -237,9 +238,15 @@ export default function FichasAvaliador() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">Avaliação — Fase 2</h1>
-        <p className="text-[var(--text-tertiary)] text-sm mt-1">{pendentes.length} pendentes · {concluidas.length} concluídas</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] font-[family-name:var(--font-fraunces)]">Avaliação — Fase 2</h1>
+          <p className="text-[var(--text-tertiary)] text-sm mt-1">{pendentes.length} pendentes · {concluidas.length} concluídas</p>
+        </div>
+        <a href={`${SITE_URL}/tutorial-avaliador`} target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border-color)] px-3 py-1.5 text-sm text-[var(--color-blue-ink)] hover:bg-[var(--bg-secondary)]">
+          <BookOpen size={14} /> Tutorial do avaliador
+        </a>
       </div>
       {erro && <p className="text-sm p-3 rounded-lg bg-red-500/10 text-red-300">{erro}</p>}
       {!fichas.length && <div className={cartao}><p className="text-[var(--text-tertiary)]">Nenhum participante foi atribuído a você ainda.</p></div>}
