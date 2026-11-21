@@ -40,8 +40,9 @@ export const concluirUploadSchema = z.object({
   bytes: z.number().int().positive(),
 });
 export const iniciarSchema = z.object({ tema: z.string().min(3).max(300) });
-export const distribuirSchema = z.object({ avaliadorIds: z.array(z.string().uuid()).min(3) });
-export const remanejarSchema = z.object({ avaliadorId: z.string().uuid() });
+// IDs: qualquer texto não vazio (usuários criados por script podem fugir do formato UUID); o serviço confere se existem.
+export const distribuirSchema = z.object({ avaliadorIds: z.array(z.string().min(1).max(64)).min(3), simular: z.boolean().optional() });
+export const remanejarSchema = z.object({ avaliadorId: z.string().min(1).max(64) });
 export const liberarReenvioSchema = z.object({
   tipo: z.enum(["video", "portfolio"]),
   liberar: z.boolean(),
@@ -125,7 +126,8 @@ export class Fase2GestaoController {
 
   @Post("distribuir")
   distribuir(@Req() req: Req, @Body() body: unknown) {
-    return this.service.distribuirAvaliadores(validar(distribuirSchema, body).avaliadorIds, req.user.id);
+    const d = validar(distribuirSchema, body);
+    return this.service.distribuirAvaliadores(d.avaliadorIds, req.user.id, { simular: d.simular });
   }
 
   @Post("atribuicoes/:id/remanejar")

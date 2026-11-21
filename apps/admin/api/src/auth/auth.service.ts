@@ -154,6 +154,7 @@ export class AuthService {
       : undefined;
 
     const accessToken = this.generateToken(user.id, user.email, user.role, sid);
+    const papeis = [user.role, ...(user.papeisExtras ?? []).filter((p) => p !== user.role)];
 
     return {
       user: {
@@ -161,9 +162,29 @@ export class AuthService {
         nome: user.nome,
         email: user.email,
         role: user.role,
+        papeis,
         emailConfirmado: user.emailConfirmado,
       },
       accessToken,
+      // Mais de um perfil: o painel pergunta com qual a pessoa quer entrar.
+      escolherPerfil: papeis.length > 1,
+    };
+  }
+
+  /** Troca o perfil ativo (ex.: Comissão ↔ Avaliador) e emite um novo token. */
+  async trocarPerfil(userId: string, perfil: string, sid?: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, nome: true, email: true, role: true, papeisExtras: true, emailConfirmado: true },
+    });
+    if (!user) throw new UnauthorizedException("Usuário não encontrado");
+    const papeis = [user.role, ...(user.papeisExtras ?? []).filter((p) => p !== user.role)];
+    if (!papeis.includes(perfil as typeof user.role)) {
+      throw new UnauthorizedException("Você não tem este perfil.");
+    }
+    return {
+      user: { id: user.id, nome: user.nome, email: user.email, role: perfil, papeis, emailConfirmado: user.emailConfirmado },
+      accessToken: this.generateToken(user.id, user.email, perfil, sid),
     };
   }
 

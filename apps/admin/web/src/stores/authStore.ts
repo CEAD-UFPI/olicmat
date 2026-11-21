@@ -7,7 +7,8 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, senha: string) => Promise<User>;
+  login: (email: string, senha: string) => Promise<User & { escolherPerfil?: boolean }>;
+  trocarPerfil: (perfil: string) => Promise<User>;
   register: (data: RegisterData) => Promise<void>;
   logout: () => void;
   loadUser: () => Promise<void>;
@@ -78,6 +79,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       senha,
       dispositivo: identificarDispositivo(),
     });
+    storeToken(data.accessToken);
+    set({ user: data.user, token: data.accessToken, isAuthenticated: true });
+    return { ...data.user, escolherPerfil: !!data.escolherPerfil };
+  },
+
+  trocarPerfil: async (perfil) => {
+    const { data } = await api.post("/auth/perfil", { perfil });
     storeToken(data.accessToken);
     set({ user: data.user, token: data.accessToken, isAuthenticated: true });
     return data.user;

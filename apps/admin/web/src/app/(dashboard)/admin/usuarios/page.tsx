@@ -30,6 +30,7 @@ interface UsuarioItem {
 }
 
 interface UsuarioForm {
+  papeisExtras: Role[];
   nome: string;
   nomeSocial: string;
   nomeMae: string;
@@ -65,6 +66,7 @@ interface UsuarioForm {
 }
 
 const FORM_VAZIO: UsuarioForm = {
+  papeisExtras: [],
   nome: "", nomeSocial: "", nomeMae: "", email: "", cpf: "", senha: "", role: "ALUNO",
   matricula: "", dataNascimento: "", instituicaoId: "", cursoId: "",
   telefone: "", celular: "",
@@ -311,6 +313,7 @@ export default function AdminUsuariosPage() {
           nomeMae: data.nomeMae || "",
           email: data.email || prev.email,
           role: data.role || prev.role,
+          papeisExtras: Array.isArray(data.papeisExtras) ? data.papeisExtras : [],
           matricula: data.matricula || "",
           instituicaoId: data.instituicao?.id || "",
           cursoId: data.curso?.id || "",
@@ -379,6 +382,7 @@ export default function AdminUsuariosPage() {
     try {
       if (editandoId) {
         await api.patch(`/admin/usuarios/${editandoId}`, {
+          papeisExtras: form.papeisExtras.filter((p) => p !== form.role && (p === "AVALIADOR" || p === "COMISSAO")),
           nome: form.nome,
           nomeSocial: form.nomeSocial || null,
           nomeMae: form.nomeMae,
@@ -912,6 +916,21 @@ export default function AdminUsuariosPage() {
                   <option key={r.value} value={r.value}>{r.label}</option>
                 ))}
               </select>
+              {editandoId && form.role !== "ALUNO" && (
+                <div className="mt-2 space-y-1">
+                  {(["AVALIADOR", "COMISSAO"] as Role[]).filter((p) => p !== form.role).map((p) => (
+                    <label key={p} className="flex items-center gap-2 text-sm text-[var(--text-primary)] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={form.papeisExtras.includes(p)}
+                        onChange={(e) => setForm({ ...form, papeisExtras: e.target.checked ? [...form.papeisExtras, p] : form.papeisExtras.filter((x) => x !== p) })}
+                      />
+                      Também {p === "AVALIADOR" ? "é avaliador(a)" : "é da Comissão"}
+                    </label>
+                  ))}
+                  <p className="text-xs text-[var(--text-tertiary)]">Com mais de um perfil, a pessoa escolhe com qual entrar no login.</p>
+                </div>
+              )}
             </div>
             <div>
               <Label className="text-[var(--text-primary)]">Matrícula</Label>

@@ -29,6 +29,8 @@ export interface User {
   email: string;
   cpf?: string;
   role: Role;
+  /** Perfis da conta (principal + extras). Mais de um: escolhe-se no login. */
+  papeis?: Role[];
   emailConfirmado?: boolean;
   instituicaoId?: string;
   cursoId?: string;

@@ -58,7 +58,16 @@ interface Painel {
   avaliadores: Array<{ avaliadorId: string; nome: string; total: number; concluidas: number; pendentes: number; atrasadas: number; mediaHoras: number | null }>;
   participantes: Participante[];
 }
-interface Avaliador { id: string; nome: string; email: string }
+interface Avaliador {
+  id: string; nome: string; email: string;
+  perfilPrincipal?: string; instituicao: string | null; externo: boolean; carga: number; capacidade: number;
+}
+interface ResumoDistribuicao {
+  simulacao: boolean; participantes: number; avaliadores: number; atribuicoes: number;
+  primeiroExterno: number; primeiroNaoExterno: number; vagasLivresPara3o: number; externos: number;
+  cargas: Array<{ id: string; nome: string; instituicao: string | null; externo: boolean; carga: number }>;
+  porInstituicao: Array<{ sigla: string; participantes: number }>;
+}
 
 const dataHora = (iso: string | null) =>
   iso ? new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";
@@ -101,9 +110,10 @@ export default function PainelFase2() {
   const [avaliadores, setAvaliadores] = useState<Avaliador[]>([]);
   const [selecionados, setSelecionados] = useState<string[]>([]);
   const [confirmarDistribuicao, setConfirmarDistribuicao] = useState(false);
+  const [simulacao, setSimulacao] = useState<ResumoDistribuicao | null>(null);
   const [filtro, setFiltro] = useState("");
   const [filtroSituacao, setFiltroSituacao] = useState("");
-  const [remanejando, setRemanejando] = useState<{ atribuicao: Atribuicao; participante: string } | null>(null);
+  const [remanejando, setRemanejando] = useState<{ atribuicao: Atribuicao; participante: string; instituicao: string; ja: string[] } | null>(null);
   const [novoAvaliador, setNovoAvaliador] = useState("");
   const [liberando, setLiberando] = useState<Participante | null>(null);
   const [tipoReenvio, setTipoReenvio] = useState<"video" | "portfolio">("video");
@@ -154,11 +164,20 @@ export default function PainelFase2() {
       return `Fase 2 iniciada. Prazo final: ${dataHora(data.prazoEm)}. Os e-mails estão sendo enviados aos ${data.classificados} classificados.`;
     });
 
+  const simular = () =>
+    acao(async () => {
+      const { data } = await api.post<ResumoDistribuicao>("/admin/fase2/distribuir", { avaliadorIds: selecionados, simular: true });
+      setSimulacao(data);
+      return `Simulação pronta: confira o resultado abaixo antes de confirmar.`;
+    });
+
   const distribuir = () =>
     acao(async () => {
-      const { data } = await api.post("/admin/fase2/distribuir", { avaliadorIds: selecionados });
+      const { data } = await api.post<ResumoDistribuicao>("/admin/fase2/distribuir", { avaliadorIds: selecionados });
       setConfirmarDistribuicao(false);
-      return `Distribuição concluída: ${data.participantes} participantes, ${data.atribuicoes} avaliações entre ${data.avaliadores} avaliadores.`;
+      setSimulacao(null);
+      api.get<Avaliador[]>("/admin/fase2/avaliadores").then(({ data: av }) => setAvaliadores(av)).catch(() => {});
+      return `Distribuição concluída: ${data.participantes} participantes, ${data.atribuicoes} avaliações entre ${data.avaliadores} avaliadores; ${data.primeiroExterno} com 1º avaliador externo.`;
     });
 
   const exportar = async () => {
@@ -284,29 +303,84 @@ export default function PainelFase2() {
       </div>
 
       {/* Distribuição */}
-      {painel.situacao === "ENCERRADA" && !painel.distribuida && (
-        <div className={`${cartao} space-y-3`}>
+      {painel.situacao === "ENCERRADA" && !painel.distribuida && (() => {
+        const escolhidos = avaliadores.filter((a) => selecionados.includes(a.id));
+        const vagas = escolhidos.reduce((s, a) => s + Math.max(0, a.capacidade - a.carga), 0);
+        const necessarias = totais.enviaram * 2;
+        const externosSel = escolhidos.filter((a) => a.externo).length;
+        const semInst = escolhidos.filter((a) => !a.instituicao);
+        const alternar = (ids: string[], marcar: boolean) => {
+          setSimulacao(null);
+          setSelecionados((s) => (marcar ? [...new Set([...s, ...ids])] : s.filter((x) => !ids.includes(x))));
+        };
+        return (
+        <div className={`${cartao} space-y-4`}>
           <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Users size={16} /> Distribuir aos avaliadores</h2>
-          <p className="text-sm text-[var(--text-secondary)]">
-            Cada participante que enviou recebe 2 avaliadores diferentes, em partes iguais. Se as notas diferirem
-            mais de 20 pontos, o sistema chama automaticamente um 3º avaliador. Selecione pelo menos 3 avaliadores.
-          </p>
+          <div className="text-sm text-[var(--text-secondary)] space-y-1">
+            <p>Regras aplicadas automaticamente:</p>
+            <ul className="list-disc pl-5 space-y-0.5">
+              <li>cada avaliador recebe <strong>no máximo 10</strong> participantes (incluindo eventuais 3ªs avaliações);</li>
+              <li>o <strong>1º avaliador é EXTERNO</strong>; se os externos lotarem, é de instituição diferente da do participante;</li>
+              <li>o <strong>2º e o 3º</strong> avaliadores são de <strong>instituição diferente</strong> da do participante;</li>
+              <li>se as notas diferirem mais de 20 pontos, o 3º avaliador é chamado automaticamente, pelas mesmas regras.</li>
+            </ul>
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <button className="rounded-full border border-[var(--border-color)] px-3 py-1 hover:border-[var(--color-gold)]" onClick={() => alternar(avaliadores.filter((a) => a.instituicao).map((a) => a.id), true)}>Marcar todos (com instituição)</button>
+            <button className="rounded-full border border-[var(--border-color)] px-3 py-1 hover:border-[var(--color-gold)]" onClick={() => alternar(avaliadores.filter((a) => a.externo).map((a) => a.id), true)}>Marcar externos</button>
+            <button className="rounded-full border border-[var(--border-color)] px-3 py-1 hover:border-[var(--color-gold)]" onClick={() => alternar(avaliadores.map((a) => a.id), false)}>Desmarcar todos</button>
+          </div>
           <div className="grid gap-2 sm:grid-cols-2">
             {avaliadores.map((a) => (
               <label key={a.id} className="flex items-center gap-2 text-sm text-[var(--text-primary)] rounded-lg bg-[var(--bg-primary)] p-2 cursor-pointer">
-                <input type="checkbox" checked={selecionados.includes(a.id)}
-                  onChange={(e) => setSelecionados((s) => (e.target.checked ? [...s, a.id] : s.filter((x) => x !== a.id)))} />
-                {a.nome} <span className="text-[var(--text-tertiary)] text-xs">{a.email}</span>
+                <input type="checkbox" checked={selecionados.includes(a.id)} onChange={(e) => alternar([a.id], e.target.checked)} />
+                <span className="flex-1 min-w-0">
+                  <span className="block truncate">{a.nome}</span>
+                  <span className="block text-xs text-[var(--text-tertiary)] truncate">{a.email}</span>
+                </span>
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${a.externo ? "bg-[var(--color-gold)]/20 text-[var(--color-gold-ink)]" : a.instituicao ? "bg-[var(--bg-secondary)] text-[var(--text-secondary)]" : "bg-red-500/10 text-red-300"}`}>
+                  {a.instituicao ?? "sem instituição"}
+                </span>
+                {a.perfilPrincipal && a.perfilPrincipal !== "AVALIADOR" && <span className="text-[10px] text-[var(--text-tertiary)]">(também {a.perfilPrincipal === "COMISSAO" ? "Comissão" : a.perfilPrincipal})</span>}
               </label>
             ))}
             {!avaliadores.length && <p className="text-sm text-[var(--text-tertiary)]">Nenhum usuário com perfil de avaliador.</p>}
           </div>
-          <Button disabled={ocupado || selecionados.length < 3} onClick={() => setConfirmarDistribuicao(true)}
-            style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}>
-            Distribuir {totais.enviaram} participantes entre {selecionados.length} avaliadores
-          </Button>
+          <div className={`rounded-lg p-3 text-sm ${vagas >= necessarias ? "bg-emerald-500/10 text-emerald-300" : "bg-amber-500/10 text-amber-300"}`}>
+            {totais.enviaram} participantes × 2 = <strong>{necessarias}</strong> avaliações · {escolhidos.length} avaliadores selecionados ({externosSel} externos) × até 10 = <strong>{vagas}</strong> vagas
+            {vagas >= necessarias ? ` · sobram ${vagas - necessarias} vagas para 3ªs avaliações` : ` · faltam ${necessarias - vagas} vagas: selecione mais avaliadores`}
+            {semInst.length > 0 && <span className="block text-red-300 mt-1">{semInst.length} selecionado(s) sem instituição cadastrada: defina a instituição (ou EXTERNO) em Usuários antes de distribuir.</span>}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" disabled={ocupado || selecionados.length < 3} onClick={simular}>Simular distribuição</Button>
+            <Button disabled={ocupado || !simulacao || selecionados.length < 3} onClick={() => setConfirmarDistribuicao(true)}
+              style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}>
+              Confirmar distribuição
+            </Button>
+          </div>
+          {simulacao && (
+            <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 space-y-3 text-sm">
+              <p className="font-semibold text-[var(--text-primary)]">Resultado da simulação (nada foi gravado)</p>
+              <ul className="space-y-1 text-[var(--text-secondary)]">
+                <li>{simulacao.participantes} participantes · {simulacao.atribuicoes} avaliações · {simulacao.avaliadores} avaliadores</li>
+                <li><strong className="text-[var(--text-primary)]">{simulacao.primeiroExterno}</strong> participantes com 1º avaliador externo{simulacao.primeiroNaoExterno > 0 && <> · <span className="text-amber-300">{simulacao.primeiroNaoExterno} com 1º de outra instituição (externos lotados)</span></>}</li>
+                <li>{simulacao.vagasLivresPara3o} vagas livres para eventuais 3ªs avaliações</li>
+                <li>Participantes por instituição: {simulacao.porInstituicao.map((x) => `${x.sigla} ${x.participantes}`).join(" · ")}</li>
+              </ul>
+              <div className="grid gap-1 sm:grid-cols-2">
+                {simulacao.cargas.map((c) => (
+                  <div key={c.id} className="flex items-center justify-between gap-2 rounded bg-[var(--bg-secondary)] px-2 py-1">
+                    <span className="truncate">{c.nome} <span className="text-xs text-[var(--text-tertiary)]">{c.instituicao}</span></span>
+                    <span className="tabular-nums font-semibold">{c.carga}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-[var(--text-tertiary)]">Ao confirmar, uma nova distribuição é calculada com as mesmas regras (os nomes podem mudar, os totais se mantêm). A distribuição é feita uma única vez.</p>
+            </div>
+          )}
         </div>
-      )}
+        );
+      })()}
 
       {/* Avaliadores */}
       {painel.avaliadores.length > 0 && (
@@ -404,7 +478,7 @@ export default function PainelFase2() {
                               <span className={a.horasComAvaliador > painel.alertaHoras ? "text-red-300 font-semibold" : "text-[var(--color-gold-ink)]"}>
                                 pendente há {a.horasComAvaliador} h
                               </span>
-                              <button className="text-[var(--color-blue-ink)] hover:underline" onClick={() => { setRemanejando({ atribuicao: a, participante: p.nome }); setNovoAvaliador(""); }}>
+                              <button className="text-[var(--color-blue-ink)] hover:underline" onClick={() => { setRemanejando({ atribuicao: a, participante: p.nome, instituicao: p.instituicao, ja: p.atribuicoes.map((x) => x.avaliadorId) }); setNovoAvaliador(""); }}>
                                 remanejar
                               </button>
                             </>
@@ -439,7 +513,7 @@ export default function PainelFase2() {
         confirmando={ocupado}
         variante="warning"
         titulo="Distribuir aos avaliadores?"
-        mensagem={`${totais.enviaram} participantes serão distribuídos entre ${selecionados.length} avaliadores, 2 avaliadores por participante. A distribuição é feita uma única vez.`}
+        mensagem={`${totais.enviaram} participantes serão distribuídos entre ${selecionados.length} avaliadores, 2 por participante, pelas regras (1º externo, instituição diferente, máximo 10). A distribuição é feita uma única vez e não pode ser desfeita.`}
       />
 
       {liberando && (
@@ -485,12 +559,15 @@ export default function PainelFase2() {
           <div className={`${cartao} w-full max-w-md space-y-3`} onClick={(e) => e.stopPropagation()}>
             <h3 className="text-base font-bold text-[var(--text-primary)]">Remanejar avaliação</h3>
             <p className="text-sm text-[var(--text-secondary)]">
-              {remanejando.participante}: {remanejando.atribuicao.ordem}º avaliador atual é {remanejando.atribuicao.avaliador}.
+              {remanejando.participante} ({remanejando.instituicao}): {remanejando.atribuicao.ordem}º avaliador atual é {remanejando.atribuicao.avaliador}.
             </p>
+            <p className="text-xs text-[var(--text-tertiary)]">Só aparecem avaliadores de outra instituição, com vaga (menos de 10) e que ainda não avaliam este participante.</p>
             <select value={novoAvaliador} onChange={(e) => setNovoAvaliador(e.target.value)}
               className="w-full h-9 rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm px-2">
               <option value="">Escolha o novo avaliador</option>
-              {avaliadores.filter((a) => a.id !== remanejando.atribuicao.avaliadorId).map((a) => <option key={a.id} value={a.id}>{a.nome}</option>)}
+              {avaliadores
+                .filter((a) => !remanejando.ja.includes(a.id) && a.instituicao && a.instituicao !== remanejando.instituicao && a.carga < a.capacidade)
+                .map((a) => <option key={a.id} value={a.id}>{a.nome} · {a.instituicao} · {a.carga}/{a.capacidade}</option>)}
             </select>
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="sm" onClick={() => setRemanejando(null)}>Cancelar</Button>
@@ -498,6 +575,7 @@ export default function PainelFase2() {
                 onClick={() => acao(async () => {
                   await api.post(`/admin/fase2/atribuicoes/${remanejando.atribuicao.id}/remanejar`, { avaliadorId: novoAvaliador });
                   setRemanejando(null);
+                  api.get<Avaliador[]>("/admin/fase2/avaliadores").then(({ data }) => setAvaliadores(data)).catch(() => {});
                   return "Avaliação remanejada.";
                 })}>
                 Remanejar

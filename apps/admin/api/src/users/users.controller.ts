@@ -10,8 +10,10 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get("me")
-  async me(@Req() req: Request & { user: { id: string; email: string; nome: string; role: string } }) {
-    return this.usersService.findById(req.user.id);
+  async me(@Req() req: Request & { user: { id: string; email: string; nome: string; role: string; papeis?: string[] } }) {
+    // O perfil ativo vem do token (pode ser um perfil extra, ex.: AVALIADOR).
+    const user = await this.usersService.findById(req.user.id);
+    return { ...user, role: req.user.role, papeis: req.user.papeis ?? [req.user.role] };
   }
 
   @UseGuards(JwtAuthGuard)

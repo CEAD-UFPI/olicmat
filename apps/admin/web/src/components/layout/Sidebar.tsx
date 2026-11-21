@@ -234,6 +234,11 @@ export function Sidebar({ role, userName, aberto = false, aoFechar }: SidebarPro
             Editar perfil
           </p>
         </Link>
+        {(user?.papeis?.length ?? 0) > 1 && (
+          <Link href="/escolher-perfil" className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[var(--color-gold)]/50 px-2.5 py-1 text-xs text-[var(--color-gold-ink)] hover:bg-[var(--color-gold)]/10">
+            <Users size={12} /> Trocar perfil
+          </Link>
+        )}
         <div className="relative mt-3">
           <button
             type="button"

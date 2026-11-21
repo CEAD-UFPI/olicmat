@@ -29,6 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         email: true,
         nome: true,
         role: true,
+        papeisExtras: true,
         sessaoId: true,
       },
     });
@@ -37,7 +38,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException("Usuário não encontrado");
     }
 
-    const { sessaoId, ...dados } = user;
+    const { sessaoId, papeisExtras, ...dados } = user;
+    // Perfil ativo: o do token, desde que pertença ao usuário (principal ou
+    // extra). Um token antigo ou adulterado cai no perfil principal.
+    const papeis = [user.role, ...(papeisExtras ?? []).filter((p) => p !== user.role)];
+    const ativo = papeis.includes(payload.role as typeof user.role) ? payload.role : user.role;
 
     // Só a prova renova a sessão. O painel consulta notificações sozinho, e uma
     // aba esquecida no notebook prenderia a conta e bloquearia a entrada no celular.
@@ -45,6 +50,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException("Esta conta entrou em outro aparelho.");
     }
 
-    return { ...dados, sid: payload.sid };
+    return { ...dados, role: ativo, papeis, sid: payload.sid };
   }
 }

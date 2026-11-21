@@ -1,7 +1,5 @@
 import {
   consolidarNotas,
-  distribuir,
-  escolherTerceiro,
   linkValido,
   prazoDe,
   situacaoEnvio,
@@ -139,49 +137,6 @@ describe("consolidarNotas", () => {
   it("empate entre pares: fica o de maior média", () => {
     // 50–75 (25), 75–100 (25): escolhe 75–100.
     expect(consolidarNotas([50, 100, 75])).toEqual({ situacao: "FINAL", nota: 87.5 });
-  });
-});
-
-describe("distribuir", () => {
-  const parts = Array.from({ length: 182 }, (_, i) => `p${i}`);
-  const avs = ["a", "b", "c", "d", "e"];
-
-  it("2 avaliadores distintos por participante", () => {
-    const r = distribuir(parts, avs);
-    expect(r).toHaveLength(364);
-    for (const p of parts) {
-      const dele = r.filter((x) => x.inscricaoId === p);
-      expect(dele).toHaveLength(2);
-      expect(dele[0].avaliadorId).not.toBe(dele[1].avaliadorId);
-    }
-  });
-
-  it("cargas diferem no máximo em 1", () => {
-    const r = distribuir(parts, avs);
-    const cargas = avs.map((a) => r.filter((x) => x.avaliadorId === a).length);
-    expect(Math.max(...cargas) - Math.min(...cargas)).toBeLessThanOrEqual(1);
-  });
-
-  it("funciona com 2 avaliadores", () => {
-    const r = distribuir(["p1", "p2", "p3"], ["a", "b"]);
-    expect(r.filter((x) => x.avaliadorId === "a")).toHaveLength(3);
-  });
-
-  it("exige ao menos 2 avaliadores distintos", () => {
-    expect(() => distribuir(parts, ["a"])).toThrow();
-    expect(() => distribuir(parts, ["a", "a"])).toThrow();
-  });
-});
-
-describe("escolherTerceiro", () => {
-  it("menor carga pendente, fora dos dois primeiros", () => {
-    const c = [
-      { avaliadorId: "a", pendentes: 0, total: 10 },
-      { avaliadorId: "b", pendentes: 1, total: 10 },
-      { avaliadorId: "c", pendentes: 2, total: 10 },
-    ];
-    expect(escolherTerceiro(c, ["a"])).toBe("b");
-    expect(escolherTerceiro(c, ["a", "b", "c"])).toBeNull();
   });
 });
 
