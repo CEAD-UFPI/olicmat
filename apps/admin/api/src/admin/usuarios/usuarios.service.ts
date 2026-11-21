@@ -157,6 +157,7 @@ export class AdminUsuariosService {
         instituicaoId: true,
         cursoId: true,
         coordenadorId: true,
+        papeisExtras: true,
         instituicao: { select: { id: true, nome: true, sigla: true } },
         curso: { select: { id: true, nome: true } },
         inscricoes: {
@@ -362,6 +363,14 @@ export class AdminUsuariosService {
       if (data[field] !== undefined) {
         updateData[field] = data[field] === null ? null : data[field];
       }
+    }
+
+    if (data.papeisExtras !== undefined) {
+      if (actor.role !== "ADMIN") {
+        throw new ForbiddenException("Só o administrador altera os perfis adicionais.");
+      }
+      const principal = (data.role ?? targetUser.role) as string;
+      updateData.papeisExtras = [...new Set(data.papeisExtras)].filter((p) => p !== principal);
     }
 
     if (Object.keys(updateData).length === 0) {

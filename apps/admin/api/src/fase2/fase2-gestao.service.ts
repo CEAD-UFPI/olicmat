@@ -3,7 +3,8 @@ import { randomInt } from "node:crypto";
 import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { EmailService } from "../email/email.service.js";
-import { ALERTA_AVALIACAO_HORAS, distribuir, prazoDe, situacaoEnvio, type TipoArquivo } from "./fase2.regras.js";
+import { ALERTA_AVALIACAO_HORAS, prazoDe, situacaoEnvio, type TipoArquivo } from "./fase2.regras.js";
+import { CAPACIDADE_AVALIADOR, ehExterno, planejarDistribuicao, podeAvaliar } from "./fase2-distribuicao.js";
 import { edicaoAtual } from "./fase2.edicao.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
 import { formatarEnvio } from "./fase2-participante.service.js";
@@ -306,22 +307,52 @@ export class Fase2GestaoService {
 
   // ─── Distribuição ──────────────────────────────────────────────────────
 
+  /** Quem pode avaliar: perfil principal AVALIADOR ou AVALIADOR como perfil extra. */
+  private readonly ehAvaliador = { OR: [{ role: "AVALIADOR" as const }, { papeisExtras: { has: "AVALIADOR" as const } }] };
+
+  /** Avaliadores com instituição, EXTERNO e carga atual (para a distribuição e o remanejamento). */
   async listarAvaliadores() {
-    return this.prisma.user.findMany({
-      where: { role: "AVALIADOR" },
-      select: { id: true, nome: true, email: true },
+    const edicao = await edicaoAtual(this.prisma);
+    const users = await this.prisma.user.findMany({
+      where: this.ehAvaliador,
+      select: { id: true, nome: true, email: true, role: true, instituicaoId: true, instituicao: { select: { sigla: true, nome: true } } },
       orderBy: { nome: "asc" },
     });
+    const cargas = edicao
+      ? await this.prisma.atribuicaoFase2.groupBy({
+          by: ["avaliadorId"],
+          where: { inscricao: { edicaoId: edicao.id }, status: { not: "REMANEJADA" } },
+          _count: { _all: true },
+        })
+      : [];
+    const carga = new Map(cargas.map((c) => [c.avaliadorId, c._count._all]));
+    return users.map((u) => ({
+      id: u.id,
+      nome: u.nome,
+      email: u.email,
+      perfilPrincipal: u.role,
+      instituicaoId: u.instituicaoId,
+      instituicao: u.instituicao?.sigla ?? null,
+      externo: ehExterno(u.instituicao),
+      carga: carga.get(u.id) ?? 0,
+      capacidade: CAPACIDADE_AVALIADOR,
+    }));
   }
 
-  async distribuirAvaliadores(avaliadorIds: string[], actorId: string, agora = new Date()) {
+  /**
+   * Distribui os participantes que enviaram materiais entre os avaliadores
+   * escolhidos, pelas regras de fase2-distribuicao.ts. Com `simular`, só
+   * devolve o plano (nada é gravado).
+   */
+  async distribuirAvaliadores(avaliadorIds: string[], actorId: string, { simular = false }: { simular?: boolean } = {}, agora = new Date()) {
     const edicao = await this.edicaoOuErro();
     if (situacaoEnvio(edicao.fase2InicioEm, edicao.fase2PrazoEm, agora) !== "ENCERRADA") {
       throw new BadRequestException("A distribuição só pode ser feita após o encerramento do prazo de envio.");
     }
     const ids = [...new Set(avaliadorIds)];
-    const validos = await this.prisma.user.count({ where: { id: { in: ids }, role: "AVALIADOR" } });
-    if (validos !== ids.length) throw new BadRequestException("Lista de avaliadores inválida.");
+    const todos = await this.listarAvaliadores();
+    const escolhidos = todos.filter((a) => ids.includes(a.id));
+    if (escolhidos.length !== ids.length) throw new BadRequestException("Lista de avaliadores inválida.");
     // 3 no mínimo: com só 2, não haveria quem fizesse a 3ª avaliação.
     if (ids.length < 3) throw new BadRequestException("Selecione pelo menos 3 avaliadores.");
 
@@ -330,26 +361,50 @@ export class Fase2GestaoService {
 
     const comEnvio = await this.prisma.inscricao.findMany({
       where: { edicaoId: edicao.id, fase2Classificado: true, enviosFase2: { some: {} } },
-      select: { id: true },
+      select: { id: true, instituicaoId: true, instituicao: { select: { sigla: true } } },
     });
     if (!comEnvio.length) throw new BadRequestException("Nenhum participante enviou os materiais.");
 
-    // Embaralha (Fisher–Yates) para não concentrar uma instituição num avaliador.
-    const ordem = comEnvio.map((i) => i.id);
-    for (let i = ordem.length - 1; i > 0; i--) {
-      const j = randomInt(i + 1);
-      [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
-    }
-    const atribuicoes = distribuir(ordem, ids);
-    await this.prisma.atribuicaoFase2.createMany({
-      data: atribuicoes.map((a) => ({ ...a, atribuidoEm: agora, atribuidoPorId: actorId })),
+    const plano = planejarDistribuicao(
+      comEnvio.map((i) => ({ id: i.id, instituicaoId: i.instituicaoId })),
+      escolhidos.map((a) => ({ id: a.id, instituicaoId: a.instituicaoId, externo: a.externo, carga: a.carga })),
+      { semente: randomInt(1, 2 ** 31 - 1) },
+    );
+    if (!plano.ok) throw new BadRequestException(plano.erro);
+
+    const resumo = {
+      participantes: comEnvio.length,
+      avaliadores: escolhidos.length,
+      atribuicoes: plano.atribuicoes.length,
+      primeiroExterno: comEnvio.length - plano.primeiroNaoExterno,
+      primeiroNaoExterno: plano.primeiroNaoExterno,
+      vagasLivresPara3o: plano.vagasLivres,
+      externos: escolhidos.filter((a) => a.externo).length,
+      cargas: escolhidos
+        .map((a) => ({ id: a.id, nome: a.nome, instituicao: a.instituicao, externo: a.externo, carga: plano.cargas[a.id] ?? 0 }))
+        .sort((x, y) => y.carga - x.carga || x.nome.localeCompare(y.nome)),
+      porInstituicao: Object.entries(
+        comEnvio.reduce<Record<string, number>>((m, i) => ({ ...m, [i.instituicao.sigla]: (m[i.instituicao.sigla] ?? 0) + 1 }), {}),
+      ).map(([sigla, participantes]) => ({ sigla, participantes })),
+    };
+    if (simular) return { simulacao: true, ...resumo };
+
+    await this.prisma.$transaction(async (tx) => {
+      // Trava contra dois cliques simultâneos.
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${"distribuir:" + edicao.id}))`;
+      const jaDentro = await tx.atribuicaoFase2.count({ where: { inscricao: { edicaoId: edicao.id } } });
+      if (jaDentro > 0) throw new BadRequestException("A distribuição já foi feita.");
+      await tx.atribuicaoFase2.createMany({
+        data: plano.atribuicoes.map((a) => ({ ...a, atribuidoEm: agora, atribuidoPorId: actorId })),
+      });
     });
     await this.auditoria.log(actorId, "DISTRIBUIR_FASE2", "Edicao", edicao.id, {
-      participantes: ordem.length,
+      participantes: resumo.participantes,
       avaliadores: ids,
-      atribuicoes: atribuicoes.length,
+      atribuicoes: resumo.atribuicoes,
+      primeiroNaoExterno: resumo.primeiroNaoExterno,
     });
-    return { participantes: ordem.length, avaliadores: ids.length, atribuicoes: atribuicoes.length };
+    return { simulacao: false, ...resumo };
   }
 
   async remanejar(atribuicaoId: string, novoAvaliadorId: string, actorId: string) {
@@ -358,8 +413,15 @@ export class Fase2GestaoService {
     if (atual.status !== "PENDENTE") {
       throw new BadRequestException("Só é possível remanejar uma avaliação pendente.");
     }
-    const novo = await this.prisma.user.findFirst({ where: { id: novoAvaliadorId, role: "AVALIADOR" } });
+    const novo = (await this.listarAvaliadores()).find((x) => x.id === novoAvaliadorId);
     if (!novo) throw new BadRequestException("Avaliador inválido.");
+    const insc = await this.prisma.inscricao.findUnique({ where: { id: atual.inscricaoId }, select: { instituicaoId: true } });
+    if (!insc || !podeAvaliar(novo, insc.instituicaoId)) {
+      throw new BadRequestException("O avaliador deve ser de instituição diferente da do participante (e ter instituição cadastrada).");
+    }
+    if (novo.carga >= CAPACIDADE_AVALIADOR) {
+      throw new BadRequestException(`Este avaliador já tem ${novo.carga} participantes (máximo ${CAPACIDADE_AVALIADOR}).`);
+    }
     const conflito = await this.prisma.atribuicaoFase2.findUnique({
       where: { inscricaoId_avaliadorId: { inscricaoId: atual.inscricaoId, avaliadorId: novoAvaliadorId } },
     });

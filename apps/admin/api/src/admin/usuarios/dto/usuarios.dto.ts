@@ -89,6 +89,8 @@ export const criarUsuarioSchema = z.object({
 export type CriarUsuarioDto = z.infer<typeof criarUsuarioSchema>;
 
 export const atualizarUsuarioSchema = z.object({
+  /** Perfis adicionais (só ADMIN altera). Ex.: Comissão que também avalia. */
+  papeisExtras: z.array(z.enum(["AVALIADOR", "COMISSAO"])).max(2).optional(),
   nome: z.string().min(2).optional(),
   nomeSocial: z.string().nullable().optional(),
   nomeMae: z.string().min(2, "Nome da mãe é obrigatório").optional(),

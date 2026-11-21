@@ -136,45 +136,7 @@ export function consolidarNotas(notas: number[]): ResultadoNotas {
   return { situacao: "FINAL", nota: arred2((x + y) / 2) };
 }
 
-/**
- * Distribuição simples e equilibrada: cada participante recebe 2 avaliadores
- * distintos; as cargas diferem no máximo em 1. Determinística para a mesma
- * entrada (participantes e avaliadores na ordem recebida).
- */
-export function distribuir(
-  participantes: string[],
-  avaliadores: string[],
-): Array<{ inscricaoId: string; avaliadorId: string; ordem: number }> {
-  if (avaliadores.length < 2) {
-    throw new Error("São necessários pelo menos 2 avaliadores");
-  }
-  if (new Set(avaliadores).size !== avaliadores.length) {
-    throw new Error("Avaliador repetido na lista");
-  }
-  const n = avaliadores.length;
-  const saida: Array<{ inscricaoId: string; avaliadorId: string; ordem: number }> = [];
-  // Percorre as 2P vagas em sequência circular: a vaga k vai para o avaliador
-  // k mod n. Como n >= 2, as duas vagas consecutivas de um participante caem em
-  // avaliadores diferentes, e as cargas ficam equilibradas.
-  let k = 0;
-  for (const p of participantes) {
-    saida.push({ inscricaoId: p, avaliadorId: avaliadores[k % n], ordem: 1 });
-    saida.push({ inscricaoId: p, avaliadorId: avaliadores[(k + 1) % n], ordem: 2 });
-    k += 2;
-  }
-  return saida;
-}
-
-/** Escolhe o 3º avaliador: menor carga pendente, excluindo quem já avaliou. */
-export function escolherTerceiro(
-  candidatos: Array<{ avaliadorId: string; pendentes: number; total: number }>,
-  excluir: string[],
-): string | null {
-  const livres = candidatos.filter((c) => !excluir.includes(c.avaliadorId));
-  if (!livres.length) return null;
-  livres.sort((a, b) => a.pendentes - b.pendentes || a.total - b.total || a.avaliadorId.localeCompare(b.avaliadorId));
-  return livres[0].avaliadorId;
-}
+// A distribuição e a escolha do 3º avaliador estão em fase2-distribuicao.ts.
 
 /* ---------------------------------------------------------------------------
  * Upload dos arquivos (videoaula e portfólio) para a nuvem própria (S3).

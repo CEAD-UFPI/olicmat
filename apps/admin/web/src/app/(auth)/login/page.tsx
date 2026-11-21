@@ -50,6 +50,11 @@ export default function LoginPage() {
     setError("");
     try {
       const user = await login(data.email, data.senha);
+      // Conta com mais de um perfil (ex.: Comissão e Avaliador): escolher.
+      if (user.escolherPerfil) {
+        router.push("/escolher-perfil");
+        return;
+      }
       const home = roleHome[user.role as Role] || "/competidor";
       router.push(home);
     } catch (e: unknown) {

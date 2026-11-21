@@ -188,6 +188,8 @@ model User {
   cpf                   String      @unique
   senhaHash             String
   role                  Role        @default(ALUNO)
+  /// Perfis adicionais (ex.: COMISSAO que também é AVALIADOR). No login, a pessoa escolhe o perfil ativo.
+  papeisExtras          Role[]      @default([])
   instituicaoId         String?
   instituicao           Instituicao?        @relation(fields: [instituicaoId], references: [id])
   cursoId               String?

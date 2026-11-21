@@ -87,6 +87,13 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post("perfil")
+  async trocarPerfil(@Req() req: ExpressReq & { user: AuthUser }, @Body() body: { perfil?: string }) {
+    if (!body?.perfil) throw new BadRequestException("Informe o perfil.");
+    return this.authService.trocarPerfil(req.user.id, body.perfil, req.user.sid);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Post("logout")
   async logout(@Req() req: ExpressReq & { user: AuthUser }) {
     return this.authService.logout(req.user.id, req.user.sid);
