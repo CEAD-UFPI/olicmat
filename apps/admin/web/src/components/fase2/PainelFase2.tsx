@@ -58,6 +58,11 @@ interface Painel {
   avaliadores: Array<{ avaliadorId: string; nome: string; total: number; concluidas: number; pendentes: number; atrasadas: number; mediaHoras: number | null }>;
   participantes: Participante[];
 }
+interface ResumoRedistribuicao {
+  simulacao: boolean; aplicados: number; pendentesMoveis: number; fixas: number; movimentos: number;
+  semParticipantesAntes: number; semParticipantesDepois: number;
+  cargas: Array<{ id: string; nome: string; instituicao: string | null; externo: boolean; recebe: boolean; antes: number; depois: number }>;
+}
 interface Avaliador {
   id: string; nome: string; email: string;
   perfilPrincipal?: string; instituicao: string | null; externo: boolean; carga: number; capacidade: number;
@@ -111,6 +116,9 @@ export default function PainelFase2() {
   const [selecionados, setSelecionados] = useState<string[]>([]);
   const [confirmarDistribuicao, setConfirmarDistribuicao] = useState(false);
   const [simulacao, setSimulacao] = useState<ResumoDistribuicao | null>(null);
+  const [naoRecebem, setNaoRecebem] = useState<string[]>([]);
+  const [simRedist, setSimRedist] = useState<ResumoRedistribuicao | null>(null);
+  const [confirmarRedist, setConfirmarRedist] = useState(false);
   const [filtro, setFiltro] = useState("");
   const [filtroSituacao, setFiltroSituacao] = useState("");
   const [remanejando, setRemanejando] = useState<{ atribuicao: Atribuicao; participante: string; instituicao: string; ja: string[] } | null>(null);
@@ -169,6 +177,25 @@ export default function PainelFase2() {
       const { data } = await api.post<ResumoDistribuicao>("/admin/fase2/distribuir", { avaliadorIds: selecionados, simular: true });
       setSimulacao(data);
       return `Simulação pronta: confira o resultado abaixo antes de confirmar.`;
+    });
+
+  const corpoRedist = (simular: boolean) => ({
+    avaliadorIds: avaliadores.filter((a) => a.instituicao && !naoRecebem.includes(a.id)).map((a) => a.id),
+    simular,
+  });
+  const simularRedist = () =>
+    acao(async () => {
+      const { data } = await api.post<ResumoRedistribuicao>("/admin/fase2/redistribuir", corpoRedist(true));
+      setSimRedist(data);
+      return data.movimentos ? "Simulação pronta: confira abaixo antes de confirmar." : "Simulação: a carga já está equilibrada; nada a mover.";
+    });
+  const redistribuir = () =>
+    acao(async () => {
+      const { data } = await api.post<ResumoRedistribuicao>("/admin/fase2/redistribuir", corpoRedist(false));
+      setConfirmarRedist(false);
+      setSimRedist(null);
+      api.get<Avaliador[]>("/admin/fase2/avaliadores").then(({ data: av }) => setAvaliadores(av)).catch(() => {});
+      return `Redistribuição concluída: ${data.aplicados} avaliações mudaram de avaliador.`;
     });
 
   const distribuir = () =>
@@ -382,6 +409,67 @@ export default function PainelFase2() {
         );
       })()}
 
+      {/* Equilíbrio entre avaliadores (redistribuição das pendentes) */}
+      {painel.distribuida && avaliadores.length > 0 && (() => {
+        const comInst = avaliadores.filter((a) => a.instituicao);
+        const zerados = comInst.filter((a) => a.carga === 0);
+        const mudou = simRedist?.cargas.filter((c) => c.antes !== c.depois) ?? [];
+        return (
+          <div className={`${cartao} space-y-4`}>
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Users size={16} /> Equilíbrio entre avaliadores</h2>
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${zerados.length ? "bg-amber-500/10 text-amber-300" : "bg-emerald-500/10 text-emerald-300"}`}>
+                {zerados.length ? `${zerados.length} avaliador(es) sem participantes` : "todos com participantes"}
+              </span>
+            </div>
+            <p className="text-sm text-[var(--text-secondary)]">
+              Redistribui as avaliações <strong>pendentes e sem rascunho salvo</strong> para equilibrar a carga (por exemplo, quem aceitou o convite
+              depois da distribuição). Avaliações concluídas ou já iniciadas (com rascunho) não mudam. Valem as regras: 1º externo, instituição
+              diferente da do participante e no máximo 10 por avaliador. Desmarque quem <strong>não</strong> deve receber.
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {avaliadores.map((a) => (
+                <label key={a.id} className={`flex items-center gap-2 text-sm rounded-lg p-2 ${a.instituicao ? "bg-[var(--bg-primary)] cursor-pointer" : "bg-[var(--bg-primary)] opacity-60"}`}>
+                  <input type="checkbox" disabled={!a.instituicao} checked={!!a.instituicao && !naoRecebem.includes(a.id)}
+                    onChange={(e) => { setSimRedist(null); setNaoRecebem((s) => (e.target.checked ? s.filter((x) => x !== a.id) : [...s, a.id])); }} />
+                  <span className="flex-1 min-w-0 truncate text-[var(--text-primary)]">{a.nome}</span>
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${a.externo ? "bg-[var(--color-gold)]/20 text-[var(--color-gold-ink)]" : a.instituicao ? "bg-[var(--bg-secondary)] text-[var(--text-secondary)]" : "bg-red-500/10 text-red-300"}`}>{a.instituicao ?? "sem instituição"}</span>
+                  <span className={`tabular-nums text-xs font-semibold w-10 text-right ${a.carga === 0 ? "text-amber-300" : "text-[var(--text-primary)]"}`}>{a.carga}/{a.capacidade}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" disabled={ocupado} onClick={simularRedist}>Simular redistribuição</Button>
+              <Button disabled={ocupado || !simRedist || simRedist.movimentos === 0} onClick={() => setConfirmarRedist(true)}
+                style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}>
+                Confirmar redistribuição
+              </Button>
+            </div>
+            {simRedist && (
+              <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 space-y-3 text-sm">
+                <p className="font-semibold text-[var(--text-primary)]">Resultado da simulação (nada foi gravado)</p>
+                <ul className="space-y-1 text-[var(--text-secondary)]">
+                  <li>{simRedist.pendentesMoveis} avaliações pendentes podem mudar · {simRedist.fixas} ficam onde estão (concluídas ou com rascunho)</li>
+                  <li><strong className="text-[var(--text-primary)]">{simRedist.movimentos}</strong> mudariam de avaliador</li>
+                  <li>Avaliadores sem participantes: {simRedist.semParticipantesAntes} → <strong className="text-[var(--text-primary)]">{simRedist.semParticipantesDepois}</strong></li>
+                </ul>
+                {mudou.length > 0 && (
+                  <div className="grid gap-1 sm:grid-cols-2">
+                    {mudou.map((c) => (
+                      <div key={c.id} className="flex items-center justify-between gap-2 rounded bg-[var(--bg-secondary)] px-2 py-1">
+                        <span className="truncate">{c.nome} <span className="text-xs text-[var(--text-tertiary)]">{c.instituicao}</span></span>
+                        <span className="tabular-nums font-semibold">{c.antes} → {c.depois}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p className="text-xs text-[var(--text-tertiary)]">Os avaliadores que perdem uma avaliação deixam de vê-la; os que recebem passam a vê-la na lista “Pendentes”. Vale avisá-los.</p>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
       {/* Avaliadores */}
       {painel.avaliadores.length > 0 && (
         <div className={cartao}>
@@ -514,6 +602,16 @@ export default function PainelFase2() {
         variante="warning"
         titulo="Distribuir aos avaliadores?"
         mensagem={`${totais.enviaram} participantes serão distribuídos entre ${selecionados.length} avaliadores, 2 por participante, pelas regras (1º externo, instituição diferente, máximo 10). A distribuição é feita uma única vez e não pode ser desfeita.`}
+      />
+
+      <ConfirmDialog
+        aberto={confirmarRedist}
+        onClose={() => setConfirmarRedist(false)}
+        onConfirm={redistribuir}
+        confirmando={ocupado}
+        variante="warning"
+        titulo="Redistribuir as avaliações pendentes?"
+        mensagem={`${simRedist?.movimentos ?? 0} avaliações pendentes (sem rascunho) mudarão de avaliador, pelas regras da distribuição. Concluídas e iniciadas não mudam.`}
       />
 
       {liberando && (

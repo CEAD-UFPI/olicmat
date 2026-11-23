@@ -241,3 +241,119 @@ export function escolherTerceiro(
   );
   return livres[0].avaliadorId;
 }
+
+/* ------------------------------------------------------- redistribuição ---- */
+
+export interface VagaMovel {
+  /** Atribuição pendente, sem rascunho, que pode mudar de avaliador. */
+  atribuicaoId: string;
+  inscricaoId: string;
+  participanteInstituicaoId: string;
+  ordem: number;
+  avaliadorAtualId: string;
+}
+
+export interface AvaliadorRedistribuicao {
+  id: string;
+  instituicaoId: string | null;
+  externo: boolean;
+  /** Atribuições que NÃO podem sair dele (concluídas ou com rascunho). */
+  cargaFixa: number;
+  /** Pode receber novas atribuições (selecionado pela Comissão). */
+  recebe: boolean;
+}
+
+export interface Movimento {
+  atribuicaoId: string;
+  inscricaoId: string;
+  ordem: number;
+  de: string;
+  para: string;
+}
+
+const CUSTO_MOVER = 5;
+const PENALIDADE_INVALIDA = 50_000;
+
+/**
+ * Redistribui as avaliações pendentes (sem rascunho) para equilibrar a carga,
+ * por exemplo quando novos avaliadores entram depois da distribuição. Cada
+ * vaga pode ficar com o avaliador atual (custo 0) ou mudar (custo pequeno);
+ * só muda quando isso melhora o equilíbrio.
+ *
+ * Valem as mesmas regras da distribuição: máximo de 10, 1º externo
+ * (preferência forte), instituição diferente e nunca repetir o avaliador.
+ * `jaAtribuidos` lista, por participante, todos os avaliadores que já tiveram
+ * atribuição com ele (inclusive remanejadas, pela restrição única do banco).
+ * Atribuições atuais que violam as regras são corrigidas sempre que houver
+ * alternativa.
+ */
+export function planejarRedistribuicao(
+  vagas: VagaMovel[],
+  avaliadoresEntrada: AvaliadorRedistribuicao[],
+  jaAtribuidos: Map<string, Set<string>>,
+  { capacidade = CAPACIDADE_AVALIADOR }: { capacidade?: number } = {},
+): { ok: true; movimentos: Movimento[]; cargasAntes: Record<string, number>; cargasDepois: Record<string, number> } | { ok: false; erro: string } {
+  const av = avaliadoresEntrada;
+  const idx = new Map(av.map((a, i) => [a.id, i]));
+  for (const v of vagas) if (!idx.has(v.avaliadorAtualId)) return { ok: false, erro: `Avaliador atual desconhecido na atribuição ${v.atribuicaoId}.` };
+
+  const cargasAntes: Record<string, number> = Object.fromEntries(av.map((a) => [a.id, a.cargaFixa]));
+  for (const v of vagas) cargasAntes[v.avaliadorAtualId]++;
+
+  // Pares (participante, avaliador): um nó por par garante que o mesmo
+  // avaliador não fique com duas vagas do mesmo participante.
+  const participantes = [...new Set(vagas.map((v) => v.inscricaoId))];
+  const S = 0, T = 1;
+  let prox = 2;
+  const noVaga = vagas.map(() => prox++);
+  const noAv = av.map(() => prox++);
+  const noPar = new Map<string, number>();
+  const par = (p: string, a: number) => {
+    const k = `${p}|${a}`;
+    if (!noPar.has(k)) noPar.set(k, prox++);
+    return noPar.get(k)!;
+  };
+  // Pré-calcula os pares necessários para saber o total de nós.
+  const opcoes: Array<Array<{ a: number; custo: number }>> = vagas.map((v) => {
+    const outros = jaAtribuidos.get(v.inscricaoId) ?? new Set<string>();
+    const lista: Array<{ a: number; custo: number }> = [];
+    av.forEach((a, i) => {
+      const atual = a.id === v.avaliadorAtualId;
+      if (!atual && (!a.recebe || outros.has(a.id) || !podeAvaliar(a, v.participanteInstituicaoId))) return;
+      let custo = atual ? 0 : CUSTO_MOVER;
+      if (atual && !podeAvaliar(a, v.participanteInstituicaoId)) custo += PENALIDADE_INVALIDA;
+      if (v.ordem === 1 && !a.externo) custo += PENALIDADE_PRIMEIRO_NAO_EXTERNO;
+      lista.push({ a: i, custo });
+    });
+    return lista;
+  });
+  opcoes.forEach((lista, s) => lista.forEach((o) => par(vagas[s].inscricaoId, o.a)));
+  const g = new Fluxo(prox);
+  const arestas: Array<Array<{ e: number; a: number }>> = [];
+  vagas.forEach((v, s) => {
+    g.aresta(S, noVaga[s], 1, 0);
+    arestas[s] = opcoes[s].map((o) => ({ e: g.aresta(noVaga[s], par(v.inscricaoId, o.a), 1, o.custo), a: o.a }));
+  });
+  for (const [k, no] of noPar) g.aresta(no, noAv[Number(k.split("|")[1])], 1, 0);
+  av.forEach((a, i) => {
+    const atuais = vagas.filter((v) => v.avaliadorAtualId === a.id).length;
+    // Até a capacidade, custo crescente (equilíbrio). Acima dela, só o que o
+    // avaliador já tinha e com custo alto, para baixar se der.
+    const teto = Math.max(capacidade, a.cargaFixa + atuais);
+    for (let u = a.cargaFixa; u < teto; u++) g.aresta(noAv[i], T, 1, u * u + (u >= capacidade ? PENALIDADE_INVALIDA : 0));
+  });
+  void participantes;
+
+  const fluxo = g.resolver(S, T, vagas.length);
+  if (fluxo < vagas.length) return { ok: false, erro: "Não foi possível acomodar todas as avaliações pendentes." };
+
+  const movimentos: Movimento[] = [];
+  const cargasDepois: Record<string, number> = Object.fromEntries(av.map((a) => [a.id, a.cargaFixa]));
+  vagas.forEach((v, s) => {
+    const escolhida = arestas[s].find((x) => g.fluxoAtual(x.e) > 0)!;
+    const para = av[escolhida.a].id;
+    cargasDepois[para]++;
+    if (para !== v.avaliadorAtualId) movimentos.push({ atribuicaoId: v.atribuicaoId, inscricaoId: v.inscricaoId, ordem: v.ordem, de: v.avaliadorAtualId, para });
+  });
+  return { ok: true, movimentos, cargasAntes, cargasDepois };
+}
