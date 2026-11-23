@@ -4,7 +4,7 @@ import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { EmailService } from "../email/email.service.js";
 import { ALERTA_AVALIACAO_HORAS, prazoDe, situacaoEnvio, type TipoArquivo } from "./fase2.regras.js";
-import { CAPACIDADE_AVALIADOR, ehExterno, planejarDistribuicao, podeAvaliar } from "./fase2-distribuicao.js";
+import { CAPACIDADE_AVALIADOR, ehExterno, planejarDistribuicao, planejarRedistribuicao, podeAvaliar } from "./fase2-distribuicao.js";
 import { edicaoAtual } from "./fase2.edicao.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
 import { formatarEnvio } from "./fase2-participante.service.js";
@@ -405,6 +405,91 @@ export class Fase2GestaoService {
       primeiroNaoExterno: resumo.primeiroNaoExterno,
     });
     return { simulacao: false, ...resumo };
+  }
+
+  /**
+   * Redistribui as avaliações PENDENTES sem rascunho para equilibrar a carga
+   * (ex.: avaliadores que aceitaram o convite depois da distribuição). As
+   * concluídas e as que têm rascunho salvo não saem do avaliador. As regras
+   * são as da distribuição. Com `simular`, só devolve o plano.
+   */
+  async redistribuirPendentes(avaliadorIds: string[] | undefined, actorId: string, { simular = false }: { simular?: boolean } = {}) {
+    const edicao = await this.edicaoOuErro();
+    const ativas = await this.prisma.atribuicaoFase2.findMany({
+      where: { inscricao: { edicaoId: edicao.id }, status: { not: "REMANEJADA" } },
+      select: { id: true, inscricaoId: true, avaliadorId: true, ordem: true, status: true, inscricao: { select: { instituicaoId: true } } },
+    });
+    if (!ativas.length) throw new BadRequestException("A distribuição ainda não foi feita.");
+    const historico = await this.prisma.atribuicaoFase2.findMany({
+      where: { inscricao: { edicaoId: edicao.id } },
+      select: { inscricaoId: true, avaliadorId: true },
+    });
+    const rascunhos = await this.prisma.avaliacaoFase2.findMany({
+      where: { concluida: false, inscricao: { edicaoId: edicao.id } },
+      select: { inscricaoId: true, avaliadorId: true },
+    });
+    const comRascunho = new Set(rascunhos.map((r) => `${r.inscricaoId}|${r.avaliadorId}`));
+
+    const lista = await this.listarAvaliadores();
+    const conhecidos = new Set(lista.map((a) => a.id));
+    // Quem tem atribuição mas deixou de ser avaliador: pode manter, não recebe.
+    const extras = await this.prisma.user.findMany({
+      where: { id: { in: [...new Set(ativas.map((a) => a.avaliadorId))].filter((id) => !conhecidos.has(id)) } },
+      select: { id: true, nome: true, instituicaoId: true, instituicao: { select: { sigla: true, nome: true } } },
+    });
+    const selecionados = avaliadorIds?.length ? new Set(avaliadorIds) : null;
+    const moveis = ativas.filter((a) => a.status === "PENDENTE" && !comRascunho.has(`${a.inscricaoId}|${a.avaliadorId}`));
+    const idsMoveis = new Set(moveis.map((m) => m.id));
+    const fixa = new Map<string, number>();
+    for (const a of ativas) if (!idsMoveis.has(a.id)) fixa.set(a.avaliadorId, (fixa.get(a.avaliadorId) ?? 0) + 1);
+
+    const avaliadores = [
+      ...lista.map((a) => ({ id: a.id, nome: a.nome, instituicao: a.instituicao, instituicaoId: a.instituicaoId, externo: a.externo, cargaFixa: fixa.get(a.id) ?? 0, recebe: !!a.instituicaoId && (!selecionados || selecionados.has(a.id)) })),
+      ...extras.map((u) => ({ id: u.id, nome: u.nome, instituicao: u.instituicao?.sigla ?? null, instituicaoId: u.instituicaoId, externo: ehExterno(u.instituicao), cargaFixa: fixa.get(u.id) ?? 0, recebe: false })),
+    ];
+    const jaAtribuidos = new Map<string, Set<string>>();
+    for (const h of historico) jaAtribuidos.set(h.inscricaoId, new Set([...(jaAtribuidos.get(h.inscricaoId) ?? []), h.avaliadorId]));
+
+    const plano = planejarRedistribuicao(
+      moveis.map((m) => ({ atribuicaoId: m.id, inscricaoId: m.inscricaoId, participanteInstituicaoId: m.inscricao.instituicaoId, ordem: m.ordem, avaliadorAtualId: m.avaliadorId })),
+      avaliadores,
+      jaAtribuidos,
+    );
+    if (!plano.ok) throw new BadRequestException(plano.erro);
+
+    const resumo = {
+      pendentesMoveis: moveis.length,
+      fixas: ativas.length - moveis.length,
+      movimentos: plano.movimentos.length,
+      semParticipantesAntes: avaliadores.filter((a) => (plano.cargasAntes[a.id] ?? 0) === 0 && a.recebe).length,
+      semParticipantesDepois: avaliadores.filter((a) => (plano.cargasDepois[a.id] ?? 0) === 0 && a.recebe).length,
+      cargas: avaliadores
+        .map((a) => ({ id: a.id, nome: a.nome, instituicao: a.instituicao, externo: a.externo, recebe: a.recebe, antes: plano.cargasAntes[a.id] ?? 0, depois: plano.cargasDepois[a.id] ?? 0 }))
+        .sort((x, y) => y.depois - x.depois || x.nome.localeCompare(y.nome)),
+    };
+    if (simular || !plano.movimentos.length) return { simulacao: simular, aplicados: 0, ...resumo };
+
+    const agora = new Date();
+    const aplicados = await this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${"distribuir:" + edicao.id}))`;
+      let n = 0;
+      for (const m of plano.movimentos) {
+        // Confere de novo: o avaliador pode ter concluído ou salvo rascunho no meio-tempo.
+        const atual = await tx.atribuicaoFase2.findUnique({ where: { id: m.atribuicaoId }, select: { status: true } });
+        const rasc = await tx.avaliacaoFase2.findUnique({ where: { inscricaoId_avaliadorId: { inscricaoId: m.inscricaoId, avaliadorId: m.de } }, select: { id: true } });
+        if (atual?.status !== "PENDENTE" || rasc) continue;
+        await tx.atribuicaoFase2.update({ where: { id: m.atribuicaoId }, data: { status: "REMANEJADA" } });
+        await tx.atribuicaoFase2.create({ data: { inscricaoId: m.inscricaoId, avaliadorId: m.para, ordem: m.ordem, atribuidoEm: agora, atribuidoPorId: actorId } });
+        n++;
+      }
+      return n;
+    });
+    await this.auditoria.log(actorId, "REDISTRIBUIR_FASE2", "Edicao", edicao.id, {
+      movimentos: plano.movimentos.length,
+      aplicados,
+      avaliadoresSelecionados: avaliadorIds ?? "todos com instituição",
+    });
+    return { simulacao: false, aplicados, ...resumo };
   }
 
   async remanejar(atribuicaoId: string, novoAvaliadorId: string, actorId: string) {
