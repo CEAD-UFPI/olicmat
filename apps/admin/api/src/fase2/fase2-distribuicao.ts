@@ -357,3 +357,116 @@ export function planejarRedistribuicao(
   });
   return { ok: true, movimentos, cargasAntes, cargasDepois };
 }
+
+/* ------------------------------------------- remanejamento por quantidade ---- */
+
+/** Comparação lexicográfica de chaves de preferência (menor = melhor). */
+function menor(a: Array<number | string>, b: Array<number | string>): boolean {
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i];
+  return false;
+}
+
+/** Origem: um avaliador (id), quem não concluiu nenhuma avaliação, ou qualquer um. */
+export type OrigemLote = string; // id | "OCIOSOS" | "QUALQUER"
+/** Destino: um avaliador (id) ou "DEMAIS" (distribui entre os de menor carga). */
+export type DestinoLote = string; // id | "DEMAIS"
+
+export interface InstrucaoLote {
+  de: OrigemLote;
+  para: DestinoLote;
+  quantidade: number;
+}
+
+export interface AvaliadorLote {
+  id: string;
+  nome: string;
+  instituicaoId: string | null;
+  externo: boolean;
+  /** Atribuições ativas (pendentes + concluídas). */
+  carga: number;
+  concluidas: number;
+}
+
+export interface ResultadoInstrucao {
+  instrucao: InstrucaoLote;
+  feitos: number;
+  movimentos: Movimento[];
+  /** Por que não completou a quantidade pedida (quando não completou). */
+  motivo?: string;
+  /** 1ºs avaliadores que deixaram de ser externos por falta de opção. */
+  primeiroNaoExterno: number;
+}
+
+/**
+ * Executa pedidos como "tire 3 da Luzia e dê ao Beto" ou "dê mais 4 à Anísia
+ * (de qualquer um)", na ordem informada, escolhendo avaliações concretas:
+ * - só avaliações pendentes sem rascunho (`vagas`), e cada uma muda no máximo
+ *   uma vez por rodada;
+ * - quem recebe precisa ser de instituição diferente da do participante, não
+ *   pode ter tido esse participante antes e deve ter menos de `capacidade`;
+ * - um não externo recebe de preferência 2º/3º avaliador; só recebe um 1º
+ *   quando não houver outra opção, e isso é contado em `primeiroNaoExterno`;
+ * - "QUALQUER" tira de quem tem mais pendências; "OCIOSOS" só de quem não
+ *   concluiu nenhuma avaliação; "DEMAIS" entrega a quem tem menor carga.
+ */
+export function planejarRemanejamentoLote(
+  instrucoes: InstrucaoLote[],
+  vagasEntrada: VagaMovel[],
+  avaliadoresEntrada: AvaliadorLote[],
+  jaAtribuidos: Map<string, Set<string>>,
+  { capacidade = CAPACIDADE_AVALIADOR }: { capacidade?: number } = {},
+): { resultados: ResultadoInstrucao[]; cargasAntes: Record<string, number>; cargasDepois: Record<string, number> } {
+  const av = new Map(avaliadoresEntrada.map((a) => [a.id, { ...a }]));
+  const ja = new Map([...jaAtribuidos].map(([k, v]) => [k, new Set(v)]));
+  const vagas = vagasEntrada.map((v) => ({ ...v, movida: false }));
+  const cargasAntes = Object.fromEntries([...av.values()].map((a) => [a.id, a.carga]));
+
+  const resultados: ResultadoInstrucao[] = [];
+  for (const ins of instrucoes) {
+    const res: ResultadoInstrucao = { instrucao: ins, feitos: 0, movimentos: [], primeiroNaoExterno: 0 };
+    for (let n = 0; n < ins.quantidade; n++) {
+      // Candidatos (vaga, destino) válidos para esta unidade.
+      const pend = new Map<string, number>();
+      for (const v of vagas) if (!v.movida) pend.set(v.avaliadorAtualId, (pend.get(v.avaliadorAtualId) ?? 0) + 1);
+      const pendentesDe = (id: string) => pend.get(id) ?? 0;
+      const doadorOk = (id: string) =>
+        ins.de === "QUALQUER" ? id !== ins.para : ins.de === "OCIOSOS" ? id !== ins.para && (av.get(id)?.concluidas ?? 0) === 0 : id === ins.de;
+      const destinos = ins.para === "DEMAIS"
+        ? [...av.values()].filter((a) => a.id !== ins.de)
+        : [av.get(ins.para)].filter((a): a is NonNullable<typeof a> => !!a);
+      let melhor: { v: (typeof vagas)[number]; d: AvaliadorLote; nota: Array<number | string> } | null = null;
+      for (const v of vagas) {
+        if (v.movida || !doadorOk(v.avaliadorAtualId)) continue;
+        for (const d of destinos) {
+          if (d.id === v.avaliadorAtualId || d.carga >= capacidade || !podeAvaliar(d, v.participanteInstituicaoId)) continue;
+          if (ja.get(v.inscricaoId)?.has(d.id)) continue;
+          const tiraPrimeiroExterno = v.ordem === 1 && !d.externo;
+          // Ordem de preferência: não quebrar o 1º externo; doador com mais
+          // pendências; destino com menor carga; desempate estável por id.
+          const nota: Array<number | string> = [tiraPrimeiroExterno ? 1 : 0, -pendentesDe(v.avaliadorAtualId), d.carga, v.atribuicaoId, d.id];
+          if (!melhor || menor(nota, melhor.nota)) melhor = { v, d, nota };
+        }
+      }
+      if (!melhor) {
+        const destinoCheio = ins.para !== "DEMAIS" && (av.get(ins.para)?.carga ?? 0) >= capacidade;
+        const semDoador = !vagas.some((v) => !v.movida && doadorOk(v.avaliadorAtualId));
+        res.motivo = destinoCheio
+          ? `o destino já tem ${capacidade} avaliações`
+          : semDoador
+            ? (ins.de === "QUALQUER" || ins.de === "OCIOSOS" ? "não há mais avaliações pendentes sem rascunho na origem" : "a origem não tem mais avaliações pendentes sem rascunho")
+            : "as avaliações disponíveis não podem ir para o destino (mesma instituição ou participante já avaliado por ele)";
+        break;
+      }
+      const { v, d } = melhor;
+      const de = av.get(v.avaliadorAtualId)!;
+      de.carga--; d.carga++;
+      ja.set(v.inscricaoId, new Set([...(ja.get(v.inscricaoId) ?? []), d.id]));
+      res.movimentos.push({ atribuicaoId: v.atribuicaoId, inscricaoId: v.inscricaoId, ordem: v.ordem, de: v.avaliadorAtualId, para: d.id });
+      if (v.ordem === 1 && !d.externo) res.primeiroNaoExterno++;
+      v.movida = true;
+      res.feitos++;
+    }
+    resultados.push(res);
+  }
+  return { resultados, cargasAntes, cargasDepois: Object.fromEntries([...av.values()].map((a) => [a.id, a.carga])) };
+}

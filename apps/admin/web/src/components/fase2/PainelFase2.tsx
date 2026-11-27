@@ -58,6 +58,12 @@ interface Painel {
   avaliadores: Array<{ avaliadorId: string; nome: string; total: number; concluidas: number; pendentes: number; atrasadas: number; mediaHoras: number | null }>;
   participantes: Participante[];
 }
+interface PedidoLote { de: string; para: string; quantidade: number }
+interface ResumoLote {
+  simulacao: boolean; aplicados: number; movimentos: number;
+  instrucoes: Array<{ de: string; para: string; pedidos: number; feitos: number; motivo: string | null; primeiroNaoExterno: number; origens: string[]; destinos: string[] }>;
+  cargas: Array<{ id: string; nome: string; antes: number; depois: number }>;
+}
 interface ResumoRedistribuicao {
   simulacao: boolean; aplicados: number; pendentesMoveis: number; fixas: number; movimentos: number;
   semParticipantesAntes: number; semParticipantesDepois: number;
@@ -119,6 +125,9 @@ export default function PainelFase2() {
   const [naoRecebem, setNaoRecebem] = useState<string[]>([]);
   const [simRedist, setSimRedist] = useState<ResumoRedistribuicao | null>(null);
   const [confirmarRedist, setConfirmarRedist] = useState(false);
+  const [pedidos, setPedidos] = useState<PedidoLote[]>([{ de: "QUALQUER", para: "", quantidade: 1 }]);
+  const [simLote, setSimLote] = useState<ResumoLote | null>(null);
+  const [confirmarLote, setConfirmarLote] = useState(false);
   const [filtro, setFiltro] = useState("");
   const [filtroSituacao, setFiltroSituacao] = useState("");
   const [remanejando, setRemanejando] = useState<{ atribuicao: Atribuicao; participante: string; instituicao: string; ja: string[] } | null>(null);
@@ -197,6 +206,27 @@ export default function PainelFase2() {
       api.get<Avaliador[]>("/admin/fase2/avaliadores").then(({ data: av }) => setAvaliadores(av)).catch(() => {});
       return `Redistribuição concluída: ${data.aplicados} avaliações mudaram de avaliador.`;
     });
+
+  const pedidosValidos = pedidos.filter((p) => p.de && p.para && p.quantidade >= 1);
+  const simularLote = () =>
+    acao(async () => {
+      const { data } = await api.post<ResumoLote>("/admin/fase2/remanejar-lote", { instrucoes: pedidosValidos, simular: true });
+      setSimLote(data);
+      return data.movimentos ? "Simulação pronta: confira abaixo antes de confirmar." : "Simulação: nenhuma avaliação pôde ser movida com esses pedidos.";
+    });
+  const aplicarLote = () =>
+    acao(async () => {
+      const { data } = await api.post<ResumoLote>("/admin/fase2/remanejar-lote", { instrucoes: pedidosValidos });
+      setConfirmarLote(false);
+      setSimLote(null);
+      setPedidos([{ de: "QUALQUER", para: "", quantidade: 1 }]);
+      api.get<Avaliador[]>("/admin/fase2/avaliadores").then(({ data: av }) => setAvaliadores(av)).catch(() => {});
+      return `Remanejamento concluído: ${data.aplicados} avaliações mudaram de avaliador.`;
+    });
+  const mudarPedido = (i: number, campo: keyof PedidoLote, valor: string | number) => {
+    setSimLote(null);
+    setPedidos((ps) => ps.map((p, k) => (k === i ? { ...p, [campo]: valor } : p)));
+  };
 
   const distribuir = () =>
     acao(async () => {
@@ -470,6 +500,80 @@ export default function PainelFase2() {
         );
       })()}
 
+      {/* Remanejamento por quantidade */}
+      {painel.distribuida && avaliadores.length > 0 && (
+        <div className={`${cartao} space-y-4`}>
+          <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Users size={16} /> Remanejamento por quantidade</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Monte os pedidos, um por linha (ex.: <em>tirar 3 da Luzia para o Beto</em>; <em>mais 4 para a Anísia, de qualquer um</em>). São aplicados na
+            ordem, só sobre avaliações <strong>pendentes e sem rascunho</strong>, respeitando instituição diferente, máximo de 10 e o 1º avaliador
+            externo sempre que possível.
+          </p>
+          <div className="space-y-2">
+            {pedidos.map((p, i) => (
+              <div key={i} className="grid gap-2 sm:grid-cols-[1fr_auto_1fr_90px_auto] items-center">
+                <select value={p.de} onChange={(e) => mudarPedido(i, "de", e.target.value)} aria-label="Tirar de"
+                  className="h-9 rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm px-2">
+                  <option value="QUALQUER">Tirar de: qualquer avaliador (quem tem mais pendências)</option>
+                  <option value="OCIOSOS">Tirar de: quem não concluiu nenhuma avaliação</option>
+                  {avaliadores.map((a) => <option key={a.id} value={a.id}>Tirar de: {a.nome} · {a.instituicao ?? "?"} · {a.carga}/10</option>)}
+                </select>
+                <span className="text-[var(--text-tertiary)] text-center">→</span>
+                <select value={p.para} onChange={(e) => mudarPedido(i, "para", e.target.value)} aria-label="Para"
+                  className="h-9 rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm px-2">
+                  <option value="">Para quem?</option>
+                  <option value="DEMAIS">Para: distribuir entre os de menor carga</option>
+                  {avaliadores.filter((a) => a.instituicao).map((a) => <option key={a.id} value={a.id}>Para: {a.nome} · {a.instituicao} · {a.carga}/10</option>)}
+                </select>
+                <Input type="number" min={1} max={10} value={p.quantidade} aria-label="Quantidade"
+                  onChange={(e) => mudarPedido(i, "quantidade", Math.max(1, Math.min(10, Number(e.target.value) || 1)))}
+                  className="h-9 bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-primary)]" />
+                <button className="text-xs text-red-300 hover:underline justify-self-start" disabled={pedidos.length === 1}
+                  onClick={() => { setSimLote(null); setPedidos((ps) => ps.filter((_, k) => k !== i)); }}>remover</button>
+              </div>
+            ))}
+            <button className="text-sm text-[var(--color-blue-ink)] hover:underline" onClick={() => { setSimLote(null); setPedidos((ps) => [...ps, { de: "QUALQUER", para: "", quantidade: 1 }]); }}>
+              + adicionar pedido
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" disabled={ocupado || !pedidosValidos.length} onClick={simularLote}>Simular remanejamento</Button>
+            <Button disabled={ocupado || !simLote || simLote.movimentos === 0} onClick={() => setConfirmarLote(true)}
+              style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}>
+              Confirmar remanejamento
+            </Button>
+          </div>
+          {simLote && (
+            <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 space-y-3 text-sm">
+              <p className="font-semibold text-[var(--text-primary)]">Resultado da simulação (nada foi gravado): {simLote.movimentos} avaliações mudariam de avaliador</p>
+              <ul className="space-y-2">
+                {simLote.instrucoes.map((x, i) => (
+                  <li key={i} className="rounded bg-[var(--bg-secondary)] px-3 py-2">
+                    <span className={x.feitos === x.pedidos ? "text-emerald-300" : "text-amber-300"}>{x.feitos === x.pedidos ? "✓" : "⚠"}</span>{" "}
+                    <strong className="text-[var(--text-primary)]">{x.de} → {x.para}</strong>: {x.feitos} de {x.pedidos}
+                    {x.motivo && <span className="text-amber-300"> — {x.motivo}</span>}
+                    {(x.origens.length > 0 || x.destinos.length > 0) && (
+                      <span className="block text-xs text-[var(--text-tertiary)]">de {x.origens.join(", ") || "—"} · para {x.destinos.join(", ") || "—"}</span>
+                    )}
+                    {x.primeiroNaoExterno > 0 && <span className="block text-xs text-amber-300">{x.primeiroNaoExterno} participante(s) ficariam com 1º avaliador não externo (não havia outra opção).</span>}
+                  </li>
+                ))}
+              </ul>
+              {simLote.cargas.length > 0 && (
+                <div className="grid gap-1 sm:grid-cols-2">
+                  {simLote.cargas.map((c) => (
+                    <div key={c.id} className="flex items-center justify-between gap-2 rounded bg-[var(--bg-secondary)] px-2 py-1">
+                      <span className="truncate">{c.nome}</span>
+                      <span className="tabular-nums font-semibold">{c.antes} → {c.depois}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Avaliadores */}
       {painel.avaliadores.length > 0 && (
         <div className={cartao}>
@@ -612,6 +716,16 @@ export default function PainelFase2() {
         variante="warning"
         titulo="Redistribuir as avaliações pendentes?"
         mensagem={`${simRedist?.movimentos ?? 0} avaliações pendentes (sem rascunho) mudarão de avaliador, pelas regras da distribuição. Concluídas e iniciadas não mudam.`}
+      />
+
+      <ConfirmDialog
+        aberto={confirmarLote}
+        onClose={() => setConfirmarLote(false)}
+        onConfirm={aplicarLote}
+        confirmando={ocupado}
+        variante="warning"
+        titulo="Aplicar o remanejamento?"
+        mensagem={`${simLote?.movimentos ?? 0} avaliações pendentes (sem rascunho) mudarão de avaliador, conforme a simulação. Os avaliadores passam a ver a mudança na lista deles.`}
       />
 
       {liberando && (

@@ -4,7 +4,7 @@ import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { EmailService } from "../email/email.service.js";
 import { ALERTA_AVALIACAO_HORAS, prazoDe, situacaoEnvio, type TipoArquivo } from "./fase2.regras.js";
-import { CAPACIDADE_AVALIADOR, ehExterno, planejarDistribuicao, planejarRedistribuicao, podeAvaliar } from "./fase2-distribuicao.js";
+import { CAPACIDADE_AVALIADOR, ehExterno, planejarDistribuicao, planejarRedistribuicao, planejarRemanejamentoLote, podeAvaliar, type InstrucaoLote } from "./fase2-distribuicao.js";
 import { edicaoAtual } from "./fase2.edicao.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
 import { formatarEnvio } from "./fase2-participante.service.js";
@@ -488,6 +488,89 @@ export class Fase2GestaoService {
       movimentos: plano.movimentos.length,
       aplicados,
       avaliadoresSelecionados: avaliadorIds ?? "todos com instituição",
+    });
+    return { simulacao: false, aplicados, ...resumo };
+  }
+
+  /**
+   * Remanejamento por quantidade ("tire 3 da Luzia e dê ao Beto", "mais 4 para
+   * a Anísia de qualquer um"). As instruções são aplicadas na ordem, só sobre
+   * avaliações pendentes sem rascunho, com as regras da distribuição. Com
+   * `simular`, só devolve o resultado.
+   */
+  async remanejarLote(instrucoes: InstrucaoLote[], actorId: string, { simular = false }: { simular?: boolean } = {}) {
+    const edicao = await this.edicaoOuErro();
+    const ativas = await this.prisma.atribuicaoFase2.findMany({
+      where: { inscricao: { edicaoId: edicao.id }, status: { not: "REMANEJADA" } },
+      select: { id: true, inscricaoId: true, avaliadorId: true, ordem: true, status: true, inscricao: { select: { instituicaoId: true } } },
+    });
+    if (!ativas.length) throw new BadRequestException("A distribuição ainda não foi feita.");
+    const historico = await this.prisma.atribuicaoFase2.findMany({ where: { inscricao: { edicaoId: edicao.id } }, select: { inscricaoId: true, avaliadorId: true } });
+    const comRascunho = new Set(
+      (await this.prisma.avaliacaoFase2.findMany({ where: { concluida: false, inscricao: { edicaoId: edicao.id } }, select: { inscricaoId: true, avaliadorId: true } }))
+        .map((r) => `${r.inscricaoId}|${r.avaliadorId}`),
+    );
+    const lista = await this.listarAvaliadores();
+    const nomes = new Map(lista.map((a) => [a.id, a.nome]));
+    for (const i of instrucoes) {
+      if (!["QUALQUER", "OCIOSOS"].includes(i.de) && !nomes.has(i.de)) throw new BadRequestException("Avaliador de origem inválido.");
+      if (i.para !== "DEMAIS" && !nomes.has(i.para)) throw new BadRequestException("Avaliador de destino inválido.");
+      if (i.de === i.para) throw new BadRequestException("Origem e destino iguais.");
+    }
+    const concluidas = new Map<string, number>();
+    for (const a of ativas) if (a.status === "CONCLUIDA") concluidas.set(a.avaliadorId, (concluidas.get(a.avaliadorId) ?? 0) + 1);
+    const carga = new Map<string, number>();
+    for (const a of ativas) carga.set(a.avaliadorId, (carga.get(a.avaliadorId) ?? 0) + 1);
+    const avaliadores = lista.map((a) => ({ id: a.id, nome: a.nome, instituicaoId: a.instituicaoId, externo: a.externo, carga: carga.get(a.id) ?? 0, concluidas: concluidas.get(a.id) ?? 0 }));
+    // Quem tem atribuição mas não está mais na lista de avaliadores: pode doar, nunca recebe.
+    for (const id of new Set(ativas.map((a) => a.avaliadorId))) {
+      if (!nomes.has(id)) avaliadores.push({ id, nome: "(fora da lista de avaliadores)", instituicaoId: null, externo: false, carga: carga.get(id) ?? 0, concluidas: concluidas.get(id) ?? 0 });
+    }
+    const jaAtribuidos = new Map<string, Set<string>>();
+    for (const h of historico) jaAtribuidos.set(h.inscricaoId, new Set([...(jaAtribuidos.get(h.inscricaoId) ?? []), h.avaliadorId]));
+    const vagas = ativas
+      .filter((a) => a.status === "PENDENTE" && !comRascunho.has(`${a.inscricaoId}|${a.avaliadorId}`))
+      .map((a) => ({ atribuicaoId: a.id, inscricaoId: a.inscricaoId, participanteInstituicaoId: a.inscricao.instituicaoId, ordem: a.ordem, avaliadorAtualId: a.avaliadorId }));
+
+    const plano = planejarRemanejamentoLote(instrucoes, vagas, avaliadores, jaAtribuidos);
+    const nome = (id: string) => (id === "QUALQUER" ? "Qualquer avaliador" : id === "OCIOSOS" ? "Quem não concluiu nenhuma" : id === "DEMAIS" ? "Os de menor carga" : nomes.get(id) ?? id);
+    const resumo = {
+      instrucoes: plano.resultados.map((r) => ({
+        de: nome(r.instrucao.de),
+        para: nome(r.instrucao.para),
+        pedidos: r.instrucao.quantidade,
+        feitos: r.feitos,
+        motivo: r.motivo ?? null,
+        primeiroNaoExterno: r.primeiroNaoExterno,
+        origens: Object.entries(r.movimentos.reduce<Record<string, number>>((m, x) => ({ ...m, [nome(x.de)]: (m[nome(x.de)] ?? 0) + 1 }), {})).map(([n, q]) => `${n} (${q})`),
+        destinos: Object.entries(r.movimentos.reduce<Record<string, number>>((m, x) => ({ ...m, [nome(x.para)]: (m[nome(x.para)] ?? 0) + 1 }), {})).map(([n, q]) => `${n} (${q})`),
+      })),
+      movimentos: plano.resultados.reduce((s, r) => s + r.feitos, 0),
+      cargas: avaliadores
+        .filter((a) => plano.cargasAntes[a.id] !== plano.cargasDepois[a.id])
+        .map((a) => ({ id: a.id, nome: a.nome, antes: plano.cargasAntes[a.id], depois: plano.cargasDepois[a.id] }))
+        .sort((x, y) => x.nome.localeCompare(y.nome)),
+    };
+    const movimentos = plano.resultados.flatMap((r) => r.movimentos);
+    if (simular || !movimentos.length) return { simulacao: simular, aplicados: 0, ...resumo };
+
+    const agora = new Date();
+    const aplicados = await this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${"distribuir:" + edicao.id}))`;
+      let n = 0;
+      for (const m of movimentos) {
+        const atual = await tx.atribuicaoFase2.findUnique({ where: { id: m.atribuicaoId }, select: { status: true } });
+        const rasc = await tx.avaliacaoFase2.findUnique({ where: { inscricaoId_avaliadorId: { inscricaoId: m.inscricaoId, avaliadorId: m.de } }, select: { id: true } });
+        if (atual?.status !== "PENDENTE" || rasc) continue;
+        await tx.atribuicaoFase2.update({ where: { id: m.atribuicaoId }, data: { status: "REMANEJADA" } });
+        await tx.atribuicaoFase2.create({ data: { inscricaoId: m.inscricaoId, avaliadorId: m.para, ordem: m.ordem, atribuidoEm: agora, atribuidoPorId: actorId } });
+        n++;
+      }
+      return n;
+    });
+    await this.auditoria.log(actorId, "REMANEJAR_LOTE_FASE2", "Edicao", edicao.id, {
+      instrucoes: resumo.instrucoes.map((i) => ({ de: i.de, para: i.para, pedidos: i.pedidos, feitos: i.feitos })),
+      aplicados,
     });
     return { simulacao: false, aplicados, ...resumo };
   }
