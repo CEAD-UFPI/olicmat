@@ -1,0 +1,13 @@
+# Espelho da OLICMAT na VPS: ver nginx.conf.
+services:
+  espelho:
+    image: nginx:1.27-alpine
+    container_name: olicmat-espelho
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [easypanel]
+
+networks:
+  easypanel:
+    external: true

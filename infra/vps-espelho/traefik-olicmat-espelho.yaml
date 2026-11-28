@@ -1,0 +1,20 @@
+# Rotas HTTPS do espelho no Traefik do EasyPanel (certificado curinga *.q7zbrj.easypanel.host).
+# Copiar para /etc/easypanel/traefik/config/ (o Traefik recarrega sozinho).
+http:
+  routers:
+    olicmat-espelho-http:
+      rule: Host(`olicmat.q7zbrj.easypanel.host`) || Host(`painel-olicmat.q7zbrj.easypanel.host`)
+      entryPoints: [http]
+      middlewares: [redirect-to-https]
+      service: olicmat-espelho
+    olicmat-espelho:
+      rule: Host(`olicmat.q7zbrj.easypanel.host`) || Host(`painel-olicmat.q7zbrj.easypanel.host`)
+      entryPoints: [https]
+      tls: {}
+      service: olicmat-espelho
+  services:
+    olicmat-espelho:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://olicmat-espelho:80
