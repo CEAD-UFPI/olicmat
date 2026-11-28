@@ -1,5 +1,6 @@
 import {
   consolidarNotas,
+  notaDeEncerramento,
   linkValido,
   prazoDe,
   situacaoEnvio,
@@ -125,8 +126,16 @@ describe("consolidarNotas", () => {
     expect(consolidarNotas([70, 90])).toEqual({ situacao: "FINAL", nota: 80 });
   });
 
-  it("pede 3º avaliador quando a diferença passa de 20", () => {
-    expect(consolidarNotas([60, 80.5]).situacao).toBe("PRECISA_TERCEIRO");
+  it("sem 3º avaliador: média das duas mesmo com divergência", () => {
+    expect(consolidarNotas([60, 80.5])).toEqual({ situacao: "FINAL", nota: 70.25 });
+    expect(consolidarNotas([20, 100])).toEqual({ situacao: "FINAL", nota: 60 });
+  });
+
+  it("encerramento: uma nota vira a nota final; duas ou três seguem a consolidação", () => {
+    expect(notaDeEncerramento([])).toBeNull();
+    expect(notaDeEncerramento([72])).toBe(72);
+    expect(notaDeEncerramento([20, 100])).toBe(60);
+    expect(notaDeEncerramento([50, 90, 85])).toBe(87.5);
   });
 
   it("com 3 notas, média das duas mais próximas", () => {

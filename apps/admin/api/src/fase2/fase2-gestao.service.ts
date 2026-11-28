@@ -3,7 +3,7 @@ import { randomInt } from "node:crypto";
 import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { EmailService } from "../email/email.service.js";
-import { ALERTA_AVALIACAO_HORAS, prazoDe, situacaoEnvio, type TipoArquivo } from "./fase2.regras.js";
+import { ALERTA_AVALIACAO_HORAS, consolidarNotas, notaDeEncerramento, prazoDe, situacaoEnvio, type TipoArquivo } from "./fase2.regras.js";
 import { CAPACIDADE_AVALIADOR, ehExterno, planejarDistribuicao, planejarRedistribuicao, planejarRemanejamentoLote, podeAvaliar, type InstrucaoLote } from "./fase2-distribuicao.js";
 import { edicaoAtual } from "./fase2.edicao.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
@@ -573,6 +573,119 @@ export class Fase2GestaoService {
       aplicados,
     });
     return { simulacao: false, aplicados, ...resumo };
+  }
+
+  /** Estado das avaliações por participante (para as ações de regra da nota). */
+  private async estadoNotas(edicaoId: string) {
+    const ativas = await this.prisma.atribuicaoFase2.findMany({
+      where: { inscricao: { edicaoId }, status: { not: "REMANEJADA" } },
+      select: { id: true, inscricaoId: true, avaliadorId: true, ordem: true, status: true },
+    });
+    const avaliacoes = await this.prisma.avaliacaoFase2.findMany({
+      where: { inscricao: { edicaoId } },
+      select: { inscricaoId: true, avaliadorId: true, nota: true, concluida: true, avaliadoEm: true },
+    });
+    const inscricoes = await this.prisma.inscricao.findMany({
+      where: { edicaoId, id: { in: [...new Set(ativas.map((a) => a.inscricaoId))] } },
+      select: { id: true, fase2Nota: true },
+    });
+    const av = new Map(avaliacoes.map((v) => [`${v.inscricaoId}|${v.avaliadorId}`, v]));
+    const nota = new Map(inscricoes.map((i) => [i.id, i.fase2Nota]));
+    const porPart = new Map<string, typeof ativas>();
+    for (const a of ativas) porPart.set(a.inscricaoId, [...(porPart.get(a.inscricaoId) ?? []), a]);
+    return { ativas, av, nota, porPart };
+  }
+
+  /** Notas concluídas válidas de um participante, em ordem de conclusão. */
+  private notasConcluidas(atribs: Array<{ inscricaoId: string; avaliadorId: string; status: string }>, av: Map<string, { nota: number; concluida: boolean; avaliadoEm: Date | null }>) {
+    return atribs
+      .filter((a) => a.status === "CONCLUIDA")
+      .map((a) => av.get(`${a.inscricaoId}|${a.avaliadorId}`))
+      .filter((v): v is NonNullable<typeof v> => !!v && v.concluida)
+      .sort((x, y) => (x.avaliadoEm?.getTime() ?? 0) - (y.avaliadoEm?.getTime() ?? 0))
+      .map((v) => v.nota);
+  }
+
+  /**
+   * Nova regra (sem 3º avaliador): cancela os 3ºs avaliadores pendentes SEM
+   * rascunho e grava a média das duas para quem estava esperando o 3º. Os 3ºs
+   * com rascunho continuam; os já concluídos mantêm o par mais próximo.
+   */
+  async aplicarMediaDupla(actorId: string, { simular = false }: { simular?: boolean } = {}) {
+    const edicao = await this.edicaoOuErro();
+    const { ativas, av, nota, porPart } = await this.estadoNotas(edicao.id);
+    const terceiros = ativas.filter((a) => a.ordem === 3 && a.status === "PENDENTE");
+    const cancelar = terceiros.filter((a) => !av.has(`${a.inscricaoId}|${a.avaliadorId}`));
+    const comRascunho = terceiros.length - cancelar.length;
+    const cancelados = new Set(cancelar.map((c) => c.id));
+    const novasNotas: Array<{ inscricaoId: string; nota: number; antes: number | null }> = [];
+    for (const [inscricaoId, atribs] of porPart) {
+      const notas = this.notasConcluidas(atribs.filter((a) => !cancelados.has(a.id)), av);
+      const r = consolidarNotas(notas);
+      if (r.situacao === "FINAL" && nota.get(inscricaoId) !== r.nota) novasNotas.push({ inscricaoId, nota: r.nota, antes: nota.get(inscricaoId) ?? null });
+    }
+    const resumo = {
+      terceirosPendentes: terceiros.length,
+      terceirosCancelados: cancelar.length,
+      terceirosComRascunhoMantidos: comRascunho,
+      notasGravadas: novasNotas.length,
+      notasAlteradas: novasNotas.filter((n) => n.antes != null).length,
+    };
+    if (simular) return { simulacao: true, ...resumo };
+    await this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${"distribuir:" + edicao.id}))`;
+      for (const c of cancelar) {
+        const atual = await tx.atribuicaoFase2.findUnique({ where: { id: c.id }, select: { status: true } });
+        const rasc = await tx.avaliacaoFase2.findUnique({ where: { inscricaoId_avaliadorId: { inscricaoId: c.inscricaoId, avaliadorId: c.avaliadorId } }, select: { id: true } });
+        if (atual?.status === "PENDENTE" && !rasc) await tx.atribuicaoFase2.update({ where: { id: c.id }, data: { status: "REMANEJADA" } });
+      }
+      for (const n of novasNotas) await tx.inscricao.update({ where: { id: n.inscricaoId }, data: { fase2Nota: n.nota } });
+    });
+    await this.auditoria.log(actorId, "APLICAR_MEDIA_DUPLA_FASE2", "Edicao", edicao.id, resumo);
+    return { simulacao: false, ...resumo };
+  }
+
+  /**
+   * Encerramento (rede de segurança): quem tem exatamente UMA avaliação
+   * concluída e ainda não tem nota fica com essa nota, e as avaliações
+   * pendentes desse participante são retiradas. Quem não tem nenhuma
+   * concluída é listado e não muda.
+   */
+  async encerrarAvaliacoes(actorId: string, { simular = false }: { simular?: boolean } = {}) {
+    const edicao = await this.edicaoOuErro();
+    const { av, nota, porPart } = await this.estadoNotas(edicao.id);
+    const fechar: Array<{ inscricaoId: string; nota: number; pendentes: string[] }> = [];
+    const semNenhuma: string[] = [];
+    let jaComNota = 0;
+    for (const [inscricaoId, atribs] of porPart) {
+      const notas = this.notasConcluidas(atribs, av);
+      if (nota.get(inscricaoId) != null) { jaComNota++; continue; }
+      if (notas.length === 0) { semNenhuma.push(inscricaoId); continue; }
+      const n = notaDeEncerramento(notas);
+      if (n != null) fechar.push({ inscricaoId, nota: n, pendentes: atribs.filter((a) => a.status === "PENDENTE").map((a) => a.id) });
+    }
+    const nomes = semNenhuma.length
+      ? await this.prisma.inscricao.findMany({ where: { id: { in: semNenhuma } }, select: { numero: true, user: { select: { nome: true } } }, orderBy: { numero: "asc" } })
+      : [];
+    const resumo = {
+      participantes: porPart.size,
+      jaComNota,
+      fechadosComUmaAvaliacao: fechar.length,
+      pendentesRetiradas: fechar.reduce((s, f) => s + f.pendentes.length, 0),
+      semNenhumaAvaliacao: nomes.map((n) => `nº ${n.numero} — ${n.user.nome}`),
+    };
+    if (simular) return { simulacao: true, ...resumo };
+    await this.prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${"distribuir:" + edicao.id}))`;
+      for (const f of fechar) {
+        const atual = await tx.inscricao.findUnique({ where: { id: f.inscricaoId }, select: { fase2Nota: true } });
+        if (atual?.fase2Nota != null) continue; // alguém concluiu no meio-tempo
+        await tx.inscricao.update({ where: { id: f.inscricaoId }, data: { fase2Nota: f.nota } });
+        if (f.pendentes.length) await tx.atribuicaoFase2.updateMany({ where: { id: { in: f.pendentes }, status: "PENDENTE" }, data: { status: "REMANEJADA" } });
+      }
+    });
+    await this.auditoria.log(actorId, "ENCERRAR_AVALIACOES_FASE2", "Edicao", edicao.id, { ...resumo, semNenhumaAvaliacao: resumo.semNenhumaAvaliacao.length });
+    return { simulacao: false, ...resumo };
   }
 
   async remanejar(atribuicaoId: string, novoAvaliadorId: string, actorId: string) {

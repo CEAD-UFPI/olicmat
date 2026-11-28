@@ -11,7 +11,6 @@
  */
 
 export const PRAZO_ENVIO_HORAS = 24;
-export const LIMITE_DIVERGENCIA = 20;
 export const ALERTA_AVALIACAO_HORAS = 48;
 
 /**
@@ -108,21 +107,26 @@ export function totalCriterios(
 
 export type ResultadoNotas =
   | { situacao: "AGUARDANDO" }
-  | { situacao: "PRECISA_TERCEIRO"; diferenca: number }
   | { situacao: "FINAL"; nota: number };
 
 const arred2 = (n: number) => Math.round(n * 100) / 100;
 
-/** Consolida as notas concluídas de um participante (em ordem de conclusão). */
+/**
+ * Consolida as notas concluídas de um participante (em ordem de conclusão).
+ *
+ * Regra desde 28/11/2026 (decisão da Comissão): dupla avaliação SEM 3º
+ * avaliador. Com duas notas, a nota é sempre a média, mesmo com divergência.
+ * Três notas só existem para quem já tinha um 3º avaliador concluído pela regra
+ * antiga; para elas vale a média do par mais próximo. Uma nota só vira nota
+ * final no encerramento (`notaDeEncerramento`).
+ */
 export function consolidarNotas(notas: number[]): ResultadoNotas {
   if (notas.length < 2) return { situacao: "AGUARDANDO" };
   if (notas.length === 2) {
     const [a, b] = notas;
-    const diferenca = Math.abs(a - b);
-    if (diferenca > LIMITE_DIVERGENCIA) return { situacao: "PRECISA_TERCEIRO", diferenca };
     return { situacao: "FINAL", nota: arred2((a + b) / 2) };
   }
-  // Três notas: média do par mais próximo. Empate entre pares: o de maior média
+  // Três notas (regra antiga, 3º já concluído): média do par mais próximo. Empate entre pares: o de maior média
   // (favorece o participante, regra explícita e determinística).
   const [a, b, c] = notas;
   const pares: Array<[number, number]> = [[a, b], [a, c], [b, c]];
@@ -136,7 +140,17 @@ export function consolidarNotas(notas: number[]): ResultadoNotas {
   return { situacao: "FINAL", nota: arred2((x + y) / 2) };
 }
 
-// A distribuição e a escolha do 3º avaliador estão em fase2-distribuicao.ts.
+/**
+ * Rede de segurança no encerramento: quem tem exatamente UMA avaliação
+ * concluída fica com essa nota. Com duas ou mais, vale `consolidarNotas`.
+ */
+export function notaDeEncerramento(notas: number[]): number | null {
+  if (notas.length === 1) return arred2(notas[0]);
+  const r = consolidarNotas(notas);
+  return r.situacao === "FINAL" ? r.nota : null;
+}
+
+// A distribuição está em fase2-distribuicao.ts.
 
 /* ---------------------------------------------------------------------------
  * Upload dos arquivos (videoaula e portfólio) para a nuvem própria (S3).

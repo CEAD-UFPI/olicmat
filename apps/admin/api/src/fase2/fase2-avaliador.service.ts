@@ -3,7 +3,6 @@ import { PrismaService } from "../prisma.service.js";
 import { AuditoriaService } from "../admin/auditoria/auditoria.service.js";
 import { CRITERIOS, ESCALA, ESCALA_MAX, conceitoValido, consolidarNotas, pontosDoConceito, totalCriterios } from "./fase2.regras.js";
 import { Fase2ArmazenamentoService } from "./fase2-armazenamento.service.js";
-import { ehExterno, escolherTerceiro } from "./fase2-distribuicao.js";
 import { formatarEnvio } from "./fase2-participante.service.js";
 import { Fase2VideosService } from "./fase2-videos.service.js";
 
@@ -169,44 +168,6 @@ export class Fase2AvaliadorService {
         await tx.inscricao.update({ where: { id: a.inscricaoId }, data: { fase2Nota: consolidado.nota } });
         return { consolidado, terceiro: null as string | null };
       }
-      if (consolidado.situacao === "PRECISA_TERCEIRO") {
-        const jaTem = await tx.atribuicaoFase2.findFirst({
-          where: { inscricaoId: a.inscricaoId, ordem: 3, status: { not: "REMANEJADA" } },
-        });
-        if (jaTem) return { consolidado, terceiro: null };
-        // Candidatos: avaliadores que participam da distribuição desta edição.
-        const insc = (await tx.inscricao.findUnique({ where: { id: a.inscricaoId }, select: { edicaoId: true, instituicaoId: true } }))!;
-        const edicaoId = insc.edicaoId;
-        const cargas = await tx.atribuicaoFase2.groupBy({
-          by: ["avaliadorId", "status"],
-          where: { inscricao: { edicaoId }, status: { not: "REMANEJADA" } },
-          _count: { _all: true },
-        });
-        // Instituição de cada candidato: o 3º deve ser de instituição diferente da do participante.
-        const insts = await tx.user.findMany({
-          where: { id: { in: [...new Set(cargas.map((c) => c.avaliadorId))] } },
-          select: { id: true, instituicaoId: true, instituicao: { select: { sigla: true, nome: true } } },
-        });
-        const instDe = new Map(insts.map((u) => [u.id, u]));
-        const mapa = new Map<string, { avaliadorId: string; instituicaoId: string | null; externo: boolean; pendentes: number; total: number }>();
-        for (const c of cargas) {
-          const u = instDe.get(c.avaliadorId);
-          const m = mapa.get(c.avaliadorId) ?? { avaliadorId: c.avaliadorId, instituicaoId: u?.instituicaoId ?? null, externo: ehExterno(u?.instituicao), pendentes: 0, total: 0 };
-          m.total += c._count._all;
-          if (c.status === "PENDENTE") m.pendentes += c._count._all;
-          mapa.set(c.avaliadorId, m);
-        }
-        const todosDoParticipante = await tx.atribuicaoFase2.findMany({
-          where: { inscricaoId: a.inscricaoId },
-          select: { avaliadorId: true },
-        });
-        const escolhido = escolherTerceiro([...mapa.values()], insc.instituicaoId, todosDoParticipante.map((x) => x.avaliadorId));
-        if (!escolhido) return { consolidado, terceiro: null };
-        await tx.atribuicaoFase2.create({
-          data: { inscricaoId: a.inscricaoId, avaliadorId: escolhido, ordem: 3 },
-        });
-        return { consolidado, terceiro: escolhido };
-      }
       return { consolidado, terceiro: null };
     });
 
@@ -215,7 +176,6 @@ export class Fase2AvaliadorService {
       total: r.total,
       ...r.notas,
       resultado: resultado.consolidado.situacao,
-      ...(resultado.terceiro ? { terceiroAvaliador: resultado.terceiro } : {}),
     });
     return this.ficha(atribuicaoId, avaliadorId);
   }

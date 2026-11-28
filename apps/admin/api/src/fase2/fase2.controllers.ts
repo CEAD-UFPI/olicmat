@@ -51,6 +51,7 @@ export const remanejarLoteSchema = z.object({
   })).min(1, "Inclua ao menos um pedido").max(40),
   simular: z.boolean().optional(),
 });
+export const simularSchema = z.object({ simular: z.boolean().optional() });
 export const remanejarSchema = z.object({ avaliadorId: z.string().min(1).max(64) });
 export const liberarReenvioSchema = z.object({
   tipo: z.enum(["video", "portfolio"]),
@@ -143,6 +144,16 @@ export class Fase2GestaoController {
   remanejarLote(@Req() req: Req, @Body() body: unknown) {
     const d = validar(remanejarLoteSchema, body);
     return this.service.remanejarLote(d.instrucoes, req.user.id, { simular: d.simular });
+  }
+
+  @Post("aplicar-media-dupla")
+  aplicarMediaDupla(@Req() req: Req, @Body() body: unknown) {
+    return this.service.aplicarMediaDupla(req.user.id, { simular: validar(simularSchema, body ?? {}).simular });
+  }
+
+  @Post("encerrar-avaliacoes")
+  encerrarAvaliacoes(@Req() req: Req, @Body() body: unknown) {
+    return this.service.encerrarAvaliacoes(req.user.id, { simular: validar(simularSchema, body ?? {}).simular });
   }
 
   @Post("redistribuir")

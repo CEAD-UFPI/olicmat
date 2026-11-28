@@ -214,7 +214,7 @@ export default function TutorialAvaliadorPage() {
           itens={[
             <>O participante concluído passa para <Strong>Concluídas</Strong>, com a data e o total. Você pode abrir a ficha em <Strong>Ver</Strong>, só para leitura.</>,
             <>Quando os dois avaliadores concluem, a nota da 2ª Fase é a <Strong>média das duas notas</Strong>.</>,
-            <>Se as notas diferirem em <Strong>mais de 20 pontos</Strong>, o sistema chama <Strong>automaticamente um 3º avaliador</Strong>, e a nota final é a média das duas notas mais próximas. Por isso, um novo participante pode aparecer na sua lista durante o período de avaliação.</>,
+            <>Não há 3º avaliador: a nota é sempre a média das duas avaliações, mesmo que elas sejam bem diferentes. Por isso, avalie com cuidado e justifique no parecer.</>,
             <>A Comissão acompanha o andamento pelo painel e pode repassar uma avaliação pendente para outro avaliador, se for preciso.</>,
           ]}
         />

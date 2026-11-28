@@ -58,6 +58,8 @@ interface Painel {
   avaliadores: Array<{ avaliadorId: string; nome: string; total: number; concluidas: number; pendentes: number; atrasadas: number; mediaHoras: number | null }>;
   participantes: Participante[];
 }
+interface ResumoMediaDupla { simulacao: boolean; terceirosPendentes: number; terceirosCancelados: number; terceirosComRascunhoMantidos: number; notasGravadas: number; notasAlteradas: number }
+interface ResumoEncerramento { simulacao: boolean; participantes: number; jaComNota: number; fechadosComUmaAvaliacao: number; pendentesRetiradas: number; semNenhumaAvaliacao: string[] }
 interface PedidoLote { de: string; para: string; quantidade: number }
 interface ResumoLote {
   simulacao: boolean; aplicados: number; movimentos: number;
@@ -128,6 +130,9 @@ export default function PainelFase2() {
   const [pedidos, setPedidos] = useState<PedidoLote[]>([{ de: "QUALQUER", para: "", quantidade: 1 }]);
   const [simLote, setSimLote] = useState<ResumoLote | null>(null);
   const [confirmarLote, setConfirmarLote] = useState(false);
+  const [simMedia, setSimMedia] = useState<ResumoMediaDupla | null>(null);
+  const [simEnc, setSimEnc] = useState<ResumoEncerramento | null>(null);
+  const [confirmarRegra, setConfirmarRegra] = useState<"media" | "encerrar" | null>(null);
   const [filtro, setFiltro] = useState("");
   const [filtroSituacao, setFiltroSituacao] = useState("");
   const [remanejando, setRemanejando] = useState<{ atribuicao: Atribuicao; participante: string; instituicao: string; ja: string[] } | null>(null);
@@ -205,6 +210,31 @@ export default function PainelFase2() {
       setSimRedist(null);
       api.get<Avaliador[]>("/admin/fase2/avaliadores").then(({ data: av }) => setAvaliadores(av)).catch(() => {});
       return `Redistribuição concluída: ${data.aplicados} avaliações mudaram de avaliador.`;
+    });
+
+  const simularRegra = (tipo: "media" | "encerrar") =>
+    acao(async () => {
+      if (tipo === "media") {
+        const { data } = await api.post<ResumoMediaDupla>("/admin/fase2/aplicar-media-dupla", { simular: true });
+        setSimMedia(data);
+      } else {
+        const { data } = await api.post<ResumoEncerramento>("/admin/fase2/encerrar-avaliacoes", { simular: true });
+        setSimEnc(data);
+      }
+      return "Simulação pronta: confira abaixo antes de confirmar.";
+    });
+  const aplicarRegra = () =>
+    acao(async () => {
+      const tipo = confirmarRegra;
+      setConfirmarRegra(null);
+      if (tipo === "media") {
+        const { data } = await api.post<ResumoMediaDupla>("/admin/fase2/aplicar-media-dupla", {});
+        setSimMedia(null);
+        return `Média dupla aplicada: ${data.terceirosCancelados} 3ºs avaliadores cancelados e ${data.notasGravadas} notas gravadas.`;
+      }
+      const { data } = await api.post<ResumoEncerramento>("/admin/fase2/encerrar-avaliacoes", {});
+      setSimEnc(null);
+      return `Avaliações encerradas: ${data.fechadosComUmaAvaliacao} participantes ficaram com a nota da única avaliação concluída.`;
     });
 
   const pedidosValidos = pedidos.filter((p) => p.de && p.para && p.quantidade >= 1);
@@ -376,10 +406,10 @@ export default function PainelFase2() {
           <div className="text-sm text-[var(--text-secondary)] space-y-1">
             <p>Regras aplicadas automaticamente:</p>
             <ul className="list-disc pl-5 space-y-0.5">
-              <li>cada avaliador recebe <strong>no máximo 10</strong> participantes (incluindo eventuais 3ªs avaliações);</li>
+              <li>cada avaliador recebe <strong>no máximo 10</strong> participantes;</li>
               <li>o <strong>1º avaliador é EXTERNO</strong>; se os externos lotarem, é de instituição diferente da do participante;</li>
-              <li>o <strong>2º e o 3º</strong> avaliadores são de <strong>instituição diferente</strong> da do participante;</li>
-              <li>se as notas diferirem mais de 20 pontos, o 3º avaliador é chamado automaticamente, pelas mesmas regras.</li>
+              <li>o <strong>2º</strong> avaliador é de <strong>instituição diferente</strong> da do participante;</li>
+              <li>a nota é a <strong>média das duas avaliações</strong> (não há 3º avaliador).</li>
             </ul>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
@@ -405,7 +435,7 @@ export default function PainelFase2() {
           </div>
           <div className={`rounded-lg p-3 text-sm ${vagas >= necessarias ? "bg-emerald-500/10 text-emerald-300" : "bg-amber-500/10 text-amber-300"}`}>
             {totais.enviaram} participantes × 2 = <strong>{necessarias}</strong> avaliações · {escolhidos.length} avaliadores selecionados ({externosSel} externos) × até 10 = <strong>{vagas}</strong> vagas
-            {vagas >= necessarias ? ` · sobram ${vagas - necessarias} vagas para 3ªs avaliações` : ` · faltam ${necessarias - vagas} vagas: selecione mais avaliadores`}
+            {vagas >= necessarias ? ` · sobram ${vagas - necessarias} vagas (folga para remanejamentos)` : ` · faltam ${necessarias - vagas} vagas: selecione mais avaliadores`}
             {semInst.length > 0 && <span className="block text-red-300 mt-1">{semInst.length} selecionado(s) sem instituição cadastrada: defina a instituição (ou EXTERNO) em Usuários antes de distribuir.</span>}
           </div>
           <div className="flex flex-wrap gap-2">
@@ -421,7 +451,7 @@ export default function PainelFase2() {
               <ul className="space-y-1 text-[var(--text-secondary)]">
                 <li>{simulacao.participantes} participantes · {simulacao.atribuicoes} avaliações · {simulacao.avaliadores} avaliadores</li>
                 <li><strong className="text-[var(--text-primary)]">{simulacao.primeiroExterno}</strong> participantes com 1º avaliador externo{simulacao.primeiroNaoExterno > 0 && <> · <span className="text-amber-300">{simulacao.primeiroNaoExterno} com 1º de outra instituição (externos lotados)</span></>}</li>
-                <li>{simulacao.vagasLivresPara3o} vagas livres para eventuais 3ªs avaliações</li>
+                <li>{simulacao.vagasLivresPara3o} vagas livres (folga para remanejamentos)</li>
                 <li>Participantes por instituição: {simulacao.porInstituicao.map((x) => `${x.sigla} ${x.participantes}`).join(" · ")}</li>
               </ul>
               <div className="grid gap-1 sm:grid-cols-2">
@@ -499,6 +529,47 @@ export default function PainelFase2() {
           </div>
         );
       })()}
+
+      {/* Regra da nota: média dupla (sem 3º) e encerramento */}
+      {painel.distribuida && (
+        <div className={`${cartao} space-y-4`}>
+          <h2 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2"><Users size={16} /> Regra da nota e encerramento</h2>
+          <p className="text-sm text-[var(--text-secondary)]">
+            Regra atual: <strong>dupla avaliação, sem 3º avaliador</strong> — a nota é a média das duas, mesmo com divergência.
+          </p>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 space-y-2 text-sm">
+              <p className="font-semibold text-[var(--text-primary)]">1. Aplicar a média dupla aos casos antigos</p>
+              <p className="text-[var(--text-secondary)]">Cancela os 3ºs avaliadores pendentes (sem rascunho) e grava a média das duas primeiras para quem estava esperando o 3º. 3ºs já concluídos mantêm a nota (par mais próximo).</p>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" disabled={ocupado} onClick={() => simularRegra("media")}>Simular</Button>
+                <Button size="sm" disabled={ocupado || !simMedia} onClick={() => setConfirmarRegra("media")} style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}>Aplicar</Button>
+              </div>
+              {simMedia && (
+                <ul className="text-[var(--text-secondary)] space-y-0.5">
+                  <li>3ºs avaliadores pendentes: {simMedia.terceirosPendentes} → <strong className="text-[var(--text-primary)]">{simMedia.terceirosCancelados} cancelados</strong>{simMedia.terceirosComRascunhoMantidos > 0 && `, ${simMedia.terceirosComRascunhoMantidos} mantidos (com rascunho)`}</li>
+                  <li>Notas gravadas agora: <strong className="text-[var(--text-primary)]">{simMedia.notasGravadas}</strong>{simMedia.notasAlteradas > 0 && ` (${simMedia.notasAlteradas} alteradas)`}</li>
+                </ul>
+              )}
+            </div>
+            <div className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-4 space-y-2 text-sm">
+              <p className="font-semibold text-[var(--text-primary)]">2. Encerrar as avaliações (no fim do prazo)</p>
+              <p className="text-[var(--text-secondary)]">Quem tiver <strong>só uma</strong> avaliação concluída fica com essa nota, e as avaliações pendentes desse participante são retiradas. Quem não tiver nenhuma concluída é listado e não muda.</p>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" disabled={ocupado} onClick={() => simularRegra("encerrar")}>Simular</Button>
+                <Button size="sm" disabled={ocupado || !simEnc} onClick={() => setConfirmarRegra("encerrar")} style={{ backgroundColor: "var(--color-gold)", color: "var(--on-accent)" }}>Encerrar</Button>
+              </div>
+              {simEnc && (
+                <ul className="text-[var(--text-secondary)] space-y-0.5">
+                  <li>{simEnc.participantes} participantes · {simEnc.jaComNota} já com nota</li>
+                  <li>Ficam com a nota da única avaliação: <strong className="text-[var(--text-primary)]">{simEnc.fechadosComUmaAvaliacao}</strong> ({simEnc.pendentesRetiradas} avaliações pendentes retiradas)</li>
+                  <li className={simEnc.semNenhumaAvaliacao.length ? "text-amber-300" : ""}>Sem nenhuma avaliação concluída: {simEnc.semNenhumaAvaliacao.length}{simEnc.semNenhumaAvaliacao.length > 0 && ` — ${simEnc.semNenhumaAvaliacao.slice(0, 15).join("; ")}${simEnc.semNenhumaAvaliacao.length > 15 ? "…" : ""}`}</li>
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Remanejamento por quantidade */}
       {painel.distribuida && avaliadores.length > 0 && (
@@ -718,6 +789,17 @@ export default function PainelFase2() {
         mensagem={`${simRedist?.movimentos ?? 0} avaliações pendentes (sem rascunho) mudarão de avaliador, pelas regras da distribuição. Concluídas e iniciadas não mudam.`}
       />
 
+      <ConfirmDialog
+        aberto={confirmarRegra !== null}
+        onClose={() => setConfirmarRegra(null)}
+        onConfirm={aplicarRegra}
+        confirmando={ocupado}
+        variante="warning"
+        titulo={confirmarRegra === "media" ? "Aplicar a média dupla?" : "Encerrar as avaliações?"}
+        mensagem={confirmarRegra === "media"
+          ? `${simMedia?.terceirosCancelados ?? 0} 3ºs avaliadores pendentes serão cancelados e ${simMedia?.notasGravadas ?? 0} notas gravadas (média das duas). A ação fica na auditoria.`
+          : `${simEnc?.fechadosComUmaAvaliacao ?? 0} participantes ficarão com a nota da única avaliação concluída e ${simEnc?.pendentesRetiradas ?? 0} avaliações pendentes serão retiradas dos avaliadores. Use no fim do prazo de avaliação.`}
+      />
       <ConfirmDialog
         aberto={confirmarLote}
         onClose={() => setConfirmarLote(false)}
